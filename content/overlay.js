@@ -35,6 +35,7 @@ if (!blr.W15yQC) {
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
+    userExpertLevel: null,
 
     sb: null,
 
@@ -626,7 +627,7 @@ ys: 'whys'
     },
 
     // Severity Levels: 0=notice, 1=warning, 2=failure
-    // Expert Levels: 0=Basic, 1=Intermediate, 2=Expert
+    // Expert Levels: 0=Basic, 1=Advanced, 2=Expert
     // TODO: QA This
     noteDetails: { // Severity, Expert level, hasExplanation, URL
       missingSBProperty: [2,0,false,null],
@@ -1028,6 +1029,62 @@ ys: 'whys'
       return tableBody;
     },
 
+    setUserLevelBasic: function() {
+      blr.W15yQC.userExpertLevel=0;
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
+    },
+    
+    setUserLevelAdvanced: function() {
+      blr.W15yQC.userExpertLevel=1;
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
+    },
+    
+    setUserLevelExpert: function() {
+      blr.W15yQC.userExpertLevel=2;
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
+    },
+    
+    fnInitMainMenuPopup: function(doc) {
+      blr.W15yQC.userExpertLevel=Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
+      var sLabel=blr.W15yQC.fnGetString('menuLabelUserExpertLevel')+' ';
+      switch(blr.W15yQC.userExpertLevel.toString()) {
+        case '1':
+          sLabel+=blr.W15yQC.fnGetString('menuLabelUELAdvanced');
+          break;
+        case '2':
+          sLabel+=blr.W15yQC.fnGetString('menuLabelUELExpert');
+          break;
+        case '0':
+        default:
+          sLabel+=blr.W15yQC.fnGetString('menuLabelUELBasic');
+          Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
+          break;
+      }
+      doc.getElementById('W15yQC_menuEntry_omUserLevel').setAttribute('label',sLabel);
+    },
+    
+    fnInitUserLevelMenuPopup: function(doc) {
+      blr.W15yQC.userExpertLevel=Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
+      switch(blr.W15yQC.userExpertLevel.toString()) {
+        case '1':
+          doc.getElementById('W15yQC_menuEntry_omulAdvanced').setAttribute('checked','true');
+          doc.getElementById('W15yQC_menuEntry_omulBasic').removeAttribute('checked');
+          doc.getElementById('W15yQC_menuEntry_omulExpert').removeAttribute('checked');
+          break;
+        case '2':
+          doc.getElementById('W15yQC_menuEntry_omulExpert').setAttribute('checked','true');
+          doc.getElementById('W15yQC_menuEntry_omulBasic').removeAttribute('checked');
+          doc.getElementById('W15yQC_menuEntry_omulAdvanced').removeAttribute('checked');
+          break;
+        case '0':
+        default:
+          doc.getElementById('W15yQC_menuEntry_omulBasic').setAttribute('checked','true');
+          doc.getElementById('W15yQC_menuEntry_omulAdvanced').removeAttribute('checked');
+          doc.getElementById('W15yQC_menuEntry_omulExpert').removeAttribute('checked');
+          Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
+      }
+    },
+    
     openDialog: function (sDialogName) {
       var dialogPath = null;
       var dialogID = null;

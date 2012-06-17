@@ -10,32 +10,50 @@
   </stringbundleset>
 
   <menupopup id="menu_ToolsPopup">
-    <menu id="W15yQC-menu" label="&W15yQCLabel;">
-      <menupopup>
-        <menuitem id="W15yQC-menuEntry-fullReport" label="Full Report" 
+    <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
+      <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">
+        <menuitem id="W15yQC_menuEntry_fullReport" label="Full Report" 
                   oncommand="blr.W15yQC.onMenuItemCommand(event);"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Access Keys" 
+        <menuseparator/>
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
                   oncommand="blr.W15yQC.openDialog('accessKeys');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="ARIA Landmarks" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="A" label="ARIA Landmarks" 
                   oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Documents" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="D" label="Documents" 
                   oncommand="blr.W15yQC.openDialog('documents');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Form Controls" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="C" label="Form Controls" 
                   oncommand="blr.W15yQC.openDialog('formControls');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Frames" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="F" label="Frames" 
                   oncommand="blr.W15yQC.openDialog('frames');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Images" 
-                  oncommand="blr.W15yQC.openDialog('images');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Headings" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="H" label="Headings" 
                   oncommand="blr.W15yQC.openDialog('headings');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Links" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="I" label="Images" 
+                  oncommand="blr.W15yQC.openDialog('images');"/>
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="L" label="Links" 
                   oncommand="blr.W15yQC.openDialog('links');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Tables" 
+        <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="T" label="Tables" 
                   oncommand="blr.W15yQC.openDialog('tables');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Contrast Tool" 
-                  oncommand="blr.W15yQC.openDialog('contrast');"/>
-        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Semantic View" 
-                  oncommand="blr.W15yQC.openDialog('semanticView');"/>
+        <menu id="W15yQC_menuEntry_toolsMenu" accesskey="o" label="Tools">
+          <menupopup>
+            <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="c" label="Contrast Tool" 
+                      oncommand="blr.W15yQC.openDialog('contrast');"/>
+            <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Semantic View" 
+                      oncommand="blr.W15yQC.openDialog('semanticView');"/>
+          </menupopup>
+        </menu>
+        <menuseparator/>
+        <menu id="W15yQC_menuEntry_omUserLevel" accesskey="U" label="User Level">
+          <menupopup onpopupshowing="blr.W15yQC.fnInitUserLevelMenuPopup(document)">
+            <menuitem id="W15yQC_menuEntry_omulBasic" label="Basic" type="radio" checked="true" name="userLevel"
+              oncommand="blr.W15yQC.setUserLevelBasic();"/>
+            <menuitem id="W15yQC_menuEntry_omulAdvanced" label="Advanced" type="radio" name="userLevel"
+              oncommand="blr.W15yQC.setUserLevelAdvanced();"/>
+            <menuitem id="W15yQC_menuEntry_omulExpert" label="Expert" type="radio" name="userLevel"
+              oncommand="blr.W15yQC.setUserLevelExpert();"/>
+          </menupopup>
+        </menu>
+        <menuseparator/>
+        <menuitem id="W15yQC_menuEntry_options" label="Options" />
       </menupopup>
     </menu>
   </menupopup>
@@ -54,5 +72,4 @@
                  oncommand="blr.W15yQC.fnInspect();">
   </toolbarbutton>
 </toolbar>
-
 </overlay>
