@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://W15yQC/locale/overlay.dtd">
+<overlay id="W15yQC-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="overlay.js"/>
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="overlay-string-bundle" src="chrome://W15yQC/locale/overlay.properties"/>
+  </stringbundleset>
+
+  <menupopup id="menu_ToolsPopup">
+    <menu id="W15yQC-menu" label="&W15yQCLabel;">
+      <menupopup>
+        <menuitem id="W15yQC-menuEntry-fullReport" label="Full Report" 
+                  oncommand="blr.W15yQC.onMenuItemCommand(event);"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Access Keys" 
+                  oncommand="blr.W15yQC.openDialog('accessKeys');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="ARIA Landmarks" 
+                  oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Documents" 
+                  oncommand="blr.W15yQC.openDialog('documents');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Form Controls" 
+                  oncommand="blr.W15yQC.openDialog('formControls');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Frames" 
+                  oncommand="blr.W15yQC.openDialog('frames');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Images" 
+                  oncommand="blr.W15yQC.openDialog('images');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Headings" 
+                  oncommand="blr.W15yQC.openDialog('headings');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Links" 
+                  oncommand="blr.W15yQC.openDialog('links');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Tables" 
+                  oncommand="blr.W15yQC.openDialog('tables');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Contrast Tool" 
+                  oncommand="blr.W15yQC.openDialog('contrast');"/>
+        <menuitem id="W15yQC-menuEntry-accessKeysDialog" label="Semantic View" 
+                  oncommand="blr.W15yQC.openDialog('semanticView');"/>
+      </menupopup>
+    </menu>
+  </menupopup>
+  
+  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbarbutton id="W15yToolbarPaletteButton" 
+    label="&W15yQCLabel;" tooltiptext="&W15yQCLabel;"
+    oncommand="blr.W15yQC.fnInspect();" />
+</toolbarpalette>
+  
+  <toolbar id="addon-bar">
+    <toolbarbutton
+                 id="W15yToolbarButton"
+                 tooltiptext="&W15yQCLabel;"
+                 label="&W15yQCLabel;"
+                 oncommand="blr.W15yQC.fnInspect();">
+  </toolbarbutton>
+</toolbar>
+
+</overlay>

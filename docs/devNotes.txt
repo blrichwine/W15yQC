@@ -1,0 +1,305 @@
+/* Dev Notes:
+ * 2011.11.17 - Working on methods for determining a node's label
+ * 2011.11.19 - Working on methods for determining a node's label (still)
+ *              Modeling the results based on JAWS 12 + IE9 on Windows 7
+ *              Wondering about how display:none cascades and what happens if a child element of display:none says display:block, who wins?
+ *              Refactored out the find recursive text for ID list to take a string of IDs split by ' ' and a document reference
+ *              Tested the implicit and explicit label text - debugged and got it working
+ * 2011.11.23 - Working on report style rules and getting hide/reveal code for sections to work
+ *              Adding code to track and display which document an element is from.
+ *              Realized that the SoundEx code isn't returning soundex codes for each word, but one for the whole phrase. Need to fix that!
+ *              Excited! Played around with packaging it into a .xpi file for the first time and it worked!
+ * 2011.11.27 - Fixed call to SoundEx routine to spell out numbers and then to create soundex codes for each word instead of just one for the whole phrase.
+ *              Added setting the language to the body element of the output window.
+ *              Added onclick detection to links with href='#' to stop reporting so many '#' as the same href value and different text.
+ *                +The onclick values must be different or refer to 'this' to avoid getting flagged as the same href.
+ *              Altered the make sortable routine to generate unique and descriptive href values.
+ *              Altered the make expand/contract links code to generate unique href values.
+ *              Added simple ARIA attribute value checks
+ *              Added checks for same page links and that their targets exist
+ *              Added code to append table row to break long strings of unbreakable text in td cells
+ *              Debugged the hidden node test function, seems to be working better now
+ *              Added ARIA role to each inspector
+ * 2011.12.23 - Worked on auto XUL Tree column sizing
+ *              Worked on calling W3C Validation Service from Documents List Dialog
+ * 2011.12.30 - Worked on Forms and Form Controls HTML Report routines.
+ *              - Added forms report
+ *              - Made auto hidden empty columns for form controls report`
+ * 2012.03.01 - Fixed the element highlighter by appending the highlight div element to node.offsetParent instead of node
+ * 2012.04.02 - Working on table detection code, adding detection of invalid IDs and non-unique IDs
+ * 2012.04.07 - Working on table analysis code
+ * 2012.04.11 - Working on table analysis code
+ * 2012.04.15 - Worked on table outlining code and debugged element highlighter for scrolled frames
+ *              - Moved scrollLeft and scrollTop from doc.documentElement to doc.body
+ * 2012.04.25 - Working on table analysis code.
+ * 2012.05.08 - Lots of QA Work. QA'd document, frame, and images analysis. Fixed bug in valid ID check
+ * 2012.05.15 - QA'd accesskeys, working on adding label, fieldset, and legend to form controls listing
+ * 2012.05.22 - Worked on ARIA Landmarks detection to indicate nesting level, worked on ARIA detection code
+ *
+ * TODO:
+ *    *** FIX ASAP***
+        - Empty links show up as Masked when highlighting them from the links dialog - try to detect real Masked elements and don't do this. Describe as too small and position where it was located.
+ *      - suppress Link target too small warning when content is being clipped / masked (detect this)
+ *      - QA state listing on ARIA landmarks -- doesn't appear to be working
+ *      - Fix landmark list, create real qa file for aria landmarks with nested landmarks
+ *      - fix aria code list
+ *        - show closing tags
+ *        - indicate skipped content
+ *        - detect and mark errors
+ *      - Detect input[type=image] where no alt attribute or title is supplied, or effective label is an image filename
+ *      - Fix form control label detection (fieldsets, legend, label, aria role="group")
+ *      - Detect label elements that don't label anything
+ *        - no for attribute, doesn't wrap control
+ *        - for attribute doesn't have a valid id
+ *        - id in for attribute doesn't exist
+ *        - id points to control that isn't a form control (shouldn't be labeled)
+ *      - Detect links that open in a new window
+ *      - Form controls HTML list should show 'alt' column when a valid instance of alt is present and the effective label comes from one
+ *    - create a routine to detect spanish text
+ *    - create a routine to detect french text
+ *    - create a routine to detect japanese, korean, chinese, german, arabic, hindi, portuguese, russian, bengali, thai, vietnamese, turkish, italian, polish, hebrew
+ *       - Use BBC Languages www.bbc.co.uk/worldservice/languages/index.shtml to generate stats on distinguishing words, UTF-8 chars
+ *    - Allow configurable values that can be added to not meaningful exceptions (i.e. 'IU', etc.)
+ *    - write a link compare routine to determine if href, src values are the same or not
+ *    - Determine a new name for the program, name for LLC, name for website
+ *       - Determine company name for LLC
+ *       - Do trademark search
+ *    - Get the program appropriately licensed
+ *       - Checkout three other Firefox extensions released under GPL and see how they did it
+ *    - Recode the scope of the code to a new scope path (shorter, hopefully!)
+ *    - Determine where to host the project
+ *    - Learn how to use git
+ *    - Determine phased developement / roadmap
+ *      - Rules
+ *      - Features
+ *         - Table structure inspector
+ *         - ARIA menu analyzer
+ *         - ARIA treeview analyzer
+ *      - Support, A11y education
+ *         - Video for using the program
+ *         - Video for QA'ng A11y
+ *         - Video for checking special features
+ *           - Menus
+ *           - Slideshows
+ *           - Audio players
+ *           - Video players
+ *           - Select elements
+ *           - Configuring OS/Browswer for Keyboard A11y Testing
+ *      - Coding tech
+ *    - Develop QA files for Phase I
+ *    - Develop to the QA files
+ *    - Once QA'd for Phase I, host the project
+ *
+ *    - TODO Before publishing to gitHub:
+ *        - Preferences Dialog / menu items
+ *        - Semantic viewer
+ *        - Disabled Rules List
+ *        - User docs / for wiki
+ *           - Tool mission statement
+ *              - explain tool's goals
+ *              - who is the tool for - no w15y aware dev, manager, w15y professional
+ *              - why to use
+ *           - Installation instructions
+ *           - Basic / Getting started user instructions
+ *           - Simple non-W15y professional accessibility checking protocol
+ *           - help for error messages in basic user level
+                - checkpoints
+                - compliance ref and standards
+                - additional resources
+                - frequently asked questions
+ *    - Rules to Add:
+ *      - HTML5 nav element best practice
+ *      - ARIA describedAt?
+ *      -longdesc must have a valid URI
+ *         - Look for linkchecker extensions
+ *         - can we tell if ff is online?
+ *         - timeouts?
+ *      - longdesc content should be appropriate: text
+ *      -links, buttons must not have both an onclick and an onkeypress handler
+ *      - ARIA, images with alt or longdesc or title attribute should not have a role of presentation
+ *      - ID values must be unique and valid
+ *        - ID defns:
+ *          - http://www.w3schools.com/tags/att_standard_id.asp (not accurate)
+ *          - http://www.w3.org/TR/html401/types.html#type-name
+ *      - Title attributes for frames must be unique
+ *      - Images must have valid alt text. OA
+ *      - Image file name is not valid alt text. OA
+ *      - Certain words cannot be used as a part of valid alt text OA
+ *      - Length of alt text OA
+ *      - If an image should not have a presentation role if:
+ *          - it has alt text
+ *          - it has a title
+ *          - it has an aria-label
+ *          - it has an aria-labelledby that contains text
+ *      - Link targets - can we detect the size? Images used as links should be a minimum size (x by y)
+ *      - Data tables must:
+ *         - See blog post on when datatable is thought to be a data table
+ *         - use the summary attribute OA7 *
+ *         - use th cells OA8 
+ *         - summary content must be unique to summary and caption content on other tables
+ *         - caption content shoould not be "layout", "layout table", "table for layout"
+ *         - summary content should not be "layout", "layout table", "table for layout"
+ *         - appropriate length of summary or caption text?
+ *         - not be be nested?
+ *      - Table summary
+ *         - If a table is otherwise a layout table, check if summary is invalid
+ *             - look for "layout table", "layout", "for layout", "summary", "table summary", "table", "header table", "Content table", "footer", "footer table",
+ *               "Navigation", "Navigation table", "Nav table", "content", ARIA Landmark role values, "(Top|left|right|bottom|side)* (hand)* nav(igation)* (table)*"
+ *      - Keyboard Accessibility
+ *         - focusable elements with mouseovers should also have onfocus handlers OA18
+ *         - focusable elements with onmouseout handlers should also have onblur handlers OA19
+ *         - every onclick handler should be on a focusable element OA20
+ *         - onchange event handler should not be on a select element OA21
+ *         - non-form / non-anchor elements with eventhandlers have appropriate ARIA roles OA73
+ *         - elements with mouse handlers have keyboard handlers OA74
+ *         - check that enabled elements with ACTIVE-DECENDANT have valid tab index OA75
+ *         - Check that elements without 'aria-activedescendant' that have roles requiring a container have focusable children OA76
+ *         - Check that elements without 'aria-activedescendant' that have roles requiring a container have key event handlers OA77
+ *         - Accesskey attribute values should be unique OA23
+ *         - Accesskey attribute values should not interfere with IE shortcuts OA24
+ *         - The blink and marquee elements must not be used OA25
+ *      - th cells in "odd" places should have scope attributes
+ *      - Complex tables must
+ *         - th cells must have valid, unique ids on them
+ *         - td cells in the "content zone" must have header attributes on them
+ *      - Layout tables:
+ *         - should not be nested?
+ *         - should have role="presentation"
+ *      - IDs refered to by headers attribute must:
+ *         - be valid
+ *         - exist in the document
+ *         - contain text
+ *      - focusable elements should have visible focus (outline)
+ *      - language element must be valid
+ *      - select elements with onchange
+ *      - each fieldset should contain a legend
+ *      - Each input element with type=text | password | checkbox | radio | file and each select and textarea element should either be referenced by the for attribute of a label element via its id attribute, or have a title attribute.
+ *      - Input element of type=[image] must have an alt or a title attribute.
+ *      - Input elements where type=[button|submit|reset] must have a value or title attribute.
+ *      - Each button element must contain content.
+ *      - Effective labels should be unique.
+ *      - Do not use font element
+ *      - Do not use I U B elements (html 4)
+ *      - ARIA
+ *        - valid ID refs
+ *        - valid hierarchy (valid roles, properties, required child roles, valid parent roles, required props and states not empty and valid values, ARIA- attrs valid)
+ *      - DATA TABLES
+ *        - QUESTIONS:
+ *          - If a cell has both row and column headers which does JAWS read first? What about multiple row or column headers are they all read aloud?
+ *          - what about the datatable attribute?
+ *          - what about ARIA roles?
+ *        - Is a data table if
+ *          - contains caption
+ *          - contains a table summary
+ *          - contains th
+ *          - contains headers attribute
+ *          - contains thead element
+ *        
+ *        - must use a caption element or summary attribute
+ *        - must use TH elements in either all columns or all rows that are non-empty
+ *        - all non-empty cells must have header text available to describe them.
+ *        - Summary attribute content must be unique
+ *        - Summary attribute content must be meaningful
+ *        - Summary attribute content shouldn't include "layout"
+ *        - complex tables must use header attributes
+ *        - Do not use nested tables
+ *       - COMPLEX DATA TABLES
+ *         - is complex table if has:
+ *           - rowspan attribute
+ *           - colspan attribute
+ *           - unequal number of columns in rows
+ *           - multiple th values in a given row (other than column headers)
+ *           - multiple th values in a given column (other than row headers)
+ *        - warn on complex table
+ *        - all td cells should have headers attribute
+ *        -
+ *       - Malformed table if
+ *         - with colspan and rowspan attributes taken into consideration the number of cells per row or column don't add up
+ *       - Warn about
+ *         - th not in the first column or row that is missing a scope attribute
+ *         
+ *    
+ *    - List of triggered manual checks to suggest:
+ *      - Alt text must describe content or purpose of an image OA
+ *      - audio without any video needs a transcript with speak information
+ *      - video with no audio track needs text description of the video's content
+ *      - video with audio needs synchronized captions for the hearing impaired, audio description for the visually impaired (extended audio description if required)
+ *      - Live audio requires realtime captioning with speaker information
+ *      - Instructions should not be dependent upon sensory information (size, location, sound, color)
+ *      - Color is not the only means of conveying information
+ *      - Verify multimedia does not begin automatically when the page loads
+ *      - luminosity contrast > minimum of 3 for large text, 4.5 for other text
+ *      - verify images aren't being used to stylize text
+ *      
+ *    - Redundant links were not being flagged when href="#". Put in a check for this, what other
+ *      similar checks need to be performed? Anything with href and onclick? Check for attached
+ *      event handlers?
+ *    - Make a phased implementation of this! Determine which TODO items go in which phase so we can publish a version!
+ *    - Make a protocol for inspecting a traditional web page using this tool. Document using videos!
+ *
+ *    -TODO: Vet these
+ *      -fnGetDisplayableTextRecursively
+ *    - CODE INSPECTIONS
+ *       - Use method to get node attributes
+ *    - READ and Learn
+ *      - http://www.w3.org/TR/wai-aria/roles#textalternativecomputation
+ *    - RESEARCH
+ *       Do HTML Entities work in alt text?
+ *    - Document Checks
+ *      - Check that all ID fields are unique and that the id is a valid ID (Valid HTML ID's and Names:http://www.w3.org/TR/html401/types.html#type-name , http://www.w3.org/TR/html401/struct/links.html#anchors-with-id)
+ *      - Make a list of non-unique ID namespace values (IDs, names on certain elements). Safer, easier to maintain.
+ *    - Code Fixes:
+ *      - Recursive functions should call arguments.callee(...) instead of the named function
+ *    - Form Controls:
+ *      - Respect HTML5 attributes?
+ *        - form
+ *        - required
+ *      - Add label column (from label tags)
+ *      - Add "Effective Label" column
+ *      - Add ARIA Description column
+ *      - Add form control type (input[type=text], textarea, etc.)
+ *      - Add JAWS label (combobox, etc.) and add to effective label
+ *      - What are the ARIA form control roles? What should be listed there?
+ *      - What about non-landmark ARIA List? 
+ *
+ *    - Detect links, references to WCAG techniques, etc in warning/error messages and make them active when displayed.
+ *    - Make effective label routine that:
+ *       - Vet results for link labeling
+ *       - Checks for ARIA role / labels first since that seems to take priority over tag
+ *       - Determines what a screen-reader will announce for any element (link, heading, form control (including legend))
+ *    - Include child text on appropriate element descriptions (button, etc.)
+ *    - Validate documents in WAI Validator
+ *       - Create assumed doctype from document values and paste that in when using DOM for source
+ *    - Invoke WAVE from DOM? <Why? The WAVE tool bar can do this.>
+ *    - Find non-link, button elements that have onclicks without appropriate role values
+ *    - Color contrast tool
+ *    - HTML5 Outliner view
+ *    - Long description attribute on images, frames, others (look it up)?
+ *    - Add ARIA State attributes to state description
+ *    - Effective Label for images
+ *    - Test alt attribute for image filename formats and flag them as possibly meaningless.
+ *    - Test longdesc attribute: link works, has text content, etc.
+ *    - Note images used in links
+ *    - Note elements with background images
+ *    - Check checkbox labels, doesn't appear to pick up title attribute (check all on worksite setup)
+ *    - Update state description to include Hidden with info incase we decide to offer the option
+ *    - Put in a page footer with optional config settings, date/time, version of tool, author of tool, etc.
+ *    - failed to find explict label for textarea for short-description field in form on defining new site.
+ *    - legend + ascii symbols are not caught. joe brought it up. <check if fixed or not>
+ *    - check that radio buttons have legend text.
+ *    - Check that radio buttons have other radio buttons with the same name attribute value
+ *    - Get data tables
+ *    - Accesskey checks
+ *    - Get ARIA attribute checks routine fleshed out
+ *       + If same role and label, give warning
+ *    - Format table column widths intelligently; set max widths in css?
+ *    - Understand if the hidden element routine is working
+ *    - Make table headings unique so the sort links are unique and indicate current sort status in text
+ *    - Create QA Suit of test html files with prescribed outcomes
+ *      Form control labeling
+ *      If a input element has an implicit label, how does the child text work for the label if the input element has a title attribute or other text on it?
+ *      Child text for various tags, child images, child input elements (including type=image, buttons, etc.), child text with hidden elements
+ *      hidden elements
+ *      
+ *    - Internationalize?
+ */   

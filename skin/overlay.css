@@ -1,0 +1,28 @@
+#W15yToolbarButton {
+   list-style-image: url("chrome://W15yQC/skin/W15yQC52x16.png");
+   cursor: pointer;
+}
+#W15yToolbarPaletteButton {
+   list-style-image: url("chrome://W15yQC/skin/W15yQC52x16.png");
+   cursor: pointer;
+}
+
+treechildren::-moz-tree-row(failed){
+  background-color:#ff7b7b;
+}
+
+treechildren::-moz-tree-row(warning) {
+  background-color: #ffc900;
+}
+
+treechildren::-moz-tree-row(failed, selected){
+  background-color:#e66f6f;
+}
+
+treechildren::-moz-tree-row(warning, selected) {
+  background-color: #f1bd00;
+}
+
+treechildren::-moz-tree-cell(center) {
+  text-align:center;
+}

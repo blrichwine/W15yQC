@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+  
+    <em:id>W15yQuickCheck@blrichwine.gmail.com</em:id>
+    <em:name>W15y Quick Check</em:name>
+    <em:version>0.9</em:version>
+    <em:description>Basic web accessibility checker extension for Firefox.</em:description>
+    <em:creator>Brian Richwine</em:creator>
+    <!-- optional items -->
+    <em:contributor>Brian Richwine</em:contributor>
+    <em:homepageURL>http://code.google.com</em:homepageURL>
+    <!--em:optionsURL>chrome://sampleext/content/settings.xul</em:optionsURL>
+    <em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL>
+    <em:iconURL>chrome://sampleext/skin/mainicon.png</em:iconURL>
+    <em:updateURL>http://sampleextension.mozdev.org/update.rdf</em:updateURL-->
+
+    <!-- Firefox -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>6.0</em:minVersion>
+        <em:maxVersion>15.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+  </Description>
+
+</RDF>

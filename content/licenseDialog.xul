@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+      id="documentsResultsDialog"
+      title="License Agreement - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      ondialogaccept="blr.W15yQC.LicenseDialog.cleanup(true);return true"
+      ondialogcancel="blr.W15yQC.LicenseDialog.cleanup(false);return true"
+      buttons="" 
+      onload="blr.W15yQC.LicenseDialog.init(this)">
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/licenseDialog.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" height="400" width="500">
+			<xul:label control="license-text" value="License Agreement:" style="margin: 5px 0 0 3px"/>		
+			<xul:iframe id="license-text" src="about:blank" type="content" height="55" flex="1"/>
+      <xul:hbox id="box-button" align="right">
+         <xul:button id="button-showFullLicense"
+            label="Show Full License"
+						oncommand="blr.W15yQC.LicenseDialog.toggleLicense()"
+            accesskey=""
+         />
+         <xul:spacer flex="1"/>
+         <xul:button id="button-activate"
+            dlgtype="accept"
+            label="Accept License"
+						oncommand=""
+            accesskey=""
+         />
+         <xul:button id="button-close"
+            dlgtype="cancel"
+            label="Cancel"
+            accesskey=""
+            oncommand=""/>
+      </xul:hbox>
+   </xul:vbox>
+</xul:dialog>

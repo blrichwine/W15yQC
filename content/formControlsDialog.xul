@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+      id="formControlsResultsDialog"
+      title="Form Controls List - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      ondialogaccept="blr.W15yQC.FormControlsDialog.cleanup(aResults);aResults=null;return true"
+      ondialogcancel="blr.W15yQC.FormControlsDialog.cleanup(aResults);aResults=null;return true"
+      buttons="" 
+      onload="aResults = blr.W15yQC.FormControlsDialog.init(this)">
+   <xul:script>
+      var aResults = null;
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/formControlsDialog.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" height="494" width="900">
+      <xul:label control="treebox1" value="Forms:" style="margin: 5px 0 0 3px"/>		
+      <xul:tree enableColumnDrag="true" id="treebox1" flex="1" seltype="single" 
+      onfocus="blr.W15yQC.FormControlsDialog.updateNotesField1(aResults)"
+      onselect="blr.W15yQC.FormControlsDialog.updateNotesField1(aResults)">
+         <xul:treecols>
+	    <xul:treecol ordinal="1" id="col-header-sourceOrder"
+	       label=" # "
+	       style="text-align:center"
+	       fixed="true"
+	       sortDirection="" 
+	       onclick=""/>
+	    <xul:splitter ordinal="2" class="tree-splitter" />
+	    <xul:treecol  ordinal="3" id="col-header-documentNumber"
+	       label="Doc. #"
+	       style="text-align:center"
+	       hidden="true"
+	       fixed="true"
+	       sortDirection="" 
+	       onclick=""/>
+	    <xul:splitter  ordinal="4" class="tree-splitter" />
+            <xul:treecol ordinal="5" id="col-header-formNumber"
+               label="Base URL"
+	       style="text-align:center"
+	       hidden="true"
+	       flex="3"
+	       sortDirection="" 
+               onclick=""/>
+            <xul:splitter ordinal="6" class="tree-splitter" />
+	    <xul:treecol ordinal="7" id="col-header-elementDescription"
+	       label="Element Description"
+	       sortDirection=""
+	       hidden="true"
+	       flex="3"
+	       onclick=""/>
+            <xul:splitter ordinal="8" class="tree-splitter" /> 
+            <xul:treecol ordinal="9" id="col-header-id"
+               label="id"
+               sortDirection=""
+	       flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="10" class="tree-splitter" /> 
+            <xul:treecol ordinal="11" id="col-header-name"
+               label="Name"
+               sortDirection=""
+	       flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="11" class="tree-splitter" /> 
+            <xul:treecol ordinal="12" id="col-header-action"
+               label="Action"
+               sortDirection=""
+	       flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="13" class="tree-splitter" /> 
+            <xul:treecol ordinal="14" id="col-header-method"
+               label="Method"
+               sortDirection=""
+	       flex="1"
+               onclick=""/>
+         </xul:treecols>
+	 <xul:treechildren id="treeboxChildren1"/>
+      </xul:tree>
+      <xul:label control="treebox2" value="Form Controls:" style="margin: 5px 0 0 3px"/>		
+      <xul:tree enableColumnDrag="true" id="treebox2" flex="2" seltype="single" 
+      onfocus="blr.W15yQC.FormControlsDialog.updateNotesField2(aResults)"
+      onselect="blr.W15yQC.FormControlsDialog.updateNotesField2(aResults)">
+         <xul:treecols>
+	    <xul:treecol ordinal="1" id="col-header-sourceOrder2"
+	       label=" # "
+	       style="text-align:center"
+	       fixed="true"
+	       sortDirection="" 
+	       onclick=""/>
+	    <xul:splitter ordinal="2" class="tree-splitter" />
+	    <xul:treecol  ordinal="3" id="col-header-documentNumber2"
+	       label="Doc. #"
+	       style="text-align:center"
+	       fixed="true"
+	       sortDirection="" 
+	       onclick=""/>
+	    <xul:splitter  ordinal="4" class="tree-splitter" />
+            <xul:treecol ordinal="5" id="col-header-formNumber2"
+               label="Form #"
+	       style="text-align:center"
+	       fixed="true"
+	       sortDirection="" 
+               onclick=""/>
+            <xul:splitter ordinal="6" class="tree-splitter" />
+	    <xul:treecol ordinal="7" id="col-header-elementDescription2"
+	       label="Element Description"
+	       hidden="true"
+	       sortDirection="" 
+	       flex="3"
+	       onclick=""/>
+            <xul:splitter ordinal="8" class="tree-splitter" /> 
+            <xul:treecol ordinal="9" id="col-header-legend2"
+               label="Legend"
+               sortDirection=""
+	       flex="1"
+               onclick=""/>
+            <xul:splitter ordinal="10" class="tree-splitter" />
+            <xul:treecol ordinal="11" id="col-header-labelTagText2"
+               label="Label Tag Text"
+               sortDirection=""
+               flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="12" class="tree-splitter" />
+            <xul:treecol ordinal="13" id="col-header-ariaLabel2"
+               label="ARIA Label"
+               sortDirection=""
+               flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="14" class="tree-splitter" />
+            <xul:treecol ordinal="15" id="col-header-ariaDescription2"
+               label="ARIA Description"
+               sortDirection=""
+               flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="16" class="tree-splitter" />
+            <xul:treecol ordinal="17" id="col-header-title2"
+               label="Title"
+               sortDirection=""
+               flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="18" class="tree-splitter" />
+            <xul:treecol ordinal="19" id="col-header-effectiveLabel2"
+               label="Effective Label"
+               sortDirection=""
+               flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="20" class="tree-splitter" />
+            <xul:treecol ordinal="21" id="col-header-name2"
+               label="Name"
+               sortDirection=""
+               flex="2"
+               onclick=""/>
+            <xul:splitter ordinal="22" class="tree-splitter" />
+            <xul:treecol ordinal="23" id="col-header-value2"
+               label="Value"
+               sortDirection=""
+               flex="2"
+               onclick=""/>
+            <xul:splitter ordinal="24" class="tree-splitter" />
+            <xul:treecol ordinal="25" id="col-header-role2"
+               label="Role"
+               sortDirection=""
+               flex="2"
+               onclick=""/>
+            <xul:splitter ordinal="26" class="tree-splitter" />
+            <xul:treecol ordinal="27" id="col-header-state2"
+               label="State"
+               sortDirection=""
+               flex="2"
+               onclick=""/>
+         </xul:treecols>
+	 <xul:treechildren id="treeboxChildren2"/>
+      </xul:tree>
+
+      <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
+	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
+	 <xul:textbox id="note-text" readonly="true" multiline="true" rows="5" flex="1" />
+      </xul:vbox>
+      <xul:hbox id="box-button" align="right">
+	 <xul:button id="button-generateHTMLReport"
+		 label="View Report"
+		 oncommand="blr.W15yQC.FormControlsDialog.generateReportHTML(aResults);"
+		 accesskey=""/>
+         <xul:spacer flex="1"/>
+         <xul:button id="button-activate"
+            dlgtype="accept"
+            label="OK"
+ 	    oncommand=""
+            accesskey=""
+         />
+         <xul:button id="button-close"
+            dlgtype="cancel"
+            label="Close"
+            accesskey=""
+            oncommand=""/>
+      </xul:hbox>
+   </xul:vbox>
+</xul:dialog>
