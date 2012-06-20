@@ -4875,12 +4875,8 @@ ys: 'whys'
           if(bIsButton == true && aFormControlsList[i].node.hasAttribute('onclick') == true && aFormControlsList[i].node.hasAttribute('onkeypress') == true &&
              aFormControlsList[i].node.getAttribute('onclick').length>0 && aFormControlsList[i].node.getAttribute('onkeypress').length>0) {
             if(blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onclick')) == blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onkeypress'))) {
-                  aFormControlsList[i].failed = true;
-                  aFormControlsList[i].notes = blr.W15yQC.fnJoin(aFormControlsList[i].notes, 'Has redundant onclick and onkeypress attributes - check for keyboard accessibility.', ' ');
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRedundantOCandOK'); //
             } else {
-                  aFormControlsList[i].warning = true;
-                  aFormControlsList[i].notes = blr.W15yQC.fnJoin(aFormControlsList[i].notes, 'Has both onclick and onkeypress attributes - check for keyboard accessibility.', ' ');
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlHasBothOCandOK'); //
             }
           }
@@ -4938,17 +4934,20 @@ ys: 'whys'
       var sFormsHeading;
       if (aFormsList && aFormsList.length && aFormsList.length > 0) {
         if (aFormsList.length > 1) {
-          sFormsHeading = aFormsList.length + " Forms";
-        } else sFormsHeading = "1 Form";
+          sFormsHeading = aFormsList.length + ' ' + blr.W15yQC.fnGetString('hrsForms');
+        } else sFormsHeading = blr.W15yQC.fnGetString('hrs1Form');
       } else {
-        sFormsHeading = "No Forms";
+        sFormsHeading = blr.W15yQC.fnGetString('hrsNoForms');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFormsHeading);
       if (aFormsList && aFormsList.length > 0) {
         var table = rd.createElement('table');
         var msgHash = new blr.W15yQC.HashTable();
         table.setAttribute('id', 'AIFormsTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Owner Doc #', 'Form Element', 'Name', 'Action', 'Method', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
+                                                            blr.W15yQC.fnGetString('hrsTHFormElement'), blr.W15yQC.fnGetString('hrsTHName'),
+                                                            blr.W15yQC.fnGetString('hrsTHAction'), blr.W15yQC.fnGetString('hrsTHMethod'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
 
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aFormsList.length; i++) {
@@ -4966,7 +4965,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No forms detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosFormsDetected'));
       }
       rd.body.appendChild(div);
     },
