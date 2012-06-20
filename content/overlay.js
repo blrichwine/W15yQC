@@ -4636,10 +4636,10 @@ ys: 'whys'
       var sHeadingsHeading;
       if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) {
         if (aHeadingsList.length > 1) {
-          sHeadingsHeading = aHeadingsList.length + " Headings";
-        } else sHeadingsHeading = "1 Heading";
+          sHeadingsHeading = aHeadingsList.length + ' ' + blr.W15yQC.fnGetString('hrsHeadings');
+        } else sHeadingsHeading = blr.W15yQC.fnGetString('hrs1Heading');
       } else {
-        sHeadingsHeading = "No Headings";
+        sHeadingsHeading = blr.W15yQC.fnGetString('hrsNoHeadings');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sHeadingsHeading);
 
@@ -4665,7 +4665,7 @@ ys: 'whys'
               sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
               previousDocument = aHeadingsList[i].doc;
             }
-            li.appendChild(rd.createTextNode("[h" + j + "] Missing Heading"));
+            li.appendChild(rd.createTextNode("[h" + j + "] "+ blr.W15yQC.fnGetString('hrsMissingHeading')));
             li.setAttribute('class', 'skippedHeadingLevel');
             if (previousHeadingLevel > 0) {
               list.push(rd.createElement('ul'));
@@ -4683,7 +4683,7 @@ ys: 'whys'
           li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
 
           var sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
-          var sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', state:'), ' - ');
+          var sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
           if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
             var span = rd.createElement('span');
 
@@ -4716,7 +4716,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'Fail - No headings detected - All pages should have at least one <h1> heading.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
       }
       rd.body.appendChild(div);
     },

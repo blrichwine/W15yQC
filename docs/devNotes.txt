@@ -35,7 +35,7 @@
  * 2012.05.08 - Lots of QA Work. QA'd document, frame, and images analysis. Fixed bug in valid ID check
  * 2012.05.15 - QA'd accesskeys, working on adding label, fieldset, and legend to form controls listing
  * 2012.05.22 - Worked on ARIA Landmarks detection to indicate nesting level, worked on ARIA detection code
- * 2012.06.19 - Working on i18n of HTML reports
+ * 2012.06.19 - Working on i18n of HTML reports -- need to pick up again at display headings
  *
  * QA Tasks
  *   - Review text in HTML report for consistency
