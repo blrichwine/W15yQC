@@ -3873,7 +3873,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIDocumentsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoDocuments'));
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -3888,9 +3888,6 @@ ys: 'whys'
       }
       return false;
     },
-
-
-
 
     fnGetARIALandmarks: function (doc, rootNode, aARIALandmarksList, baseLevel) {
       if (aARIALandmarksList == null) aARIALandmarksList = new Array();
@@ -4013,17 +4010,20 @@ ys: 'whys'
       var sARIALandmarksSectionHeading;
       if (aARIALandmarksList && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
         if (aARIALandmarksList.length > 1) {
-          sARIALandmarksSectionHeading = aARIALandmarksList.length + " ARIA Landmarks";
-        } else sARIALandmarksSectionHeading = "1 ARIA Landmark";
+          sARIALandmarksSectionHeading = aARIALandmarksList.length + ' ' + blr.W15yQC.fnGetString('hrsARIALandmarks');
+        } else sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrs1ARIALandmark');
       } else {
-        sARIALandmarksSectionHeading = "No ARIA Landmarks";
+        sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrsNoARIALandmarks');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sARIALandmarksSectionHeading);
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevelNotes && aARIALandmarksList.pageLevelNotes.length>0))) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Landmark Element', 'Owner Doc #', 'Level', 'Role', 'ARIA Label', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
+                                                            blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         // Elements
@@ -4053,7 +4053,7 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1 + aARIALandmarksList.length, "--Page Level--", '', '', '', '', '', sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
           }
         }
         
@@ -4061,7 +4061,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIIARIALandmarksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No ARIA Landmarks detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
       }
       rd.body.appendChild(div);
 
