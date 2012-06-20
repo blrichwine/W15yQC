@@ -4509,10 +4509,10 @@ ys: 'whys'
       var sSectionHeading;
       if (aAccessKeysList && aAccessKeysList.length && aAccessKeysList.length > 0) {
         if (aAccessKeysList.length > 1) {
-          sSectionHeading = aAccessKeysList.length + ' Accesskeys';
-        } else sSectionHeading = '1 Accesskey';
+          sSectionHeading = aAccessKeysList.length + ' ' +blr.W15yQC.fnGetString('hrsAccessKeys');
+        } else sSectionHeading = blr.W15yQC.fnGetString('hrs1AccessKey');
       } else {
-        sSectionHeading = 'No Accesskeys';
+        sSectionHeading = blr.W15yQC.fnGetString('hrsNoAccessKeys');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sSectionHeading);
 
@@ -4520,7 +4520,10 @@ ys: 'whys'
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIAccesskeysTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Element Description', 'Owner Doc #', 'Accesskey', 'Effective Label', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
+                                                            blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
+                                                            blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aAccessKeysList.length; i++) {
@@ -4538,7 +4541,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIAccesskeysTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No accesskeys detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
       }
       rd.body.appendChild(div);
     },
