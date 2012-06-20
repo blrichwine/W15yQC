@@ -35,7 +35,13 @@
  * 2012.05.08 - Lots of QA Work. QA'd document, frame, and images analysis. Fixed bug in valid ID check
  * 2012.05.15 - QA'd accesskeys, working on adding label, fieldset, and legend to form controls listing
  * 2012.05.22 - Worked on ARIA Landmarks detection to indicate nesting level, worked on ARIA detection code
+ * 2012.06.19 - Working on i18n of HTML reports
  *
+ * QA Tasks
+ *   - Review text in HTML report for consistency
+ *      - Column headers in tables
+ *   - Review text in Dialog Box tables for consistency
+ * 
  * TODO:
  *    *** FIX ASAP***
         - Empty links show up as Masked when highlighting them from the links dialog - try to detect real Masked elements and don't do this. Describe as too small and position where it was located.

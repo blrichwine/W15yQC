@@ -3841,10 +3841,10 @@ ys: 'whys'
       var sDocumentsSectionHeading;
       if (aDocumentsList && aDocumentsList.length && aDocumentsList.length > 0) {
         if (aDocumentsList.length > 1) {
-          sDocumentsSectionHeading = aDocumentsList.length + " Documents";
-        } else sDocumentsSectionHeading = "1 Document";
+          sDocumentsSectionHeading = aDocumentsList.length + ' ' + blr.W15yQC.fnGetString('hrsDocuments');
+        } else sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrs1Document');
       } else {
-        sDocumentsSectionHeading = "No Documents";
+        sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrsNoDocuments');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sDocumentsSectionHeading);
 
@@ -3852,7 +3852,10 @@ ys: 'whys'
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIDocumentsTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['Doc. #', 'Title', 'Language', 'Direction', 'URL', 'Compatability Mode', 'Doctype', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
+                                                            blr.W15yQC.fnGetString('hrsTHLanguage'), blr.W15yQC.fnGetString('hrsTHDirection'),
+                                                            blr.W15yQC.fnGetString('hrsTHDocumentURL'), blr.W15yQC.fnGetString('hrsTHCompatMode'),
+                                                            blr.W15yQC.fnGetString('hrsTHDoctype'),blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aDocumentsList.length; i++) {
@@ -3870,7 +3873,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIDocumentsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'Odd... No documents detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoDocuments'));
       }
       rd.body.appendChild(div);
     },
