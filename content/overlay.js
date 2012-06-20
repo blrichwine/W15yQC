@@ -4977,10 +4977,10 @@ ys: 'whys'
       var sFormControlsHeading;
       if (aFormControlsList && aFormControlsList.length && aFormControlsList.length > 0) {
         if (aFormControlsList.length > 1) {
-          sFormControlsHeading = aFormControlsList.length + " Form Controls";
-        } else sFormControlsHeading = "1 Form Control";
+          sFormControlsHeading = aFormControlsList.length + ' ' + blr.W15yQC.fnGetString('hrsFormsCtrls');
+        } else sFormControlsHeading = blr.W15yQC.fnGetString('hrs1FormCtrl');
       } else {
-        sFormControlsHeading = "No Form Controls";
+        sFormControlsHeading = blr.W15yQC.fnGetString('hrsNoFormCtrls');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFormControlsHeading);
 
@@ -5003,17 +5003,18 @@ ys: 'whys'
           if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
         }
 
-        var aTableHeaders = ['#', 'Form #', 'Owner <br>Doc #', 'Form Control Element'];
-        if (bHasLegend) aTableHeaders.push('Legend');
-        aTableHeaders.push('Label Text');
-        if (bHasTitle) aTableHeaders.push('Title');
-        if (bHasARIALabel) aTableHeaders.push('ARIA Label');
-        aTableHeaders.push('Effective Label');
-        if (bHasARIADescription) aTableHeaders.push('ARIA Description');
-        aTableHeaders.push('Name');
-        aTableHeaders.push('Value');
-        if (bHasStateDescription) aTableHeaders.push('State');
-        aTableHeaders.push('Notes');
+        var aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
+                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
+        if (bHasLegend) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
+        if (bHasTitle) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
+        if (bHasARIALabel) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
+        if (bHasARIADescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIADescription'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHName'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHValue'));
+        if (bHasStateDescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIFormControlsTable');
@@ -5048,7 +5049,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No form controls detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosFormsCtrlsDetected'));
       }
       rd.body.appendChild(div);
     },
