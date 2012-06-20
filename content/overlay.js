@@ -4370,17 +4370,20 @@ ys: 'whys'
       var sImagesSectionHeading;
       if (aImagesList && aImagesList.length && aImagesList.length > 0) {
         if (aImagesList.length > 1) {
-          sImagesSectionHeading = aImagesList.length + " Images";
-        } else sImagesSectionHeading = "1 Image";
+          sImagesSectionHeading = aImagesList.length + ' ' + blr.W15yQC.fnGetString('hrsImages');
+        } else sImagesSectionHeading = blr.W15yQC.fnGetString('hrs1Image');
       } else {
-        sImagesSectionHeading = "No Images";
+        sImagesSectionHeading = blr.W15yQC.fnGetString('hrsNoImages');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sImagesSectionHeading);
 
       if (aImagesList && aImagesList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Image Element', 'Owner Doc #', 'Alt', 'Title', 'ARIA Label', 'Src', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt'),
+                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
+                                                            blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
 
         var tbody = rd.createElement('tbody');
@@ -4399,7 +4402,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIImagesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No images detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoImagesDetected'));
       }
       rd.body.appendChild(div);
 
