@@ -3672,7 +3672,10 @@ ys: 'whys'
       if (aFramesList && aFramesList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIFramesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Frame Element', 'Owner Doc. #', 'Contains Doc #', 'Title', 'Src', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
+                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHSrc'),
+                                                            blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aFramesList.length; i++) {
