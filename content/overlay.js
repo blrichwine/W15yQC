@@ -4148,10 +4148,10 @@ ys: 'whys'
       var sARIAElementsHeading;
       if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) {
         if (aARIAElementsList.length > 1) {
-          sARIAElementsHeading = aARIAElementsList.length + " ARIA Elements";
-        } else sARIAElementsHeading = "1 ARIA Element";
+          sARIAElementsHeading = aARIAElementsList.length + ' ' + blr.W15yQC.fnGetString('hrsARIAEls');
+        } else sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
       } else {
-        sARIAElementsHeading = "No ARIA Elements";
+        sARIAElementsHeading = blr.W15yQC.fnGetString('hrsNoARIAEls');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sARIAElementsHeading);
 
@@ -4231,7 +4231,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No ARIA Elements Detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -4965,7 +4965,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosFormsDetected'));
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFormsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5049,7 +5049,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosFormsCtrlsDetected'));
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5359,7 +5359,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AILinksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosLinksDetected'));
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoLinksDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5829,7 +5829,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AITablesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosTablesDetected'));
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoTablesDetected'));
       }
       rd.body.appendChild(div);
     },
