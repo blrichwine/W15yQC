@@ -5114,7 +5114,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtOnlyASCII'); //
           } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(linkText)) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNextPrev'); //
-          } else if (linkText.match(/^link to /i)) {
+          } else if (linkText.match(/^link to /i)) { // TODO: Make functions for testing for this.
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtBeginWithLink'); //
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
@@ -5329,16 +5329,19 @@ ys: 'whys'
       var sLinksHeading;
       if (aLinksList && aLinksList.length && aLinksList.length > 0) {
         if (aLinksList.length > 1) {
-          sLinksHeading = aLinksList.length + " Links";
-        } else sLinksHeading = "1 Link";
+          sLinksHeading = aLinksList.length + ' '+blr.W15yQC.fnGetString('hrsLinks');
+        } else sLinksHeading = blr.W15yQC.fnGetString('hrs1Link');
       } else {
-        sLinksHeading = "No Links";
+        sLinksHeading = blr.W15yQC.fnGetString('hrsNoLinks');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sLinksHeading);
       if (aLinksList && aLinksList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Link Element', 'Owner Doc #', 'Link Text', 'Title', 'href', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
+                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
 
         var tbody = rd.createElement('tbody');
@@ -5356,7 +5359,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AILinksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No links detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosLinksDetected'));
       }
       rd.body.appendChild(div);
     },

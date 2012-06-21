@@ -44,6 +44,8 @@
  * 
  * TODO:
  *    *** FIX ASAP***
+        - Table 7x11 shows up as a layout table, probably should guess it could be a data table and warn to check (looks larger than a normal layout table, etc.)
+ *      - Page content hosted inside an object element is not appearing in the results: ereserves.indiana.edu/eres/default.aspx page send email message popup
         - Empty links show up as Masked when highlighting them from the links dialog - try to detect real Masked elements and don't do this. Describe as too small and position where it was located.
  *      - suppress Link target too small warning when content is being clipped / masked (detect this)
  *      - QA state listing on ARIA landmarks -- doesn't appear to be working
