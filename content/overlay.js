@@ -5798,17 +5798,20 @@ ys: 'whys'
       var sTablesHeading;
       if (aTablesList && aTablesList.length && aTablesList.length > 0) {
         if (aTablesList.length > 1) {
-          sTablesHeading = aTablesList.length + " Tables";
-        } else sTablesHeading = "1 Table";
+          sTablesHeading = aTablesList.length + ' ' + blr.W15yQC.fnGetString('hrsTables');
+        } else sTablesHeading = blr.W15yQC.fnGetString('hrs1Table');
       } else {
-        sTablesHeading = "No Tables";
+        sTablesHeading = blr.W15yQC.fnGetString('hrsNoTables');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sTablesHeading);
       if (aTablesList && aTablesList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AITablesTable');
         // TODO: Make summary and caption columns so they only appear when needed.
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Table Element', 'Owner Doc #', 'Summary', 'Caption', 'Size (CxR)', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHSummary'),
+                                                            blr.W15yQC.fnGetString('hrsTHCaption'), blr.W15yQC.fnGetString('hrsTHSizeCR'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aTablesList.length; i++) {
@@ -5826,7 +5829,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AITablesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No tables detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNosTablesDetected'));
       }
       rd.body.appendChild(div);
     },
