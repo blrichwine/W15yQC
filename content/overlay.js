@@ -908,7 +908,7 @@ ys: 'whys'
       return false;
     },
 
-    fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this!
+    fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
       if (s1 == s2) return true;
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
         return true;
@@ -963,7 +963,7 @@ ys: 'whys'
     },
 
     fnAppendExpandContractHeadingTo: function (node, doc, sElementType, sText) {
-      var element = doc.createElement(sElementType);
+      var element = doc.createElement(sElementType); // TODO: Internationalize the "Hide" on the next line
       element.innerHTML = '<a tabindex="0" class="ec" href="javascript:expandContractSection=\'' + sText + '\';" onclick="ec(this,\'' + sText + '\');return false;"><span class="auralText">Hide </span>' + sText + '</a>';
       element.setAttribute('tabindex', '-1');
       node.appendChild(element);
@@ -1194,7 +1194,7 @@ ys: 'whys'
           w = 'auto';
           h = 'auto';
           div = doc.createElement('div');
-          div.innerHTML = "Offscreen";
+          div.innerHTML = blr.W15yQC.fnGetString('heOffscreen');
           div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
           div.setAttribute('id', 'W15yQCElementHighlight');
           doc.body.appendChild(div);
@@ -1205,7 +1205,7 @@ ys: 'whys'
           w = 'auto';
           h = 'auto';
           div = doc.createElement('div');
-          div.innerHTML = "Masked";
+          div.innerHTML = blr.W15yQC.fnGetString('heMasked');
           div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
           div.setAttribute('id', 'W15yQCElementHighlight');
           doc.body.appendChild(div);
@@ -1422,6 +1422,7 @@ ys: 'whys'
 
       return blr.W15yQC.fnCleanSpaces(sResult);
     },
+    
     fnSpellOutHundreds: function (sString) {
       var sResult = '';
       if (sString != null) {
@@ -1438,6 +1439,7 @@ ys: 'whys'
       }
       return sResult;
     },
+    
     fnSpellOutTens: function (sString) {
       var sResult = '';
       if (sString != null && sString.length && sString.length > 1) {
