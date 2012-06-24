@@ -908,7 +908,7 @@ ys: 'whys'
       return false;
     },
 
-    fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this!
+    fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
       if (s1 == s2) return true;
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
         return true;
@@ -963,7 +963,7 @@ ys: 'whys'
     },
 
     fnAppendExpandContractHeadingTo: function (node, doc, sElementType, sText) {
-      var element = doc.createElement(sElementType);
+      var element = doc.createElement(sElementType); // TODO: Internationalize the "Hide" on the next line
       element.innerHTML = '<a tabindex="0" class="ec" href="javascript:expandContractSection=\'' + sText + '\';" onclick="ec(this,\'' + sText + '\');return false;"><span class="auralText">Hide </span>' + sText + '</a>';
       element.setAttribute('tabindex', '-1');
       node.appendChild(element);
@@ -1194,7 +1194,7 @@ ys: 'whys'
           w = 'auto';
           h = 'auto';
           div = doc.createElement('div');
-          div.innerHTML = "Offscreen";
+          div.innerHTML = blr.W15yQC.fnGetString('heOffscreen');
           div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
           div.setAttribute('id', 'W15yQCElementHighlight');
           doc.body.appendChild(div);
@@ -1205,7 +1205,7 @@ ys: 'whys'
           w = 'auto';
           h = 'auto';
           div = doc.createElement('div');
-          div.innerHTML = "Masked";
+          div.innerHTML = blr.W15yQC.fnGetString('heMasked');
           div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
           div.setAttribute('id', 'W15yQCElementHighlight');
           doc.body.appendChild(div);
@@ -1422,6 +1422,7 @@ ys: 'whys'
 
       return blr.W15yQC.fnCleanSpaces(sResult);
     },
+    
     fnSpellOutHundreds: function (sString) {
       var sResult = '';
       if (sString != null) {
@@ -1438,6 +1439,7 @@ ys: 'whys'
       }
       return sResult;
     },
+    
     fnSpellOutTens: function (sString) {
       var sResult = '';
       if (sString != null && sString.length && sString.length > 1) {
@@ -2725,6 +2727,7 @@ ys: 'whys'
 
     fnGetDisplayableTextRecursively: function (rootNode, bRecursion) {
       // TODO: Vet this with JAWS
+      // TODO: Gan we get this from Firefox? What about ARIA-label and other ARIA attribute?
       // How does display:none, visibility:hidden, and aria-hidden=true affect child text collection?
       var sNodeChildText = '';
       var sRecursiveText = null;
@@ -2732,7 +2735,7 @@ ys: 'whys'
       if (rootNode != null) {
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1 && c.nodeType !== 3) continue; // Only pay attention to element and text nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // don't get frame contents, but instead check if it has a title attribute
             if (c.hasAttribute('title')) {
               sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('title'), ' ');
@@ -3572,7 +3575,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // document the frame
             var frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
             var frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
@@ -3583,7 +3586,8 @@ ys: 'whys'
             var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
             aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, frameSrc));
             // get frame contents
-            blr.W15yQC.fnGetFrameTitles(c.contentWindow.document, c.contentWindow.document.body, aFramesList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
           } else { // keep looking through current document
             blr.W15yQC.fnGetFrameTitles(doc, c, aFramesList);
           }
@@ -3597,7 +3601,15 @@ ys: 'whys'
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
       for (var i = 0; i < aFramesList.length; i++) {
         aFramesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node, aDocumentsList);
-        aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node.contentWindow.document.body, aDocumentsList);
+        var framedDocumentBody = null;
+        if(aFramesList[i].node != null) {
+          if(aFramesList[i].node.contentWindow != null && aFramesList[i].node.contentWindow.document && aFramesList[i].node.contentWindow.document.body) {
+            framedDocumentBody = aFramesList[i].node.contentWindow.document.body;
+          } else if(aFramesList[i].node.contentDocument && aFramesList[i].node.contentDocument.body) {
+            framedDocumentBody = aFramesList[i].node.contentDocument.body;
+          }
+        }
+        aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(framedDocumentBody, aDocumentsList);
         if (aFramesList[i].title != null && aFramesList[i].title.length && aFramesList[i].title.length > 0) {
           aFramesList[i].title = blr.W15yQC.fnCleanSpaces(aFramesList[i].title);
           aFramesList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title);
@@ -3672,7 +3684,10 @@ ys: 'whys'
       if (aFramesList && aFramesList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIFramesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Frame Element', 'Owner Doc. #', 'Contains Doc #', 'Title', 'Src', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
+                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHSrc'),
+                                                            blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aFramesList.length; i++) {
@@ -3734,7 +3749,7 @@ ys: 'whys'
     fnGetDocuments: function (doc, rootNode, aDocumentsList) {
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
-
+      // TODO: Store framing node (frameset, iframe, object, etc.)
       if (doc != null) {
         if (aDocumentsList == null) {
           aDocumentsList = new Array();
@@ -3771,14 +3786,14 @@ ys: 'whys'
               }
             }
 
-            if (c.tagName && c.contentWindow && c.contentWindow.document !== null && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
               // Document the new document
-              var frameDocument = c.contentWindow.document;
+              var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
               aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
 
               // get frame contents
-              blr.W15yQC.fnGetDocuments(c.contentWindow.document, c.contentWindow.document.body, aDocumentsList);
+              blr.W15yQC.fnGetDocuments(frameDocument, frameDocument.body, aDocumentsList);
             } else { // keep looking through current document
               blr.W15yQC.fnGetDocuments(doc, c, aDocumentsList);
             }
@@ -3838,10 +3853,10 @@ ys: 'whys'
       var sDocumentsSectionHeading;
       if (aDocumentsList && aDocumentsList.length && aDocumentsList.length > 0) {
         if (aDocumentsList.length > 1) {
-          sDocumentsSectionHeading = aDocumentsList.length + " Documents";
-        } else sDocumentsSectionHeading = "1 Document";
+          sDocumentsSectionHeading = aDocumentsList.length + ' ' + blr.W15yQC.fnGetString('hrsDocuments');
+        } else sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrs1Document');
       } else {
-        sDocumentsSectionHeading = "No Documents";
+        sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrsNoDocuments');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sDocumentsSectionHeading);
 
@@ -3849,7 +3864,10 @@ ys: 'whys'
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIDocumentsTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['Doc. #', 'Title', 'Language', 'Direction', 'URL', 'Compatability Mode', 'Doctype', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
+                                                            blr.W15yQC.fnGetString('hrsTHLanguage'), blr.W15yQC.fnGetString('hrsTHDirection'),
+                                                            blr.W15yQC.fnGetString('hrsTHDocumentURL'), blr.W15yQC.fnGetString('hrsTHCompatMode'),
+                                                            blr.W15yQC.fnGetString('hrsTHDoctype'),blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aDocumentsList.length; i++) {
@@ -3867,7 +3885,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIDocumentsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'Odd... No documents detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -3883,9 +3901,6 @@ ys: 'whys'
       return false;
     },
 
-
-
-
     fnGetARIALandmarks: function (doc, rootNode, aARIALandmarksList, baseLevel) {
       if (aARIALandmarksList == null) aARIALandmarksList = new Array();
       if (baseLevel == null) baseLevel = 0;
@@ -3895,7 +3910,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // determine level, and then get frame contents
             level = baseLevel+1;
             for(var i=aARIALandmarksList.length-1; i>=0; i--) {
@@ -3903,8 +3918,9 @@ ys: 'whys'
                 level = aARIALandmarksList[i].level+1;
                 break;
               }
-            }
-            blr.W15yQC.fnGetARIALandmarks(c.contentWindow.document, c.contentWindow.document.body, aARIALandmarksList, level);
+            }            
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetARIALandmarks(frameDocument, frameDocument.body, aARIALandmarksList, level);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && c.hasAttribute('role') == true) {
               var sTagName = c.tagName.toLowerCase();
@@ -4007,17 +4023,20 @@ ys: 'whys'
       var sARIALandmarksSectionHeading;
       if (aARIALandmarksList && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
         if (aARIALandmarksList.length > 1) {
-          sARIALandmarksSectionHeading = aARIALandmarksList.length + " ARIA Landmarks";
-        } else sARIALandmarksSectionHeading = "1 ARIA Landmark";
+          sARIALandmarksSectionHeading = aARIALandmarksList.length + ' ' + blr.W15yQC.fnGetString('hrsARIALandmarks');
+        } else sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrs1ARIALandmark');
       } else {
-        sARIALandmarksSectionHeading = "No ARIA Landmarks";
+        sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrsNoARIALandmarks');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sARIALandmarksSectionHeading);
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevelNotes && aARIALandmarksList.pageLevelNotes.length>0))) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Landmark Element', 'Owner Doc #', 'Level', 'Role', 'ARIA Label', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
+                                                            blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         // Elements
@@ -4047,7 +4066,7 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1 + aARIALandmarksList.length, "--Page Level--", '', '', '', '', '', sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
           }
         }
         
@@ -4055,7 +4074,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIIARIALandmarksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No ARIA Landmarks detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
       }
       rd.body.appendChild(div);
 
@@ -4068,9 +4087,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetARIAElements(c.contentWindow.document, c.contentWindow.document.body, aARIAElementsList, null);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetARIAElements(frameDocument, frameDocument.body, aARIAElementsList, null);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnElementUsesARIA(c) == true) {
               var sTagName = c.tagName.toLowerCase();
@@ -4142,10 +4162,10 @@ ys: 'whys'
       var sARIAElementsHeading;
       if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) {
         if (aARIAElementsList.length > 1) {
-          sARIAElementsHeading = aARIAElementsList.length + " ARIA Elements";
-        } else sARIAElementsHeading = "1 ARIA Element";
+          sARIAElementsHeading = aARIAElementsList.length + ' ' + blr.W15yQC.fnGetString('hrsARIAEls');
+        } else sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
       } else {
-        sARIAElementsHeading = "No ARIA Elements";
+        sARIAElementsHeading = blr.W15yQC.fnGetString('hrsNoARIAEls');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sARIAElementsHeading);
 
@@ -4225,7 +4245,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No ARIA Elements Detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -4238,9 +4258,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetImages(c.contentWindow.document, c.contentWindow.document.body, aImagesList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetImages(frameDocument, frameDocument.body, aImagesList);
           } else { // keep looking through current document
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               var tagName = c.tagName.toLowerCase();
@@ -4364,17 +4385,20 @@ ys: 'whys'
       var sImagesSectionHeading;
       if (aImagesList && aImagesList.length && aImagesList.length > 0) {
         if (aImagesList.length > 1) {
-          sImagesSectionHeading = aImagesList.length + " Images";
-        } else sImagesSectionHeading = "1 Image";
+          sImagesSectionHeading = aImagesList.length + ' ' + blr.W15yQC.fnGetString('hrsImages');
+        } else sImagesSectionHeading = blr.W15yQC.fnGetString('hrs1Image');
       } else {
-        sImagesSectionHeading = "No Images";
+        sImagesSectionHeading = blr.W15yQC.fnGetString('hrsNoImages');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sImagesSectionHeading);
 
       if (aImagesList && aImagesList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Image Element', 'Owner Doc #', 'Alt', 'Title', 'ARIA Label', 'Src', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt'),
+                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
+                                                            blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
 
         var tbody = rd.createElement('tbody');
@@ -4393,7 +4417,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIImagesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No images detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoImagesDetected'));
       }
       rd.body.appendChild(div);
 
@@ -4406,9 +4430,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetAccessKeys(c.contentWindow.document, c.contentWindow.document.body, aAccessKeysList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetAccessKeys(frameDocument, frameDocument.body, aAccessKeysList);
           } else { // keep looking through current document
             if (c.tagName && c.hasAttribute('accesskey') == true) {
               if (blr.W15yQC.fnNodeIsHidden(c) == false) {
@@ -4500,10 +4525,10 @@ ys: 'whys'
       var sSectionHeading;
       if (aAccessKeysList && aAccessKeysList.length && aAccessKeysList.length > 0) {
         if (aAccessKeysList.length > 1) {
-          sSectionHeading = aAccessKeysList.length + ' Accesskeys';
-        } else sSectionHeading = '1 Accesskey';
+          sSectionHeading = aAccessKeysList.length + ' ' +blr.W15yQC.fnGetString('hrsAccessKeys');
+        } else sSectionHeading = blr.W15yQC.fnGetString('hrs1AccessKey');
       } else {
-        sSectionHeading = 'No Accesskeys';
+        sSectionHeading = blr.W15yQC.fnGetString('hrsNoAccessKeys');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sSectionHeading);
 
@@ -4511,7 +4536,10 @@ ys: 'whys'
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIAccesskeysTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Element Description', 'Owner Doc #', 'Accesskey', 'Effective Label', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
+                                                            blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
+                                                            blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aAccessKeysList.length; i++) {
@@ -4529,7 +4557,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIAccesskeysTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No accesskeys detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -4542,9 +4570,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetHeadings(c.contentWindow.document, c.contentWindow.document.body, aHeadingsList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetHeadings(frameDocument, frameDocument.body, aHeadingsList);
           } else { // keep looking through current document
             if (c.tagName) {
               var tagName = c.tagName.toLowerCase();
@@ -4624,10 +4653,10 @@ ys: 'whys'
       var sHeadingsHeading;
       if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) {
         if (aHeadingsList.length > 1) {
-          sHeadingsHeading = aHeadingsList.length + " Headings";
-        } else sHeadingsHeading = "1 Heading";
+          sHeadingsHeading = aHeadingsList.length + ' ' + blr.W15yQC.fnGetString('hrsHeadings');
+        } else sHeadingsHeading = blr.W15yQC.fnGetString('hrs1Heading');
       } else {
-        sHeadingsHeading = "No Headings";
+        sHeadingsHeading = blr.W15yQC.fnGetString('hrsNoHeadings');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sHeadingsHeading);
 
@@ -4653,7 +4682,7 @@ ys: 'whys'
               sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
               previousDocument = aHeadingsList[i].doc;
             }
-            li.appendChild(rd.createTextNode("[h" + j + "] Missing Heading"));
+            li.appendChild(rd.createTextNode("[h" + j + "] "+ blr.W15yQC.fnGetString('hrsMissingHeading')));
             li.setAttribute('class', 'skippedHeadingLevel');
             if (previousHeadingLevel > 0) {
               list.push(rd.createElement('ul'));
@@ -4671,7 +4700,7 @@ ys: 'whys'
           li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
 
           var sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
-          var sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', state:'), ' - ');
+          var sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
           if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
             var span = rd.createElement('span');
 
@@ -4704,7 +4733,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'Fail - No headings detected - All pages should have at least one <h1> heading.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -4717,8 +4746,9 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
-            blr.W15yQC.fnGetFormControls(c.contentWindow.document, c.contentWindow.document.body, aDocumentsList, aFormsList, aFormControlsList);
+          if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetFormControls(frameDocument, frameDocument.body, aDocumentsList, aFormsList, aFormControlsList);
           } else {
             if (c.tagName != null && c.tagName.toLowerCase() == 'form') {
               var sXPath = blr.W15yQC.fnGetElementXPath(c);
@@ -4863,12 +4893,8 @@ ys: 'whys'
           if(bIsButton == true && aFormControlsList[i].node.hasAttribute('onclick') == true && aFormControlsList[i].node.hasAttribute('onkeypress') == true &&
              aFormControlsList[i].node.getAttribute('onclick').length>0 && aFormControlsList[i].node.getAttribute('onkeypress').length>0) {
             if(blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onclick')) == blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onkeypress'))) {
-                  aFormControlsList[i].failed = true;
-                  aFormControlsList[i].notes = blr.W15yQC.fnJoin(aFormControlsList[i].notes, 'Has redundant onclick and onkeypress attributes - check for keyboard accessibility.', ' ');
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRedundantOCandOK'); //
             } else {
-                  aFormControlsList[i].warning = true;
-                  aFormControlsList[i].notes = blr.W15yQC.fnJoin(aFormControlsList[i].notes, 'Has both onclick and onkeypress attributes - check for keyboard accessibility.', ' ');
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlHasBothOCandOK'); //
             }
           }
@@ -4926,17 +4952,20 @@ ys: 'whys'
       var sFormsHeading;
       if (aFormsList && aFormsList.length && aFormsList.length > 0) {
         if (aFormsList.length > 1) {
-          sFormsHeading = aFormsList.length + " Forms";
-        } else sFormsHeading = "1 Form";
+          sFormsHeading = aFormsList.length + ' ' + blr.W15yQC.fnGetString('hrsForms');
+        } else sFormsHeading = blr.W15yQC.fnGetString('hrs1Form');
       } else {
-        sFormsHeading = "No Forms";
+        sFormsHeading = blr.W15yQC.fnGetString('hrsNoForms');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFormsHeading);
       if (aFormsList && aFormsList.length > 0) {
         var table = rd.createElement('table');
         var msgHash = new blr.W15yQC.HashTable();
         table.setAttribute('id', 'AIFormsTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Owner Doc #', 'Form Element', 'Name', 'Action', 'Method', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
+                                                            blr.W15yQC.fnGetString('hrsTHFormElement'), blr.W15yQC.fnGetString('hrsTHName'),
+                                                            blr.W15yQC.fnGetString('hrsTHAction'), blr.W15yQC.fnGetString('hrsTHMethod'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
 
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aFormsList.length; i++) {
@@ -4954,7 +4983,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No forms detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFormsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -4966,10 +4995,10 @@ ys: 'whys'
       var sFormControlsHeading;
       if (aFormControlsList && aFormControlsList.length && aFormControlsList.length > 0) {
         if (aFormControlsList.length > 1) {
-          sFormControlsHeading = aFormControlsList.length + " Form Controls";
-        } else sFormControlsHeading = "1 Form Control";
+          sFormControlsHeading = aFormControlsList.length + ' ' + blr.W15yQC.fnGetString('hrsFormsCtrls');
+        } else sFormControlsHeading = blr.W15yQC.fnGetString('hrs1FormCtrl');
       } else {
-        sFormControlsHeading = "No Form Controls";
+        sFormControlsHeading = blr.W15yQC.fnGetString('hrsNoFormCtrls');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFormControlsHeading);
 
@@ -4992,17 +5021,18 @@ ys: 'whys'
           if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
         }
 
-        var aTableHeaders = ['#', 'Form #', 'Owner <br>Doc #', 'Form Control Element'];
-        if (bHasLegend) aTableHeaders.push('Legend');
-        aTableHeaders.push('Label Text');
-        if (bHasTitle) aTableHeaders.push('Title');
-        if (bHasARIALabel) aTableHeaders.push('ARIA Label');
-        aTableHeaders.push('Effective Label');
-        if (bHasARIADescription) aTableHeaders.push('ARIA Description');
-        aTableHeaders.push('Name');
-        aTableHeaders.push('Value');
-        if (bHasStateDescription) aTableHeaders.push('State');
-        aTableHeaders.push('Notes');
+        var aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
+                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
+        if (bHasLegend) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
+        if (bHasTitle) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
+        if (bHasARIALabel) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
+        if (bHasARIADescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIADescription'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHName'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHValue'));
+        if (bHasStateDescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState'));
+        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
         var table = rd.createElement('table');
         table.setAttribute('id', 'AIFormControlsTable');
@@ -5037,7 +5067,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No form controls detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5051,9 +5081,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetLinks(c.contentWindow.document, c.contentWindow.document.body, aLinksList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
           } else { // keep looking through current document
             if (c.tagName && c.tagName.toLowerCase() == 'a' && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // document the link
@@ -5102,7 +5133,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtOnlyASCII'); //
           } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(linkText)) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNextPrev'); //
-          } else if (linkText.match(/^link to /i)) {
+          } else if (linkText.match(/^link to /i)) { // TODO: Make functions for testing for this.
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtBeginWithLink'); //
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
@@ -5317,16 +5348,19 @@ ys: 'whys'
       var sLinksHeading;
       if (aLinksList && aLinksList.length && aLinksList.length > 0) {
         if (aLinksList.length > 1) {
-          sLinksHeading = aLinksList.length + " Links";
-        } else sLinksHeading = "1 Link";
+          sLinksHeading = aLinksList.length + ' '+blr.W15yQC.fnGetString('hrsLinks');
+        } else sLinksHeading = blr.W15yQC.fnGetString('hrs1Link');
       } else {
-        sLinksHeading = "No Links";
+        sLinksHeading = blr.W15yQC.fnGetString('hrsNoLinks');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sLinksHeading);
       if (aLinksList && aLinksList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Link Element', 'Owner Doc #', 'Link Text', 'Title', 'href', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
+                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
 
         var tbody = rd.createElement('tbody');
@@ -5344,7 +5378,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AILinksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No links detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoLinksDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5360,9 +5394,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetTables(c.contentWindow.document, c.contentWindow.document.body, aTablesList, null, nestingDepth);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetTables(frameDocument, frameDocument.body, aTablesList, null, nestingDepth);
           } else { // keep looking through current document
             if (c.tagName) {
               var tagName = c.tagName.toLowerCase();
@@ -5783,17 +5818,20 @@ ys: 'whys'
       var sTablesHeading;
       if (aTablesList && aTablesList.length && aTablesList.length > 0) {
         if (aTablesList.length > 1) {
-          sTablesHeading = aTablesList.length + " Tables";
-        } else sTablesHeading = "1 Table";
+          sTablesHeading = aTablesList.length + ' ' + blr.W15yQC.fnGetString('hrsTables');
+        } else sTablesHeading = blr.W15yQC.fnGetString('hrs1Table');
       } else {
-        sTablesHeading = "No Tables";
+        sTablesHeading = blr.W15yQC.fnGetString('hrsNoTables');
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sTablesHeading);
       if (aTablesList && aTablesList.length > 0) {
         var table = rd.createElement('table');
         table.setAttribute('id', 'AITablesTable');
         // TODO: Make summary and caption columns so they only appear when needed.
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, ['#', 'Table Element', 'Owner Doc #', 'Summary', 'Caption', 'Size (CxR)', 'State', 'Notes']);
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
+                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHSummary'),
+                                                            blr.W15yQC.fnGetString('hrsTHCaption'), blr.W15yQC.fnGetString('hrsTHSizeCR'),
+                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
         var msgHash = new blr.W15yQC.HashTable();
         var tbody = rd.createElement('tbody');
         for (var i = 0; i < aTablesList.length; i++) {
@@ -5811,7 +5849,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AITablesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', 'No tables detected.');
+        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoTablesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5933,7 +5971,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             oValues.iNumberOfFrames++;
             // determine level, and then get frame contents
             level = baseLevel+1;
@@ -5943,7 +5981,8 @@ ys: 'whys'
                 break;
               }
             }
-            blr.W15yQC.fnBuildSemanticView(rd, c.contentWindow.document, c.contentWindow.document.body, level, list, oValues);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Do we need to close some blocks?
@@ -6027,7 +6066,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             oValues.iNumberOfFrames++;
             // determine level, and then get frame contents
             level = baseLevel+1;
@@ -6037,7 +6076,8 @@ ys: 'whys'
                 break;
               }
             }
-            blr.W15yQC.fnBuildSemanticView(rd, c.contentWindow.document, c.contentWindow.document.body, level, list, oValues);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Do we need to close some blocks?
