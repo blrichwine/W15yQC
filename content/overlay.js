@@ -2727,6 +2727,7 @@ ys: 'whys'
 
     fnGetDisplayableTextRecursively: function (rootNode, bRecursion) {
       // TODO: Vet this with JAWS
+      // TODO: Gan we get this from Firefox? What about ARIA-label and other ARIA attribute?
       // How does display:none, visibility:hidden, and aria-hidden=true affect child text collection?
       var sNodeChildText = '';
       var sRecursiveText = null;
@@ -2734,7 +2735,7 @@ ys: 'whys'
       if (rootNode != null) {
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1 && c.nodeType !== 3) continue; // Only pay attention to element and text nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // don't get frame contents, but instead check if it has a title attribute
             if (c.hasAttribute('title')) {
               sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('title'), ' ');
@@ -3574,7 +3575,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // document the frame
             var frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
             var frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
@@ -3585,7 +3586,8 @@ ys: 'whys'
             var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
             aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, frameSrc));
             // get frame contents
-            blr.W15yQC.fnGetFrameTitles(c.contentWindow.document, c.contentWindow.document.body, aFramesList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
           } else { // keep looking through current document
             blr.W15yQC.fnGetFrameTitles(doc, c, aFramesList);
           }
@@ -3599,7 +3601,15 @@ ys: 'whys'
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
       for (var i = 0; i < aFramesList.length; i++) {
         aFramesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node, aDocumentsList);
-        aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node.contentWindow.document.body, aDocumentsList);
+        var framedDocumentBody = null;
+        if(aFramesList[i].node != null) {
+          if(aFramesList[i].node.contentWindow != null && aFramesList[i].node.contentWindow.document && aFramesList[i].node.contentWindow.document.body) {
+            framedDocumentBody = aFramesList[i].node.contentWindow.document.body;
+          } else if(aFramesList[i].node.contentDocument && aFramesList[i].node.contentDocument.body) {
+            framedDocumentBody = aFramesList[i].node.contentDocument.body;
+          }
+        }
+        aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(framedDocumentBody, aDocumentsList);
         if (aFramesList[i].title != null && aFramesList[i].title.length && aFramesList[i].title.length > 0) {
           aFramesList[i].title = blr.W15yQC.fnCleanSpaces(aFramesList[i].title);
           aFramesList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title);
@@ -3739,7 +3749,7 @@ ys: 'whys'
     fnGetDocuments: function (doc, rootNode, aDocumentsList) {
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
-
+      // TODO: Store framing node (frameset, iframe, object, etc.)
       if (doc != null) {
         if (aDocumentsList == null) {
           aDocumentsList = new Array();
@@ -3776,14 +3786,14 @@ ys: 'whys'
               }
             }
 
-            if (c.tagName && c.contentWindow && c.contentWindow.document !== null && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
               // Document the new document
-              var frameDocument = c.contentWindow.document;
+              var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
               aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
 
               // get frame contents
-              blr.W15yQC.fnGetDocuments(c.contentWindow.document, c.contentWindow.document.body, aDocumentsList);
+              blr.W15yQC.fnGetDocuments(frameDocument, frameDocument.body, aDocumentsList);
             } else { // keep looking through current document
               blr.W15yQC.fnGetDocuments(doc, c, aDocumentsList);
             }
@@ -3900,7 +3910,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // determine level, and then get frame contents
             level = baseLevel+1;
             for(var i=aARIALandmarksList.length-1; i>=0; i--) {
@@ -3908,8 +3918,9 @@ ys: 'whys'
                 level = aARIALandmarksList[i].level+1;
                 break;
               }
-            }
-            blr.W15yQC.fnGetARIALandmarks(c.contentWindow.document, c.contentWindow.document.body, aARIALandmarksList, level);
+            }            
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetARIALandmarks(frameDocument, frameDocument.body, aARIALandmarksList, level);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && c.hasAttribute('role') == true) {
               var sTagName = c.tagName.toLowerCase();
@@ -4076,9 +4087,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetARIAElements(c.contentWindow.document, c.contentWindow.document.body, aARIAElementsList, null);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetARIAElements(frameDocument, frameDocument.body, aARIAElementsList, null);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnElementUsesARIA(c) == true) {
               var sTagName = c.tagName.toLowerCase();
@@ -4246,9 +4258,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetImages(c.contentWindow.document, c.contentWindow.document.body, aImagesList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetImages(frameDocument, frameDocument.body, aImagesList);
           } else { // keep looking through current document
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               var tagName = c.tagName.toLowerCase();
@@ -4417,9 +4430,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetAccessKeys(c.contentWindow.document, c.contentWindow.document.body, aAccessKeysList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetAccessKeys(frameDocument, frameDocument.body, aAccessKeysList);
           } else { // keep looking through current document
             if (c.tagName && c.hasAttribute('accesskey') == true) {
               if (blr.W15yQC.fnNodeIsHidden(c) == false) {
@@ -4556,9 +4570,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetHeadings(c.contentWindow.document, c.contentWindow.document.body, aHeadingsList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetHeadings(frameDocument, frameDocument.body, aHeadingsList);
           } else { // keep looking through current document
             if (c.tagName) {
               var tagName = c.tagName.toLowerCase();
@@ -4731,8 +4746,9 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
-            blr.W15yQC.fnGetFormControls(c.contentWindow.document, c.contentWindow.document.body, aDocumentsList, aFormsList, aFormControlsList);
+          if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetFormControls(frameDocument, frameDocument.body, aDocumentsList, aFormsList, aFormControlsList);
           } else {
             if (c.tagName != null && c.tagName.toLowerCase() == 'form') {
               var sXPath = blr.W15yQC.fnGetElementXPath(c);
@@ -5065,9 +5081,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetLinks(c.contentWindow.document, c.contentWindow.document.body, aLinksList);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
           } else { // keep looking through current document
             if (c.tagName && c.tagName.toLowerCase() == 'a' && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // document the link
@@ -5377,9 +5394,10 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            blr.W15yQC.fnGetTables(c.contentWindow.document, c.contentWindow.document.body, aTablesList, null, nestingDepth);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetTables(frameDocument, frameDocument.body, aTablesList, null, nestingDepth);
           } else { // keep looking through current document
             if (c.tagName) {
               var tagName = c.tagName.toLowerCase();
@@ -5953,7 +5971,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             oValues.iNumberOfFrames++;
             // determine level, and then get frame contents
             level = baseLevel+1;
@@ -5963,7 +5981,8 @@ ys: 'whys'
                 break;
               }
             }
-            blr.W15yQC.fnBuildSemanticView(rd, c.contentWindow.document, c.contentWindow.document.body, level, list, oValues);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Do we need to close some blocks?
@@ -6047,7 +6066,7 @@ ys: 'whys'
         if (rootNode == null) rootNode = doc.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && c.contentWindow && c.contentWindow.document && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             oValues.iNumberOfFrames++;
             // determine level, and then get frame contents
             level = baseLevel+1;
@@ -6057,7 +6076,8 @@ ys: 'whys'
                 break;
               }
             }
-            blr.W15yQC.fnBuildSemanticView(rd, c.contentWindow.document, c.contentWindow.document.body, level, list, oValues);
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Do we need to close some blocks?
