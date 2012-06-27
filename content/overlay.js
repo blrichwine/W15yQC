@@ -36,6 +36,8 @@ if (!blr.W15yQC) {
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
     userExpertLevel: null,
+    userLocale: null,
+    bEnglishLocale: true,
 
     sb: null,
 
@@ -44,6 +46,14 @@ if (!blr.W15yQC) {
     // http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/Homophones
     // http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings
     homophones: {
+accomodate: 'accommodate',
+acknowlege: 'acknowledge',
+acommodate: 'accommodate',
+acomodate: 'accommodate',
+aknowledge: 'acknowledge',
+acknowlegment: 'acknowledgment',
+acknowledgement: 'acknowledgment',
+acknowlegement: 'acknowledgment',
 add: 'ad',
 aide: 'aid',
 aisle: 'ill',
@@ -51,8 +61,12 @@ allowed: 'aloud',
 alter: 'altar',
 apse: 'apps',
 arent: 'aunt',
+arguement: 'argument',
+arguemant: 'argument',
+arguemint: 'argument',
 ark: 'arc',
 assent: 'ascent',
+assocation: 'association',
 aural: 'oral',
 b: 'be',
 bah: 'baa',
@@ -67,10 +81,15 @@ baste: 'based',
 bawl: 'ball',
 bawled: 'balled',
 bear: 'bare',
+becuase: 'because',
 bee: 'be',
 beech: 'beach',
 been: 'bean',
 beet: 'beat',
+begining: 'beginning',
+behavior: 'behavior',
+behaviour: 'behavior',
+beleive: 'believe',
 berry: 'bury',
 bier: 'beer',
 billed: 'build',
@@ -100,6 +119,7 @@ c: 'sea',
 cache: 'cash',
 caste: 'cast',
 caught: 'court',
+calender: 'calendar',
 chants: 'chance',
 chaste: 'chased',
 cheep: 'cheap',
@@ -110,7 +130,20 @@ ciao: 'chow',
 clause: 'claws',
 clime: 'climb',
 climes: 'climbs',
-compliment: 'complement',
+commerical: 'commercial',
+comission: 'commission',
+comision: 'commission',
+commision: 'commission',
+comitted: 'committed',
+commited: 'committed',
+comitment : 'commitment',
+comitmment: 'commitment',
+comitmant: 'complement',
+concensus: 'consensus',
+consencus: 'consensus',
+consensus: 'consensus',
+consenssus: 'consensus',
+congradulations: 'contratulations',
 copse: 'cops',
 core: 'caw',
 cores: 'cause',
@@ -123,8 +156,20 @@ cs: 'seas',
 damn: 'dam',
 damned: 'dammed',
 daze: 'days',
+deductable: 'deductible',
+deductuble: 'deductible',
+deductabel: 'deductible',
 deer: 'dear',
+definately: 'definitely',
+definatly: 'definitely',
+definantly: 'definitely',
+definetly: 'definitely',
+definently: 'definitely',
+depindant: 'dependant',
+dependent: 'dependant',
+dependunt: 'dependant',
 dessert: 'desert',
+diffrent: 'different',
 dock: 'doc',
 done: 'dun',
 doze: 'does',
@@ -133,14 +178,24 @@ due: 'dew',
 dye: 'die',
 dyed: 'died',
 earn: 'urn',
+effect: 'affect',
 eight: 'ate',
+embarras: 'embarrass',
+embaras: 'embarrass',
+embarass: 'embarrass',
+enviroment: 'environment',
 es: 'ease',
 eye: 'aye',
 eyed: 'id',
+existanc: 'existence',
+existance: 'existence',
+existanse: 'existence',
 fare: 'fair',
 farther: 'father',
+febuary: 'february',
 feet: 'feat',
 feint: 'faint',
+firey: 'fiery',
 filled: 'field',
 fined: 'find',
 flare: 'flair',
@@ -152,17 +207,23 @@ floored: 'flawed',
 flower: 'flour',
 flue: 'flu',
 fore: 'for',
+forword: 'foreward',
+forworde: 'foreward',
+foreword: 'foreward',
 fought: 'fort',
 four: 'for',
 fowl: 'foul',
 freeze: 'frees',
 frieze: 'frees',
 fur: 'fir',
+further: 'farther',
 gaze: 'gays',
 gilled: 'gild',
 gnaw: 'nor',
 gores: 'gauze',
+goverment: 'government',
 great: 'grate',
+greatful: 'grateful',
 greece: 'grease',
 greys: 'graze',
 grown: 'groan',
@@ -170,6 +231,9 @@ gs: 'jeez',
 guessed: 'guest',
 guild: 'gild',
 har: 'ah',
+haras: 'harass', 
+harrass: 'harass', 
+herrass: 'harass', 
 hare: 'hair',
 harry: 'hairy',
 haul: 'hall',
@@ -190,9 +254,18 @@ hurts: 'hertz',
 hymn: 'him',
 i: 'aye',
 idol: 'idle',
+inadvertant: 'inadvertent',
+inadvartant: 'inadvertent',
+inadvartent: 'inadvertent',
+indispensabel: 'indispensable',
+indispensible: 'indispensable',
+indespensible: 'indispensable',
 inn: 'in',
 isle: 'ill',
 jeans: 'genes',
+judgment: 'judgement',
+judgemant: 'judgement',
+judgmant: 'judgement',
 knead: 'need',
 kneaded: 'needed',
 kneed: 'need',
@@ -211,11 +284,19 @@ laze: 'lays',
 lead: 'led',
 leased: 'least',
 leek: 'leak',
+liason: 'liaison',
+liasson: 'liaison',
+liasone: 'liaison',
+libary: 'library',
+licens: 'license',
+lisense: 'license',
+lisence: 'license',
 links: 'lynx',
 lock: 'loch',
 lode: 'load',
 lone: 'loan',
 lore: 'law',
+loose: 'lose',
 lute: 'loot',
 lye: 'lie',
 maid: 'made',
@@ -236,6 +317,7 @@ mined: 'mind',
 minks: 'minx',
 minor: 'miner',
 mints: 'mince',
+mispell: 'misspell',
 missed: 'mist',
 more: 'moor',
 mourn: 'morn',
@@ -249,6 +331,17 @@ none: 'nun',
 o: 'oh',
 oar: 'or',
 oared: 'awed',
+ocassion: 'occasion',
+ocasion: 'occasion',
+occassion: 'occasion',
+ocurrance: 'occurrence',
+occurrance: 'occurrence',
+occurance: 'occurrence',
+occurence: 'occurrence',
+ocurred: 'occurred',
+ocured: 'occurred',
+occured: 'occurred',
+offical: 'official',
 ore: 'or',
 owe: 'oh',
 owed: 'ode',
@@ -265,6 +358,9 @@ pee: 'pea',
 peek: 'peak',
 peeked: 'peaked',
 peeled: 'pealed',
+perserverance: 'perseverance',
+persaverence: 'perseverance',
+perserverence: 'perseverance',
 phew: 'few',
 pie: 'pi',
 piece: 'peace',
@@ -279,6 +375,9 @@ pour: 'poor',
 poured: 'pored',
 pours: 'pores',
 praise: 'prays',
+perogative: 'prerogative',
+perogitive: 'prerogative',
+preragitive: 'prerogative',
 prey: 'pray',
 preyed: 'prayed',
 preys: 'prays',
@@ -286,7 +385,13 @@ pried: 'pride',
 principle: 'principal',
 prints: 'prince',
 prise: 'pries',
+privelege: 'privilege',
+privlege: 'privilege',
+privelige: 'privilege',
 prize: 'pries',
+proceed: 'procede',
+proceede: 'procede',
+proced: 'procede',
 prophet: 'profit',
 prose: 'pros',
 purr: 'per',
@@ -298,8 +403,11 @@ raise: 'rays',
 raised: 'razed',
 raze: 'rays',
 read: 'red',
+reciept: 'receipt',
+recieve: 'receive',
 reed: 'red',
 reel: 'real',
+realy: 'really',
 reign: 'rain',
 reigned: 'rained',
 rein: 'rain',
@@ -321,6 +429,7 @@ rows: 'roes',
 ryes: 'rise',
 sacks: 'sax',
 sale: 'sail',
+sales: 'sails',
 scene: 'seen',
 scent: 'cent',
 scents: 'cents',
@@ -335,6 +444,9 @@ sell: 'cell',
 sense: 'cents',
 sensor: 'censor',
 sent: 'cent',
+separete: 'separate',
+seperate: 'separate',
+seperat: 'separate',
 serial: 'cereal',
 sew: 'so',
 sheer: 'shear',
@@ -365,6 +477,9 @@ steak: 'stake',
 steel: 'steal',
 straight: 'strait',
 sun: 'son',
+supercede: 'supersede',
+superceed: 'supersede',
+suparseed: 'supersede',
 surf: 'serf',
 surge: 'serge',
 sweet: 'suite',
@@ -380,7 +495,9 @@ tease: 'teas',
 tee: 'tea',
 teem: 'team',
 tees: 'teas',
+teh: 'the',
 thai: 'tie',
+then: 'than',
 there: 'their',
 theres: 'theirs',
 theyre: 'their',
@@ -397,12 +514,14 @@ tonne: 'ton',
 too: 'to',
 tow: 'toe',
 towed: 'toad',
+truely: 'truly',
 trussed: 'trust',
 ts: 'teas',
 tucks: 'tux',
 two: 'to',
 tyre: 'tire',
 u: 'ewe',
+untill: 'until',
 vane: 'vain',
 vein: 'vain',
 waive: 'wave',
@@ -434,10 +553,12 @@ whit: 'wit',
 who: 'hoo',
 whole: 'hole',
 whose: 'whos',
+wich: 'which',
 wiegh: 'way',
 wise: 'whys',
 witch: 'which',
 won: 'one',
+wonder: 'wander',
 wore: 'war',
 worn: 'warn',
 would: 'wood',
@@ -521,6 +642,22 @@ ys: 'whys'
       return 'String Bundle System Unavailable. Something serious is wrong!';
     },
 
+    fnIsValidLocale: function(sLocale) {
+      return /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/.test(sLocale); // QA iframeTests01.html
+    },
+    
+    fnSetIsEnglishLocale: function(sLocale) {
+      if(sLocale == null || sLocale=='' || (sLocale.substring && sLocale.substring(0,2).toLowerCase()=='en'))
+        blr.W15yQC.bEnglishLocale = true;
+      else
+        blr.W15yQC.bEnglishLocale = false;
+      return blr.W15yQC.bEnglishLocale;
+    },
+    
+    fnGetUserLocale: function() {
+      return blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
+    },
+    
     onMenuItemCommand: function () {
       blr.W15yQC.fnInspect();
     },
@@ -768,6 +905,7 @@ ys: 'whys'
       tblUnequalColCount: [1,0,false,null],
       tblLayoutTblIsComplex: [1,0,false,null],
       tblLayoutTblIsComplexWOpresRole: [1,0,false,null],
+      tblTooLargeForLayoutTable: [1,0,false,null]
     },
 
     fnGetNoteSeverityLevel: function(msgKey) {
@@ -1677,6 +1815,8 @@ ys: 'whys'
         sText = blr.W15yQC.fnSpellOutNumbers(sText);
         sText = sText.replace(/[^a-zA-Z]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText);
+        sText = sText.replace(/\balot\b/i,'a lot');
+        sText = sText.replace(/\bawhile\b/i,'a while');
         var tokens = sText.split(' ');
         for (var i = 0; i < tokens.length; i++) {
           sTokens += blr.W15yQC.fnSoundEx(tokens[i]) + ' ';
@@ -1689,11 +1829,20 @@ ys: 'whys'
 
     fnOnlyASCIISymbolsWithNoLettersOrDigits: function (sText) {
       if (sText && sText.length && sText.length > 0) {
-        sText = sText.replace(/[^a-zA-Z0-9]+/g, '');
-        if (sText.length > 0) {
-          return false;
-        } else {
-          return true;
+        if(blr.W15yQC.bEnglishLocale==true) {
+          sText = sText.replace(/[^a-zA-Z0-9]+/g, '');
+          if (sText.length > 0) {
+            return false;
+          } else {
+            return true;
+          }
+        } else { // TODO: Improve this by checking for unicode characters in common languages
+          sText = sText.replace(/[~`!@#$%^&*\(\)-_+=\[{\]}\\\|;:'",<\.>\/\?\s]+/g, '');
+          if (sText.length > 0) {
+            return false;
+          } else {
+            return true;
+          }
         }
       }
       return false;
@@ -1719,7 +1868,7 @@ ys: 'whys'
     fnIsMeaningfulLinkText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
@@ -1747,7 +1896,7 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          return true;
+          if(!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1756,14 +1905,13 @@ ys: 'whys'
     fnIsMeaningfulHeadingText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1772,7 +1920,7 @@ ys: 'whys'
     fnIsMeaningfulDocTitleText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: What should the minimum doc title be?
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
@@ -1783,7 +1931,7 @@ ys: 'whys'
           case 'homepage':
             return false;
           }
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1792,7 +1940,7 @@ ys: 'whys'
     fnIsMeaningfulFormLabelText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
@@ -1820,16 +1968,16 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
     },
 
-    fnIsMeaningfulText: function (sText, minLength) {
+    fnIsMeaningfulText: function (sText, minLength) { // TODO: Where is this used? Should it be a specific instance?
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
@@ -1857,7 +2005,7 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1938,7 +2086,7 @@ ys: 'whys'
 
     fnAltTextAppearsToHaveRedundantImageReferenceInIt: function (sText) {
       if(sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
-         sText.match(/\S\s*(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i)) {
+         sText.match(/\b(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i)) {
         return true;
       }
       return false;
@@ -1982,9 +2130,10 @@ ys: 'whys'
       return no;
     },
 
-    fnIsOnlyNextOrPreviousText: function (str) {
+    fnIsOnlyNextOrPreviousText: function (str) { // TODO: What about other languages?
       if(str != null && str.replace) {
-        str = blr.W15yQC.fnCleanSpaces(str.replace(/[^a-z0-9\s]/ig,' '));
+        if(blr.W15yQC.bEnglishLocale) str=str.replace(/[^a-z0-9\s]/ig,' ');
+        str = blr.W15yQC.fnCleanSpaces(str);
         if(str.match(/^(next|prev|previous)$/i)) return true;
       }
       return false;
@@ -2100,8 +2249,41 @@ ys: 'whys'
       return 100000;
     },
     
+    fnJAWSAnnouncesControlAs: function (node) { // TODO: Vet this with JAWS
+      if(node != null && node.tagName) {
+        switch (node.tagName.toLowerCase()) {
+          case 'input':
+            if(node.hasAttribute('type')) {
+              var nType=node.getAttribute('type');
+              if(nType != null && nType.toLowerCase) {
+                switch(nType.toLowerCase()) {
+                  case 'button':
+                    return 'button';
+                  case 'text':
+                    return 'edit';
+                  case 'submit':
+                    break;
+                }
+              }
+              return '';
+            }
+            break;
+          case 'button':
+            return 'button';
+            break;
+          case 'select':
+            return 'combobox';
+            break;
+          case 'textarea':
+            return '' ;
+            break;
+        }
+      }
+      return '';
+    },
+    
     fnIsLabelControlNode: function (node) {
-      if (node && node.tagName) {
+      if (node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
         case 'label':
         case 'fieldset':
@@ -2113,7 +2295,7 @@ ys: 'whys'
     },
     
     fnIsFormControlNode: function (node) {
-      if (node && node.tagName) {
+      if (node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
         case 'input':
         case 'button':
@@ -2313,29 +2495,6 @@ ys: 'whys'
       }
       return sLabelText;
     },
-
-    // TODO: Determine Why is this one here:
-    //fnGetEffectiveLabelText: function (node, doc) {
-    //  var sLabelText = null;
-    //  if (node != null && node.hasAttribute) {
-    //    if (node.hasAttribute('aria-label')) {
-    //      sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-    //    }
-    //    if ((sLabelText == null || sLabelText.length < 1) && node.hasAttribute('aria-labelledby')) {
-    //      sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-    //    }
-    //    if (sLabelText == null || sLabelText.length < 1) {
-    //      sLabelText = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
-    //    }
-    //    if (sLabelText == null || sLabelText.length < 1) {
-    //      sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);
-    //    }
-    //    if (sLabelText.length < 1 && node.hasAttribute('title')) {
-    //      sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-    //    }
-    //  }
-    //  return sLabelText;
-    //},
 
     fnGetARIALabelText: function (node, doc) {
       var sLabelText = null;
@@ -2700,19 +2859,19 @@ ys: 'whys'
       var sStateDescription = null;
       if (node != null && node.tagName != null) {
         if (blr.W15yQC.fnNodeIsHidden(node) == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Hidden', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsHidden'), ', ');
         }
         if (blr.W15yQC.fnNodeIsMasked(node) == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Masked with CSS', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsMasked'), ', ');
         }
         if (blr.W15yQC.fnNodeIsOffScreen(node) == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Positioned Offscreen with CSS', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsPosOffScrn'), ', ');
         }
         if (node.disabled == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Disabled', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsDisabled'), ', ');
         }
         if (node.readOnly == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Read only', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsReadOnly'), ', ');
         } // TODO: What other global ARIA attributes should we include here:
         if (node.hasAttribute('aria-required') == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-required="' + node.getAttribute('aria-required') + '"', ', ');
@@ -2720,7 +2879,6 @@ ys: 'whys'
         if (node.hasAttribute('aria-invalid') == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-invalid="' + node.getAttribute('aria-invalid') + '"', ', ');
         }
-        if(sStateDescription != null) blr.W15yQC.fnLog('=====fnGetNodeState:'+node.tagName+':'+sStateDescription);
       }
       return blr.W15yQC.fnCleanSpaces(sStateDescription);
     },
@@ -3565,6 +3723,20 @@ ys: 'whys'
       p.innerHTML = blr.W15yQC.fnGetString('hrsFooter',[blr.W15yQC.version]);
       div.appendChild(p);
       rd.body.appendChild(div);
+
+      if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault",false) || Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault",false)) {
+        var scriptElement = rd.createElement('script');
+        var sScript = '';
+        if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault",false)) {
+          sScript = 'collapseAll();';
+        }
+        if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault",false)) {
+          sScript += 'fnToggleDisplayOfNonIssues();';
+        }
+        scriptElement.innerHTML = "/*<![CDATA[*/ " + sScript + " /*]]>*/";
+        rd.body.appendChild(scriptElement);
+      }
+      
     },
 
     fnGetFrameTitles: function (doc, rootNode, aFramesList) {
@@ -3710,14 +3882,16 @@ ys: 'whys'
     },
 
     fnGetDocumentLanguage: function (doc) {
-      if (doc != null && doc.getElementsByTagName) {
-        var aHTMLList = doc.getElementsByTagName('html');
-        if (aHTMLList && aHTMLList.length > 0 && aHTMLList[0].hasAttribute && aHTMLList[0].hasAttribute('lang')) {
-          return aHTMLList[0].getAttribute('lang');
+      if (doc != null) {
+        if (doc.body && doc.body.hasAttribute && doc.body.hasAttribute('lang')) {
+          return doc.body.getAttribute('lang');
         }
-      }
-      if (doc != null && doc.body && doc.body.hasAttribute && doc.body.hasAttribute('lang')) {
-        return doc.body.getAttribute('lang');
+        if (doc.getElementsByTagName) {
+          var aHTMLList = doc.getElementsByTagName('html');
+          if (aHTMLList && aHTMLList.length > 0 && aHTMLList[0].hasAttribute && aHTMLList[0].hasAttribute('lang')) {
+            return aHTMLList[0].getAttribute('lang');
+          }
+        }
       }
       return null;
     },
@@ -3806,7 +3980,7 @@ ys: 'whys'
     fnAnalyzeDocuments: function (aDocumentsList) {
       if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
       if (aDocumentsList !== null && aDocumentsList.length) {
-        for (var i = 0; i < aDocumentsList.length; i++) {
+        for (var i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
           if (aDocumentsList[i].title == null) {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleMissing'); // QA iframeTests01.html -- TODO: Can't produce, scan this be detected?
           } else if (blr.W15yQC.fnCleanSpaces(aDocumentsList[i].title).length < 1) {
@@ -3817,7 +3991,7 @@ ys: 'whys'
           } else {
             if (!aDocumentsList[i].language.length || aDocumentsList[i].language.length < 1) {
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docLangNotSpecified'); // QA firstNested.html
-            } else if (/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/.test(aDocumentsList[i].language) == false) {
+            } else if (blr.W15yQC.fnIsValidLocale(aDocumentsList[i].language) == false) {
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLang'); // QA iframeTests01.html
             }
           }
@@ -4810,10 +4984,11 @@ ys: 'whys'
       // Check if form labels are empty, not meaningful, the same as other form controls, or sound like any other label texts
       if (aFormsList != null && aFormsList.length > 0) {
         for (var i = 0; i < aFormsList.length; i++) {
+          aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
           for (var j = 0; j < aFormsList.length; j++) {
             if (i == j) continue;
             // If it has a name, check that the name is unique compared to other forms in the same document
-            if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
+            if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].ownerDocumentNumber == aFormsList[j].ownerDocumentNumber && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
               blr.W15yQC.fnAddNote(aFormsList[i], 'frmNameNotUnique'); //
             }
           }
@@ -4847,7 +5022,7 @@ ys: 'whys'
           aFormControlsList[i].title = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].title);
           aFormControlsList[i].ARIALabelText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].ARIALabelText);
           aFormControlsList[i].ARIADescriptionText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].ARIADescriptionText);
-          aFormControlsList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText);
+          aFormControlsList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText+' '+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node));
         }
 
         for (var i = 0; i < aFormControlsList.length; i++) {
@@ -4865,7 +5040,8 @@ ys: 'whys'
                   continue;
                 } else {
                   if (aFormControlsList[j].effectiveLabelText != null && aFormControlsList[j].effectiveLabelText.length > 0) {
-                    if (aFormControlsList[i].effectiveLabelText.toLowerCase() == aFormControlsList[j].effectiveLabelText.toLowerCase()) {
+                    if (aFormControlsList[i].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node) ==
+                        aFormControlsList[j].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[j].node)) {
                       blr.W15yQC.fnAddNote(aFormControlsList[i], 'fmrCtrlLabelNotUnique'); //
                     } else if (aFormControlsList[i].soundex == aFormControlsList[j].soundex) {
                       blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDoesntSoundUnique'); // TODO: Make a list of these
@@ -5175,8 +5351,8 @@ ys: 'whys'
                   if(bOnclickValuesAreDifferent == false) {
                     aSameHrefAndOnclick.push(j+1);
                   }
-                } else {
-                  if(aLinksList[i].href != '#') aDiffTextSameHref.push(j+1);
+                } else { // unless javascript:;, #, javascript:void(0)
+                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(sText)==false) aDiffTextSameHref.push(j+1);
                 }
               }
             }
@@ -5780,8 +5956,12 @@ ys: 'whys'
           //bEveryTdCellWithContentHasAHeadersAttribute
           //bTableUsesHeadersAttribute
 
-        } else { // Looks like it is a layout table
-          blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsLayoutTable'); //
+        } else { // Looks like it is a layout table          
+          if(aTablesList[i].maxCols * aTablesList[i].maxRows > 25 && Math.min(aTablesList[i].maxCols, aTablesList[i].maxRows)>4) {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblTooLargeForLayoutTable'); //
+          } else {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsLayoutTable'); //
+          }
         }
 
         // End of table analysis, now provide any warning / failure notices
@@ -5867,6 +6047,9 @@ ys: 'whys'
 
     fnInspectDocuments: function (rd) {
       if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale());
+      blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
+
       var aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
       blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
       blr.W15yQC.fnDisplayDocumentsResults(rd, aDocumentsList);
@@ -5952,7 +6135,7 @@ ys: 'whys'
         blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
+        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList);
@@ -6352,7 +6535,6 @@ ys: 'whys'
     stateDescription: null
   };
 
-
   blr.W15yQC.formElement = function (node, xpath, nodeDescription, doc, ownerDocumentNumber, orderNumber, name, role, action, method) {
     this.node = node;
     this.xpath = xpath;
@@ -6451,7 +6633,6 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
-    stateDescription: null,
     notes: null,
     failed: false,
     warning: false,
