@@ -914,6 +914,7 @@ ys: 'whys'
       lnkHasBothOCandOK: [2,0,false,null],
       lnkTargetIDisNotUnique: [2,0,false,null],
       lnkTargetIDNotValid: [1,0,false,null],
+      lnkServerSideImageMap: [2,0,false,null],
       lnkIDNotValid: [2,0,false,null],
       lnkIDNotUnique: [2,0,false,null],
 
@@ -5430,9 +5431,18 @@ ys: 'whys'
       }
 
       for (var i = 0; i < aLinksList.length; i++) {
+        var aChildImages=aLinksList[i].node.getElementsByTagName('img');
+        if(aChildImages != null && aChildImages.length>0) {
+          for(var j=0; j< aChildImages.length; j++) { alert(aLinksList[i].nodeDescription);
+            if(aChildImages[j].hasAttribute('ismap')==true) {
+              blr.W15yQC.fnAddNote(aLinksList[i], 'lnkServerSideImageMap'); // TODO: QA This, determine how ismap is actually used
+            }
+          }
+        }
+        
         if (aLinksList[i].text == null) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
-        } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) {
+        } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
           var linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtOnlyASCII'); //
