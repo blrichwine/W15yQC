@@ -36,24 +36,49 @@
  * 2012.05.15 - QA'd accesskeys, working on adding label, fieldset, and legend to form controls listing
  * 2012.05.22 - Worked on ARIA Landmarks detection to indicate nesting level, worked on ARIA detection code
  * 2012.06.19 - Working on i18n of HTML reports -- need to pick up again at display headings
+ * 2012.06.25 - Working on user prefs, added common misspellings from three sources to word list
  *
  * QA Tasks
  *   - Review text in HTML report for consistency
  *      - Column headers in tables
  *   - Review text in Dialog Box tables for consistency
- * 
+ *
+ * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average Nesting Level is 3. Warn if greater than 5
  * TODO:
  *    *** FIX ASAP***
-        - Table 7x11 shows up as a layout table, probably should guess it could be a data table and warn to check (looks larger than a normal layout table, etc.)
- *      - Page content hosted inside an object element is not appearing in the results: ereserves.indiana.edu/eres/default.aspx page send email message popup
+        - QA Form Control Test [].
+        - Fix HTML Report save feature so it adds an .html extension if the extension isn't either .html or .htm
+        - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
+        - determine if the separate file that sets up the prefs has any real effect [It does]
+        - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/
+        - check label is labeling appropriate form control, guess by location of label vs. location of other control's label
+        - test role="group" effects
+        - ability to save HTML results to a file. (https://developer.mozilla.org/en/XPCOM_Interface_Reference/nsIFilePicker)
+        - image maps
+           - Does each area tag of an image map have an alt attribute
+           - Does each area tag of an image map with an empty href have an empty alt attribute?
+           - Does the equivalent link text for an area tag meet link text requirements (include in links list? Test with JAWS obviously)
+        - Can we detect server side image maps? server-side image map (img tag with the ismap attribute)
+        - Check for focusable elements that have the focus outline reset
+        - Check for full justification of text SC 1.4.8, F88, G172
+        - Verify that theys are required to have labels: input tag of type text, password, checkbox, radio, file, or textarea and select tags
+        - In each selection list (select tag), does each list item grouping (optgroup tag) have a label attribute?
+        - Does each applet tag, applet image have an alt attribute?
+        - What about object or embed tags with type="image/..."
+        - Data table should not have caption content that is exactly the same as summary content
+        - thead and tfoot tags trigger datatable and are included in why datatable list
+        - td cells with scope, headers, colgroup, axis attributes trigger datatable and are included in why datatable list
+        - [Resoved - QA THIS] Distinguish (Failure: Label text sounds the same as another form control's text label.) by form control type
+          How does JAWS announce the various form controls? Make a function to return string announced by JAWS.
+        - [Resolved - QA THIS] Detect language, and disable english only checks if default language is not set to english
+        - [Resolved - QA This] Make "Link text contains only ASCII symbols" fall back to known symbols list if not lang="en".
+        - [Resolved - QA This] Img Alt Attribute checks do not seem to detect only ASCII symbols
+        - [Resolved - tableTests01.html] Table 7x11 shows up as a layout table, probably should guess it could be a data table and warn to check (looks larger than a normal layout table, etc.)
+ *      - [Resolved - QA This] Page content hosted inside an object element is not appearing in the results: ereserves.indiana.edu/eres/default.aspx page send email message popup
         - Empty links show up as Masked when highlighting them from the links dialog - try to detect real Masked elements and don't do this. Describe as too small and position where it was located.
  *      - suppress Link target too small warning when content is being clipped / masked (detect this)
  *      - QA state listing on ARIA landmarks -- doesn't appear to be working
  *      - Fix landmark list, create real qa file for aria landmarks with nested landmarks
- *      - fix aria code list
- *        - show closing tags
- *        - indicate skipped content
- *        - detect and mark errors
  *      - Detect input[type=image] where no alt attribute or title is supplied, or effective label is an image filename
  *      - Fix form control label detection (fieldsets, legend, label, aria role="group")
  *      - Detect label elements that don't label anything
@@ -61,22 +86,50 @@
  *        - for attribute doesn't have a valid id
  *        - id in for attribute doesn't exist
  *        - id points to control that isn't a form control (shouldn't be labeled)
- *      - Detect links that open in a new window
  *      - Form controls HTML list should show 'alt' column when a valid instance of alt is present and the effective label comes from one
+ *      - links, buttons must not have both an onclick and an onkeypress handler
+ *      - ARIA, images with alt or longdesc or title attribute should not have a role of presentation
+ *      - Title attributes for frames must be unique
+ *      - [Resolved - QA this] Images must have valid alt text. OA
+ *      - [Resolved - QA this] Image file name is not valid alt text. OA
+ *      - [Resolved - QA this] Certain words cannot be used as a part of valid alt text OA
+ *      - Length of alt text OA
+ *      - [Resolved - imageTests01.html] If an image should not have a presentation role if:
+ *          - it has alt text
+ *          - it has a title
+ *          - it has an aria-label
+ *          - it has an aria-labelledby that contains text
+ *      - Data tables must:
+ *         - use the summary attribute OA7 *
+ *         - use th cells OA8 
+ *         - summary content must be unique to summary and caption content on other tables
+ *         - caption content shoould not be "layout", "layout table", "table for layout"
+ *         - summary content should not be "layout", "layout table", "table for layout"
+ *         - appropriate length of summary or caption text?
+ *         - not be be nested?
+ *      - Table summary
+ *         - If a table is otherwise a layout table, check if summary is invalid
+ *             - look for "layout table", "layout", "for layout", "summary", "table summary", "table", "header table", "Content table", "footer", "footer table",
+ *               "Navigation", "Navigation table", "Nav table", "content", ARIA Landmark role values, "(Top|left|right|bottom|side)* (hand)* nav(igation)* (table)*"
+
+
+
+ 
+ *      - fix aria code list
+ *        - show closing tags
+ *        - indicate skipped content
+ *        - detect and mark errors
  *    - create a routine to detect spanish text
  *    - create a routine to detect french text
  *    - create a routine to detect japanese, korean, chinese, german, arabic, hindi, portuguese, russian, bengali, thai, vietnamese, turkish, italian, polish, hebrew
  *       - Use BBC Languages www.bbc.co.uk/worldservice/languages/index.shtml to generate stats on distinguishing words, UTF-8 chars
  *    - Allow configurable values that can be added to not meaningful exceptions (i.e. 'IU', etc.)
- *    - write a link compare routine to determine if href, src values are the same or not
- *    - Determine a new name for the program, name for LLC, name for website
- *       - Determine company name for LLC
- *       - Do trademark search
- *    - Get the program appropriately licensed
- *       - Checkout three other Firefox extensions released under GPL and see how they did it
- *    - Recode the scope of the code to a new scope path (shorter, hopefully!)
- *    - Determine where to host the project
- *    - Learn how to use git
+      - Allow configurable values that are listed as not meaningful
+      
+      
+ DoD
+ 
+ 
  *    - Determine phased developement / roadmap
  *      - Rules
  *      - Features
@@ -123,36 +176,9 @@
  *         - can we tell if ff is online?
  *         - timeouts?
  *      - longdesc content should be appropriate: text
- *      -links, buttons must not have both an onclick and an onkeypress handler
- *      - ARIA, images with alt or longdesc or title attribute should not have a role of presentation
- *      - ID values must be unique and valid
  *        - ID defns:
  *          - http://www.w3schools.com/tags/att_standard_id.asp (not accurate)
  *          - http://www.w3.org/TR/html401/types.html#type-name
- *      - Title attributes for frames must be unique
- *      - Images must have valid alt text. OA
- *      - Image file name is not valid alt text. OA
- *      - Certain words cannot be used as a part of valid alt text OA
- *      - Length of alt text OA
- *      - If an image should not have a presentation role if:
- *          - it has alt text
- *          - it has a title
- *          - it has an aria-label
- *          - it has an aria-labelledby that contains text
- *      - Link targets - can we detect the size? Images used as links should be a minimum size (x by y)
- *      - Data tables must:
- *         - See blog post on when datatable is thought to be a data table
- *         - use the summary attribute OA7 *
- *         - use th cells OA8 
- *         - summary content must be unique to summary and caption content on other tables
- *         - caption content shoould not be "layout", "layout table", "table for layout"
- *         - summary content should not be "layout", "layout table", "table for layout"
- *         - appropriate length of summary or caption text?
- *         - not be be nested?
- *      - Table summary
- *         - If a table is otherwise a layout table, check if summary is invalid
- *             - look for "layout table", "layout", "for layout", "summary", "table summary", "table", "header table", "Content table", "footer", "footer table",
- *               "Navigation", "Navigation table", "Nav table", "content", ARIA Landmark role values, "(Top|left|right|bottom|side)* (hand)* nav(igation)* (table)*"
  *      - Keyboard Accessibility
  *         - focusable elements with mouseovers should also have onfocus handlers OA18
  *         - focusable elements with onmouseout handlers should also have onblur handlers OA19

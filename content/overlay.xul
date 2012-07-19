@@ -13,7 +13,9 @@
     <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
       <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">
         <menuitem id="W15yQC_menuEntry_fullReport" label="Full Report" 
-                  oncommand="blr.W15yQC.onMenuItemCommand(event);"/>
+                  oncommand="blr.W15yQC.onMenuItemCommand(false);"/>
+        <menuitem id="W15yQC_menuEntry_fullReport" label="Save Full Report" 
+                  oncommand="blr.W15yQC.onMenuItemCommand(true);"/>
         <menuseparator/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
                   oncommand="blr.W15yQC.openDialog('accessKeys');"/>

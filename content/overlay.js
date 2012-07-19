@@ -658,8 +658,36 @@ ys: 'whys'
       return blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
     },
     
-    onMenuItemCommand: function () {
-      blr.W15yQC.fnInspect();
+    onMenuItemCommand: function (bSaveToFile) {
+      var rd=blr.W15yQC.fnInspect();
+      if(bSaveToFile==true) {
+        if(rd != null) {
+          const nsIFilePicker = Components.interfaces.nsIFilePicker;
+  
+          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
+          var rv = fp.show();
+          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+            
+            var file = fp.file;
+            // work with returned nsILocalFile...
+            if(/\.html?$/.test(file.path)==false) {
+              file.initWithPath(file.path+'.html');
+            }
+  
+            var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
+                           createInstance(Components.interfaces.nsIFileOutputStream);  
+              
+            // use 0x02 | 0x10 to open file for appending.  
+            foStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
+            var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
+            converter.init(foStream, "UTF-8", 0, 0);  
+            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
+            converter.close(); // this closes foStream            
+          }
+        }
+      }
     },
 
     fnLog: function (sMsg) {
@@ -822,7 +850,8 @@ ys: 'whys'
       imgAltTxtIncludesImageTxt: [1,0,false,null],
       imgIDNotValid: [1,0,false,null],
       imgIDNotUnique: [2,0,false,null],
-
+      imgAltTxtOnlyASCII: [2,0,false,null],
+      
       akConflict: [1,0,false,null],
       akNoLabel: [2,0,false,null],
       akLabelOnlyASCII: [2,0,false,null],
@@ -850,6 +879,7 @@ ys: 'whys'
       frmCtrlNotLabeled: [2,0,false,null],
       frmCtrlLabelOnlyASCII: [2,0,false,null],
       frmCtrlLabelNotMeaningful: [1,0,false,null],
+      frmCtrlLabelNextPrev: [1,0,false,null],
       fmrCtrlLabelNotUnique: [2,0,false,null],
       frmCtrlLabelDoesntSoundUnique: [2,0,false,null],
       frmCtrlLabelEmpty: [2,0,false,null],
@@ -1170,16 +1200,19 @@ ys: 'whys'
     setUserLevelBasic: function() {
       blr.W15yQC.userExpertLevel=0;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", false);
     },
     
     setUserLevelAdvanced: function() {
       blr.W15yQC.userExpertLevel=1;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
     },
     
     setUserLevelExpert: function() {
       blr.W15yQC.userExpertLevel=2;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
     },
     
     fnInitMainMenuPopup: function(doc) {
@@ -1943,7 +1976,7 @@ ys: 'whys'
         if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
+        if(sText == 'go') return true;
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
@@ -3429,7 +3462,7 @@ ys: 'whys'
             }
         },
 
-    fnGetAttributeValueWarnings: function(name, value) {
+    fnGetAttributeValueWarnings: function(name, value) { // TODO: Is this called anywhere? Finish this!!
       if(name != null && value != null && name.toLowerCase) {
         name=name.toLowerCase();
         switch(name) {
@@ -3687,6 +3720,7 @@ ys: 'whys'
       styleRules += "tr.warning td { background-color: #FFC900; color: #000;} tr.failed td { background-color: #FF7B7B; color: #000}";
       styleRules += "#AIARIAElementsList ul ul {border-left:1px solid #757575;margin-left:5px;padding-left:8px} #AIARIAElementsList li {list-style:none;overflow:auto;width:100%;min-width:800px}";
       styleRules += "td:first-child, th:first-child { border-left: none !important; box-shadow:none;}";
+      styleRules += "td ul{padding-left:12px}";
       styleRules += "tbody tr:hover td { background: none repeat scroll 0 0 #D0DAFD; }";
       styleRules += "tbody tr.failed:hover td { background: none repeat scroll 0 0 #E66F6F; }";
       styleRules += "tbody tr.warning:hover td { background: none repeat scroll 0 0 #F1BD00; }";
@@ -3784,7 +3818,7 @@ ys: 'whys'
         aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(framedDocumentBody, aDocumentsList);
         if (aFramesList[i].title != null && aFramesList[i].title.length && aFramesList[i].title.length > 0) {
           aFramesList[i].title = blr.W15yQC.fnCleanSpaces(aFramesList[i].title);
-          aFramesList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title);
+          aFramesList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFramesList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title) : '';
         } else {
           aFramesList[i].soundex = '';
         }
@@ -3807,7 +3841,7 @@ ys: 'whys'
             } else if (aFramesList[j].title != null && aFramesList[j].title.length > 0) {
               if (blr.W15yQC.fnStringsEffectivelyEqual(aFramesList[i].title, aFramesList[j].title)) {
                 blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotUnique'); // QA iframeTests01.html
-              } else if (aFramesList[i].soundex == aFramesList[j].soundex) {
+              } else if (aFramesList[i].soundex.length>2 && aFramesList[i].soundex == aFramesList[j].soundex) {
                 blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleSoundsSame'); // QA iframeTests01.html
               }
             }
@@ -3995,11 +4029,16 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLang'); // QA iframeTests01.html
             }
           }
-          for (var j=0; j < aDocumentsList.length; j++) {
-            if(i == j) continue;
-            if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
-              blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleNotUnique'); // QA iframeTests01.html
-              break;
+          var aSameTitles = [];
+          if(aDocumentsList[i].title != null && aDocumentsList[i].title.length>0) {
+            for (var j=0; j < aDocumentsList.length; j++) {
+              if(i == j) continue;
+              if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
+                aSameTitles.push(j+1);
+              }
+            }
+            if(aSameTitles.length>0) {
+              blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleNotUnique', [blr.W15yQC.fnCutoffString(aSameTitles.toString(),99)]); //QA iframeTests01.html
             }
           }
           if (aDocumentsList[i].IDsUnique == false) {
@@ -4155,17 +4194,24 @@ ys: 'whys'
             iContentInfoLandmarkCount++;
           } 
           var sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
+          
+          var aSameLabelText = [];
           for (var j = 0; j < aARIALandmarksList.length; j++) {
             if (i == j) continue;
             var sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
             if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
-              if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
-                blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique');  // QA ariaTests01.html
-              } else {
-                blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotUnique');  // QA ariaTests01.html
-              }
+              aSameLabelText.push(j+1);
             }
           }
+          
+          if(aSameLabelText.length>0) {
+            if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]);   // QA ariaTests01.html
+            } else {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]); // QA ariaTests01.html
+            }
+          }
+          
           if(aARIALandmarksList[i].node != null && aARIALandmarksList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aARIALandmarksList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkIDNotValid');
@@ -4293,7 +4339,7 @@ ys: 'whys'
       return aARIAElementsList;
     },
 
-    fnAnalyzeARIA: function (aARIALandmarksList, aDocumentsList) {
+    fnAnalyzeARIA: function (aARIALandmarksList, aDocumentsList) { // TODO: Finish this
       blr.W15yQC.fnLog("+++++WHAT?:fnAnalyzeARIA");
       if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
       // TODO: Learn what is important to analyze in ARIA
@@ -4526,12 +4572,15 @@ ys: 'whys'
           }
           var sCombinedLabel = blr.W15yQC.fnTrim(blr.W15yQC.fnJoin(blr.W15yQC.fnJoin(aImagesList[i].alt, aImagesList[i].title, ''), aImagesList[i].ariaLabel, ''));
           if (sCombinedLabel == null || sCombinedLabel.length < 1) {
-            if(blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node)==false) {
+            if(aImagesList[i].alt != null && blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node)==false) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgNoAltText'); // QA imageTests01.html
             }
           } else if(blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node) == true) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgHasAltTextAndPresRole'); // QA imageTests01.html
           } else {
+            if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aImagesList[i].effectiveLabel)) {
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtOnlyASCII'); // QA imageTests01.html
+            }
             aImagesList[i] = blr.W15yQC.fnIsMeaningfulAltTextTest(aImagesList[i].effectiveLabel, aImagesList[i]);
             if(blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(aImagesList[i].src) == true) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgSpacerWithAltTxt'); // QA imageTests01.html
@@ -4663,17 +4712,26 @@ ys: 'whys'
             } else if (blr.W15yQC.fnIsMeaningfulLinkText(ak.effectiveLabel) == false) {
               blr.W15yQC.fnAddNote(ak, 'akLabelNotMeaningful'); //  QA accesskeyTests01.html
             }
+            var aValuesDuplicated = [];
+            var aLabelsDuplicated = [];
             for (var j = 0; j < aAccessKeysList.length; j++) {
               if (i == j) continue;
               var ak2 = aAccessKeysList[j];
               if (ak2 != null && ak2.accessKey != null) {
                 if (ak.accessKey == ak2.accessKey) {
-                  blr.W15yQC.fnAddNote(ak, 'akValueNotUnique'); //
+                  aValuesDuplicated.push(j+1);
                 }
-                if (ak.effectiveLabel == ak2.effectiveLabel) {
-                  blr.W15yQC.fnAddNote(ak, 'akLabelNotUnique'); //
+                if (blr.W15yQC.fnStringsEffectivelyEqual(ak.effectiveLabel, ak2.effectiveLabel)) {
+                  aLabelsDuplicated.push(j+1);
                 }
               }
+            }
+            
+            if(aValuesDuplicated.length>0) {
+              blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aValuesDuplicated.toString(),99)]); //
+            }
+            if(aLabelsDuplicated.length>0) {
+              blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aLabelsDuplicated.toString(),99)]); //
             }
           } else {
             blr.W15yQC.fnAddNote(ak, 'akLabelEmpty'); // QA accesskeyTests01.html
@@ -4913,6 +4971,7 @@ ys: 'whys'
     },
 
     fnGetFormControls: function (doc, rootNode, aDocumentsList, aFormsList, aFormControlsList) {
+      var bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls',false); 
       if (aFormControlsList == null) aFormControlsList = new Array();
       if (aFormsList == null) aFormsList = new Array();
 
@@ -4933,8 +4992,7 @@ ys: 'whys'
               var sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
               var sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
               aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sName, sRole, sAction, sMethod));
-
-            } else if (blr.W15yQC.fnIsFormControlOrLabelNode(c) && blr.W15yQC.fnNodeIsHidden(c) == false) {
+            } else if ((blr.W15yQC.fnIsFormControlNode(c) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(c))) && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Document the form control
               var xPath = blr.W15yQC.fnGetElementXPath(c);
               var sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
@@ -4985,12 +5043,16 @@ ys: 'whys'
       if (aFormsList != null && aFormsList.length > 0) {
         for (var i = 0; i < aFormsList.length; i++) {
           aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
+          var aSameNames = [];
           for (var j = 0; j < aFormsList.length; j++) {
             if (i == j) continue;
             // If it has a name, check that the name is unique compared to other forms in the same document
             if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].ownerDocumentNumber == aFormsList[j].ownerDocumentNumber && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
-              blr.W15yQC.fnAddNote(aFormsList[i], 'frmNameNotUnique'); //
+              aSameNames.push(j+1);
             }
+          }
+          if(aSameNames.length>0) {
+            blr.W15yQC.fnAddNote(aFormsList[i], 'frmNameNotUnique', [blr.W15yQC.fnCutoffString(aSameNames.toString(),99)]); //
           }
           // Check that it is not nested in another form and that it does not contain any form elements
           if (blr.W15yQC.fnGetParentFormElement(aFormsList[i].node.parentNode) != null) {
@@ -5022,7 +5084,7 @@ ys: 'whys'
           aFormControlsList[i].title = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].title);
           aFormControlsList[i].ARIALabelText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].ARIALabelText);
           aFormControlsList[i].ARIADescriptionText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].ARIADescriptionText);
-          aFormControlsList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText+' '+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node));
+          aFormControlsList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFormControlsList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText+' '+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node)) : '';
         }
 
         for (var i = 0; i < aFormControlsList.length; i++) {
@@ -5030,50 +5092,75 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); //
           } else if (aFormControlsList[i].effectiveLabelText != null && aFormControlsList[i].effectiveLabelText.length > 0) {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aFormControlsList[i].effectiveLabelText)) {
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); //
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); // 
+            } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(aFormControlsList[i].effectiveLabelText) == true) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNextPrev'); //
             } else if (blr.W15yQC.fnIsMeaningfulFormLabelText(aFormControlsList[i].effectiveLabelText) == false) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNotMeaningful'); //
             }
             if(blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node)==false) {
+              var aSameLabelText = [];
+              var aSoundsTheSame = [];
+              
               for (var j = 0; j < aFormControlsList.length; j++) {
                 if (j == i || blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==true) {
                   continue;
                 } else {
                   if (aFormControlsList[j].effectiveLabelText != null && aFormControlsList[j].effectiveLabelText.length > 0) {
-                    if (aFormControlsList[i].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node) ==
-                        aFormControlsList[j].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[j].node)) {
-                      blr.W15yQC.fnAddNote(aFormControlsList[i], 'fmrCtrlLabelNotUnique'); //
-                    } else if (aFormControlsList[i].soundex == aFormControlsList[j].soundex) {
-                      blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDoesntSoundUnique'); // TODO: Make a list of these
+                    if (blr.W15yQC.fnStringsEffectivelyEqual(aFormControlsList[i].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node),
+                        aFormControlsList[j].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[j].node))) {
+                      aSameLabelText.push(j+1);
+                    } else if (aFormControlsList[i].soundex.length>2 && aFormControlsList[i].soundex == aFormControlsList[j].soundex) {
+                      aSoundsTheSame.push(j+1);
                     }
                   }
                 }
+              }
+              
+              if(aSameLabelText.length>0) {
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'fmrCtrlLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]); //
+              }
+              if(aSoundsTheSame.length>0) {
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDoesntSoundUnique', [blr.W15yQC.fnCutoffString(aSoundsTheSame.toString(),99)]); //
               }
             }
           } else {
             blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelEmpty'); //
           }
 
-          // Look for button specific issues
-          // What about ARIA buttons?
-          var bIsButton = false;
+          // Look for form controls with both keyboard and mouse handlers
+          var bShouldntHaveBoth = false;
           var nodeTagName = '';
           var nodeTypeValue = '';
           if(aFormControlsList[i].node != null && aFormControlsList[i].node.tagName) {
             nodeTagName = aFormControlsList[i].node.tagName.toLowerCase();
             nodeTypeValue = blr.W15yQC.fnGetNodeAttribute(aFormControlsList[i].node,'type','').toLowerCase();
           }
-          if(nodeTagName == 'button' || (nodeTagName == 'input' && (nodeTypeValue == 'button' || nodeTypeValue == 'submit' || nodeTypeValue == 'image' || nodeTypeValue == ''))) {
-            bIsButton = true;
+          if(nodeTagName == 'button' || (nodeTagName == 'input' && (nodeTypeValue == 'button' || nodeTypeValue == 'submit' || nodeTypeValue == 'image' ||
+                                                                    nodeTypeValue == 'checkbox' || nodeTypeValue == 'radio' || nodeTypeValue == 'reset'))) {
+            bShouldntHaveBoth = true;
           }
-          if(bIsButton == true && aFormControlsList[i].node.hasAttribute('onclick') == true && aFormControlsList[i].node.hasAttribute('onkeypress') == true &&
+          if(bShouldntHaveBoth == true && aFormControlsList[i].node.hasAttribute('onclick') == true && aFormControlsList[i].node.hasAttribute('onkeypress') == true &&
              aFormControlsList[i].node.getAttribute('onclick').length>0 && aFormControlsList[i].node.getAttribute('onkeypress').length>0) {
-            if(blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onclick')) == blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onkeypress'))) {
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRedundantOCandOK'); //
-            } else {
+            if(blr.W15yQC.fnScriptValuesAreDifferent(aFormControlsList[i].node.getAttribute('onclick')) == blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onkeypress'))) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlHasBothOCandOK'); //
+            } else {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRedundantOCandOK'); //
             }
           }
+          
+          // Check form control's dist from label
+          if(aFormControlsList[i].node.hasAttribute('id') == true && (nodeTagName == 'button' || nodeTagName == 'textarea' || nodeTagName == 'select' || nodeTagName == 'input')) {
+            var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(aFormControlsList[i].node.getAttribute('id'), aFormControlsList[i].doc);
+            var minDist = 10000;
+            for (var j = 0; j < explictLabelsList.length; j++) {
+              minDist = Math.min(minDist, blr.W15yQC.fnMinDistanceBetweenNodes(explictLabelsList[j], aFormControlsList[i].node));
+            }
+            if(explictLabelsList.length>0 && minDist>100) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDistance', [minDist]); //
+            }
+          }
+
           // Look for label issues
           // TODO: Add empty label check, implicit with no child form control check
           if(nodeTagName == 'label') {
@@ -5291,7 +5378,8 @@ ys: 'whys'
         aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
-          aLinksList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text);
+          blr.W15yQC.fnLog('i='+i+' aLinksList[i].odn='+aLinksList[i].ownerDocumentNumber);
+          aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
         } else {
           aLinksList[i].soundex = '';
         }
@@ -5340,7 +5428,7 @@ ys: 'whys'
               if (aLinksList[j].text && aLinksList[j].text.length > 0) {
                 if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || hrefsAreEqual == false || aLinksList[i].href.length < 2)) {
                   aSameLinkText.push(j+1);
-                } else if (aLinksList[i].soundex == aLinksList[j].soundex && hrefsAreEqual == false) {
+                } else if (aLinksList[i].length>2 && aLinksList[i].soundex == aLinksList[j].soundex && hrefsAreEqual == false) {
                   aSoundsTheSame.push(j+1);
                 }
               }
@@ -5352,26 +5440,26 @@ ys: 'whys'
                     aSameHrefAndOnclick.push(j+1);
                   }
                 } else { // unless javascript:;, #, javascript:void(0)
-                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(sText)==false) aDiffTextSameHref.push(j+1);
+                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) aDiffTextSameHref.push(j+1);
                 }
               }
             }
           }
 
           if(aSameLinkText.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [aSameLinkText.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [blr.W15yQC.fnCutoffString(aSameLinkText.toString(),99)]); //
           }
 
           if(aSoundsTheSame.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[aSoundsTheSame.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[blr.W15yQC.fnCutoffString(aSoundsTheSame.toString(),99)]); //
           }
 
           if(aSameHrefAndOnclick.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHrefOnclick',[aSameHrefAndOnclick.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHrefOnclick',[blr.W15yQC.fnCutoffString(aSameHrefAndOnclick.toString(),99)]); //
           }
 
           if(aDiffTextSameHref.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHref',[aDiffTextSameHref.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHref',[blr.W15yQC.fnCutoffString(aDiffTextSameHref.toString(),99)]); //
           }
 
         } else {
@@ -5548,7 +5636,7 @@ ys: 'whys'
           } else if (aLinksList[i].warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, aLinksList[i].href, aLinksList[i].stateDescription, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -5958,7 +6046,7 @@ ys: 'whys'
 
         } else { // Looks like it is a layout table          
           if(aTablesList[i].maxCols * aTablesList[i].maxRows > 25 && Math.min(aTablesList[i].maxCols, aTablesList[i].maxRows)>4) {
-            blr.W15yQC.fnAddNote(aTablesList[i], 'tblTooLargeForLayoutTable'); //
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblTooLargeForLayoutTable',[aTablesList[i].maxCols, aTablesList[i].maxRows]); // QA tabletests01.html
           } else {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsLayoutTable'); //
           }
@@ -6142,7 +6230,9 @@ ys: 'whys'
         blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList);
         blr.W15yQC.fnDisplayFooter(reportDoc);
+        return reportDoc;
       }
+      return null;
     },
 
     fnBuildRemoveStylesView: function (rd, doc, rootNode, baseLevel, list) {
