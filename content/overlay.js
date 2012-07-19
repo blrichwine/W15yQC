@@ -2063,14 +2063,14 @@ ys: 'whys'
       // GUIDs are typically 32 characters
       // This will match anything that has 22 or more consecutive characters without whitespace
       sText = blr.W15yQC.fnCleanSpaces(sText);
-      if (sText.match(/[^\s]{22,23}/)) {
+      if (sText != null && sText.match(/[^\s]{22,23}/)) {
         return true;
       }
       return false;
     },
 
     fnAppearsToBeImageFileName: function (sText) {
-      if (sText.match(/.\.(apng|bmp|gif|ico|jbig|jpg|jng|jpeg|mng|pcx|png|svg|tif|tiff)\s*$/i) || sText.match(/\w_img$/i) || sText.match(/^(img|ico)_\w/i) || sText.match(/^DCSIMG/i)) {
+      if (sText != null && sText.match(/.\.(apng|bmp|gif|ico|jbig|jpg|jng|jpeg|mng|pcx|png|svg|tif|tiff)\s*$/i) || sText.match(/\w_img$/i) || sText.match(/^(img|ico)_\w/i) || sText.match(/^DCSIMG/i)) {
         return true;
       }
       return false;
@@ -2078,7 +2078,7 @@ ys: 'whys'
 
     // http://regexlib.com/REDetails.aspx?regexp_id=96
     fnAppearsToBeURL: function (sText) {
-      if (sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i)) {
+      if (sText != null && sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i)) {
         return true;
       }
       return false;
@@ -2087,7 +2087,7 @@ ys: 'whys'
     fnAppearsToBeValidLongdesc: function(sText) {
       // Should be a text based href value
       if(sText != null && sText.match && sText.length && sText.length>0) {
-        if(sText.match(/^((http|ftp|https):\/\/[\w\-]+(\.[\w\-]+)+(:\d+)?([\\\/]~)?)?[\w\-\.,@^=%&\\\/]+\.([xs]?html?|php|asp|txt)([#\?].*)?\s*$/i) != null) {
+        if(sText != null && sText.match(/^((http|ftp|https):\/\/[\w\-]+(\.[\w\-]+)+(:\d+)?([\\\/]~)?)?[\w\-\.,@^=%&\\\/]+\.([xs]?html?|php|asp|txt)([#\?].*)?\s*$/i) != null) {
           return true;
       	}
       }
@@ -2097,28 +2097,28 @@ ys: 'whys'
     fnAppearsToBeDefaultAltText: function (sText) {
       // Strip punctuation
       sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' '));
-      if (sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
+      if (sText != null && sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
         return true;
       }
       return false;
     },
 
     fnAltTextAppearsIfItShouldBeEmpty: function (sText) {
-      if (sText.match(/^\s*(none|blank|decorative\s*(ima?ge?|photo|pic\w*)?)\s*$/i)) {
+      if (sText != null && sText.match(/^\s*(none|blank|decorative\s*(ima?ge?|photo|pic\w*)?)\s*$/i)) {
         return true;
       }
       return false;
     },
 
     fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer: function (sText) {
-      if (sText.match(/\b(spacer([\. ](gif|jpg|ima?ge?|pic).*))\s*$/i)) {
+      if (sText != null && sText.match(/\b(spacer([\. ](gif|jpg|ima?ge?|pic).*))\s*$/i)) {
         return true;
       }
       return false;
     },
 
     fnAltTextAppearsToHaveRedundantImageReferenceInIt: function (sText) {
-      if(sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
+      if(sText != null && sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
          sText.match(/\b(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i)) {
         return true;
       }
@@ -2829,7 +2829,7 @@ ys: 'whys'
           }
 
           sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' ');
-          } else if (nTagName == 'img') { // JAWS 13: aria-label, alt, title, aria-labelledby
+          } else if (nTagName == 'img' || nTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
             if (node.hasAttribute('aria-label')) {
               sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
             }
@@ -4486,13 +4486,38 @@ ys: 'whys'
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               var tagName = c.tagName.toLowerCase();
               switch (tagName) {
+                case 'area':
+                  var xPath = blr.W15yQC.fnGetElementXPath(c);
+                  var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                  var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  var box = c.getBoundingClientRect();
+                  var width;
+                  var height;
+                  if (box != null) {
+                    var width = box.width;
+                    var height = box.height;
+                  }
+                  var title = null;
+                  if (c.hasAttribute('title')) title = c.getAttribute('title');
+                  var alt = null;
+                  if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
+                  var src = null;
+                  if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
+                  var sARIALabel = null;
+                  if (c.hasAttribute('aria-label') == true) {
+                    sARIALabel = c.getAttribute('aria-label');
+                  } else if (c.hasAttribute('aria-labelledby') == true) {
+                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
+                  }
+                  aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                  break;
               case 'img':
                 // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
                 var xPath = blr.W15yQC.fnGetElementXPath(c);
                 var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                 var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
                 var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                var title = null;
                 var box = c.getBoundingClientRect();
                 var width;
                 var height;
@@ -4500,6 +4525,7 @@ ys: 'whys'
                   var width = box.width;
                   var height = box.height;
                 }
+                var title = null;
                 if (c.hasAttribute('title')) title = c.getAttribute('title');
                 var alt = null;
                 if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
@@ -5349,17 +5375,28 @@ ys: 'whys'
             var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
           } else { // keep looking through current document
-            if (c.tagName && c.tagName.toLowerCase() == 'a' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              // document the link
-              var xPath = blr.W15yQC.fnGetElementXPath(c);
-              var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-              var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              var text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
-              var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-              var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
-              var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
-              var sState = blr.W15yQC.fnGetNodeState(c);
-              aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+              if(c.tagName.toLowerCase()=='a') {  // document the link
+                var xPath = blr.W15yQC.fnGetElementXPath(c);
+                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                var text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                var sState = blr.W15yQC.fnGetNodeState(c);
+                aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+              } else if(c.tagName.toLowerCase()=='area') {
+                var xPath = blr.W15yQC.fnGetElementXPath(c);
+                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                var text = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                var sState = blr.W15yQC.fnGetNodeState(c);
+                aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+              }
             }
             blr.W15yQC.fnGetLinks(doc, c, aLinksList);
           }

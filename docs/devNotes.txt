@@ -47,17 +47,16 @@
  * TODO:
  *    *** FIX ASAP***
         - QA Form Control Test [].
-        - Fix HTML Report save feature so it adds an .html extension if the extension isn't either .html or .htm
         - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
-        - determine if the separate file that sets up the prefs has any real effect [It does]
         - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/
         - check label is labeling appropriate form control, guess by location of label vs. location of other control's label
         - test role="group" effects
-        - ability to save HTML results to a file. (https://developer.mozilla.org/en/XPCOM_Interface_Reference/nsIFilePicker)
+        - FEATURE ADD: Compute largest square that fits in an area's target. Check if it is too small to hit reliably. 
         - image maps
            - Does each area tag of an image map have an alt attribute
            - Does each area tag of an image map with an empty href have an empty alt attribute?
            - Does the equivalent link text for an area tag meet link text requirements (include in links list? Test with JAWS obviously)
+           - add areas to links
         - Can we detect server side image maps? server-side image map (img tag with the ismap attribute)
         - Check for focusable elements that have the focus outline reset
         - Check for full justification of text SC 1.4.8, F88, G172
