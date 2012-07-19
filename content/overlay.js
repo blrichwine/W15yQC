@@ -5179,10 +5179,14 @@ ys: 'whys'
           if(aFormControlsList[i].node.hasAttribute('id') == true && (nodeTagName == 'button' || nodeTagName == 'textarea' || nodeTagName == 'select' || nodeTagName == 'input')) {
             var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(aFormControlsList[i].node.getAttribute('id'), aFormControlsList[i].doc);
             var minDist = 10000;
+            var bCheckedLabel = false;
             for (var j = 0; j < explictLabelsList.length; j++) {
-              minDist = Math.min(minDist, blr.W15yQC.fnMinDistanceBetweenNodes(explictLabelsList[j], aFormControlsList[i].node));
+              if(blr.W15yQC.fnNodeIsOffScreen(explictLabelsList[j])== false && blr.W15yQC.fnNodeIsMasked(explictLabelsList[j])== false) {
+                minDist = Math.min(minDist, blr.W15yQC.fnMinDistanceBetweenNodes(explictLabelsList[j], aFormControlsList[i].node));
+                bCheckedLabel=true;
+              }
             }
-            if(explictLabelsList.length>0 && minDist>100) {
+            if(bCheckedLabel && explictLabelsList.length>0 && minDist>100) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDistance', [minDist]); //
             }
           }
@@ -5205,7 +5209,7 @@ ys: 'whys'
                   }
                   if(blr.W15yQC.fnNodeIsHidden(targetNode) == true) {
                     blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlForForValueIsHidden'); //
-                  } else {
+                  } else if(blr.W15yQC.fnNodeIsOffScreen(aFormControlsList[i].node)== false && blr.W15yQC.fnNodeIsMasked(aFormControlsList[i].node)== false){
                     var iDist = blr.W15yQC.fnMinDistanceBetweenNodes(targetNode,aFormControlsList[i].node);
                     if( iDist > 100) {
                       blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDistance', [iDist]); //
@@ -5390,7 +5394,7 @@ ys: 'whys'
                 var xPath = blr.W15yQC.fnGetElementXPath(c);
                 var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                 var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                var text = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                var text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
                 var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
                 var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
                 var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
