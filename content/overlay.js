@@ -36,6 +36,8 @@ if (!blr.W15yQC) {
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
     userExpertLevel: null,
+    userLocale: null,
+    bEnglishLocale: true,
 
     sb: null,
 
@@ -44,6 +46,14 @@ if (!blr.W15yQC) {
     // http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/Homophones
     // http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings
     homophones: {
+accomodate: 'accommodate',
+acknowlege: 'acknowledge',
+acommodate: 'accommodate',
+acomodate: 'accommodate',
+aknowledge: 'acknowledge',
+acknowlegment: 'acknowledgment',
+acknowledgement: 'acknowledgment',
+acknowlegement: 'acknowledgment',
 add: 'ad',
 aide: 'aid',
 aisle: 'ill',
@@ -51,8 +61,12 @@ allowed: 'aloud',
 alter: 'altar',
 apse: 'apps',
 arent: 'aunt',
+arguement: 'argument',
+arguemant: 'argument',
+arguemint: 'argument',
 ark: 'arc',
 assent: 'ascent',
+assocation: 'association',
 aural: 'oral',
 b: 'be',
 bah: 'baa',
@@ -67,10 +81,15 @@ baste: 'based',
 bawl: 'ball',
 bawled: 'balled',
 bear: 'bare',
+becuase: 'because',
 bee: 'be',
 beech: 'beach',
 been: 'bean',
 beet: 'beat',
+begining: 'beginning',
+behavior: 'behavior',
+behaviour: 'behavior',
+beleive: 'believe',
 berry: 'bury',
 bier: 'beer',
 billed: 'build',
@@ -100,6 +119,7 @@ c: 'sea',
 cache: 'cash',
 caste: 'cast',
 caught: 'court',
+calender: 'calendar',
 chants: 'chance',
 chaste: 'chased',
 cheep: 'cheap',
@@ -110,7 +130,20 @@ ciao: 'chow',
 clause: 'claws',
 clime: 'climb',
 climes: 'climbs',
-compliment: 'complement',
+commerical: 'commercial',
+comission: 'commission',
+comision: 'commission',
+commision: 'commission',
+comitted: 'committed',
+commited: 'committed',
+comitment : 'commitment',
+comitmment: 'commitment',
+comitmant: 'complement',
+concensus: 'consensus',
+consencus: 'consensus',
+consensus: 'consensus',
+consenssus: 'consensus',
+congradulations: 'contratulations',
 copse: 'cops',
 core: 'caw',
 cores: 'cause',
@@ -123,8 +156,20 @@ cs: 'seas',
 damn: 'dam',
 damned: 'dammed',
 daze: 'days',
+deductable: 'deductible',
+deductuble: 'deductible',
+deductabel: 'deductible',
 deer: 'dear',
+definately: 'definitely',
+definatly: 'definitely',
+definantly: 'definitely',
+definetly: 'definitely',
+definently: 'definitely',
+depindant: 'dependant',
+dependent: 'dependant',
+dependunt: 'dependant',
 dessert: 'desert',
+diffrent: 'different',
 dock: 'doc',
 done: 'dun',
 doze: 'does',
@@ -133,14 +178,24 @@ due: 'dew',
 dye: 'die',
 dyed: 'died',
 earn: 'urn',
+effect: 'affect',
 eight: 'ate',
+embarras: 'embarrass',
+embaras: 'embarrass',
+embarass: 'embarrass',
+enviroment: 'environment',
 es: 'ease',
 eye: 'aye',
 eyed: 'id',
+existanc: 'existence',
+existance: 'existence',
+existanse: 'existence',
 fare: 'fair',
 farther: 'father',
+febuary: 'february',
 feet: 'feat',
 feint: 'faint',
+firey: 'fiery',
 filled: 'field',
 fined: 'find',
 flare: 'flair',
@@ -152,17 +207,23 @@ floored: 'flawed',
 flower: 'flour',
 flue: 'flu',
 fore: 'for',
+forword: 'foreward',
+forworde: 'foreward',
+foreword: 'foreward',
 fought: 'fort',
 four: 'for',
 fowl: 'foul',
 freeze: 'frees',
 frieze: 'frees',
 fur: 'fir',
+further: 'farther',
 gaze: 'gays',
 gilled: 'gild',
 gnaw: 'nor',
 gores: 'gauze',
+goverment: 'government',
 great: 'grate',
+greatful: 'grateful',
 greece: 'grease',
 greys: 'graze',
 grown: 'groan',
@@ -170,6 +231,9 @@ gs: 'jeez',
 guessed: 'guest',
 guild: 'gild',
 har: 'ah',
+haras: 'harass', 
+harrass: 'harass', 
+herrass: 'harass', 
 hare: 'hair',
 harry: 'hairy',
 haul: 'hall',
@@ -190,9 +254,18 @@ hurts: 'hertz',
 hymn: 'him',
 i: 'aye',
 idol: 'idle',
+inadvertant: 'inadvertent',
+inadvartant: 'inadvertent',
+inadvartent: 'inadvertent',
+indispensabel: 'indispensable',
+indispensible: 'indispensable',
+indespensible: 'indispensable',
 inn: 'in',
 isle: 'ill',
 jeans: 'genes',
+judgment: 'judgement',
+judgemant: 'judgement',
+judgmant: 'judgement',
 knead: 'need',
 kneaded: 'needed',
 kneed: 'need',
@@ -211,11 +284,19 @@ laze: 'lays',
 lead: 'led',
 leased: 'least',
 leek: 'leak',
+liason: 'liaison',
+liasson: 'liaison',
+liasone: 'liaison',
+libary: 'library',
+licens: 'license',
+lisense: 'license',
+lisence: 'license',
 links: 'lynx',
 lock: 'loch',
 lode: 'load',
 lone: 'loan',
 lore: 'law',
+loose: 'lose',
 lute: 'loot',
 lye: 'lie',
 maid: 'made',
@@ -236,6 +317,7 @@ mined: 'mind',
 minks: 'minx',
 minor: 'miner',
 mints: 'mince',
+mispell: 'misspell',
 missed: 'mist',
 more: 'moor',
 mourn: 'morn',
@@ -249,6 +331,17 @@ none: 'nun',
 o: 'oh',
 oar: 'or',
 oared: 'awed',
+ocassion: 'occasion',
+ocasion: 'occasion',
+occassion: 'occasion',
+ocurrance: 'occurrence',
+occurrance: 'occurrence',
+occurance: 'occurrence',
+occurence: 'occurrence',
+ocurred: 'occurred',
+ocured: 'occurred',
+occured: 'occurred',
+offical: 'official',
 ore: 'or',
 owe: 'oh',
 owed: 'ode',
@@ -265,6 +358,9 @@ pee: 'pea',
 peek: 'peak',
 peeked: 'peaked',
 peeled: 'pealed',
+perserverance: 'perseverance',
+persaverence: 'perseverance',
+perserverence: 'perseverance',
 phew: 'few',
 pie: 'pi',
 piece: 'peace',
@@ -279,6 +375,9 @@ pour: 'poor',
 poured: 'pored',
 pours: 'pores',
 praise: 'prays',
+perogative: 'prerogative',
+perogitive: 'prerogative',
+preragitive: 'prerogative',
 prey: 'pray',
 preyed: 'prayed',
 preys: 'prays',
@@ -286,7 +385,13 @@ pried: 'pride',
 principle: 'principal',
 prints: 'prince',
 prise: 'pries',
+privelege: 'privilege',
+privlege: 'privilege',
+privelige: 'privilege',
 prize: 'pries',
+proceed: 'procede',
+proceede: 'procede',
+proced: 'procede',
 prophet: 'profit',
 prose: 'pros',
 purr: 'per',
@@ -298,8 +403,11 @@ raise: 'rays',
 raised: 'razed',
 raze: 'rays',
 read: 'red',
+reciept: 'receipt',
+recieve: 'receive',
 reed: 'red',
 reel: 'real',
+realy: 'really',
 reign: 'rain',
 reigned: 'rained',
 rein: 'rain',
@@ -321,6 +429,7 @@ rows: 'roes',
 ryes: 'rise',
 sacks: 'sax',
 sale: 'sail',
+sales: 'sails',
 scene: 'seen',
 scent: 'cent',
 scents: 'cents',
@@ -335,6 +444,9 @@ sell: 'cell',
 sense: 'cents',
 sensor: 'censor',
 sent: 'cent',
+separete: 'separate',
+seperate: 'separate',
+seperat: 'separate',
 serial: 'cereal',
 sew: 'so',
 sheer: 'shear',
@@ -365,6 +477,9 @@ steak: 'stake',
 steel: 'steal',
 straight: 'strait',
 sun: 'son',
+supercede: 'supersede',
+superceed: 'supersede',
+suparseed: 'supersede',
 surf: 'serf',
 surge: 'serge',
 sweet: 'suite',
@@ -380,7 +495,9 @@ tease: 'teas',
 tee: 'tea',
 teem: 'team',
 tees: 'teas',
+teh: 'the',
 thai: 'tie',
+then: 'than',
 there: 'their',
 theres: 'theirs',
 theyre: 'their',
@@ -397,12 +514,14 @@ tonne: 'ton',
 too: 'to',
 tow: 'toe',
 towed: 'toad',
+truely: 'truly',
 trussed: 'trust',
 ts: 'teas',
 tucks: 'tux',
 two: 'to',
 tyre: 'tire',
 u: 'ewe',
+untill: 'until',
 vane: 'vain',
 vein: 'vain',
 waive: 'wave',
@@ -434,10 +553,12 @@ whit: 'wit',
 who: 'hoo',
 whole: 'hole',
 whose: 'whos',
+wich: 'which',
 wiegh: 'way',
 wise: 'whys',
 witch: 'which',
 won: 'one',
+wonder: 'wander',
 wore: 'war',
 worn: 'warn',
 would: 'wood',
@@ -521,8 +642,52 @@ ys: 'whys'
       return 'String Bundle System Unavailable. Something serious is wrong!';
     },
 
-    onMenuItemCommand: function () {
-      blr.W15yQC.fnInspect();
+    fnIsValidLocale: function(sLocale) {
+      return /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/.test(sLocale); // QA iframeTests01.html
+    },
+    
+    fnSetIsEnglishLocale: function(sLocale) {
+      if(sLocale == null || sLocale=='' || (sLocale.substring && sLocale.substring(0,2).toLowerCase()=='en'))
+        blr.W15yQC.bEnglishLocale = true;
+      else
+        blr.W15yQC.bEnglishLocale = false;
+      return blr.W15yQC.bEnglishLocale;
+    },
+    
+    fnGetUserLocale: function() {
+      return blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
+    },
+    
+    onMenuItemCommand: function (bSaveToFile) {
+      var rd=blr.W15yQC.fnInspect();
+      if(bSaveToFile==true) {
+        if(rd != null) {
+          const nsIFilePicker = Components.interfaces.nsIFilePicker;
+  
+          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
+          var rv = fp.show();
+          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+            
+            var file = fp.file;
+            // work with returned nsILocalFile...
+            if(/\.html?$/.test(file.path)==false) {
+              file.initWithPath(file.path+'.html');
+            }
+  
+            var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
+                           createInstance(Components.interfaces.nsIFileOutputStream);  
+              
+            // use 0x02 | 0x10 to open file for appending.  
+            foStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
+            var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
+            converter.init(foStream, "UTF-8", 0, 0);  
+            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
+            converter.close(); // this closes foStream            
+          }
+        }
+      }
     },
 
     fnLog: function (sMsg) {
@@ -685,7 +850,8 @@ ys: 'whys'
       imgAltTxtIncludesImageTxt: [1,0,false,null],
       imgIDNotValid: [1,0,false,null],
       imgIDNotUnique: [2,0,false,null],
-
+      imgAltTxtOnlyASCII: [2,0,false,null],
+      
       akConflict: [1,0,false,null],
       akNoLabel: [2,0,false,null],
       akLabelOnlyASCII: [2,0,false,null],
@@ -713,6 +879,7 @@ ys: 'whys'
       frmCtrlNotLabeled: [2,0,false,null],
       frmCtrlLabelOnlyASCII: [2,0,false,null],
       frmCtrlLabelNotMeaningful: [1,0,false,null],
+      frmCtrlLabelNextPrev: [1,0,false,null],
       fmrCtrlLabelNotUnique: [2,0,false,null],
       frmCtrlLabelDoesntSoundUnique: [2,0,false,null],
       frmCtrlLabelEmpty: [2,0,false,null],
@@ -747,6 +914,7 @@ ys: 'whys'
       lnkHasBothOCandOK: [2,0,false,null],
       lnkTargetIDisNotUnique: [2,0,false,null],
       lnkTargetIDNotValid: [1,0,false,null],
+      lnkServerSideImageMap: [2,0,false,null],
       lnkIDNotValid: [2,0,false,null],
       lnkIDNotUnique: [2,0,false,null],
 
@@ -761,13 +929,16 @@ ys: 'whys'
       tblRowpanExceedsTableRows: [1,1,false,null],
       tblIsDataTable: [0,0,false,null],
       tblCheckCaptionSummary: [1,0,false,null],
+      tblCaptionSameAsSummary: [1,0,false,null],
       tblDTMissingTHs: [2,0,false,null],
       tblDTisComplex: [1,0,false,null],
       tblDTwTDwoHeadersAttrib: [2,0,false,null],
+      tblNotEveryCellWithContentInDTHasHeaders: [2,0,false,null],
       tblIsLayoutTable: [0,0,false,null],
       tblUnequalColCount: [1,0,false,null],
       tblLayoutTblIsComplex: [1,0,false,null],
       tblLayoutTblIsComplexWOpresRole: [1,0,false,null],
+      tblTooLargeForLayoutTable: [1,0,false,null]
     },
 
     fnGetNoteSeverityLevel: function(msgKey) {
@@ -1032,16 +1203,19 @@ ys: 'whys'
     setUserLevelBasic: function() {
       blr.W15yQC.userExpertLevel=0;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", false);
     },
     
     setUserLevelAdvanced: function() {
       blr.W15yQC.userExpertLevel=1;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
     },
     
     setUserLevelExpert: function() {
       blr.W15yQC.userExpertLevel=2;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
     },
     
     fnInitMainMenuPopup: function(doc) {
@@ -1677,6 +1851,8 @@ ys: 'whys'
         sText = blr.W15yQC.fnSpellOutNumbers(sText);
         sText = sText.replace(/[^a-zA-Z]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText);
+        sText = sText.replace(/\balot\b/i,'a lot');
+        sText = sText.replace(/\bawhile\b/i,'a while');
         var tokens = sText.split(' ');
         for (var i = 0; i < tokens.length; i++) {
           sTokens += blr.W15yQC.fnSoundEx(tokens[i]) + ' ';
@@ -1689,11 +1865,20 @@ ys: 'whys'
 
     fnOnlyASCIISymbolsWithNoLettersOrDigits: function (sText) {
       if (sText && sText.length && sText.length > 0) {
-        sText = sText.replace(/[^a-zA-Z0-9]+/g, '');
-        if (sText.length > 0) {
-          return false;
-        } else {
-          return true;
+        if(blr.W15yQC.bEnglishLocale==true) {
+          sText = sText.replace(/[^a-zA-Z0-9]+/g, '');
+          if (sText.length > 0) {
+            return false;
+          } else {
+            return true;
+          }
+        } else { // TODO: Improve this by checking for unicode characters in common languages
+          sText = sText.replace(/[~`!@#$%^&*\(\)-_+=\[{\]}\\\|;:'",<\.>\/\?\s]+/g, '');
+          if (sText.length > 0) {
+            return false;
+          } else {
+            return true;
+          }
         }
       }
       return false;
@@ -1719,7 +1904,7 @@ ys: 'whys'
     fnIsMeaningfulLinkText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
@@ -1747,7 +1932,7 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          return true;
+          if(!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1756,14 +1941,13 @@ ys: 'whys'
     fnIsMeaningfulHeadingText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1772,7 +1956,7 @@ ys: 'whys'
     fnIsMeaningfulDocTitleText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: What should the minimum doc title be?
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
@@ -1783,7 +1967,7 @@ ys: 'whys'
           case 'homepage':
             return false;
           }
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1792,10 +1976,10 @@ ys: 'whys'
     fnIsMeaningfulFormLabelText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
+        if(sText == 'go') return true;
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
@@ -1820,16 +2004,16 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
     },
 
-    fnIsMeaningfulText: function (sText, minLength) {
+    fnIsMeaningfulText: function (sText, minLength) { // TODO: Where is this used? Should it be a specific instance?
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
@@ -1857,7 +2041,7 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
         }
       }
       return false;
@@ -1882,14 +2066,14 @@ ys: 'whys'
       // GUIDs are typically 32 characters
       // This will match anything that has 22 or more consecutive characters without whitespace
       sText = blr.W15yQC.fnCleanSpaces(sText);
-      if (sText.match(/[^\s]{22,23}/)) {
+      if (sText != null && sText.match(/[^\s]{22,23}/)) {
         return true;
       }
       return false;
     },
 
     fnAppearsToBeImageFileName: function (sText) {
-      if (sText.match(/.\.(apng|bmp|gif|ico|jbig|jpg|jng|jpeg|mng|pcx|png|svg|tif|tiff)\s*$/i) || sText.match(/\w_img$/i) || sText.match(/^(img|ico)_\w/i) || sText.match(/^DCSIMG/i)) {
+      if (sText != null && sText.match(/.\.(apng|bmp|gif|ico|jbig|jpg|jng|jpeg|mng|pcx|png|svg|tif|tiff)\s*$/i) || sText.match(/\w_img$/i) || sText.match(/^(img|ico)_\w/i) || sText.match(/^DCSIMG/i)) {
         return true;
       }
       return false;
@@ -1897,7 +2081,7 @@ ys: 'whys'
 
     // http://regexlib.com/REDetails.aspx?regexp_id=96
     fnAppearsToBeURL: function (sText) {
-      if (sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i)) {
+      if (sText != null && sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i)) {
         return true;
       }
       return false;
@@ -1906,7 +2090,7 @@ ys: 'whys'
     fnAppearsToBeValidLongdesc: function(sText) {
       // Should be a text based href value
       if(sText != null && sText.match && sText.length && sText.length>0) {
-        if(sText.match(/^((http|ftp|https):\/\/[\w\-]+(\.[\w\-]+)+(:\d+)?([\\\/]~)?)?[\w\-\.,@^=%&\\\/]+\.([xs]?html?|php|asp|txt)([#\?].*)?\s*$/i) != null) {
+        if(sText != null && sText.match(/^((http|ftp|https):\/\/[\w\-]+(\.[\w\-]+)+(:\d+)?([\\\/]~)?)?[\w\-\.,@^=%&\\\/]+\.([xs]?html?|php|asp|txt)([#\?].*)?\s*$/i) != null) {
           return true;
       	}
       }
@@ -1916,29 +2100,29 @@ ys: 'whys'
     fnAppearsToBeDefaultAltText: function (sText) {
       // Strip punctuation
       sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' '));
-      if (sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
+      if (sText != null && sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
         return true;
       }
       return false;
     },
 
     fnAltTextAppearsIfItShouldBeEmpty: function (sText) {
-      if (sText.match(/^\s*(none|blank|decorative\s*(ima?ge?|photo|pic\w*)?)\s*$/i)) {
+      if (sText != null && sText.match(/^\s*(none|blank|decorative\s*(ima?ge?|photo|pic\w*)?)\s*$/i)) {
         return true;
       }
       return false;
     },
 
     fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer: function (sText) {
-      if (sText.match(/\b(spacer([\. ](gif|jpg|ima?ge?|pic).*))\s*$/i)) {
+      if (sText != null && sText.match(/\b(spacer([\. ](gif|jpg|ima?ge?|pic).*))\s*$/i)) {
         return true;
       }
       return false;
     },
 
     fnAltTextAppearsToHaveRedundantImageReferenceInIt: function (sText) {
-      if(sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
-         sText.match(/\S\s*(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i)) {
+      if(sText != null && sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
+         sText.match(/\b(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i)) {
         return true;
       }
       return false;
@@ -1982,9 +2166,10 @@ ys: 'whys'
       return no;
     },
 
-    fnIsOnlyNextOrPreviousText: function (str) {
+    fnIsOnlyNextOrPreviousText: function (str) { // TODO: What about other languages?
       if(str != null && str.replace) {
-        str = blr.W15yQC.fnCleanSpaces(str.replace(/[^a-z0-9\s]/ig,' '));
+        if(blr.W15yQC.bEnglishLocale) str=str.replace(/[^a-z0-9\s]/ig,' ');
+        str = blr.W15yQC.fnCleanSpaces(str);
         if(str.match(/^(next|prev|previous)$/i)) return true;
       }
       return false;
@@ -2100,8 +2285,41 @@ ys: 'whys'
       return 100000;
     },
     
+    fnJAWSAnnouncesControlAs: function (node) { // TODO: Vet this with JAWS
+      if(node != null && node.tagName) {
+        switch (node.tagName.toLowerCase()) {
+          case 'input':
+            if(node.hasAttribute('type')) {
+              var nType=node.getAttribute('type');
+              if(nType != null && nType.toLowerCase) {
+                switch(nType.toLowerCase()) {
+                  case 'button':
+                    return 'button';
+                  case 'text':
+                    return 'edit';
+                  case 'submit':
+                    break;
+                }
+              }
+              return '';
+            }
+            break;
+          case 'button':
+            return 'button';
+            break;
+          case 'select':
+            return 'combobox';
+            break;
+          case 'textarea':
+            return '' ;
+            break;
+        }
+      }
+      return '';
+    },
+    
     fnIsLabelControlNode: function (node) {
-      if (node && node.tagName) {
+      if (node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
         case 'label':
         case 'fieldset':
@@ -2113,7 +2331,7 @@ ys: 'whys'
     },
     
     fnIsFormControlNode: function (node) {
-      if (node && node.tagName) {
+      if (node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
         case 'input':
         case 'button':
@@ -2313,29 +2531,6 @@ ys: 'whys'
       }
       return sLabelText;
     },
-
-    // TODO: Determine Why is this one here:
-    //fnGetEffectiveLabelText: function (node, doc) {
-    //  var sLabelText = null;
-    //  if (node != null && node.hasAttribute) {
-    //    if (node.hasAttribute('aria-label')) {
-    //      sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-    //    }
-    //    if ((sLabelText == null || sLabelText.length < 1) && node.hasAttribute('aria-labelledby')) {
-    //      sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-    //    }
-    //    if (sLabelText == null || sLabelText.length < 1) {
-    //      sLabelText = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
-    //    }
-    //    if (sLabelText == null || sLabelText.length < 1) {
-    //      sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);
-    //    }
-    //    if (sLabelText.length < 1 && node.hasAttribute('title')) {
-    //      sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-    //    }
-    //  }
-    //  return sLabelText;
-    //},
 
     fnGetARIALabelText: function (node, doc) {
       var sLabelText = null;
@@ -2637,7 +2832,7 @@ ys: 'whys'
           }
 
           sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' ');
-          } else if (nTagName == 'img') { // JAWS 13: aria-label, alt, title, aria-labelledby
+          } else if (nTagName == 'img' || nTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
             if (node.hasAttribute('aria-label')) {
               sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
             }
@@ -2700,19 +2895,19 @@ ys: 'whys'
       var sStateDescription = null;
       if (node != null && node.tagName != null) {
         if (blr.W15yQC.fnNodeIsHidden(node) == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Hidden', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsHidden'), ', ');
         }
         if (blr.W15yQC.fnNodeIsMasked(node) == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Masked with CSS', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsMasked'), ', ');
         }
         if (blr.W15yQC.fnNodeIsOffScreen(node) == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Positioned Offscreen with CSS', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsPosOffScrn'), ', ');
         }
         if (node.disabled == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Disabled', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsDisabled'), ', ');
         }
         if (node.readOnly == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'Read only', ', ');
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsReadOnly'), ', ');
         } // TODO: What other global ARIA attributes should we include here:
         if (node.hasAttribute('aria-required') == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-required="' + node.getAttribute('aria-required') + '"', ', ');
@@ -2720,7 +2915,6 @@ ys: 'whys'
         if (node.hasAttribute('aria-invalid') == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-invalid="' + node.getAttribute('aria-invalid') + '"', ', ');
         }
-        if(sStateDescription != null) blr.W15yQC.fnLog('=====fnGetNodeState:'+node.tagName+':'+sStateDescription);
       }
       return blr.W15yQC.fnCleanSpaces(sStateDescription);
     },
@@ -3271,7 +3465,7 @@ ys: 'whys'
             }
         },
 
-    fnGetAttributeValueWarnings: function(name, value) {
+    fnGetAttributeValueWarnings: function(name, value) { // TODO: Is this called anywhere? Finish this!!
       if(name != null && value != null && name.toLowerCase) {
         name=name.toLowerCase();
         switch(name) {
@@ -3529,6 +3723,7 @@ ys: 'whys'
       styleRules += "tr.warning td { background-color: #FFC900; color: #000;} tr.failed td { background-color: #FF7B7B; color: #000}";
       styleRules += "#AIARIAElementsList ul ul {border-left:1px solid #757575;margin-left:5px;padding-left:8px} #AIARIAElementsList li {list-style:none;overflow:auto;width:100%;min-width:800px}";
       styleRules += "td:first-child, th:first-child { border-left: none !important; box-shadow:none;}";
+      styleRules += "td ul{padding-left:12px}";
       styleRules += "tbody tr:hover td { background: none repeat scroll 0 0 #D0DAFD; }";
       styleRules += "tbody tr.failed:hover td { background: none repeat scroll 0 0 #E66F6F; }";
       styleRules += "tbody tr.warning:hover td { background: none repeat scroll 0 0 #F1BD00; }";
@@ -3565,6 +3760,20 @@ ys: 'whys'
       p.innerHTML = blr.W15yQC.fnGetString('hrsFooter',[blr.W15yQC.version]);
       div.appendChild(p);
       rd.body.appendChild(div);
+
+      if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault",false) || Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault",false)) {
+        var scriptElement = rd.createElement('script');
+        var sScript = '';
+        if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault",false)) {
+          sScript = 'collapseAll();';
+        }
+        if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault",false)) {
+          sScript += 'fnToggleDisplayOfNonIssues();';
+        }
+        scriptElement.innerHTML = "/*<![CDATA[*/ " + sScript + " /*]]>*/";
+        rd.body.appendChild(scriptElement);
+      }
+      
     },
 
     fnGetFrameTitles: function (doc, rootNode, aFramesList) {
@@ -3612,7 +3821,7 @@ ys: 'whys'
         aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(framedDocumentBody, aDocumentsList);
         if (aFramesList[i].title != null && aFramesList[i].title.length && aFramesList[i].title.length > 0) {
           aFramesList[i].title = blr.W15yQC.fnCleanSpaces(aFramesList[i].title);
-          aFramesList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title);
+          aFramesList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFramesList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title) : '';
         } else {
           aFramesList[i].soundex = '';
         }
@@ -3635,7 +3844,7 @@ ys: 'whys'
             } else if (aFramesList[j].title != null && aFramesList[j].title.length > 0) {
               if (blr.W15yQC.fnStringsEffectivelyEqual(aFramesList[i].title, aFramesList[j].title)) {
                 blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotUnique'); // QA iframeTests01.html
-              } else if (aFramesList[i].soundex == aFramesList[j].soundex) {
+              } else if (aFramesList[i].soundex.length>2 && aFramesList[i].soundex == aFramesList[j].soundex) {
                 blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleSoundsSame'); // QA iframeTests01.html
               }
             }
@@ -3710,14 +3919,16 @@ ys: 'whys'
     },
 
     fnGetDocumentLanguage: function (doc) {
-      if (doc != null && doc.getElementsByTagName) {
-        var aHTMLList = doc.getElementsByTagName('html');
-        if (aHTMLList && aHTMLList.length > 0 && aHTMLList[0].hasAttribute && aHTMLList[0].hasAttribute('lang')) {
-          return aHTMLList[0].getAttribute('lang');
+      if (doc != null) {
+        if (doc.body && doc.body.hasAttribute && doc.body.hasAttribute('lang')) {
+          return doc.body.getAttribute('lang');
         }
-      }
-      if (doc != null && doc.body && doc.body.hasAttribute && doc.body.hasAttribute('lang')) {
-        return doc.body.getAttribute('lang');
+        if (doc.getElementsByTagName) {
+          var aHTMLList = doc.getElementsByTagName('html');
+          if (aHTMLList && aHTMLList.length > 0 && aHTMLList[0].hasAttribute && aHTMLList[0].hasAttribute('lang')) {
+            return aHTMLList[0].getAttribute('lang');
+          }
+        }
       }
       return null;
     },
@@ -3806,7 +4017,7 @@ ys: 'whys'
     fnAnalyzeDocuments: function (aDocumentsList) {
       if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
       if (aDocumentsList !== null && aDocumentsList.length) {
-        for (var i = 0; i < aDocumentsList.length; i++) {
+        for (var i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
           if (aDocumentsList[i].title == null) {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleMissing'); // QA iframeTests01.html -- TODO: Can't produce, scan this be detected?
           } else if (blr.W15yQC.fnCleanSpaces(aDocumentsList[i].title).length < 1) {
@@ -3817,15 +4028,20 @@ ys: 'whys'
           } else {
             if (!aDocumentsList[i].language.length || aDocumentsList[i].language.length < 1) {
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docLangNotSpecified'); // QA firstNested.html
-            } else if (/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/.test(aDocumentsList[i].language) == false) {
+            } else if (blr.W15yQC.fnIsValidLocale(aDocumentsList[i].language) == false) {
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLang'); // QA iframeTests01.html
             }
           }
-          for (var j=0; j < aDocumentsList.length; j++) {
-            if(i == j) continue;
-            if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
-              blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleNotUnique'); // QA iframeTests01.html
-              break;
+          var aSameTitles = [];
+          if(aDocumentsList[i].title != null && aDocumentsList[i].title.length>0) {
+            for (var j=0; j < aDocumentsList.length; j++) {
+              if(i == j) continue;
+              if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
+                aSameTitles.push(j+1);
+              }
+            }
+            if(aSameTitles.length>0) {
+              blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleNotUnique', [blr.W15yQC.fnCutoffString(aSameTitles.toString(),99)]); //QA iframeTests01.html
             }
           }
           if (aDocumentsList[i].IDsUnique == false) {
@@ -3981,17 +4197,24 @@ ys: 'whys'
             iContentInfoLandmarkCount++;
           } 
           var sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
+          
+          var aSameLabelText = [];
           for (var j = 0; j < aARIALandmarksList.length; j++) {
             if (i == j) continue;
             var sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
             if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
-              if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
-                blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique');  // QA ariaTests01.html
-              } else {
-                blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotUnique');  // QA ariaTests01.html
-              }
+              aSameLabelText.push(j+1);
             }
           }
+          
+          if(aSameLabelText.length>0) {
+            if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]);   // QA ariaTests01.html
+            } else {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]); // QA ariaTests01.html
+            }
+          }
+          
           if(aARIALandmarksList[i].node != null && aARIALandmarksList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aARIALandmarksList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkIDNotValid');
@@ -4119,7 +4342,7 @@ ys: 'whys'
       return aARIAElementsList;
     },
 
-    fnAnalyzeARIA: function (aARIALandmarksList, aDocumentsList) {
+    fnAnalyzeARIA: function (aARIALandmarksList, aDocumentsList) { // TODO: Finish this
       blr.W15yQC.fnLog("+++++WHAT?:fnAnalyzeARIA");
       if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
       // TODO: Learn what is important to analyze in ARIA
@@ -4266,13 +4489,38 @@ ys: 'whys'
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               var tagName = c.tagName.toLowerCase();
               switch (tagName) {
+                case 'area':
+                  var xPath = blr.W15yQC.fnGetElementXPath(c);
+                  var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                  var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  var box = c.getBoundingClientRect();
+                  var width;
+                  var height;
+                  if (box != null) {
+                    var width = box.width;
+                    var height = box.height;
+                  }
+                  var title = null;
+                  if (c.hasAttribute('title')) title = c.getAttribute('title');
+                  var alt = null;
+                  if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
+                  var src = null;
+                  if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
+                  var sARIALabel = null;
+                  if (c.hasAttribute('aria-label') == true) {
+                    sARIALabel = c.getAttribute('aria-label');
+                  } else if (c.hasAttribute('aria-labelledby') == true) {
+                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
+                  }
+                  aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                  break;
               case 'img':
                 // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
                 var xPath = blr.W15yQC.fnGetElementXPath(c);
                 var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                 var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
                 var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                var title = null;
                 var box = c.getBoundingClientRect();
                 var width;
                 var height;
@@ -4280,6 +4528,7 @@ ys: 'whys'
                   var width = box.width;
                   var height = box.height;
                 }
+                var title = null;
                 if (c.hasAttribute('title')) title = c.getAttribute('title');
                 var alt = null;
                 if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
@@ -4352,12 +4601,15 @@ ys: 'whys'
           }
           var sCombinedLabel = blr.W15yQC.fnTrim(blr.W15yQC.fnJoin(blr.W15yQC.fnJoin(aImagesList[i].alt, aImagesList[i].title, ''), aImagesList[i].ariaLabel, ''));
           if (sCombinedLabel == null || sCombinedLabel.length < 1) {
-            if(blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node)==false) {
+            if(aImagesList[i].alt != null && blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node)==false) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgNoAltText'); // QA imageTests01.html
             }
           } else if(blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node) == true) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgHasAltTextAndPresRole'); // QA imageTests01.html
           } else {
+            if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aImagesList[i].effectiveLabel)) {
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtOnlyASCII'); // QA imageTests01.html
+            }
             aImagesList[i] = blr.W15yQC.fnIsMeaningfulAltTextTest(aImagesList[i].effectiveLabel, aImagesList[i]);
             if(blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(aImagesList[i].src) == true) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgSpacerWithAltTxt'); // QA imageTests01.html
@@ -4489,17 +4741,26 @@ ys: 'whys'
             } else if (blr.W15yQC.fnIsMeaningfulLinkText(ak.effectiveLabel) == false) {
               blr.W15yQC.fnAddNote(ak, 'akLabelNotMeaningful'); //  QA accesskeyTests01.html
             }
+            var aValuesDuplicated = [];
+            var aLabelsDuplicated = [];
             for (var j = 0; j < aAccessKeysList.length; j++) {
               if (i == j) continue;
               var ak2 = aAccessKeysList[j];
               if (ak2 != null && ak2.accessKey != null) {
                 if (ak.accessKey == ak2.accessKey) {
-                  blr.W15yQC.fnAddNote(ak, 'akValueNotUnique'); //
+                  aValuesDuplicated.push(j+1);
                 }
-                if (ak.effectiveLabel == ak2.effectiveLabel) {
-                  blr.W15yQC.fnAddNote(ak, 'akLabelNotUnique'); //
+                if (blr.W15yQC.fnStringsEffectivelyEqual(ak.effectiveLabel, ak2.effectiveLabel)) {
+                  aLabelsDuplicated.push(j+1);
                 }
               }
+            }
+            
+            if(aValuesDuplicated.length>0) {
+              blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aValuesDuplicated.toString(),99)]); //
+            }
+            if(aLabelsDuplicated.length>0) {
+              blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aLabelsDuplicated.toString(),99)]); //
             }
           } else {
             blr.W15yQC.fnAddNote(ak, 'akLabelEmpty'); // QA accesskeyTests01.html
@@ -4739,6 +5000,7 @@ ys: 'whys'
     },
 
     fnGetFormControls: function (doc, rootNode, aDocumentsList, aFormsList, aFormControlsList) {
+      var bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls',false); 
       if (aFormControlsList == null) aFormControlsList = new Array();
       if (aFormsList == null) aFormsList = new Array();
 
@@ -4759,8 +5021,7 @@ ys: 'whys'
               var sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
               var sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
               aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sName, sRole, sAction, sMethod));
-
-            } else if (blr.W15yQC.fnIsFormControlOrLabelNode(c) && blr.W15yQC.fnNodeIsHidden(c) == false) {
+            } else if ((blr.W15yQC.fnIsFormControlNode(c) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(c))) && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Document the form control
               var xPath = blr.W15yQC.fnGetElementXPath(c);
               var sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
@@ -4810,12 +5071,17 @@ ys: 'whys'
       // Check if form labels are empty, not meaningful, the same as other form controls, or sound like any other label texts
       if (aFormsList != null && aFormsList.length > 0) {
         for (var i = 0; i < aFormsList.length; i++) {
+          aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
+          var aSameNames = [];
           for (var j = 0; j < aFormsList.length; j++) {
             if (i == j) continue;
             // If it has a name, check that the name is unique compared to other forms in the same document
-            if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
-              blr.W15yQC.fnAddNote(aFormsList[i], 'frmNameNotUnique'); //
+            if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].ownerDocumentNumber == aFormsList[j].ownerDocumentNumber && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
+              aSameNames.push(j+1);
             }
+          }
+          if(aSameNames.length>0) {
+            blr.W15yQC.fnAddNote(aFormsList[i], 'frmNameNotUnique', [blr.W15yQC.fnCutoffString(aSameNames.toString(),99)]); //
           }
           // Check that it is not nested in another form and that it does not contain any form elements
           if (blr.W15yQC.fnGetParentFormElement(aFormsList[i].node.parentNode) != null) {
@@ -4847,7 +5113,7 @@ ys: 'whys'
           aFormControlsList[i].title = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].title);
           aFormControlsList[i].ARIALabelText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].ARIALabelText);
           aFormControlsList[i].ARIADescriptionText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].ARIADescriptionText);
-          aFormControlsList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText);
+          aFormControlsList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFormControlsList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText+' '+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node)) : '';
         }
 
         for (var i = 0; i < aFormControlsList.length; i++) {
@@ -4855,49 +5121,79 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); //
           } else if (aFormControlsList[i].effectiveLabelText != null && aFormControlsList[i].effectiveLabelText.length > 0) {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aFormControlsList[i].effectiveLabelText)) {
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); //
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); // 
+            } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(aFormControlsList[i].effectiveLabelText) == true) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNextPrev'); //
             } else if (blr.W15yQC.fnIsMeaningfulFormLabelText(aFormControlsList[i].effectiveLabelText) == false) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNotMeaningful'); //
             }
             if(blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node)==false) {
+              var aSameLabelText = [];
+              var aSoundsTheSame = [];
+              
               for (var j = 0; j < aFormControlsList.length; j++) {
                 if (j == i || blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==true) {
                   continue;
                 } else {
                   if (aFormControlsList[j].effectiveLabelText != null && aFormControlsList[j].effectiveLabelText.length > 0) {
-                    if (aFormControlsList[i].effectiveLabelText.toLowerCase() == aFormControlsList[j].effectiveLabelText.toLowerCase()) {
-                      blr.W15yQC.fnAddNote(aFormControlsList[i], 'fmrCtrlLabelNotUnique'); //
-                    } else if (aFormControlsList[i].soundex == aFormControlsList[j].soundex) {
-                      blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDoesntSoundUnique'); // TODO: Make a list of these
+                    if (blr.W15yQC.fnStringsEffectivelyEqual(aFormControlsList[i].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node),
+                        aFormControlsList[j].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[j].node))) {
+                      aSameLabelText.push(j+1);
+                    } else if (aFormControlsList[i].soundex.length>2 && aFormControlsList[i].soundex == aFormControlsList[j].soundex) {
+                      aSoundsTheSame.push(j+1);
                     }
                   }
                 }
+              }
+              
+              if(aSameLabelText.length>0) {
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'fmrCtrlLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]); //
+              }
+              if(aSoundsTheSame.length>0) {
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDoesntSoundUnique', [blr.W15yQC.fnCutoffString(aSoundsTheSame.toString(),99)]); //
               }
             }
           } else {
             blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelEmpty'); //
           }
 
-          // Look for button specific issues
-          // What about ARIA buttons?
-          var bIsButton = false;
+          // Look for form controls with both keyboard and mouse handlers
+          var bShouldntHaveBoth = false;
           var nodeTagName = '';
           var nodeTypeValue = '';
           if(aFormControlsList[i].node != null && aFormControlsList[i].node.tagName) {
             nodeTagName = aFormControlsList[i].node.tagName.toLowerCase();
             nodeTypeValue = blr.W15yQC.fnGetNodeAttribute(aFormControlsList[i].node,'type','').toLowerCase();
           }
-          if(nodeTagName == 'button' || (nodeTagName == 'input' && (nodeTypeValue == 'button' || nodeTypeValue == 'submit' || nodeTypeValue == 'image' || nodeTypeValue == ''))) {
-            bIsButton = true;
+          if(nodeTagName == 'button' || (nodeTagName == 'input' && (nodeTypeValue == 'button' || nodeTypeValue == 'submit' || nodeTypeValue == 'image' ||
+                                                                    nodeTypeValue == 'checkbox' || nodeTypeValue == 'radio' || nodeTypeValue == 'reset'))) {
+            bShouldntHaveBoth = true;
           }
-          if(bIsButton == true && aFormControlsList[i].node.hasAttribute('onclick') == true && aFormControlsList[i].node.hasAttribute('onkeypress') == true &&
+          if(bShouldntHaveBoth == true && aFormControlsList[i].node.hasAttribute('onclick') == true && aFormControlsList[i].node.hasAttribute('onkeypress') == true &&
              aFormControlsList[i].node.getAttribute('onclick').length>0 && aFormControlsList[i].node.getAttribute('onkeypress').length>0) {
-            if(blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onclick')) == blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onkeypress'))) {
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRedundantOCandOK'); //
-            } else {
+            if(blr.W15yQC.fnScriptValuesAreDifferent(aFormControlsList[i].node.getAttribute('onclick')) == blr.W15yQC.fnCleanSpaces(aFormControlsList[i].node.getAttribute('onkeypress'))) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlHasBothOCandOK'); //
+            } else {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRedundantOCandOK'); //
             }
           }
+          
+          // Check form control's dist from label
+          if(aFormControlsList[i].node.hasAttribute('id') == true && (nodeTagName == 'button' || nodeTagName == 'textarea' || nodeTagName == 'select' || nodeTagName == 'input')) {
+            var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(aFormControlsList[i].node.getAttribute('id'), aFormControlsList[i].doc);
+            var minDist = 10000;
+            var bCheckedLabel = false;
+            for (var j = 0; j < explictLabelsList.length; j++) {
+              if(blr.W15yQC.fnNodeIsOffScreen(explictLabelsList[j])== false && blr.W15yQC.fnNodeIsMasked(explictLabelsList[j])== false) {
+                minDist = Math.min(minDist, blr.W15yQC.fnMinDistanceBetweenNodes(explictLabelsList[j], aFormControlsList[i].node));
+                bCheckedLabel=true;
+              }
+            }
+            if(bCheckedLabel && explictLabelsList.length>0 && minDist>100) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDistance', [minDist]); //
+            }
+          }
+
           // Look for label issues
           // TODO: Add empty label check, implicit with no child form control check
           if(nodeTagName == 'label') {
@@ -4916,7 +5212,7 @@ ys: 'whys'
                   }
                   if(blr.W15yQC.fnNodeIsHidden(targetNode) == true) {
                     blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlForForValueIsHidden'); //
-                  } else {
+                  } else if(blr.W15yQC.fnNodeIsOffScreen(aFormControlsList[i].node)== false && blr.W15yQC.fnNodeIsMasked(aFormControlsList[i].node)== false){
                     var iDist = blr.W15yQC.fnMinDistanceBetweenNodes(targetNode,aFormControlsList[i].node);
                     if( iDist > 100) {
                       blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDistance', [iDist]); //
@@ -5086,17 +5382,28 @@ ys: 'whys'
             var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
           } else { // keep looking through current document
-            if (c.tagName && c.tagName.toLowerCase() == 'a' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              // document the link
-              var xPath = blr.W15yQC.fnGetElementXPath(c);
-              var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-              var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              var text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
-              var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-              var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
-              var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
-              var sState = blr.W15yQC.fnGetNodeState(c);
-              aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+              if(c.tagName.toLowerCase()=='a') {  // document the link
+                var xPath = blr.W15yQC.fnGetElementXPath(c);
+                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                var text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                var sState = blr.W15yQC.fnGetNodeState(c);
+                aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+              } else if(c.tagName.toLowerCase()=='area') {
+                var xPath = blr.W15yQC.fnGetElementXPath(c);
+                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                var text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
+                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                var sState = blr.W15yQC.fnGetNodeState(c);
+                aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+              }
             }
             blr.W15yQC.fnGetLinks(doc, c, aLinksList);
           }
@@ -5115,7 +5422,8 @@ ys: 'whys'
         aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
-          aLinksList[i].soundex = blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text);
+          blr.W15yQC.fnLog('i='+i+' aLinksList[i].odn='+aLinksList[i].ownerDocumentNumber);
+          aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
         } else {
           aLinksList[i].soundex = '';
         }
@@ -5125,9 +5433,22 @@ ys: 'whys'
       }
 
       for (var i = 0; i < aLinksList.length; i++) {
+        var aChildImages=aLinksList[i].node.getElementsByTagName('img');
+        if(aChildImages != null && aChildImages.length>0) {
+          for(var j=0; j< aChildImages.length; j++) { 
+            if(aChildImages[j].hasAttribute('ismap')==true) {
+              blr.W15yQC.fnAddNote(aLinksList[i], 'lnkServerSideImageMap'); // TODO: QA This, determine how ismap is actually used
+            }
+          }
+        }
+        
+        if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
+        }
+
         if (aLinksList[i].text == null) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
-        } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) {
+        } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
           var linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtOnlyASCII'); //
@@ -5137,10 +5458,6 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtBeginWithLink'); //
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
-          }
-
-          if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
           }
 
           var maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
@@ -5164,7 +5481,7 @@ ys: 'whys'
               if (aLinksList[j].text && aLinksList[j].text.length > 0) {
                 if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || hrefsAreEqual == false || aLinksList[i].href.length < 2)) {
                   aSameLinkText.push(j+1);
-                } else if (aLinksList[i].soundex == aLinksList[j].soundex && hrefsAreEqual == false) {
+                } else if (aLinksList[i].length>2 && aLinksList[i].soundex == aLinksList[j].soundex && hrefsAreEqual == false) {
                   aSoundsTheSame.push(j+1);
                 }
               }
@@ -5175,27 +5492,27 @@ ys: 'whys'
                   if(bOnclickValuesAreDifferent == false) {
                     aSameHrefAndOnclick.push(j+1);
                   }
-                } else {
-                  if(aLinksList[i].href != '#') aDiffTextSameHref.push(j+1);
+                } else { // unless javascript:;, #, javascript:void(0)
+                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) aDiffTextSameHref.push(j+1);
                 }
               }
             }
           }
 
           if(aSameLinkText.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [aSameLinkText.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [blr.W15yQC.fnCutoffString(aSameLinkText.toString(),99)]); //
           }
 
           if(aSoundsTheSame.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[aSoundsTheSame.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[blr.W15yQC.fnCutoffString(aSoundsTheSame.toString(),99)]); //
           }
 
           if(aSameHrefAndOnclick.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHrefOnclick',[aSameHrefAndOnclick.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHrefOnclick',[blr.W15yQC.fnCutoffString(aSameHrefAndOnclick.toString(),99)]); //
           }
 
           if(aDiffTextSameHref.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHref',[aDiffTextSameHref.toString()]); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHref',[blr.W15yQC.fnCutoffString(aDiffTextSameHref.toString(),99)]); //
           }
 
         } else {
@@ -5323,7 +5640,7 @@ ys: 'whys'
 
         if(aLinksList[i].node != null && aLinksList[i].node.hasAttribute('onclick') == true && aLinksList[i].node.hasAttribute('onkeypress') == true &&
            aLinksList[i].node.getAttribute('onclick').length>0 && aLinksList[i].node.getAttribute('onkeypress').length>0) { // TODO: Make this check more sophisticated
-            if(/^\s*return\s+false;*\s*$/.test(aLinksList[i].node.getAttribute('onkeypress').toLowerCase())==false) {
+            if(/^\s*return\s*\(*\s*false\)*\s*\s*;*\s*$/.test(aLinksList[i].node.getAttribute('onkeypress').toLowerCase())==false) {
               blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasBothOCandOK'); //
             }
         }
@@ -5372,7 +5689,7 @@ ys: 'whys'
           } else if (aLinksList[i].warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, aLinksList[i].href, aLinksList[i].stateDescription, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -5513,9 +5830,10 @@ ys: 'whys'
         var bRowHasHeader = false;
         var bTableUsesThElements = false;
         var bTableUsesHeadersAttribute = false;
-        var everyTdInContentAreaHasHeadersAttribute = true;
+        var bEveryTdInContentAreaHasHeadersAttribute = true;
         var bEveryTdCellWithContentHasAHeadersAttribute = true;
-        var everyCellWithCOntentHasARowOrColumnHeader = true;
+        var bEveryCellWithContentHasARowOrColumnHeader = true;
+        var bEveryTdCellWithContentHasHeaderOfSomeType = true;
         var nodeStack = [];
         var bInTableRow = false;
         var columnsInThisRow = 0;
@@ -5537,6 +5855,7 @@ ys: 'whys'
               if (node.nodeType == 1) {
                 // Only pay attention to element nodes
                 if(node.tagName && node.tagName.length > 0) {
+                  var bIsColumnHeader=false;
                   tagName = node.tagName.toLowerCase();
                   switch(tagName) {
                     case 'thead':
@@ -5568,30 +5887,53 @@ ys: 'whys'
                       columnsInThisRow = 0;
                       bRowHasHeader = false;
 
-                      if(columnRowSpans.length<columnsInThisRow+1) {
-                        columnRowSpans.push(0);
-                        columnHasHeader.push(false);
-                      }
+                      //if(columnRowSpans.length<1) {
+                      //  columnRowSpans.push(0);
+                      //  columnHasHeader.push(false);
+                      //}
                       blr.W15yQC.fnLog(aTablesList[i].caption+' just before while:columnsInThisRow:'+columnsInThisRow+' columnRowSpans:'+columnRowSpans.toString());
-                      while(columnRowSpans[columnsInThisRow]>0) {
-                      blr.W15yQC.fnLog(aTablesList[i].caption+' in while');
-                        columnsInThisRow++;
-                        if(columnRowSpans.length<columnsInThisRow+1) {
-                          columnRowSpans.push(0);
-                          columnHasHeader.push(false);
+                      if(columnRowSpans.length>0) {
+                        while(columnRowSpans[columnsInThisRow]>0) {
+                          blr.W15yQC.fnLog(aTablesList[i].caption+' in while');
+                          columnsInThisRow++;
+                          if(columnRowSpans.length<columnsInThisRow+1) {
+                            columnRowSpans.push(0);
+                            if(columnHasHeader.length>1) {
+                              columnHasHeader.push(columnHasHeader[columnHasHeader.length-1]);
+                            } else {
+                              columnHasHeader.push(false);
+                            }
+                          }
                         }
                       }
                       break;
 
                     case 'th':
                         bTableUsesThElements = true;
-                        bRowHasHeader = true; // TODO: Be more precise. Really, when is a th cell considered for the row?
+                        if(node.hasAttribute('scope')==false) {
+                          if(columnsInThisRow<1) {
+                            bRowHasHeader = true;
+                          }
+                          if(rowCount<=1) {
+                            bIsColumnHeader = true;
+                          }
+                        }
                         aTablesList[i].isDataTable = true;
                         aTablesList[i].bHasTHCells = true;
+                        
                     case 'td':
                       if(!bInTableRow) {
                         blr.W15yQC.fnAddNote(aTablesList[i], 'tblOutsideRow', [tagName]); //
                       } else {
+                        if(node.hasAttribute('scope')==true) {
+                          aTablesList[i].isDataTable = true;
+                          aTablesList[i].bHasScopeAttr = true;
+                          if(node.getAttribute('scope').toLowerCase()=='row') {
+                            bRowHasHeader = true;
+                          } else if(node.getAttribute('scope').toLowerCase()=='col') {
+                            bIsColumnHeader = true;
+                          }
+                        }
                         // Does the cell use a headers attribute?
                         if(node.hasAttribute('headers') ==true) {
                           bTableUsesHeadersAttribute = true;
@@ -5599,16 +5941,24 @@ ys: 'whys'
                           aTablesList[i].bHasHeadersAttr = true;
                         }
                         // Find out if a rowspan in this column in a previous row is pushing this cell over
+                        if(columnRowSpans.length>=columnsInThisRow+1) {
+                          while(columnRowSpans[columnsInThisRow]>0) { 
+                            columnsInThisRow++;
+                            if(columnRowSpans.length<columnsInThisRow+1) {
+                              columnRowSpans.push(0); 
+                              if(columnHasHeader.length>0) {
+                                columnHasHeader.push(columnHasHeader[columnHasHeader.length-1]);
+                              } else {
+                                columnHasHeader.push(false);
+                              }
+                            }
+                          }
+                        }
                         if(columnRowSpans.length<columnsInThisRow+1) {
                           columnRowSpans.push(0);
-                          columnHasHeader.push(false);
-                        }
-                        while(columnRowSpans[columnsInThisRow]>0) {
-                          columnsInThisRow++;
-                          if(columnRowSpans.length<columnsInThisRow+1) {
-                            columnRowSpans.push(0);
-                            columnHasHeader.push(false);
-                          }
+                          columnHasHeader.push(bIsColumnHeader);
+                        } else if(bIsColumnHeader) {
+                          columnHasHeader[columnsInThisRow]=true;
                         }
                         // Find out if this cell has any content
                         var content = blr.W15yQC.fnTrim(blr.W15yQC.fnGetDisplayableTextRecursively(node));
@@ -5620,9 +5970,17 @@ ys: 'whys'
                           if(rowCount < firstRowWithContent) {
                             firstRowWithContent = rowCount;
                           }
-                          if(tagName=='td' && aTablesList[i].node.hasAttribute('headers') != true) {
-                            bEveryTdCellWithContentHasAHeadersAttribute = false;
-                          }
+                          if(tagName=='td') {
+                            if(aTablesList[i].node.hasAttribute('headers') != true) {
+                              bEveryTdCellWithContentHasAHeadersAttribute = false;
+                            }
+                            if(columnHasHeader[columnsInThisRow]==false && bRowHasHeader==false) {
+                              bEveryCellWithContentHasARowOrColumnHeader = false;
+                            }
+                            if(columnHasHeader[columnsInThisRow]==false && bRowHasHeader==false && node.hasAttribute('headers') != true) {
+                              bEveryTdCellWithContentHasHeaderOfSomeType = false;
+                            }
+                          }                         
                         }
                         // Get the rowspan value
                         var rowSpanValue = 1;
@@ -5648,7 +6006,7 @@ ys: 'whys'
                         while(colSpanValue>0) {
                           while(columnRowSpans.length<columnsInThisRow+1) {
                             columnRowSpans.push(0);
-                            columnHasHeader.push(false);
+                            columnHasHeader.push(bIsColumnHeader);
                           }
                           // Detect any colspan into rowspan colisions
                           if(columnRowSpans[columnsInThisRow]>0 && rowSpanValue>1) {
@@ -5662,7 +6020,7 @@ ys: 'whys'
                         }
 
                         if(rowCount>firstRowWithContent && firstRowWithContent>0 && !node.hasAttribute('headers') && content != null && content.length >0) {
-                          everyTdInContentAreaHasHeadersAttribute = false;
+                          bEveryTdInContentAreaHasHeadersAttribute = false;
                         }
                       }
                       break;
@@ -5692,7 +6050,7 @@ ys: 'whys'
                           columnsInThisRow++;
                           if(columnRowSpans.length<columnsInThisRow+1) {
                             columnRowSpans.push(0);
-                            columnHasHeader.push(false);
+                            columnHasHeader.push(bIsColumnHeader);
                           }
                         }
                         if(columnsInThisRow != maxColumns && maxColumns>0) {
@@ -5754,7 +6112,8 @@ ys: 'whys'
         if(aTablesList[i].isDataTable == true) { // Looks like it is a data table
           var sWhyDataTable='';
           if(aTablesList[i].bHasTHCells == true) sWhyDataTable = 'Has TH Cells';
-          if(aTablesList[i].bHasHeadersAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', ');
+          if(aTablesList[i].bHasHeadersAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', '); 
+          if(aTablesList[i].bHasScopeAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has scope attributes',', ');
           if(aTablesList[i].bHasCaption == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a caption',', ');
           if(aTablesList[i].node.hasAttribute('summary') == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a summary',', ');
           
@@ -5762,13 +6121,17 @@ ys: 'whys'
           // Warn that they should check if the table needs either a caption or a summary
           if((aTablesList[i].summary == null || aTablesList[i].summary.length<1) && (aTablesList[i].caption == null || aTablesList[i].caption.length<1)) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblCheckCaptionSummary'); //
+          } else if(blr.W15yQC.fnStringsEffectivelyEqual(aTablesList[i].summary,aTablesList[i].caption)==true) {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionSameAsSummary'); //
           }
 
           // Warn that data tables should use table headers (th elements).
           if(bTableUsesThElements == false) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblDTMissingTHs'); //
-        }
-
+          } else if(bEveryCellWithContentHasARowOrColumnHeader==false && bEveryTdCellWithContentHasHeaderOfSomeType==false) {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblNotEveryCellWithContentInDTHasHeaders'); //
+          }
+          
           if(aTablesList[i].isComplex == true) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblDTisComplex'); //
 
@@ -5779,9 +6142,14 @@ ys: 'whys'
           }
           //bEveryTdCellWithContentHasAHeadersAttribute
           //bTableUsesHeadersAttribute
+          //everyCellWithCOntentHasARowOrColumnHeader
 
-        } else { // Looks like it is a layout table
-          blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsLayoutTable'); //
+        } else { // Looks like it is a layout table          
+          if(aTablesList[i].maxCols * aTablesList[i].maxRows > 25 && Math.min(aTablesList[i].maxCols, aTablesList[i].maxRows)>4) {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblTooLargeForLayoutTable',[aTablesList[i].maxCols, aTablesList[i].maxRows]); // QA tabletests01.html
+          } else {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsLayoutTable'); //
+          }
         }
 
         // End of table analysis, now provide any warning / failure notices
@@ -5797,7 +6165,7 @@ ys: 'whys'
         }
 
         if(aTablesList[i].isComplex ==true) {
-          if(aTablesList[i].isDataTable == true) {
+          if(aTablesList[i].isDataTable == true) { // TODO: Is something missing here?
           } else {
             aTablesList[i].warning = true;
             if(bMarkedAsPresentation == true) {
@@ -5867,6 +6235,9 @@ ys: 'whys'
 
     fnInspectDocuments: function (rd) {
       if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale());
+      blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
+
       var aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
       blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
       blr.W15yQC.fnDisplayDocumentsResults(rd, aDocumentsList);
@@ -5952,14 +6323,16 @@ ys: 'whys'
         blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
+        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList);
         blr.W15yQC.fnDisplayFooter(reportDoc);
+        return reportDoc;
       }
+      return null;
     },
 
     fnBuildRemoveStylesView: function (rd, doc, rootNode, baseLevel, list) {
@@ -6352,7 +6725,6 @@ ys: 'whys'
     stateDescription: null
   };
 
-
   blr.W15yQC.formElement = function (node, xpath, nodeDescription, doc, ownerDocumentNumber, orderNumber, name, role, action, method) {
     this.node = node;
     this.xpath = xpath;
@@ -6451,7 +6823,6 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
-    stateDescription: null,
     notes: null,
     failed: false,
     warning: false,
@@ -6561,6 +6932,7 @@ ys: 'whys'
     isDataTable: false,
     bHasTHCells: false,
     bHasHeadersAttr: false,
+    bHasScopeAttr: false,
     bHasCaption: false,
     bHasSummary: false,
     whyDataTable: null,

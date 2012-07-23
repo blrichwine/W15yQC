@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Form Controls Tests 01 - W15yQC QA</title>
+</head>
+<body>
+	<noscript><div><h1>This is the noscript area</h1></div></noscript>
+	<h1>Form Controls Tests</h1>
+	<form name="tests_A" method="get">
+		<p>Here is a label for a control down below...</p>
+		<label for="toofar">Far away control:</label>
+		<p>An unlabeled text box:</p>
+		<input type="text" name="formAtxtbox" />
+		
+		<p>A button labeled only with ascii symbols:</p>
+		<input type="button" value=">" />
+		
+		<p>A series of buttons with non-meaningful labels:</p>
+		<input type="button" value="next" />
+		<input type="button" value="prev" />
+		<input type="button" value="previous" />
+		<input type="button" value="1" />
+		
+		<p>These two buttons do not have unique labels:</p>
+		<input type="button" value="next 1" />
+		<input type="button" value="next  1" />
+
+		<p>These two buttons have labels that sound alike:</p>
+		<input type="button" value="next 23" />
+		<input type="button" value="next twenty three" />
+		<input type="button" value="next twunty threeee" />
+
+		<p>These form controls have empty labels:</p>
+		<input type="button" value="" />
+		<label for="empty2"></label> <input type="text" id="empty2"/>
+		
+		<p>Here are some div elements using ARIA to be a button.</p>
+		<div role="button">ARIA Button 1</div>
+		<div role="button" aria-label="ARIA Button 2">ARIA Button 2</div>
+		
+		<p>Here are some form controls where the labels label the wrong controls:</p>
+		<label for="wlln">First Name:</label><input id="wlfn" type="text" />
+		<label for="wlfn">Last Name:</label><input id="wlln" type="text" />
+		
+		<p>Here is a text box where the label is too far away:</p>
+		<input type="text" name="toofar" id="toofar"/>
+		
+		<p>Here is a pair of text boxes which have the same id values:</p>
+		<input id="dup1" title="Duplicate 1"/> <input id="dup1" title="Duplicate 2"/>
+
+		<p>Here is a text box with an invalid id:</p>
+		<input id="$er" title="Invalid ID"/>
+		
+		<p>This submit button should have a default label:</p>
+		<input type="submit" />		
+	</form>
+	
+</body>
+</html>
