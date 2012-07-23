@@ -53,11 +53,11 @@
         - test role="group" effects
         - FEATURE ADD: Compute largest square that fits in an area's target. Check if it is too small to hit reliably. 
         - image maps
-           - Does each area tag of an image map have an alt attribute
+           - Does each area tag of an image map have an alt attribute [done]
            - Does each area tag of an image map with an empty href have an empty alt attribute?
            - Does the equivalent link text for an area tag meet link text requirements (include in links list? Test with JAWS obviously)
-           - add areas to links
-        - Can we detect server side image maps? server-side image map (img tag with the ismap attribute)
+           - add areas to links [done]
+        - Can we detect server side image maps? server-side image map (img tag with the ismap attribute) [done]
         - Check for focusable elements that have the focus outline reset
         - Check for full justification of text SC 1.4.8, F88, G172
         - Verify that theys are required to have labels: input tag of type text, password, checkbox, radio, file, or textarea and select tags

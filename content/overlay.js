@@ -929,9 +929,11 @@ ys: 'whys'
       tblRowpanExceedsTableRows: [1,1,false,null],
       tblIsDataTable: [0,0,false,null],
       tblCheckCaptionSummary: [1,0,false,null],
+      tblCaptionSameAsSummary: [1,0,false,null],
       tblDTMissingTHs: [2,0,false,null],
       tblDTisComplex: [1,0,false,null],
       tblDTwTDwoHeadersAttrib: [2,0,false,null],
+      tblNotEveryCellWithContentInDTHasHeaders: [2,0,false,null],
       tblIsLayoutTable: [0,0,false,null],
       tblUnequalColCount: [1,0,false,null],
       tblLayoutTblIsComplex: [1,0,false,null],
@@ -5433,13 +5435,17 @@ ys: 'whys'
       for (var i = 0; i < aLinksList.length; i++) {
         var aChildImages=aLinksList[i].node.getElementsByTagName('img');
         if(aChildImages != null && aChildImages.length>0) {
-          for(var j=0; j< aChildImages.length; j++) { alert(aLinksList[i].nodeDescription);
+          for(var j=0; j< aChildImages.length; j++) { 
             if(aChildImages[j].hasAttribute('ismap')==true) {
               blr.W15yQC.fnAddNote(aLinksList[i], 'lnkServerSideImageMap'); // TODO: QA This, determine how ismap is actually used
             }
           }
         }
         
+        if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
+        }
+
         if (aLinksList[i].text == null) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
         } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
@@ -5452,10 +5458,6 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtBeginWithLink'); //
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
-          }
-
-          if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
           }
 
           var maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
@@ -5638,7 +5640,7 @@ ys: 'whys'
 
         if(aLinksList[i].node != null && aLinksList[i].node.hasAttribute('onclick') == true && aLinksList[i].node.hasAttribute('onkeypress') == true &&
            aLinksList[i].node.getAttribute('onclick').length>0 && aLinksList[i].node.getAttribute('onkeypress').length>0) { // TODO: Make this check more sophisticated
-            if(/^\s*return\s+false;*\s*$/.test(aLinksList[i].node.getAttribute('onkeypress').toLowerCase())==false) {
+            if(/^\s*return\s*\(*\s*false\)*\s*\s*;*\s*$/.test(aLinksList[i].node.getAttribute('onkeypress').toLowerCase())==false) {
               blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasBothOCandOK'); //
             }
         }
@@ -5828,9 +5830,10 @@ ys: 'whys'
         var bRowHasHeader = false;
         var bTableUsesThElements = false;
         var bTableUsesHeadersAttribute = false;
-        var everyTdInContentAreaHasHeadersAttribute = true;
+        var bEveryTdInContentAreaHasHeadersAttribute = true;
         var bEveryTdCellWithContentHasAHeadersAttribute = true;
-        var everyCellWithCOntentHasARowOrColumnHeader = true;
+        var bEveryCellWithContentHasARowOrColumnHeader = true;
+        var bEveryTdCellWithContentHasHeaderOfSomeType = true;
         var nodeStack = [];
         var bInTableRow = false;
         var columnsInThisRow = 0;
@@ -5852,6 +5855,7 @@ ys: 'whys'
               if (node.nodeType == 1) {
                 // Only pay attention to element nodes
                 if(node.tagName && node.tagName.length > 0) {
+                  var bIsColumnHeader=false;
                   tagName = node.tagName.toLowerCase();
                   switch(tagName) {
                     case 'thead':
@@ -5883,30 +5887,53 @@ ys: 'whys'
                       columnsInThisRow = 0;
                       bRowHasHeader = false;
 
-                      if(columnRowSpans.length<columnsInThisRow+1) {
-                        columnRowSpans.push(0);
-                        columnHasHeader.push(false);
-                      }
+                      //if(columnRowSpans.length<1) {
+                      //  columnRowSpans.push(0);
+                      //  columnHasHeader.push(false);
+                      //}
                       blr.W15yQC.fnLog(aTablesList[i].caption+' just before while:columnsInThisRow:'+columnsInThisRow+' columnRowSpans:'+columnRowSpans.toString());
-                      while(columnRowSpans[columnsInThisRow]>0) {
-                      blr.W15yQC.fnLog(aTablesList[i].caption+' in while');
-                        columnsInThisRow++;
-                        if(columnRowSpans.length<columnsInThisRow+1) {
-                          columnRowSpans.push(0);
-                          columnHasHeader.push(false);
+                      if(columnRowSpans.length>0) {
+                        while(columnRowSpans[columnsInThisRow]>0) {
+                          blr.W15yQC.fnLog(aTablesList[i].caption+' in while');
+                          columnsInThisRow++;
+                          if(columnRowSpans.length<columnsInThisRow+1) {
+                            columnRowSpans.push(0);
+                            if(columnHasHeader.length>1) {
+                              columnHasHeader.push(columnHasHeader[columnHasHeader.length-1]);
+                            } else {
+                              columnHasHeader.push(false);
+                            }
+                          }
                         }
                       }
                       break;
 
                     case 'th':
                         bTableUsesThElements = true;
-                        bRowHasHeader = true; // TODO: Be more precise. Really, when is a th cell considered for the row?
+                        if(node.hasAttribute('scope')==false) {
+                          if(columnsInThisRow<1) {
+                            bRowHasHeader = true;
+                          }
+                          if(rowCount<=1) {
+                            bIsColumnHeader = true;
+                          }
+                        }
                         aTablesList[i].isDataTable = true;
                         aTablesList[i].bHasTHCells = true;
+                        
                     case 'td':
                       if(!bInTableRow) {
                         blr.W15yQC.fnAddNote(aTablesList[i], 'tblOutsideRow', [tagName]); //
                       } else {
+                        if(node.hasAttribute('scope')==true) {
+                          aTablesList[i].isDataTable = true;
+                          aTablesList[i].bHasScopeAttr = true;
+                          if(node.getAttribute('scope').toLowerCase()=='row') {
+                            bRowHasHeader = true;
+                          } else if(node.getAttribute('scope').toLowerCase()=='col') {
+                            bIsColumnHeader = true;
+                          }
+                        }
                         // Does the cell use a headers attribute?
                         if(node.hasAttribute('headers') ==true) {
                           bTableUsesHeadersAttribute = true;
@@ -5914,16 +5941,24 @@ ys: 'whys'
                           aTablesList[i].bHasHeadersAttr = true;
                         }
                         // Find out if a rowspan in this column in a previous row is pushing this cell over
+                        if(columnRowSpans.length>=columnsInThisRow+1) {
+                          while(columnRowSpans[columnsInThisRow]>0) { 
+                            columnsInThisRow++;
+                            if(columnRowSpans.length<columnsInThisRow+1) {
+                              columnRowSpans.push(0); 
+                              if(columnHasHeader.length>0) {
+                                columnHasHeader.push(columnHasHeader[columnHasHeader.length-1]);
+                              } else {
+                                columnHasHeader.push(false);
+                              }
+                            }
+                          }
+                        }
                         if(columnRowSpans.length<columnsInThisRow+1) {
                           columnRowSpans.push(0);
-                          columnHasHeader.push(false);
-                        }
-                        while(columnRowSpans[columnsInThisRow]>0) {
-                          columnsInThisRow++;
-                          if(columnRowSpans.length<columnsInThisRow+1) {
-                            columnRowSpans.push(0);
-                            columnHasHeader.push(false);
-                          }
+                          columnHasHeader.push(bIsColumnHeader);
+                        } else if(bIsColumnHeader) {
+                          columnHasHeader[columnsInThisRow]=true;
                         }
                         // Find out if this cell has any content
                         var content = blr.W15yQC.fnTrim(blr.W15yQC.fnGetDisplayableTextRecursively(node));
@@ -5935,9 +5970,17 @@ ys: 'whys'
                           if(rowCount < firstRowWithContent) {
                             firstRowWithContent = rowCount;
                           }
-                          if(tagName=='td' && aTablesList[i].node.hasAttribute('headers') != true) {
-                            bEveryTdCellWithContentHasAHeadersAttribute = false;
-                          }
+                          if(tagName=='td') {
+                            if(aTablesList[i].node.hasAttribute('headers') != true) {
+                              bEveryTdCellWithContentHasAHeadersAttribute = false;
+                            }
+                            if(columnHasHeader[columnsInThisRow]==false && bRowHasHeader==false) {
+                              bEveryCellWithContentHasARowOrColumnHeader = false;
+                            }
+                            if(columnHasHeader[columnsInThisRow]==false && bRowHasHeader==false && node.hasAttribute('headers') != true) {
+                              bEveryTdCellWithContentHasHeaderOfSomeType = false;
+                            }
+                          }                         
                         }
                         // Get the rowspan value
                         var rowSpanValue = 1;
@@ -5963,7 +6006,7 @@ ys: 'whys'
                         while(colSpanValue>0) {
                           while(columnRowSpans.length<columnsInThisRow+1) {
                             columnRowSpans.push(0);
-                            columnHasHeader.push(false);
+                            columnHasHeader.push(bIsColumnHeader);
                           }
                           // Detect any colspan into rowspan colisions
                           if(columnRowSpans[columnsInThisRow]>0 && rowSpanValue>1) {
@@ -5977,7 +6020,7 @@ ys: 'whys'
                         }
 
                         if(rowCount>firstRowWithContent && firstRowWithContent>0 && !node.hasAttribute('headers') && content != null && content.length >0) {
-                          everyTdInContentAreaHasHeadersAttribute = false;
+                          bEveryTdInContentAreaHasHeadersAttribute = false;
                         }
                       }
                       break;
@@ -6007,7 +6050,7 @@ ys: 'whys'
                           columnsInThisRow++;
                           if(columnRowSpans.length<columnsInThisRow+1) {
                             columnRowSpans.push(0);
-                            columnHasHeader.push(false);
+                            columnHasHeader.push(bIsColumnHeader);
                           }
                         }
                         if(columnsInThisRow != maxColumns && maxColumns>0) {
@@ -6069,7 +6112,8 @@ ys: 'whys'
         if(aTablesList[i].isDataTable == true) { // Looks like it is a data table
           var sWhyDataTable='';
           if(aTablesList[i].bHasTHCells == true) sWhyDataTable = 'Has TH Cells';
-          if(aTablesList[i].bHasHeadersAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', ');
+          if(aTablesList[i].bHasHeadersAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', '); 
+          if(aTablesList[i].bHasScopeAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has scope attributes',', ');
           if(aTablesList[i].bHasCaption == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a caption',', ');
           if(aTablesList[i].node.hasAttribute('summary') == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a summary',', ');
           
@@ -6077,13 +6121,17 @@ ys: 'whys'
           // Warn that they should check if the table needs either a caption or a summary
           if((aTablesList[i].summary == null || aTablesList[i].summary.length<1) && (aTablesList[i].caption == null || aTablesList[i].caption.length<1)) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblCheckCaptionSummary'); //
+          } else if(blr.W15yQC.fnStringsEffectivelyEqual(aTablesList[i].summary,aTablesList[i].caption)==true) {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionSameAsSummary'); //
           }
 
           // Warn that data tables should use table headers (th elements).
           if(bTableUsesThElements == false) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblDTMissingTHs'); //
-        }
-
+          } else if(bEveryCellWithContentHasARowOrColumnHeader==false && bEveryTdCellWithContentHasHeaderOfSomeType==false) {
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblNotEveryCellWithContentInDTHasHeaders'); //
+          }
+          
           if(aTablesList[i].isComplex == true) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblDTisComplex'); //
 
@@ -6094,6 +6142,7 @@ ys: 'whys'
           }
           //bEveryTdCellWithContentHasAHeadersAttribute
           //bTableUsesHeadersAttribute
+          //everyCellWithCOntentHasARowOrColumnHeader
 
         } else { // Looks like it is a layout table          
           if(aTablesList[i].maxCols * aTablesList[i].maxRows > 25 && Math.min(aTablesList[i].maxCols, aTablesList[i].maxRows)>4) {
@@ -6116,7 +6165,7 @@ ys: 'whys'
         }
 
         if(aTablesList[i].isComplex ==true) {
-          if(aTablesList[i].isDataTable == true) {
+          if(aTablesList[i].isDataTable == true) { // TODO: Is something missing here?
           } else {
             aTablesList[i].warning = true;
             if(bMarkedAsPresentation == true) {
@@ -6883,6 +6932,7 @@ ys: 'whys'
     isDataTable: false,
     bHasTHCells: false,
     bHasHeadersAttr: false,
+    bHasScopeAttr: false,
     bHasCaption: false,
     bHasSummary: false,
     whyDataTable: null,

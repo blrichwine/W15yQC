@@ -1,11 +1,14 @@
 <html>
 <head>
 	<title>Table tests 01</title>
-  <style> 
+  <style>
+	table {border: thin solid blue;}
+	th {border: thin solid black;}
+	td {border: thin dotted black;}
 	</style>
 </head>
 <body>
-<h1>Table Tests 01</h1>
+<h1>Table Tests 01</h1> 
 <h2>Table 1</h2>
 <p>Table should pass, but be flagged as a layout table</p>
 <table>
@@ -275,7 +278,76 @@ Should Pass.</p>
   </tr>
 </table>
 
+<h2>Table 17</h2>
+<p>Data table with the same caption and summary.</p>
+<table border="1" cellpadding="4" summary="This is the table caption and the table summary text.">
+	<caption>This is the table caption and the table summary text.</caption>
+  <tr>
+    <th scope="row">Row 1</td>
+    <td>1,2</td>
+	</tr>
+  <tr>
+    <th scope="row">Row 2</td>
+    <td>2,2</td>
+	</tr>
+</table>
 
+<h2>Table 18</h2>
+<p>Data table with row missing table header.</p>
+<table border="1" cellpadding="4" summary="This table has row th's. One row has content that does not have a header.">
+  <tr>
+    <th scope="row">Row 1</td>
+    <td>1,2</td>
+	</tr>
+  <tr>
+    <td>Row 2</td>
+    <td>2,2</td>
+	</tr>
+  <tr>
+    <th scope="row">Row 3</td>
+    <td>3,2</td>
+	</tr>
+</table>
+
+<h2>Table 19</h2>
+<p>Data table with column missing table header.</p>
+<table border="1" cellpadding="4" summary="This table has column th's. One column has content that does not have a header.">
+  <tr>
+    <th scope="col">Col 1</td>
+    <td>Col 2</td>
+    <th scope="col">Col 3</td>
+	</tr>
+  <tr>
+    <td>2,1</td>
+    <td>2,2</td>
+    <td>2,3</td>
+	</tr>
+  <tr>
+    <td>3,1</td>
+    <td>3,2</td>
+    <td>3,3</td>
+	</tr>
+</table>
+
+<h2>Table 20</h2>
+<p>Data table with combination of table headers and headers attributes.</p>
+<table border="1" cellpadding="4" summary="This table has column headers and header attributes. All cells have either a header or headers attribute.">
+  <tr>
+    <th id="t20ha" scope="col">Col 1</td>
+    <td id="t20h1" headers="t20ha">Col 2</td>
+    <th scope="col">Col 3</td>
+	</tr>
+  <tr>
+    <td>2,1</td>
+    <td headers="t20h1">2,2</td>
+    <td>2,3</td>
+	</tr>
+  <tr>
+    <td>3,1</td>
+    <td headers="t20h1">3,2</td>
+    <td>3,3</td>
+	</tr>
+</table>
 
 </body>
 </html>
