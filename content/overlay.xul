@@ -39,8 +39,8 @@
           <menupopup>
             <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="c" label="Contrast Tool" 
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
-            <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Semantic View" 
-                      oncommand="blr.W15yQC.openDialog('semanticView');"/>
+            <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Remove Styles" 
+                      oncommand="blr.W15yQC.fnRemoveStyles();"/>
           </menupopup>
         </menu>
         <menuseparator/>

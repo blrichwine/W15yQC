@@ -48,7 +48,8 @@
  *    *** FIX ASAP***
         - QA Form Control Test [].
         - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
-        - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/
+        - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
+        - compare results on running against FAE on several pages (link text, form control text, headings)
         - check label is labeling appropriate form control, guess by location of label vs. location of other control's label
         - test role="group" effects
         - FEATURE ADD: Compute largest square that fits in an area's target. Check if it is too small to hit reliably. 

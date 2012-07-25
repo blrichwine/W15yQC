@@ -2178,9 +2178,13 @@ ys: 'whys'
     fnNodeIsHidden: function (node) { // TODO: Improve and QA This!
       //returns true if element should be invisible to screen-readers.
       if (node != null) {
-        if (node.tagName.toLowerCase() == 'input' && node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'hidden') return true;
-
-        while (node != null && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset' && window.getComputedStyle(node, null).getPropertyValue("display").toLowerCase() != 'none' && window.getComputedStyle(node, null).getPropertyValue("visibility").toLowerCase() != 'hidden' && (node.hasAttribute('aria-hidden') == false || node.getAttribute('aria-hidden') == "false")) {
+        if (node.tagName.toLowerCase() == 'input' && node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'hidden') {
+          return true;
+        }
+        while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset' &&
+               window.getComputedStyle(node, null).getPropertyValue("display").toLowerCase() != 'none' &&
+               window.getComputedStyle(node, null).getPropertyValue("visibility").toLowerCase() != 'hidden' &&
+               (node.hasAttribute('aria-hidden') == false || node.getAttribute('aria-hidden') == "false")) {
           node = node.parentNode;
         }
         if (node != null && (node.nodeName.toLowerCase() == 'body' || node.nodeName.toLowerCase() == 'frameset')) {
@@ -6335,76 +6339,55 @@ ys: 'whys'
       return null;
     },
 
-    fnBuildRemoveStylesView: function (rd, doc, rootNode, baseLevel, list) {
-      if (baseLevel == null) baseLevel = 0;
-      if(list == null) list = new Array();
-      var level;
-
+    fnRemoveStyles: function () {
+      var outputWindow = window.open('');
+      var reportDoc = outputWindow.document;
+      reportDoc.title = 'Removed Style View - '+window.top.content.document.title+' - W15yQC';
+      blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, window.top.content.document);
+    },
+    
+    fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode) {
+      // if(rootNode != null) alert('Received:'+rootNode.tagName);
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
+        if (appendNode == null) appendNode = rd.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            oValues.iNumberOfFrames++;
-            // determine level, and then get frame contents
-            level = baseLevel+1;
-            for(var i=aARIALandmarksList.length-1; i>=0; i--) {
-              if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
-                level = aARIALandmarksList[i].level+1;
-                break;
+          if(c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
+            if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
+                              (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              var div = rd.createElement('div');
+              div.setAttribute('style','border:thin solid black');
+              appendNode.appendChild(div);
+              var p=rd.createElement('p');
+              p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
+              p.innerHTML = 'Frame: '+(c.hasAttribute('title') ? c.getAttribute('title') : 'Missing Title');
+              div.appendChild(p);
+              blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body);
+            } else { // keep looking through current document
+              if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                var node;
+                if(/^(b|center|em|i)$/i.test(c.tagName)) {
+                  node = rd.createElement('span');
+                } else {
+                  node = rd.importNode(c, false);
+                }
+                for(var i=0;i<node.attributes.length;i++) {
+                  if(/^(on[a-z]+|style|class|align|border)$/i.test(node.attributes[i].name)==true) {
+                    node.removeAttribute(node.attributes[i].name);
+                  }
+                }
+                appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
+                //alert('digging into:'+node.tagName);
+                blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c);
               }
             }
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
-          } else { // keep looking through current document
-            if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              // Do we need to close some blocks?
-              while(list.length>0 && blr.W15yQC.fnIsDescendant(list[list.length-1],c)==false) {
-                // close last list item
-                list.pop();
-              }
-              var sTagName = c.tagName.toLowerCase();
-              var sRole = c.getAttribute('role');
-              switch (sRole) {
-                case 'application':
-                case 'banner':
-                case 'complementary':
-                case 'contentinfo':
-                case 'form':
-                case 'main':
-                case 'navigation':
-                case 'search':
-                  // Landmark Role
-                  //var xPath = blr.W15yQC.fnGetElementXPath(c);
-                  //var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  var sARIALabel = null;
-                  level = baseLevel+1;
-                  for(var i=aARIALandmarksList.length-1; i>=0; i--) {
-                    if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
-                      level = aARIALandmarksList[i].level+1;
-                      break;
-                    }
-                  }
-                  if (c.hasAttribute('aria-label') == true) {
-                    sARIALabel = c.getAttribute('aria-label');
-                  } else if (c.hasAttribute('aria-labelledby') == true) {
-                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
-                  }
-                  var sState = blr.W15yQC.fnGetNodeState(c);
-                  aARIALandmarksList.push(new blr.W15yQC.ariaLandmarkElement(c, xPath, nodeDescription, doc, aARIALandmarksList.length, level, sRole, sARIALabel, sState));
-                  break;
-              }
-              blr.W15yQC.fnBuildSemanticView(rd, doc, c, level, list, oValues);
-            }
+          } else {
+            appendNode.appendChild(rd.importNode(c, true)); //alert('appending:'+c.nodeName+' to:'+appendNode.tagName);
           }
         }
       }
-      // Do we need to close some blocks?
-      while(list.length>0 && blr.W15yQC.fnIsDescendant(list[list.length-1],c)==false) {
-        // close last list item
-        list.pop();
-      }
-
+      return appendNode.parent || appendNode;
     },
 
     fnBuildSemanticView: function (rd, doc, rootNode, baseLevel, list, oValues) {
