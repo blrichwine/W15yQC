@@ -6342,13 +6342,55 @@ ys: 'whys'
     fnRemoveStyles: function () {
       var outputWindow = window.open('');
       var reportDoc = outputWindow.document;
-      reportDoc.title = 'Removed Style View - '+window.top.content.document.title+' - W15yQC';
-      blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, window.top.content.document);
+      var srcDoc = window.top.content.document;
+      var metaElements = srcDoc.head.getElementsByTagName('meta');
+      if(metaElements != null && metaElements.length>0) {
+        for(var i=0;i<metaElements.length;i++) {
+          reportDoc.head.appendChild(reportDoc.importNode(metaElements[i], false));
+        }
+      }
+      reportDoc.title = 'Removed Style View - '+srcDoc.title+' - W15yQC';
+      blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, srcDoc);
+      var rd=reportDoc;
+              if(rd != null) {
+          const nsIFilePicker = Components.interfaces.nsIFilePicker;
+  
+          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
+          var rv = fp.show();
+          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+            
+            var file = fp.file;
+            // work with returned nsILocalFile...
+            if(/\.html?$/.test(file.path)==false) {
+              file.initWithPath(file.path+'.html');
+            }
+  
+            var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
+                           createInstance(Components.interfaces.nsIFileOutputStream);  
+              
+            // use 0x02 | 0x10 to open file for appending.  
+            foStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
+            var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
+            converter.init(foStream, "UTF-8", 0, 0);  
+            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
+            converter.close(); // this closes foStream            
+          }
+        }
+
     },
     
-    fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode) {
-      // if(rootNode != null) alert('Received:'+rootNode.tagName);
+    fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
+      if(oValues == null) {
+        oValues = {
+          iNumberOfLinks: 0,
+          iNumberOfFrames: 0,
+          iNumberOfARIALandmarks: 0
+        }
+      }
       if (doc != null) {
+        var node;
         if (rootNode == null) rootNode = doc.body;
         if (appendNode == null) appendNode = rd.body;
         for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
@@ -6361,29 +6403,43 @@ ys: 'whys'
               appendNode.appendChild(div);
               var p=rd.createElement('p');
               p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
-              p.innerHTML = 'Frame: '+(c.hasAttribute('title') ? c.getAttribute('title') : 'Missing Title');
+              oValues.iNumberOfFrames++;
+              p.innerHTML = 'Frame('+oValues.iNumberOfFrames+'): '+(c.hasAttribute('title') ? 'Title: '+c.getAttribute('title') : 'Missing Title');
+              var thisFrameNumber = oValues.iNumberOfFrames;
               div.appendChild(p);
-              blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body);
+              blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
+              p=rd.createElement('p');
+              p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
+              p.innerHTML = 'Frame('+thisFrameNumber+') Ends';
+              div.appendChild(p);
             } else { // keep looking through current document
               if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-                var node;
-                if(/^(b|center|em|i)$/i.test(c.tagName)) {
+                if(/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
                   node = rd.createElement('span');
                 } else {
                   node = rd.importNode(c, false);
+                  if(/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
+                    node.setAttribute('src','dont-load-'+node.getAttribute('src'));
+                  }
                 }
                 for(var i=0;i<node.attributes.length;i++) {
                   if(/^(on[a-z]+|style|class|align|border)$/i.test(node.attributes[i].name)==true) {
                     node.removeAttribute(node.attributes[i].name);
+                  } else if(/^javascript:/i.test(node.attributes[i].value)) {
+                    node.setAttribute(node.attributes[i].name, 'javascript:return false;');
                   }
                 }
+                node.removeAttribute('style');
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
                 //alert('digging into:'+node.tagName);
-                blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c);
+                blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
               }
             }
           } else {
-            appendNode.appendChild(rd.importNode(c, true)); //alert('appending:'+c.nodeName+' to:'+appendNode.tagName);
+            node = rd.importNode(c, true);
+            if(node.removeAttribute) node.removeAttribute('style');
+            appendNode.appendChild(node); //alert('appending:'+c.nodeName+' to:'+appendNode.tagName);
+            blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
           }
         }
       }
