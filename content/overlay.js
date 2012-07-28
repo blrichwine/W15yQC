@@ -1072,11 +1072,7 @@ ys: 'whys'
     },
     
     fnStringHasContent: function(s) {
-      if(s != null) {
-        s = s.replace(/\s/g,'');
-        if(s.length>0) return true;
-      }
-      return false;
+      return (s!=null)&&/[^\s]/.test(s);
     },
 
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
