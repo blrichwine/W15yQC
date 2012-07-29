@@ -1075,6 +1075,29 @@ ys: 'whys'
       return (s!=null)&&/[^\s]/.test(s);
     },
 
+    fnElementHasOwnContent: function(node) {
+      if(node!=null && node.firstChild) {
+        node = node.firstChild;
+        while(node!=null) {
+          if(node.nodeType==3 && node.data!=null &&/[^\s]/.test(node.data)) return true;
+          node=node.nextSibling;
+        }
+      }
+      return false;
+    },
+    
+    fnElementsOwnContent: function(node) {
+      var sText='';
+      if(node!=null && node.firstChild) {
+        node = node.firstChild;
+        while(node!=null) {
+          if(node.nodeType==3 && node.data!=null) sText+=node.data;
+          node=node.nextSibling;
+        }
+      }
+      return sText.replace(/\s/g, '');
+    },
+    
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
       if (s1 == s2) return true;
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
@@ -1306,6 +1329,10 @@ ys: 'whys'
         case 'contrast':
           dialogID = 'contrastToolDialog';
           dialogPath = 'chrome://W15yQC/content/contrastDialog.xul';
+          break;
+        case 'lumCheck':
+          dialogID = 'luminosityCheckDialog';
+          dialogPath = 'chrome://W15yQC/content/luminosityCheckDialog.xul';
           break;
         }
         if (dialogID != null) window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen');
@@ -2415,7 +2442,7 @@ ys: 'whys'
       return sXPath;
     },
 
-    fnDescribeElement: function (node, maxLength, maxAttributeLength) {
+    fnDescribeElement: function (node, maxLength, maxAttributeLength, sMode) {
       var sDescription = '';
       if (node != null && node.tagName) {
         var sAttributes = '';
@@ -4473,7 +4500,103 @@ ys: 'whys'
       rd.body.appendChild(div);
     },
 
+    fnGetColorString: function(ic) {
+        return '#'+('000000'+ic.toString(16)).substr(-6).toUpperCase();
+    },
+    
+    fnParseColorValues: function(sColor) {
+      if(sColor != null && sColor.match) {
+        var aMatches = sColor.match(/^\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)\s*$/i);
+        if(aMatches != null) {
+          return [aMatches[1],aMatches[2],aMatches[3]];
+        }
+      }
+      return null;
+    },
+    
+    fnCalculateLuminance: function(r,g,b){
+        r = r <= 0.03928 ? r / 12.92 : Math.pow(((r+0.055)/1.055), 2.4);
+        g = g <= 0.03928 ? g / 12.92 : Math.pow(((g+0.055)/1.055), 2.4);
+        b = b <= 0.03928 ? b / 12.92 : Math.pow(((b+0.055)/1.055), 2.4);
+        return 0.2126*r + 0.7152*g + 0.0722*b;
+    },
 
+    fnComputeWCAG2LuminosityRatio: function(r1,g1,b1, r2,g2,b2) {
+        var l1 = blr.W15yQC.fnCalculateLuminance(r1/255, g1/255, b1/255);
+        var l2 = blr.W15yQC.fnCalculateLuminance(r2/255, g2/255, b2/255);
+        return Math.round(((l1 >= l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05)) *100) / 100;
+    },
+
+    fnGetColorValues: function(el) {
+      var style = window.getComputedStyle(el, null);
+      if(style!=null) {
+        var fgColor=style.getPropertyValue('color');
+        while(/transparent/i.test(fgColor) && el.parentNode != null) {
+          el=el.parentNode;
+          if(el.nodeType==1) {
+            style = window.getComputedStyle(el, null);
+            if(style!=null) {
+              fgColor=style.getPropertyValue('background-color');
+            }
+          }
+        }
+        if(/transparent/i.test(fgColor)) fgColor = 'rgb(0, 0, 0)';
+        var bgColor=style.getPropertyValue('background-color');
+        while(/transparent/i.test(bgColor) && el.parentNode != null) {
+          el=el.parentNode;
+          if(el.nodeType==1) {
+            style = window.getComputedStyle(el, null);
+            if(style!=null) {
+              bgColor=style.getPropertyValue('background-color');
+            }
+          }
+        }
+        if(/transparent/i.test(bgColor)) bgColor = 'rgb(255, 255, 255)';
+
+        var aFGColor = blr.W15yQC.fnParseColorValues(fgColor);
+        var aBGColor = blr.W15yQC.fnParseColorValues(bgColor);
+        if(aFGColor != null && aBGColor != null) return [aFGColor[0], aFGColor[1], aFGColor[2], aBGColor[0], aBGColor[1], aBGColor[2]];
+      }
+      return null;
+    },
+    
+    fnGetLuminosityCheckElements: function(doc, rootNode, aLumCheckList, parentsColor, parentsBGColor) {
+      if (aLumCheckList == null) aLumCheckList = new Array();
+
+      if (doc != null) {
+        if (rootNode == null) rootNode = doc.body;
+        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
+                            (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+            // get frame contents
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetLuminosityCheckElements(frameDocument, frameDocument.body, aLumCheckList);
+          } else { // keep looking through current document
+            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+              var tagName = c.tagName.toLowerCase();
+              if(blr.W15yQC.fnElementHasOwnContent(c)) {
+                var aColors = blr.W15yQC.fnGetColorValues(c);
+                var xPath = blr.W15yQC.fnGetElementXPath(c);
+                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                var sText = blr.W15yQC.fnElementsOwnContent(c);
+                if(aColors != null) {
+                  var fgColor = [aColors[0], aColors[1], aColors[2]];
+                  var bgColor = [aColors[3], aColors[4], aColors[5]];
+                  var fgLum;
+                  var bgLum;
+                  var lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
+                  aLumCheckList.push(new blr.W15yQC.contrastElement(c, xPath, nodeDescription, doc, aLumCheckList.length, sText, fgColor, bgColor, fgLum, bgLum, lRatio));
+                }
+              }
+            }
+            blr.W15yQC.fnGetLuminosityCheckElements(doc, c, aLumCheckList);
+          }
+        }
+      }
+      return aLumCheckList;
+    },
+        
     fnGetImages: function (doc, rootNode, aImagesList) {
       if (aImagesList == null) aImagesList = new Array();
 
@@ -6289,6 +6412,10 @@ ys: 'whys'
       blr.W15yQC.fnDisplayImagesResults(rd, aImagesList);
     },
 
+    fnInspectLuminosityRatios: function (rd, aDocumentsList) {
+      var aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.top.content.document);
+    },
+
     fnInspectAccessKeys: function (rd, aDocumentsList) {
       var aAccessKeysList = blr.W15yQC.fnGetAccessKeys(window.top.content.document);
       blr.W15yQC.fnAnalyzeAccessKeys(aAccessKeysList, aDocumentsList);
@@ -6910,6 +7037,36 @@ ys: 'whys'
     title: null
   };
 
+  blr.W15yQC.contrastElement = function (node, xpath, nodeDescription, doc, orderNumber, sText, fgColor, bgColor, fgLuminosity, bgLuminosity, lRatio) {
+    this.node = node;
+    this.xpath = xpath;
+    this.nodeDescription = nodeDescription;
+    this.doc = doc;
+    this.orderNumber = orderNumber;
+    this.text = sText;
+    this.fgColor = fgColor;
+    this.bgColor = bgColor;
+    this.fgLuminosity = fgLuminosity;
+    this.bgLuminosity = bgLuminosity;
+    this.luminosityRatio = lRatio;
+  };
+
+  blr.W15yQC.contrastElement.prototype = {
+    node: null,
+    xpath: null,
+    nodeDescription: null,
+    doc: null,
+    orderNumber: null,
+    text: null,
+    ownerDocumentNumber: null,
+    fgColor: null,
+    bgColor: null,
+    fgLuminosity: null,
+    bgLuminosity: null,
+    luminosityRatio: null,
+    failed: false,
+    warning: false
+  };
 
   blr.W15yQC.accessKey = function (node, xpath, nodeDescription, doc, orderNumber, role, accessKey, effectiveLabel) {
     this.node = node;
