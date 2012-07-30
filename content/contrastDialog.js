@@ -48,6 +48,10 @@ blr.W15yQC.ContrastDialog = {
     color2enabled: false,
     
     init: function(dialog) {
+        if(dialog.arguments.length>1) {
+            blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(dialog.arguments[0]);
+            blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(dialog.arguments[1]);
+        }
         blr.W15yQC.ContrastDialog.fnColor1SliderChange();
         blr.W15yQC.ContrastDialog.fnColor2SliderChange();
         blr.W15yQC.ContrastDialog.fnBGSliderChange();
@@ -157,8 +161,9 @@ blr.W15yQC.ContrastDialog = {
     
 // ----- Color 1
 
-    fnColor1HTMLColorChange: function() {
+    fnColor1HTMLColorChange: function(newColor) {
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
+            if(newColor!=null) document.getElementById('tbHTMLColor1').value=newColor;
             blr.W15yQC.ContrastDialog.updatingValues = true;
             var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor1').value);
             var r = document.getElementById('sRed1').value = RGB[0];
@@ -298,8 +303,9 @@ blr.W15yQC.ContrastDialog = {
     
 // ------ BG Color
 
-    fnBGHTMLColorChange: function() {
+    fnBGHTMLColorChange: function(newColor) {
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
+            if(newColor!=null) document.getElementById('tbHTMLColorBG').value=newColor;
             blr.W15yQC.ContrastDialog.updatingValues = true;
             var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColorBG').value);
             var r = document.getElementById('sRedBG').value = RGB[0];
