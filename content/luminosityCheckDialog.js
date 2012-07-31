@@ -112,7 +112,7 @@ blr.W15yQC.LuminosityCheckDialog = {
                     
                     var lRatio = parseFloat(ak.luminosityRatio).toFixed(2);
                     treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+lRatio+' ');
+                    treecell.setAttribute('label', ' '+lRatio+(ak.hasBackgroundImage?'?':' ')+' ');
                     treerow.appendChild(treecell);
                                                             
                     treecell = document.createElement('treecell');
@@ -141,13 +141,16 @@ blr.W15yQC.LuminosityCheckDialog = {
         
     init: function(dialog) {
         var aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-        blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
-        
+        blr.W15yQC.fnAnalyzeDocuments(aDocumentsList); //http://stackoverflow.com/questions/1030747/how-to-set-a-xulrunner-main-windows-minimum-size
         var aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeLuminosityCheckElements(aLumCheckList, aDocumentsList);
         blr.W15yQC.LuminosityCheckDialog.fnPopulateTree(aDocumentsList, aLumCheckList);
         
         return [aDocumentsList, aLumCheckList];
+    },
+    
+    forceMinSize: function(dialog) {
+        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<800 || dialog.outerHeight<450)) dialog.resizeTo(Math.max(800,dialog.outerWidth),Math.max(450,dialog.outerHeight<450));
     },
     
     cleanup: function(aResults) {
@@ -238,9 +241,11 @@ blr.W15yQC.LuminosityCheckDialog = {
         var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
         if1.contentDocument.body.style.color=fgC;
         if1.contentDocument.body.style.backgroundColor=bgC;
+        if1.contentDocument.body.style.fontFamily=window.getComputedStyle(ak.node, null).getPropertyValue("font-family");
+        if1.contentDocument.body.style.fontSize=(textSize*.80).toString()+'pt';
         if1.contentDocument.body.style.margin='0';
-        if1.contentDocument.body.style.padding='0';
-        if1.contentDocument.body.innerHTML='<p style="margin:0;padding:4px;font-size:'+textSize.toString()+'pt">Example text at '+textSize+' points. <i>Example text in italic.</i> <b>Example text in bold.</b></p>';
+        if1.contentDocument.body.style.padding='4px';
+        if1.contentDocument.body.innerHTML='Example text at '+textSize+' points. <i>Example text in italic.</i> <b>Example text in bold.</b>';
 
         for(var i=0;i<aResults[0].length;i++) blr.W15yQC.resetHighlightElement(aResults[0][i].doc);
         var highlightElementsCB = document.getElementById('chkbox-highlighton');

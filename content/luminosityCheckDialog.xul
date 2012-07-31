@@ -9,7 +9,9 @@
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
       ondialogaccept="blr.W15yQC.LuminosityCheckDialog.cleanup(aResults);aResults=null;return true"
       ondialogcancel="blr.W15yQC.LuminosityCheckDialog.cleanup(aResults);aResults=null;return true"
-      buttons="" 
+      buttons=""
+			onresize="blr.W15yQC.LuminosityCheckDialog.forceMinSize(this)"
+			style="min-width:908px"
       onload="aResults = blr.W15yQC.LuminosityCheckDialog.init(this)">
    <xul:script>
       var aResults = null;
@@ -100,8 +102,8 @@
 	 <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 	 	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
 		 <xul:hbox>
-			<xul:textbox id="note-text" readonly="true" multiline="true" rows="5" flex="2" />
-			<xul:iframe id="iframeCSample" src="about:blank" type="content" height="50" flex="1"/>
+			<xul:textbox style="margin:0 4px 0 0" id="note-text" readonly="true" multiline="true" rows="5" flex="2" />
+			<xul:iframe id="iframeCSample" src="about:blank" type="content" height="32" flex="1"/>
 		 </xul:hbox>
 	 </xul:vbox>
 	 <xul:hbox id="box-button" align="right">
