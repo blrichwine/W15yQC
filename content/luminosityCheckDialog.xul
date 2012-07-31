@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+      id="colorContrastCheckResultsDialog"
+      title="Color Contrast Check Results - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      ondialogaccept="blr.W15yQC.LuminosityCheckDialog.cleanup(aResults);aResults=null;return true"
+      ondialogcancel="blr.W15yQC.LuminosityCheckDialog.cleanup(aResults);aResults=null;return true"
+      buttons=""
+			onresize="blr.W15yQC.LuminosityCheckDialog.forceMinSize(this)"
+			style="min-width:908px"
+      onload="aResults = blr.W15yQC.LuminosityCheckDialog.init(this)">
+   <xul:script>
+      var aResults = null;
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/luminosityCheckDialog.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
+      onselect="blr.W15yQC.LuminosityCheckDialog.updateNotesField(aResults)">
+         <xul:treecols>
+						<xul:treecol ordinal="1" id="col-header-sourceOrder"
+							 label=" # "
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-documentNumber"
+							 label="Doc. #"
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter  ordinal="4" class="tree-splitter" />
+						<xul:treecol ordinal="5" id="col-header-elementDescription"
+							 label="Element Description"
+							 sortDirection=""
+							 hidden="true"
+							 flex="2"
+							 onclick=""/>
+						<xul:splitter ordinal="6" class="tree-splitter" />
+						<xul:treecol ordinal="7" id="col-header-tag"
+							 label="Tag"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="8" class="tree-splitter" />
+						<xul:treecol ordinal="9" id="col-header-id"
+							 label="ID"
+							 style="text-align:left"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="10" class="tree-splitter" />
+						<xul:treecol ordinal="11" id="col-header-class"
+							 label="Class"
+							 style="text-align:left"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="12" class="tree-splitter" />
+						<xul:treecol ordinal="13" id="col-header-textSize"
+							 label="Size"
+							 style="text-align:right"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="14" class="tree-splitter" />
+						<xul:treecol ordinal="15" id="col-header-textWeight"
+							 label="Weight"
+							 style="text-align:right"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="16" class="tree-splitter" />
+						<xul:treecol ordinal="17" id="col-header-fgColor"
+							 label="fgColor"
+							 style="text-align:right"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="18" class="tree-splitter" />
+						<xul:treecol ordinal="19" id="col-header-bgcolor"
+							 label="bgColor"
+							 style="text-align:right"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="20" class="tree-splitter" />
+						<xul:treecol ordinal="21" id="col-header-ratio"
+							 label="Luminosity Ratio"
+							 style="text-align:right"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="22" class="tree-splitter" /> 
+						<xul:treecol ordinal="23" id="col-header-text"
+							 label="Text"
+							 style="text-align:left"
+							 sortDirection=""
+							 flex="3"
+							 onclick=""/>
+         </xul:treecols>
+	 	 <xul:treechildren id="treeboxChildren"/>
+	 </xul:tree>
+	 <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
+	 	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
+		 <xul:hbox>
+			<xul:textbox style="margin:0 4px 0 0" id="note-text" readonly="true" multiline="true" rows="5" flex="2" />
+			<xul:iframe id="iframeCSample" src="about:blank" type="content" height="32" flex="1"/>
+		 </xul:hbox>
+	 </xul:vbox>
+	 <xul:hbox id="box-button" align="right">
+			<xul:button id="button-generateHTMLReport"
+				label="View Report"
+				oncommand=""
+				accesskey=""/>
+			<xul:button id="button-moveToSelectedElement"
+				label="Scroll To"
+				oncommand="blr.W15yQC.LuminosityCheckDialog.moveToSelectedElement()"
+				accesskey=""/>
+			<xul:button id="button-moveFocusToSelectedElement"
+				label="Move Focus To"
+				oncommand="blr.W15yQC.LuminosityCheckDialog.moveFocusToSelectedElement()"
+				accesskey=""/>
+			<xul:button id="button-openInContrastTool"
+				label="Open Contrast Tool"
+				oncommand="blr.W15yQC.LuminosityCheckDialog.openColorsInContrastTool()"
+				accesskey=""/>
+	 	 <xul:checkbox id="chkbox-highlighton" label="Highlight Selected Element" checked="true" oncommand="blr.W15yQC.LuminosityCheckDialog.toggleHighlighting(aResults);"/>
+			<xul:spacer flex="1"/>
+			<xul:button id="button-activate"
+				 dlgtype="accept"
+				 label="OK"
+	  	    oncommand=""
+				 accesskey=""
+         />
+			<xul:button id="button-close"
+				 dlgtype="cancel"
+				 label="Close"
+				 accesskey=""
+				 oncommand=""/>
+      </xul:hbox>
+   </xul:vbox>
+</xul:dialog>

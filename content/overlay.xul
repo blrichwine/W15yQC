@@ -41,6 +41,8 @@
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
             <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Remove Styles" 
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
+            <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Contrast Checker" 
+                      oncommand="blr.W15yQC.openDialog('lumCheck');"/>
           </menupopup>
         </menu>
         <menuseparator/>

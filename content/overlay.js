@@ -1075,6 +1075,29 @@ ys: 'whys'
       return (s!=null)&&/[^\s]/.test(s);
     },
 
+    fnElementHasOwnContent: function(node) {
+      if(node!=null && node.firstChild) {
+        node = node.firstChild;
+        while(node!=null) {
+          if(node.nodeType==3 && node.data!=null &&/[^\s]/.test(node.data)) return true;
+          node=node.nextSibling;
+        }
+      }
+      return false;
+    },
+    
+    fnElementsOwnContent: function(node) {
+      var sText='';
+      if(node!=null && node.firstChild) {
+        node = node.firstChild;
+        while(node!=null) {
+          if(node.nodeType==3 && node.data!=null) sText+=node.data;
+          node=node.nextSibling;
+        }
+      }
+      return blr.W15yQC.fnCleanSpaces(sText);
+    },
+    
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
       if (s1 == s2) return true;
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
@@ -1307,6 +1330,10 @@ ys: 'whys'
           dialogID = 'contrastToolDialog';
           dialogPath = 'chrome://W15yQC/content/contrastDialog.xul';
           break;
+        case 'lumCheck':
+          dialogID = 'luminosityCheckDialog';
+          dialogPath = 'chrome://W15yQC/content/luminosityCheckDialog.xul';
+          break;
         }
         if (dialogID != null) window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen');
       }
@@ -1331,6 +1358,40 @@ ys: 'whys'
       return null;
     },
 
+    fnMoveToElement: function(node) {
+      if(node != null && node.hasAttribute && node.nodeType==1) {
+        if(node.hasAttribute('tabindex')) {
+          //var oldTIValue=node.getAttribute('tabindex');
+          //node.setAttribute('tabindex',-1);
+          //node.focus();
+          node.scrollIntoView(true);
+          //node.setAttribute('tabindex',oldTIValue);
+        } else {
+          //node.setAttribute('tabindex',-1);
+          //node.focus();
+          node.scrollIntoView(true);
+          //node.removeAttribute('tabindex');
+        }
+      }
+    },
+
+    fnMoveFocusToElement: function(node) {
+      if(node != null && node.hasAttribute && node.nodeType==1) {
+        if(node.hasAttribute('tabindex')) {
+          var oldTIValue=node.getAttribute('tabindex');
+          node.setAttribute('tabindex',-1);
+          node.focus();
+          node.scrollIntoView(false);
+          node.setAttribute('tabindex',oldTIValue);
+        } else {
+          node.setAttribute('tabindex',-1);
+          node.focus();
+          node.scrollIntoView(false);
+          node.removeAttribute('tabindex');
+        }
+      }
+    },
+    
     highlightElement: function (node, doc) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
       blr.W15yQC.fnLog('highlightElement start');
@@ -2415,7 +2476,7 @@ ys: 'whys'
       return sXPath;
     },
 
-    fnDescribeElement: function (node, maxLength, maxAttributeLength) {
+    fnDescribeElement: function (node, maxLength, maxAttributeLength, sMode) {
       var sDescription = '';
       if (node != null && node.tagName) {
         var sAttributes = '';
@@ -4473,7 +4534,163 @@ ys: 'whys'
       rd.body.appendChild(div);
     },
 
+    fnGetColorString: function(ic) {
+        return '#'+('000000'+ic.toString(16)).substr(-6).toUpperCase();
+    },
+    
+    fnParseCSSColorValues: function(sColor) {
+      if(sColor != null && sColor.match) {
+        var aMatches = sColor.match(/^\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)\s*$/i);
+        if(aMatches != null) {
+          return [aMatches[1],aMatches[2],aMatches[3]];
+        }
+      }
+      return null;
+    },
+    
+    fnCalculateLuminance: function(r,g,b){
+        r = r <= 0.03928 ? r / 12.92 : Math.pow(((r+0.055)/1.055), 2.4);
+        g = g <= 0.03928 ? g / 12.92 : Math.pow(((g+0.055)/1.055), 2.4);
+        b = b <= 0.03928 ? b / 12.92 : Math.pow(((b+0.055)/1.055), 2.4);
+        return 0.2126*r + 0.7152*g + 0.0722*b;
+    },
 
+    fnComputeWCAG2LuminosityRatio: function(r1,g1,b1, r2,g2,b2) {
+        var l1 = blr.W15yQC.fnCalculateLuminance(r1/255, g1/255, b1/255);
+        var l2 = blr.W15yQC.fnCalculateLuminance(r2/255, g2/255, b2/255);
+        return Math.round(((l1 >= l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05)) *100) / 100;
+    },
+
+    fnGetColorValues: function(el) {
+      var bdebug=false;
+      if(el.innerHTML=='NewsPulse') bdebug=true;
+      if(bdebug) blr.W15yQC.fnLog('gcv-newspulse-start');
+      var style = window.getComputedStyle(el, null);
+      if(style!=null) {
+        var textSize = style.getPropertyValue('font-size');
+        var textWeight = style.getPropertyValue('font-weight');
+        var bBgImage = style.getPropertyValue('background-image').toLowerCase()!=='none';
+        var bgTransparent = style.getPropertyValue('background-color').toLowerCase()=='transparent';
+        if(bdebug) blr.W15yQC.fnLog('gcv-newspulse:'+el.tagName+' '+textSize+' '+textWeight+' '+bBgImage+' ' + bgTransparent+ ' '+style.getPropertyValue('background-color').toLowerCase());
+        var el2=el;
+        var style2;
+        while(bBgImage==false && bgTransparent==true && el2.parentNode != null) {
+        if(bdebug) blr.W15yQC.fnLog('gcv-newspulse-inWhile:'+el2.tagName+' '+textSize+' '+textWeight+' '+bBgImage+' '+bgTransparent);
+          el2=el2.parentNode;
+          if(el2.nodeType==1) {
+            style2 = window.getComputedStyle(el2, null); 
+            if(bdebug) blr.W15yQC.fnLog('gcv-newspulse-inWhileIf1:'+el2.tagName+' '+style2.getPropertyValue('background-image'));
+            if(style2!=null && style2.getPropertyValue('background-image').toLowerCase() !=='none' && bgTransparent==true) {
+              bBgImage=true;
+              blr.W15yQC.fnLog('gcv-newspulse-foundImage:'+el.tagName+' -- '+el2.tagName+' '+style2.getPropertyValue('background-image'));
+              break;
+            } else {
+              bgTransparent = style2.getPropertyValue('background-color').toLowerCase()=='transparent';
+            }
+          }
+        }
+
+        var fgColor=style.getPropertyValue('color');
+        el2=el;
+        while(/transparent/i.test(fgColor) && el2.parentNode != null) {
+          el2=el2.parentNode;
+          if(el2.nodeType==1) {
+            style2 = window.getComputedStyle(el2, null);
+            if(style2!=null) {
+              fgColor=style2.getPropertyValue('background-color');
+            }
+          }
+        }
+        if(/transparent/i.test(fgColor)) fgColor = 'rgb(0, 0, 0)';
+        
+        var bgColor=style.getPropertyValue('background-color');
+        el2=el;
+        while(/transparent/i.test(bgColor) && el2.parentNode != null) {
+          el2=el2.parentNode;
+          if(el2.nodeType==1) {
+            style2 = window.getComputedStyle(el2, null);
+            if(style2!=null) {
+              bgColor=style2.getPropertyValue('background-color');
+            }
+          }
+        }
+        if(/transparent/i.test(bgColor)) bgColor = 'rgb(255, 255, 255)';
+
+        var aFGColor = blr.W15yQC.fnParseCSSColorValues(fgColor);
+        var aBGColor = blr.W15yQC.fnParseCSSColorValues(bgColor);
+        if(aFGColor != null && aBGColor != null) return [aFGColor[0], aFGColor[1], aFGColor[2], aBGColor[0], aBGColor[1], aBGColor[2], textSize, textWeight, bBgImage];
+      }
+      return null;
+    },
+    
+    fnGetLuminosityCheckElements: function(doc, rootNode, aLumCheckList, parentsColor, parentsBGColor) {
+      if (aLumCheckList == null) aLumCheckList = new Array();
+
+      if (doc != null) {
+        if (rootNode == null) rootNode = doc.body;
+        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
+          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
+                            (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+            // get frame contents
+            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnGetLuminosityCheckElements(frameDocument, frameDocument.body, aLumCheckList);
+          } else { // keep looking through current document
+            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+              var tagName = c.tagName.toLowerCase();
+              if(tagName != 'script' && tagName != 'style' && tagName != 'option' && blr.W15yQC.fnElementHasOwnContent(c)) {
+                var aColors = blr.W15yQC.fnGetColorValues(c);
+                var xPath = blr.W15yQC.fnGetElementXPath(c);
+                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                var sText = blr.W15yQC.fnElementsOwnContent(c);
+                if(aColors != null) {
+                  var fgColor = [aColors[0], aColors[1], aColors[2]];
+                  var bgColor = [aColors[3], aColors[4], aColors[5]];
+                  var sTextSize = aColors[6];
+                  var textWeight = aColors[7];
+                  var bBgImage = aColors[8];
+                  var fgLum;
+                  var bgLum;
+                  var lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
+                  aLumCheckList.push(new blr.W15yQC.contrastElement(c, xPath, nodeDescription, doc, aLumCheckList.length, sText, sTextSize, textWeight, fgColor, bgColor, bBgImage, fgLum, bgLum, lRatio));
+                }
+              }
+            }
+            blr.W15yQC.fnGetLuminosityCheckElements(doc, c, aLumCheckList);
+          }
+        }
+      }
+      return aLumCheckList;
+    },
+        
+    fnAnalyzeLuminosityCheckElements: function(aLumCheckList, aDocumentsList) {
+      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      
+      var spec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2AA');
+      var minRatio=7.0;
+
+      if (aLumCheckList != null && aLumCheckList.length) {
+        for (var i = 0; i < aLumCheckList.length; i++) {
+          aLumCheckList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLumCheckList[i].node, aDocumentsList);
+          var textSize = parseFloat(aLumCheckList[i].textSize);
+          var textWeight = parseInt(aLumCheckList[i].textWeight);
+          var lRatio = parseFloat(aLumCheckList[i].luminosityRatio);
+          if(textSize>=18) {
+            minRatio=spec=='WCAG2AA' ? 3.0 : 4.5;
+          } else if(textSize >= 14 && textWeight>=700) {
+            minRatio=spec=='WCAG2AA' ? 3.0 : 4.5;
+          } else {
+            minRatio=spec=='WCAG2AA' ? 4.5 : 7.0;
+          }
+          if(lRatio<=minRatio) {
+            aLumCheckList[i].failed=true;
+          } else if(aLumCheckList[i].hasBackgroundImage==true) {
+            aLumCheckList[i].warning=true;
+          }
+        }
+      }
+    },
+    
     fnGetImages: function (doc, rootNode, aImagesList) {
       if (aImagesList == null) aImagesList = new Array();
 
@@ -6289,6 +6506,10 @@ ys: 'whys'
       blr.W15yQC.fnDisplayImagesResults(rd, aImagesList);
     },
 
+    fnInspectLuminosityRatios: function (rd, aDocumentsList) {
+      var aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.top.content.document);
+    },
+
     fnInspectAccessKeys: function (rd, aDocumentsList) {
       var aAccessKeysList = blr.W15yQC.fnGetAccessKeys(window.top.content.document);
       blr.W15yQC.fnAnalyzeAccessKeys(aAccessKeysList, aDocumentsList);
@@ -6910,6 +7131,42 @@ ys: 'whys'
     title: null
   };
 
+  blr.W15yQC.contrastElement = function (node, xpath, nodeDescription, doc, orderNumber, sText, sTextSize, textWeight, fgColor, bgColor, bHasBGImage, fgLuminosity, bgLuminosity, lRatio) {
+    this.node = node;
+    this.xpath = xpath;
+    this.nodeDescription = nodeDescription;
+    this.doc = doc;
+    this.orderNumber = orderNumber;
+    this.text = sText;
+    this.textSize = sTextSize;
+    this.textWeight = textWeight;
+    this.fgColor = fgColor;
+    this.bgColor = bgColor;
+    this.hasBackgroundImage = bHasBGImage;
+    this.fgLuminosity = fgLuminosity;
+    this.bgLuminosity = bgLuminosity;
+    this.luminosityRatio = lRatio;
+  };
+
+  blr.W15yQC.contrastElement.prototype = {
+    node: null,
+    xpath: null,
+    nodeDescription: null,
+    doc: null,
+    orderNumber: null,
+    text: null,
+    textSize: null,
+    textWeight: null,
+    ownerDocumentNumber: null,
+    fgColor: null,
+    bgColor: null,
+    hasBackgroundImage: false,
+    fgLuminosity: null,
+    bgLuminosity: null,
+    luminosityRatio: null,
+    failed: false,
+    warning: false
+  };
 
   blr.W15yQC.accessKey = function (node, xpath, nodeDescription, doc, orderNumber, role, accessKey, effectiveLabel) {
     this.node = node;
