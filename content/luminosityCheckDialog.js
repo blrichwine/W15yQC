@@ -150,7 +150,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
     
     forceMinSize: function(dialog) {
-        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<800 || dialog.outerHeight<450)) dialog.resizeTo(Math.max(800,dialog.outerWidth),Math.max(450,dialog.outerHeight<450));
+        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<800 || dialog.outerHeight<470)) dialog.resizeTo(Math.max(800,dialog.outerWidth),Math.max(470,dialog.outerHeight));
     },
     
     cleanup: function(aResults) {
@@ -219,10 +219,10 @@ blr.W15yQC.LuminosityCheckDialog = {
             sMeetsLimitText='just meets AA compliance.';
         }
         var sLimitMsg = 'For text that is '+sTextDescription+', the minimum required contrast ratio to meet WCAG 2.0 AA compliance is: '+AALimit+
-        ":1,\n and to meet AAA compliance is: "+AAALimit+':1. The contrast ratio of '+lRatio+':1 '+sMeetsLimitText;
+        ":1, and to meet AAA compliance is: "+AAALimit+':1. The contrast ratio of '+lRatio+':1 '+sMeetsLimitText;
         
         if(ak.hasBackgroundImage==true) {
-            textbox.value = blr.W15yQC.fnJoin(textbox.value, "WARNING: Appears to have a background image. Results may be invalid.", "\n\n");
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, "NOTICE: Element appears to be over a background image. Contrast results may be invalid. Verify styling against sample on the right.", "\n\n");
         }
 
         textbox.value = blr.W15yQC.fnJoin(textbox.value, sLimitMsg+"\n\n"+ak.nodeDescription, "\n\n");

@@ -18,7 +18,7 @@
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/luminosityCheckDialog.js"/>
-   <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
+   <xul:vbox id="vb" align="stretch" flex="1" height="425" width="900">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
       onselect="blr.W15yQC.LuminosityCheckDialog.updateNotesField(aResults)">
          <xul:treecols>
@@ -102,8 +102,8 @@
 	 <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 	 	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
 		 <xul:hbox>
-			<xul:textbox style="margin:0 4px 0 0" id="note-text" readonly="true" multiline="true" rows="5" flex="2" />
-			<xul:iframe id="iframeCSample" src="about:blank" type="content" height="32" flex="1"/>
+			<xul:textbox style="margin:0 4px 0 0" id="note-text" readonly="true" multiline="true" rows="9" flex="2" />
+			<xul:iframe id="iframeCSample" src="about:blank" type="content" flex="1"/>
 		 </xul:hbox>
 	 </xul:vbox>
 	 <xul:hbox id="box-button" align="right">
