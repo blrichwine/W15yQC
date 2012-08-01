@@ -1,3 +1,4 @@
+
 /*
     This file is part of W15y Quick Check
     Copyright (C) 2011, 2012  Brian L. Richwine
@@ -30,8 +31,7 @@ if (!blr) var blr = {};
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-
-    version: '0.9.1',
+    version: '1.0-B01',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -104,7 +104,7 @@ borne: 'born',
 bough: 'bow',
 braise: 'brays',
 bread: 'bred',
-break: 'brake',
+brake: 'break',
 browse: 'brows',
 bruise: 'brews',
 bryan: 'brian',
@@ -546,7 +546,7 @@ wheeze: 'wees',
 where: 'ware',
 whet: 'wet',
 whey: 'way',
-while: 'wile',
+wile: 'while',
 whine: 'wine',
 whined: 'wined',
 whit: 'wit',
@@ -662,7 +662,7 @@ ys: 'whys'
       var rd=blr.W15yQC.fnInspect();
       if(bSaveToFile==true) {
         if(rd != null) {
-          const nsIFilePicker = Components.interfaces.nsIFilePicker;
+          var nsIFilePicker = Components.interfaces.nsIFilePicker;
   
           var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
           fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
@@ -691,10 +691,10 @@ ys: 'whys'
     },
 
     fnLog: function (sMsg) {
-      try {
-        var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-        consoleServ.logStringMessage(sMsg);
-      } catch (ex) {};
+      //try {
+      //  var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
+      //  consoleServ.logStringMessage(sMsg);
+      //} catch (ex) {};
     },
 
     autoAdjustColumnWidths: function (treebox, iLimitCounter) {
@@ -6570,7 +6570,7 @@ ys: 'whys'
       blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, srcDoc);
       var rd=reportDoc;
               if(rd != null) {
-          const nsIFilePicker = Components.interfaces.nsIFilePicker;
+          var nsIFilePicker = Components.interfaces.nsIFilePicker;
   
           var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
           fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
