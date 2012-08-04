@@ -3737,7 +3737,7 @@ ys: 'whys'
     },
 
     fnInitDisplayWindow: function (doc) {
-      var topURL, topNav, titleText, outputWindow, reportDoc, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
+      var topURL, topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, reportDoc, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
       
       topURL = doc.URL;
       titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
@@ -3766,7 +3766,46 @@ ys: 'whys'
       topNav = reportDoc.createElement('ul');
       topNav.setAttribute('id', 'topNav');
       topNav.setAttribute('role', 'navigation');
-      topNav.innerHTML = '<li><a tabindex="0" class="collapseAll" href="javascript:collapseAll()">Collapse All</a></li><li><a tabindex="0" class="expandAll" href="javascript:expandAll()">Expand All</a></li><li><a id="displayToggle" href="javascript:fnToggleDisplayOfNonIssues()">Show Issues Only</a></li><li><a tabindex="0" href="http://iuadapts.indiana.edu/">Help<span class="auralText"> (opens in a new window)</span></a></li>';
+      
+      topNavLI=reportDoc.createElement('li');
+      topNavA=reportDoc.createElement('a');
+      topNavA.setAttribute('tabindex','0');
+      topNavA.setAttribute('class','collapseAll');
+      topNavA.setAttribute('href','javascript:collapseAll()');
+      topNavA.appendChild(reportDoc.createTextNode('Collapse All')); // TODO: i18n
+      topNavLI.appendChild(topNavA);
+      topNav.appendChild(topNavLI);
+
+      topNavLI=reportDoc.createElement('li');
+      topNavA=reportDoc.createElement('a');
+      topNavA.setAttribute('tabindex','0');
+      topNavA.setAttribute('class','expandAll');
+      topNavA.setAttribute('href','javascript:expandAll()');
+      topNavA.appendChild(reportDoc.createTextNode('Expand All')); // TODO: i18n
+      topNavLI.appendChild(topNavA);
+      topNav.appendChild(topNavLI);
+
+      topNavLI=reportDoc.createElement('li');
+      topNavA=reportDoc.createElement('a');
+      topNavA.setAttribute('tabindex','0');
+      topNavA.setAttribute('id','displayToggle');
+      topNavA.setAttribute('href','javascript:fnToggleDisplayOfNonIssues()');
+      topNavA.appendChild(reportDoc.createTextNode('Show Issues Only')); // TODO: i18n
+      topNavLI.appendChild(topNavA);
+      topNav.appendChild(topNavLI);
+
+      topNavLI=reportDoc.createElement('li');
+      topNavA=reportDoc.createElement('a');
+      topNavA.setAttribute('tabindex','0');
+      topNavA.setAttribute('href','http://iuadapts.indiana.edu/');
+      topNavA.appendChild(reportDoc.createTextNode('Help')); // TODO: i18n
+      topNavSpan=reportDoc.createElement('span');
+      topNavSpan.setAttribute('class','auralText');
+      topNavSpan.appendChild(reportDoc.createTextNode(' (opens in a new window)'));
+      topNavA.appendChild(topNavSpan);
+      topNavLI.appendChild(topNavA);
+      topNav.appendChild(topNavLI);
+
       reportDoc.body.appendChild(topNav);
 
       reportDoc.body.setAttribute('lang', 'en-US'); // TODO: Get this from FF
