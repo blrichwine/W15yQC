@@ -46,6 +46,7 @@
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average Nesting Level is 3. Warn if greater than 5
  * TODO:
  *    *** FIX ASAP***
+        - Table sort in HTML results is not ignoring case: Link Text on links table
         - QA Form Control Test [].
         - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
         - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
