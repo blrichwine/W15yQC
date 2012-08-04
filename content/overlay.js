@@ -1177,15 +1177,16 @@ ys: 'whys'
 
     fnAppendExpandContractHeadingTo: function (node, doc, sText) {
       var element, aEl, spanEl;
-      element = doc.createElement('h2'); // TODO: Internationalize the "Hide" on the next line
+      element = doc.createElement('h2'); 
       element.setAttribute('tabindex', '-1');
       aEl = doc.createElement('a');
       aEl.setAttribute('tabindex',0);
       aEl.setAttribute('class','ec');
       aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
+      aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
       aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
       spanEl=doc.createElement('span');
-      spanEl.appendChild(doc.createTextNode('Hide '));
+      spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
       spanEl.setAttribute('class','auralText');
       aEl.appendChild(spanEl);
       aEl.appendChild(doc.createTextNode(sText));
