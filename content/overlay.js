@@ -24,7 +24,11 @@
  * Project:	Quick Web Accessibility Checker
  *
  */
-if (!blr) var blr = {};
+
+/*global blr: false, Components: false, Application: false */
+
+
+if (!blr) { var blr = {}; }
 
 /*
  * Object:  W15yQC
@@ -610,7 +614,7 @@ ys: 'whys'
     },
 
     fnGetString: function(sKey, aParameters) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       var sString;
       if(blr.W15yQC.sb != null) {
         if(blr.W15yQC.sb.getString) {
@@ -623,7 +627,7 @@ ys: 'whys'
           } catch(ex) {
             try {
               sString = blr.W15yQC.sb.getFormattedString('missingSBProperty', [sKey]);
-            } catch(ex) {
+            } catch(ex2) {
             }
           }
         } else {
@@ -633,55 +637,63 @@ ys: 'whys'
             } else {
               sString = blr.W15yQC.sb.GetStringFromName(sKey);
             }
-          } catch(ex) {
+          } catch(ex3) {
             sString = blr.W15yQC.sb.formatStringFromName('missingSBProperty', [sKey], 1);
           }
         }
-        if(sString != null) return sString;
+        if(sString != null) { return sString; }
       }
       return 'String Bundle System Unavailable. Something serious is wrong!';
     },
 
     fnIsValidLocale: function(sLocale) {
-      return /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/.test(sLocale); // QA iframeTests01.html
+      return (/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/).test(sLocale); // QA iframeTests01.html
     },
     
     fnSetIsEnglishLocale: function(sLocale) {
-      if(sLocale == null || sLocale=='' || (sLocale.substring && sLocale.substring(0,2).toLowerCase()=='en'))
+      if(sLocale == null || sLocale=='' || (sLocale.substring && sLocale.substring(0,2).toLowerCase()=='en')) {
         blr.W15yQC.bEnglishLocale = true;
-      else
+      }
+      else {
         blr.W15yQC.bEnglishLocale = false;
+      }
       return blr.W15yQC.bEnglishLocale;
     },
     
     fnGetUserLocale: function() {
-      return blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
+      blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
+      return blr.W15yQC.userLocale;
     },
     
     onMenuItemCommand: function (bSaveToFile) {
-      var rd=blr.W15yQC.fnInspect();
+      var converter,
+          file,
+          foStream,
+          fp,
+          nsIFilePicker,
+          rd=blr.W15yQC.fnInspect(),
+          rv;
       if(bSaveToFile==true) {
         if(rd != null) {
-          var nsIFilePicker = Components.interfaces.nsIFilePicker;
+          nsIFilePicker = Components.interfaces.nsIFilePicker;
   
-          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
           fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
           fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
-          var rv = fp.show();
+          rv = fp.show();
           if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
             
-            var file = fp.file;
+            file = fp.file;
             // work with returned nsILocalFile...
             if(/\.html?$/.test(file.path)==false) {
               file.initWithPath(file.path+'.html');
             }
   
-            var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
+            foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
                            createInstance(Components.interfaces.nsIFileOutputStream);  
-              
-            // use 0x02 | 0x10 to open file for appending.  
-            foStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
-            var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
+
+            foStream.init(file, 0x2A, 438, 0);
+            converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
             converter.init(foStream, "UTF-8", 0, 0);  
             converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
             converter.close(); // this closes foStream            
@@ -699,22 +711,28 @@ ys: 'whys'
 
     autoAdjustColumnWidths: function (treebox, iLimitCounter) {
       // Auto-size the narrower XUL treebox columns
+
+      var cols, i, j, newWidth, ch,
+          tree,
+          rowCount,
+          bChangeMade;
+
       if (iLimitCounter == null) {
         iLimitCounter = 1;
       } else {
         iLimitCounter++;
       }
       if (iLimitCounter < 30 && treebox != null && treebox.columns != null && treebox.columns.length && treebox.columns.length > 0) {
-        var cols = treebox.columns;
-        var tree = cols.tree;
-        var rowCount = tree.treeBody.childElementCount;
-        var bChangeMade = false;
-        for (var i = 0; i < cols.length; i++) {
+        cols = treebox.columns;
+        tree = cols.tree;
+        rowCount = tree.treeBody.childElementCount;
+        bChangeMade = false;
+        for (i = 0; i < cols.length; i++) {
           if (cols[i].width > 1 && cols[i].width < 150) {
-            for (var j = 0; j < rowCount; j++) { // Check each row
+            for (j = 0; j < rowCount; j++) { // Check each row
               if (tree.isCellCropped(j, cols[i])) {
-                var newWidth = cols[i].width + 5;
-                var ch = treebox.ownerDocument.getElementById(cols[i].id);
+                newWidth = cols[i].width + 5;
+                ch = treebox.ownerDocument.getElementById(cols[i].id);
                 if (ch) {
                   ch.setAttribute('width', newWidth);
                   bChangeMade = true;
@@ -724,10 +742,10 @@ ys: 'whys'
             }
           }
         }
-        if (bChangeMade) {
+        if (bChangeMade) { // Need to release the thread so change takes place.
           tree.invalidate();
           setTimeout(function () {
-            blr.W15yQC.autoAdjustColumnWidths(treebox, iLimitCounter)
+            blr.W15yQC.autoAdjustColumnWidths(treebox, iLimitCounter);
           }, 2);
         }
       }
@@ -743,27 +761,27 @@ ys: 'whys'
     fnCleanSpaces: function (str, bKeepNewLines) {
       if (str && str.replace) {
         if (bKeepNewLines) {
-          return blr.W15yQC.fnTrim(str.replace(/[ \t]+/g, ' '));
+          str = blr.W15yQC.fnTrim(str.replace(/[ \t]+/g, ' '));
         } else {
-          return blr.W15yQC.fnTrim(str.replace(/\s+/g, ' '));
+          str = blr.W15yQC.fnTrim(str.replace(/\s+/g, ' '));
         }
       }
       return str;
     },
 
     fnTrim: function (str) {
-      if(str != null && str.replace) return str.replace(/^\s*|\s*$/g, '');
-      if(str != null) blr.W15yQC.fnLog("fnTrim: passed:"+str.toString());
+      if(str != null && str.replace) { return str.replace(/^\s*|\s*$/g, ''); }
+      if(str != null) { blr.W15yQC.fnLog("fnTrim: passed:"+str.toString()); }
       return str;
     },
 
     fnJoin: function (s1, s2, sSeparator) {
-      if (s1 == null) return s2;
-      if (s2 == null) return s1;
-      if (sSeparator == null) sSeparator = ' ';
+      var sRet = null;
+      if (s1 == null) { return s2; }
+      if (s2 == null) { return s1; }
+      if (sSeparator == null) { sSeparator = ' '; }
       s1 = blr.W15yQC.fnCleanSpaces(s1, true);
       s2 = blr.W15yQC.fnCleanSpaces(s2, true);
-      var sRet = null;
       if (s1.length > 0 && s2.length > 0) {
         sRet = s1 + sSeparator + s2;
       } else {
@@ -773,8 +791,8 @@ ys: 'whys'
     },
 
     fnJoinIfNew: function (s1, s2, sSeparator) {
-      if (s1 == null) return s2;
-      if (s2 == null) return s1;
+      if (s1 == null) { return s2; }
+      if (s2 == null) { return s1; }
       s1 = blr.W15yQC.fnCleanSpaces(s1, true);
       s2 = blr.W15yQC.fnCleanSpaces(s2, true);
       if (s1.indexOf(s2) < 0 && s2.indexOf(s1) < 0) { // Join if s2 is not in s1 and vice versa
@@ -785,7 +803,7 @@ ys: 'whys'
 
     fnCutoffString: function (s, maxLen) {
       if (maxLen != null && maxLen > 0 && s != null && s.length > maxLen) {
-        if (maxLen > 3) s = s.substr(0, maxLen - 3) + '...';
+        if (maxLen > 3) { s = s.substr(0, maxLen - 3) + '...'; }
         s = s.substr(0, maxLen);
       }
       return s;
@@ -950,10 +968,10 @@ ys: 'whys'
     },
 
     fnAddNote: function(no, sMsgKey, aParameters) {
+      var sl=blr.W15yQC.fnGetNoteSeverityLevel(sMsgKey);
       blr.W15yQC.fnLog("fnAddNote-begin:"+sMsgKey+' '+aParameters);
       blr.W15yQC.fnLog(no.toString());
-      if(no.notes == null) no.notes = [];
-      var sl=blr.W15yQC.fnGetNoteSeverityLevel(sMsgKey);
+      if(no.notes == null) { no.notes = []; }
       if(sl==1) {
         no.warning = true;
       } else if(sl==2) {
@@ -964,17 +982,18 @@ ys: 'whys'
 
     fnResolveNote: function(note, msgHash) {
       if(note != null && note.msgKey && note.msgKey.length) {
-        var msgKey = note.msgKey;
-        var aParameters = note.aParameters;
-        var sMsgTxt = null;
-        var bHasExplanation = false;
-        var sExplanation = null;
-        var severityLevel = 0;
-        var expertLevel = 0;
-        var URL = null;
+        var msgKey = note.msgKey,
+            aParameters = note.aParameters,
+            sMsgTxt = null,
+            bHasExplanation = false,
+            sExplanation = null,
+            severityLevel = 0,
+            expertLevel = 0,
+            nd,
+            URL = null;
 
         if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
-          var nd = blr.W15yQC.noteDetails[msgKey];
+          nd = blr.W15yQC.noteDetails[msgKey];
           severityLevel = nd[0];
           expertLevel = nd[1];
           bHasExplanation = nd[2];
@@ -983,18 +1002,18 @@ ys: 'whys'
 
         if(bHasExplanation == true && (msgHash == null || msgHash.hasItem(msgKey) == false)) {
           sExplanation = blr.W15yQC.fnGetString(msgKey+'.e');
-          if(msgHash != null) msgHash.setItem(msgKey, 1);
+          if(msgHash != null) { msgHash.setItem(msgKey, 1); }
         }
 
-        if(severityLevel != 1 && severityLevel != 2) severityLevel = 0;
-        if(expertLevel != 1 && expertLevel != 2) expertLevel = 0;
+        if(severityLevel != 1 && severityLevel != 2) { severityLevel = 0; }
+        if(expertLevel != 1 && expertLevel != 2) { expertLevel = 0; }
 
         sMsgTxt = blr.W15yQC.fnGetString(msgKey, aParameters);
         if(sMsgTxt == null) {
           severityLevel = 2;
           expertLevel = 0;
           sMsgTxt = blr.W15yQC.fnGetString('missingSBProperty', [msgKey]);
-          if(sMsgTxt == null) sMsgTxt = 'Missing String Bundle Property for:'+msgKey;
+          if(sMsgTxt == null) { sMsgTxt = 'Missing String Bundle Property for:'+msgKey; }
         }
         return new blr.W15yQC.resolvedNote(msgKey, severityLevel, expertLevel, sMsgTxt, sExplanation, URL);
       }
@@ -1002,20 +1021,26 @@ ys: 'whys'
     },
 
     fnMakeHTMLNotesList: function(no, msgHash) {
-      var expertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
-      var sHTML = '';
-      var noteLevelDisplayOrder = [0,2,1];
-      var noteLevelClasses = ['', 'warning', 'failure'];
-      var noteLevelTexts = ['', blr.W15yQC.fnGetString('noteWarning'),blr.W15yQC.fnGetString('noteFailure')];
+      var expertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0),
+          sHTML = '',
+          noteLevelDisplayOrder = [0,2,1],
+          noteLevelClasses = ['', 'warning', 'failure'],
+          noteLevelTexts = ['', blr.W15yQC.fnGetString('noteWarning'),blr.W15yQC.fnGetString('noteFailure')],
+          noteLevelIndex,
+          noteLevel,
+          noteClass,
+          i,
+          rn,
+          noteText;
       if(no != null && no.notes != null && no.notes.length > 0) {
         sHTML = '<ul class="results">';
-        for(var noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
-          var noteLevel = noteLevelDisplayOrder[noteLevelIndex];
-          var noteClass = noteLevelClasses[noteLevel];
-          var noteText = noteLevelTexts[noteLevel];
-          for(var i=0; i<no.notes.length; i++) {
+        for(noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
+          noteLevel = noteLevelDisplayOrder[noteLevelIndex];
+          noteClass = noteLevelClasses[noteLevel];
+          noteText = noteLevelTexts[noteLevel];
+          for(i=0; i<no.notes.length; i++) {
             if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel) {
-              var rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
+              rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
               if(rn != null && rn.expertLevel<= expertLevel) {
                 if(noteLevel==1) {
                   no.warning = true;
@@ -1033,19 +1058,26 @@ ys: 'whys'
     },
 
     fnMakeTextNotesList: function(no, msgHash) {
-      var expertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
-      var sNotes = '';
-      var noteLevelDisplayOrder = [2,1,0];
-      var noteLevelClasses = ['', 'warning', 'failure'];
-      var noteLevelTexts = [blr.W15yQC.fnGetString('noteNote'), blr.W15yQC.fnGetString('noteWarning'),blr.W15yQC.fnGetString('noteFailure')];
+      var expertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0),
+      sNotes = '',
+      noteLevelDisplayOrder = [2,1,0],
+      noteLevelClasses = ['', 'warning', 'failure'],
+      noteLevelTexts = [blr.W15yQC.fnGetString('noteNote'), blr.W15yQC.fnGetString('noteWarning'),blr.W15yQC.fnGetString('noteFailure')],
+      noteLevelIndex,
+      bLevelTextDisplayed,
+      noteLevel,
+      noteText,
+      i,
+      rn;
+
       if(no != null && no.notes != null && no.notes.length > 0) {
-        for(var noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
-          var bLevelTextDisplayed = false;
-          var noteLevel = noteLevelDisplayOrder[noteLevelIndex];
-          var noteText = noteLevelTexts[noteLevel];
-          for(var i=0; i<no.notes.length; i++) {
+        for(noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
+          bLevelTextDisplayed = false;
+          noteLevel = noteLevelDisplayOrder[noteLevelIndex];
+          noteText = noteLevelTexts[noteLevel];
+          for(i=0; i<no.notes.length; i++) {
             if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel) {
-              var rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
+              rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
               if(rn != null && rn.expertLevel<= expertLevel) {
                 if(noteLevel==1) {
                   no.warning = true;
@@ -1066,20 +1098,20 @@ ys: 'whys'
     },
 
     fnAddPageLevelNote: function(no, sMsgKey, aParameters) {
-      if(!no) no = [];
-      if(!no.pageLevel) no.pageLevel = { failed:false, warning:false};
+      if(!no) { no = []; }
+      if(!no.pageLevel) { no.pageLevel = { failed:false, warning:false}; }
       blr.W15yQC.fnAddNote(no.pageLevel,sMsgKey, aParameters);
     },
     
     fnStringHasContent: function(s) {
-      return (s!=null)&&/[^\s]/.test(s);
+      return (s!=null)&&/\S/.test(s);
     },
 
     fnElementHasOwnContent: function(node) {
       if(node!=null && node.firstChild) {
         node = node.firstChild;
         while(node!=null) {
-          if(node.nodeType==3 && node.data!=null &&/[^\s]/.test(node.data)) return true;
+          if(node.nodeType==3 && node.data!=null &&/\S/.test(node.data)) { return true; }
           node=node.nextSibling;
         }
       }
@@ -1091,7 +1123,7 @@ ys: 'whys'
       if(node!=null && node.firstChild) {
         node = node.firstChild;
         while(node!=null) {
-          if(node.nodeType==3 && node.data!=null) sText+=node.data;
+          if(node.nodeType==3 && node.data!=null) { sText+=node.data; }
           node=node.nextSibling;
         }
       }
@@ -1099,7 +1131,7 @@ ys: 'whys'
     },
     
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
-      if (s1 == s2) return true;
+      if (s1 == s2) { return true; }
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
         return true;
       }
@@ -1108,7 +1140,7 @@ ys: 'whys'
 
     fnIsValidPositiveInt: function (sInt) {
       sInt = blr.W15yQC.fnTrim(sInt);
-      if(sInt != null && sInt.length>0 && /^[0-9]+$/.test(sInt) && !isNaN(parseInt(sInt)) && parseInt(sInt)>=0) {
+      if(sInt != null && sInt.length>0 && /^[0-9]+$/.test(sInt) && !isNaN(parseInt(sInt,10)) && parseInt(sInt,10)>=0) {
         return true;
       }
       return false;
@@ -1134,37 +1166,43 @@ ys: 'whys'
     },
 
     fnAddClass: function (ele, cls) {
-      if (!blr.W15yQC.fnHasClass(ele, cls)) ele.className += " " + cls;
+      if (!blr.W15yQC.fnHasClass(ele, cls)) { ele.className += " " + cls; }
     },
 
-    fnAppendElement: function (doc, sElementType, sText, sClass) {
-      var element = doc.createElement(sElementType);
-      element.innerHTML = sText;
-      if (sClass != null) {
-        element.setAttribute('class', sClass);
-      }
-      doc.body.appendChild(element);
-    },
-
-    fnAppendElementTo: function (node, doc, sElementType, sText) {
-      var element = doc.createElement(sElementType);
+    fnAppendPElementTo: function (node, doc, sText) {
+      var element = doc.createElement('p');
       element.appendChild(doc.createTextNode(sText));
       node.appendChild(element);
     },
 
-    fnAppendExpandContractHeadingTo: function (node, doc, sElementType, sText) {
-      var element = doc.createElement(sElementType); // TODO: Internationalize the "Hide" on the next line
-      element.innerHTML = '<a tabindex="0" class="ec" href="javascript:expandContractSection=\'' + sText + '\';" onclick="ec(this,\'' + sText + '\');return false;"><span class="auralText">Hide </span>' + sText + '</a>';
+    fnAppendExpandContractHeadingTo: function (node, doc, sText) {
+      var element, aEl, spanEl;
+      element = doc.createElement('h2'); // TODO: Internationalize the "Hide" on the next line
       element.setAttribute('tabindex', '-1');
+      aEl = doc.createElement('a');
+      aEl.setAttribute('tabindex',0);
+      aEl.setAttribute('class','ec');
+      aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
+      aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
+      spanEl=doc.createElement('span');
+      spanEl.appendChild(doc.createTextNode('Hide '));
+      spanEl.setAttribute('class','auralText');
+      aEl.appendChild(spanEl);
+      aEl.appendChild(doc.createTextNode(sText));
+      element.appendChild(aEl);
       node.appendChild(element);
     },
 
     fnCreateTableHeaders: function (doc, table, aTableHeaders) {
+        var thead,
+            tr,
+            i,
+            th;
       if (doc && table && aTableHeaders && aTableHeaders.length > 0) {
-        var thead = doc.createElement('thead');
-        var tr = doc.createElement('tr');
-        for (var i = 0; i < aTableHeaders.length; i++) {
-          var th = doc.createElement('th');
+        thead = doc.createElement('thead');
+        tr = doc.createElement('tr');
+        for (i = 0; i < aTableHeaders.length; i++) {
+          th = doc.createElement('th');
           th.setAttribute('scope', 'col');
           //th.appendChild(doc.createTextNode(aTableHeaders[i]));
           th.innerHTML = aTableHeaders[i]; // Switched to innerHTML to allow <br> elements in headings
@@ -1177,12 +1215,13 @@ ys: 'whys'
     },
 
     fnAppendTableRow: function (doc, tableBody, aTableCells, sClass) {
+      var i, sText, td, tr;
       if (doc && tableBody && aTableCells && aTableCells.length > 0) {
-        var tr = doc.createElement('tr');
-        for (var i = 0; i < aTableCells.length; i++) {
-          var td = doc.createElement('td');
+        tr = doc.createElement('tr');
+        for (i = 0; i < aTableCells.length; i++) {
+          td = doc.createElement('td');
           if (aTableCells[i] != null) {
-            var sText = aTableCells[i].toString();
+            sText = aTableCells[i].toString();
             sText = sText.replace(/([^<&;\s|\/-]{45,50})/g, "$1<br />"); // Chars known to cause FF to break long strings of text to wrap a td cell ('<' to avoid breaking into tags)
             if (sClass != null && sClass.length != null && sClass.length > 0 && i == aTableCells.length - 1) {
               sText = '<span class="auralText">' + sClass + ': </span>' + sText;
@@ -1200,12 +1239,13 @@ ys: 'whys'
     },
 
     fnAppendTableRow2: function (doc, tableBody, aTableCells, sClass) {
+      var i, sText, td, tr;
       if (doc && tableBody && aTableCells && aTableCells.length > 0) {
-        var tr = doc.createElement('tr');
-        for (var i = 0; i < aTableCells.length; i++) {
-          var td = doc.createElement('td');
+        tr = doc.createElement('tr');
+        for (i = 0; i < aTableCells.length; i++) {
+          td = doc.createElement('td');
           if (aTableCells[i] != null) {
-            var sText = aTableCells[i].toString();
+            sText = aTableCells[i].toString();
             sText = sText.replace(/([^<&;\s|\/-]{45,50})/g, "$1<br />"); // Chars known to cause FF to break long strings of text to wrap a td cell ('<' to avoid breaking into tags)
             td.innerHTML = sText;
           }
@@ -1335,18 +1375,20 @@ ys: 'whys'
           dialogPath = 'chrome://W15yQC/content/luminosityCheckDialog.xul';
           break;
         }
-        if (dialogID != null) window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen');
+        if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen'); }
       }
     },
 
     fnGetMaxNodeRectangleDimensions: function(node) {
       if(node != null && node.getClientRects()) {
-        var w = 0;
-        var h = 0;
-        var rects = node.getClientRects();
+        var w = 0,
+            h = 0,
+            i,
+            rect,
+            rects = node.getClientRects();
         if(rects != null && rects.length>0) {
-          for(var i=0;i<rects.length;i++) {
-            var rect = rects[i];
+          for(i=0;i<rects.length;i++) {
+            rect = rects[i];
             if(rect.width > w && rect.height > h) {
               w = rect.width;
               h = rect.height;
@@ -1394,19 +1436,20 @@ ys: 'whys'
     
     highlightElement: function (node, doc) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-      blr.W15yQC.fnLog('highlightElement start');
+        var div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, idCounter;
+
       if (doc != null && node != null) {
         blr.W15yQC.resetHighlightElement(doc);
-        var div = null;
+        div = null;
 
-        var box = node.getBoundingClientRect();
-        var scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
-        var scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
+        box = node.getBoundingClientRect();
+        scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
+        scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
 
-        var x = 0;
-        var y = 0;
-        var w = 0;
-        var h = 0;
+        x = 0;
+        y = 0;
+        w = 0;
+        h = 0;
         if(box != null) {
           x = box.left + scrollLeft;
           y = box.top + scrollTop;
@@ -1414,10 +1457,10 @@ ys: 'whys'
           h = box.height;
         }
 
-        var l = x;
-        var t = y;
+        l = x;
+        t = y;
 
-        var o = 0.5;
+        o = 0.5;
         if (x < 0 || y < 0) {
           o = 0.9;
           l = 4;
@@ -1441,18 +1484,18 @@ ys: 'whys'
           div.setAttribute('id', 'W15yQCElementHighlight');
           doc.body.appendChild(div);
         } else {
-          var rects = node.getClientRects();
+          rects = node.getClientRects();
           if(rects != null && rects.length>1) {
-            var idCounter=0;
-            for(var i=0;i<rects.length;i++) {
-              var rect = rects[i];
+            idCounter=0;
+            for(i=0;i<rects.length;i++) {
+              rect = rects[i];
               x = rect.left + scrollLeft;
               y = rect.top + scrollTop;
               w = rect.width;
               h = rect.height;
               if(x>=0 && y>=0 && w>0 && h>0) {
-                if(w>2) w=w-2;
-                if(h>2) h=h-2;
+                if(w>2) { w=w-2; }
+                if(h>2) { h=h-2; }
                 w = w + 'px';
                 h = h + 'px';
                 div = doc.createElement('div');
@@ -1476,11 +1519,12 @@ ys: 'whys'
     },
 
     resetHighlightElement: function (doc) {
+      var he, idCounter, failureCount;
       if (doc != null) {
-        var he = doc.getElementById('W15yQCElementHighlight');
-        if (he != null && he.parentNode != null && he.parentNode.removeChild) he.parentNode.removeChild(he);
-        var idCounter = 0;
-        var failureCount = 0;
+        he = doc.getElementById('W15yQCElementHighlight');
+        if (he != null && he.parentNode != null && he.parentNode.removeChild) { he.parentNode.removeChild(he); }
+        idCounter = 0;
+        failureCount = 0;
         do {
           idCounter++;
           he = doc.getElementById('W15yQCElementHighlight'+idCounter);
@@ -1493,16 +1537,6 @@ ys: 'whys'
       }
     },
 
-    popup: function (f, e, g, c, d) {
-      var b = (screen.width - g) / 2,
-        k = (screen.height - c) / 2;
-      d += ", left=" + b + ", top=" + k + ", width=" + g + ", height=" + c;
-      d = d.replace(/^,/, "");
-      var h = window.open(f, e, d);
-      h.focus();
-      return h
-    },
-
     fnRemoveWWWAndEndingSlash: function(sUrl) {
       sUrl = sUrl.replace(/:\/\/www\./i, '://');
       sUrl = sUrl.replace(/[\/\\]$/, '');
@@ -1510,11 +1544,12 @@ ys: 'whys'
     },
 
     fnNormalizeURL: function(docURL, sUrl) {
+      var firstPart;
       if(docURL != null && sUrl != null && sUrl.length>0) {
         docURL = blr.W15yQC.fnTrim(docURL);
         sUrl = blr.W15yQC.fnTrim(sUrl);
         if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
-          var firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
+          firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
           if(firstPart != null) {
             sUrl = firstPart[1]+firstPart[2]+sUrl;
     			} else {
@@ -1529,74 +1564,58 @@ ys: 'whys'
     			}
         }
       }
-      if(sUrl != null) sUrl = sUrl.replace(/\s/g,'%20');
+      if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
       return sUrl;
     },
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      if(url1 != null) url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
-      if(url2 != null) url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
-
-      if(url1 == url2) {
-        return true;
-      } else {
-        return false;
-      }
+      if(url1 != null) { url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1)); }
+      if(url2 != null) { url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2)); }
+      return (url1 == url2);
     },
 
     fnLinkTextsAreDifferent: function(s1, s2) {
-      if(s1 == s2) return false;
-      if(s1 != null) {
-        s1 = blr.W15yQC.fnCleanSpaces(s1).toLowerCase();
-      }
-      if(s2 != null) {
-        s2 = blr.W15yQC.fnCleanSpaces(s2).toLowerCase();
-      }
-      if(s1 == s2) {
-        return false;
-      } else {
-        return true;
-      }
+      if(s1 == s2) { return false; }
+      if(s1 != null) { s1 = blr.W15yQC.fnCleanSpaces(s1).toLowerCase(); }
+      if(s2 != null) { s2 = blr.W15yQC.fnCleanSpaces(s2).toLowerCase(); }
+      return (s1 != s2);
     },
 
     fnScriptValuesAreDifferent: function(s1,s2) {
       // TODO: Make this more advanced!
-      if(s1 == s2) return false;
-      if(s1 != null) {
-        s1 = blr.W15yQC.fnTrim(s1);
-      }
-      if(s2 != null) {
-        s2 = blr.W15yQC.fnTrim(s2);
-      }
+      if(s1 == s2) { return false; }
+      if(s1 != null) { s1 = blr.W15yQC.fnTrim(s1); }
+      if(s2 != null) { s2 = blr.W15yQC.fnTrim(s2); }
       if(s1 == s2 && s1.match(/\bthis\b/) == false) {
         return false;
-      } else {
-        return true;
-      }
+      } 
+      return true;
     },
 
     fnSpellOutNumbers: function (sString) {
-
+      var re, matches;
       if (sString != null && sString.length && sString.length > 0) {
-        var re = /(\$\s*)?\d*\.?\d+/g;
-        var matches = re.exec(sString);
+        re = /(\$\s*)?\d*\.?\d+/g;
+        matches = re.exec(sString);
         while (matches != null) {
           sString = sString.replace(matches[0], ' ' + blr.W15yQC.fnSpellOutNumber(matches[0]) + ' ');
           matches = re.exec(sString);
         }
-        return blr.W15yQC.fnCleanSpaces(sString);
+        sString = blr.W15yQC.fnCleanSpaces(sString);
       }
       return sString;
     },
 
     fnSpellOutNumber: function (sString) {
-      var sResult = '';
-      var bCurrency = false;
-      var sWholePart = '';
-      var sWholePartResult = '';
-      var sDecimalPart = '';
-      var sDecimalPartResult = '';
-      var sMagnitude = [" ", " Thousand ", " Million ", " Billion ", " Trillion "];
+      var sResult = '',
+          bCurrency = false,
+          sWholePart = '',
+          sWholePartResult = '',
+          sDecimalPart = '',
+          sDecimalPartResult = '',
+          sMagnitude = [" ", " Thousand ", " Million ", " Billion ", " Trillion "],
+          iMagnitude,
+          sThisPart;
 
       blr.W15yQC.fnLog('fnSpellOutNumber IN:'+sString);
       sString = blr.W15yQC.fnTrim(sString);
@@ -1614,12 +1633,12 @@ ys: 'whys'
         }
 
         if (sWholePart.length < 16) {
-          var iMagnitude = 0;
+          iMagnitude = 0;
           if (sWholePart == '0') {
             sWholePartResult = "Zero";
           } else {
             while (sWholePart.length > 0) {
-              var sThisPart = '00' + sWholePart;
+              sThisPart = '00' + sWholePart;
               sThisPart = sThisPart.substring(sThisPart.length - 3);
               sWholePartResult = blr.W15yQC.fnSpellOutHundreds(sThisPart) + sMagnitude[iMagnitude] + " " + sWholePartResult;
               iMagnitude += 1;
@@ -1645,8 +1664,8 @@ ys: 'whys'
             sDecimalPart = sDecimalPart.substring(1);
           }
           sResult = sWholePartResult;
-          if (sDecimalPartResult.length > 0) sResult += " point " + sDecimalPartResult;
-          if (bCurrency == true) sResult += " dollars";
+          if (sDecimalPartResult.length > 0) { sResult += " point " + sDecimalPartResult; }
+          if (bCurrency == true) { sResult += " dollars"; }
         }
       }
       blr.W15yQC.fnLog('fnSpellOutNumber OUT:'+sResult);
@@ -1672,10 +1691,10 @@ ys: 'whys'
     },
     
     fnSpellOutTens: function (sString) {
-      var sResult = '';
+      var sTensDigit, sResult = '';
       if (sString != null && sString.length && sString.length > 1) {
-        if (sString.length > 2) sString = sString.substring(sString.length - 2);
-        var sTensDigit = sString[0];
+        if (sString.length > 2) { sString = sString.substring(sString.length - 2); }
+        sTensDigit = sString[0];
         if (sTensDigit == '0') {
           return blr.W15yQC.fnSpellOutDigit(sString[1]);
         } else if (sTensDigit == '1') {
@@ -1736,13 +1755,13 @@ ys: 'whys'
     },
 
     fnSpellOutDigitWZero: function (sString) {
-      if (sString != null && sString.length && sString.length > 0 && sString[0] == '0') return "Zero";
+      if (sString != null && sString.length && sString.length > 0 && sString[0] == '0') { return "Zero"; }
       return blr.W15yQC.fnSpellOutDigit(sString);
     },
 
     fnSpellOutDigit: function (sString) {
       if (sString != null) {
-        if (sString.length && sString.length > 1) sString = sString[sString.length - 1];
+        if (sString.length && sString.length > 1) { sString = sString[sString.length - 1]; }
         switch (sString) {
         case '1':
           return "One";
@@ -1768,13 +1787,14 @@ ys: 'whys'
     },
 
     fnSoundEx: function (WordString, LengthOption, CensusOption) { // http://creativyst.com/Doc/Articles/SoundEx1/SoundEx1.htm#JavaScriptCode
-      var TmpStr;
-      var WordStr = "";
-      var CurChar;
-      var LastChar;
-      var SoundExLen = 10;
-      var WSLen;
-      var FirstLetter;
+      var TmpStr,
+          WordStr = "",
+          CurChar,
+          LastChar,
+          SoundExLen = 10,
+          WSLen,
+          FirstLetter,
+          i;
 
       if (CensusOption) {
         LengthOption = 4;
@@ -1877,7 +1897,7 @@ ys: 'whys'
       LastChar = "";
       TmpStr = "";
       // removed v10c djr:  TmpStr = "-";  /* rplcng skipped first char */
-      for (var i = 0; i < WSLen; i++) {
+      for (i = 0; i < WSLen; i++) {
         CurChar = WordStr.charAt(i);
         if (CurChar == LastChar) {
           TmpStr += " ";
@@ -1903,15 +1923,15 @@ ys: 'whys'
 
 
     fnGetSoundExTokens: function (sText) {
-      var sTokens = '';
+      var i, tokens, sTokens = '';
       if (sText != null && sText.length && sText.length > 0) {
         sText = blr.W15yQC.fnSpellOutNumbers(sText);
         sText = sText.replace(/[^a-zA-Z]/g, ' ');
         sText = blr.W15yQC.fnCleanSpaces(sText);
         sText = sText.replace(/\balot\b/i,'a lot');
         sText = sText.replace(/\bawhile\b/i,'a while');
-        var tokens = sText.split(' ');
-        for (var i = 0; i < tokens.length; i++) {
+        tokens = sText.split(' ');
+        for (i = 0; i < tokens.length; i++) {
           sTokens += blr.W15yQC.fnSoundEx(tokens[i]) + ' ';
         }
       }
@@ -1926,16 +1946,14 @@ ys: 'whys'
           sText = sText.replace(/[^a-zA-Z0-9]+/g, '');
           if (sText.length > 0) {
             return false;
-          } else {
-            return true;
-          }
+          } 
+          return true;
         } else { // TODO: Improve this by checking for unicode characters in common languages
           sText = sText.replace(/[~`!@#$%^&*\(\)-_+=\[{\]}\\\|;:'",<\.>\/\?\s]+/g, '');
           if (sText.length > 0) {
             return false;
-          } else {
-            return true;
           }
+          return true;
         }
       }
       return false;
@@ -1961,10 +1979,10 @@ ys: 'whys'
     fnIsMeaningfulLinkText: function(sText, minLength) {
       if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
+        if(sText == 'go' || sText == 'faq' || sText == 'map') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
@@ -1989,16 +2007,16 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          if(!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
+          if(!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
         }
       }
       return false;
     },
 
     fnIsMeaningfulHeadingText: function(sText, minLength) {
-      if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
+      if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
         if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
@@ -2129,16 +2147,17 @@ ys: 'whys'
       return false;
     },
 
-    fnAppearsToBeImageFileName: function (sText) {
-      if (sText != null && sText.match(/.\.(apng|bmp|gif|ico|jbig|jpg|jng|jpeg|mng|pcx|png|svg|tif|tiff)\s*$/i) || sText.match(/\w_img$/i) || sText.match(/^(img|ico)_\w/i) || sText.match(/^DCSIMG/i)) {
+    fnAppearsToBeImageFileName: function (sText) { // TODO: QA THIS
+      if (sText != null && (sText.match(/.\.(apng|bmp|gif|ico|jbig|jpg|jng|jpeg|mng|pcx|png|svg|tif|tiff)\s*$/i) ||
+                            sText.match(/\w_img$/i) || sText.match(/^(img|ico)_\w/i) || sText.match(/^DCSIMG/i))) {
         return true;
       }
       return false;
     },
 
     // http://regexlib.com/REDetails.aspx?regexp_id=96
-    fnAppearsToBeURL: function (sText) {
-      if (sText != null && sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i)) {
+    fnAppearsToBeURL: function (sText) { // TODO: QA THIS!!!
+      if (sText != null && sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
         return true;
       }
       return false;
@@ -2178,8 +2197,8 @@ ys: 'whys'
     },
 
     fnAltTextAppearsToHaveRedundantImageReferenceInIt: function (sText) {
-      if(sText != null && sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
-         sText.match(/\b(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i)) {
+      if(sText != null && (sText.match(/^\s*(graphic|image|img|photo|picture|pic|pict)\s*of\s/i) ||
+                           sText.match(/\b(graphic|image|img|photo|picture|pic|pict)[^a-zA-Z]*$/i))) {
         return true;
       }
       return false;
@@ -2246,9 +2265,8 @@ ys: 'whys'
         }
         if (node != null && (node.nodeName.toLowerCase() == 'body' || node.nodeName.toLowerCase() == 'frameset')) {
           return false;
-        } else {
-          return true;
         }
+        return true;
       }
       return true;
     },
@@ -2278,9 +2296,9 @@ ys: 'whys'
 
           if (/absolute|fixed/.test(window.getComputedStyle(node, null).getPropertyValue("position").toLowerCase()) == true &&
               /hidden/.test(window.getComputedStyle(node, null).getPropertyValue("overflow").toLowerCase()) == true &&
-              (parseInt(window.getComputedStyle(node, null).getPropertyValue("width")) <= 1 || parseInt(window.getComputedStyle(node, null).getPropertyValue("height")) <= 1) &&
-              parseInt(window.getComputedStyle(node, null).getPropertyValue("top")) > -1 &&
-              parseInt(window.getComputedStyle(node, null).getPropertyValue("left")) > -1) {
+              (parseInt(window.getComputedStyle(node, null).getPropertyValue("width"),10) <= 1 || parseInt(window.getComputedStyle(node, null).getPropertyValue("height"),10) <= 1) &&
+              parseInt(window.getComputedStyle(node, null).getPropertyValue("top"),10) > -1 &&
+              parseInt(window.getComputedStyle(node, null).getPropertyValue("left"),10) > -1) {
             return true;
           }
 
@@ -2291,18 +2309,19 @@ ys: 'whys'
     },
 
     fnMinDistanceBetweenNodes: function(n1, n2) {
+      var box1, box2, x1, y1, w1, h1, x2, y2, w2, h2, dx, dy, scrollLeft1, scrollTop1, scrollLeft2, scrollTop2;
       if(n1 != null && n2 != null && n1.getBoundingClientRect && n2.getBoundingClientRect &&
          blr.W15yQC.fnNodeIsHidden(n1)==false && blr.W15yQC.fnNodeIsHidden(n2)==false) {
-        var box1 = n1.getBoundingClientRect();
-        var box2 = n2.getBoundingClientRect();
+        box1 = n1.getBoundingClientRect();
+        box2 = n2.getBoundingClientRect();
         if(box1 != null && box2 != null) {
-          var scrollLeft1 = n1.ownerDocument.documentElement.scrollLeft || n1.ownerDocument.body.scrollLeft;
-          var scrollTop1 = n1.ownerDocument.documentElement.scrollTop || n1.ownerDocument.body.scrollTop;
+          scrollLeft1 = n1.ownerDocument.documentElement.scrollLeft || n1.ownerDocument.body.scrollLeft;
+          scrollTop1 = n1.ownerDocument.documentElement.scrollTop || n1.ownerDocument.body.scrollTop;
   
-          var x1 = 0;
-          var y1 = 0;
-          var w1 = 0;
-          var h1 = 0;
+          x1 = 0;
+          y1 = 0;
+          w1 = 0;
+          h1 = 0;
           if(box1 != null) {
             x1 = box1.left + scrollLeft1;
             y1 = box1.top + scrollTop1;
@@ -2311,13 +2330,13 @@ ys: 'whys'
           }
           blr.W15yQC.fnLog("***x1 y1 w1 h1:"+x1+' '+y1+' '+w1+' '+h1);
 
-          var scrollLeft2 = n2.ownerDocument.documentElement.scrollLeft || n2.ownerDocument.body.scrollLeft;
-          var scrollTop2 = n2.ownerDocument.documentElement.scrollTop || n2.ownerDocument.body.scrollTop;
+          scrollLeft2 = n2.ownerDocument.documentElement.scrollLeft || n2.ownerDocument.body.scrollLeft;
+          scrollTop2 = n2.ownerDocument.documentElement.scrollTop || n2.ownerDocument.body.scrollTop;
   
-          var x2 = 0;
-          var y2 = 0;
-          var w2 = 0;
-          var h2 = 0;
+          x2 = 0;
+          y2 = 0;
+          w2 = 0;
+          h2 = 0;
           if(box2 != null) {
             x2 = box2.left + scrollLeft2;
             y2 = box2.top + scrollTop2;
@@ -2327,14 +2346,14 @@ ys: 'whys'
           blr.W15yQC.fnLog("***x1 y1 w1 h1:"+x2+' '+y2+' '+w2+' '+h2);
         }
  
-        var dx=100000;
+        dx=100000;
         if((x1>=x2 && x1<=x2+w2) || (x2>=x1 && x2<=x1+w1)) { // look for overlap
           dx=0;
         } else { // find closest x point
           dx=Math.min(Math.abs(x1-x2),Math.abs((x1+w1)-(x2+w2)),Math.abs(x1-(x2+w2)),Math.abs((x1+w1)-x2));
         }
 
-        var dy=100000;
+        dy=100000;
         if((y1>=y2 && y1<=y2+h2) || (y2>=y1 && y2<=y1+h1)) { // look for overlap
           dy=0;
         } else { // find closest x point
@@ -2347,11 +2366,12 @@ ys: 'whys'
     },
     
     fnJAWSAnnouncesControlAs: function (node) { // TODO: Vet this with JAWS
+      var nType;
       if(node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
           case 'input':
             if(node.hasAttribute('type')) {
-              var nType=node.getAttribute('type');
+              nType=node.getAttribute('type');
               if(nType != null && nType.toLowerCase) {
                 switch(nType.toLowerCase()) {
                   case 'button':
@@ -2367,13 +2387,10 @@ ys: 'whys'
             break;
           case 'button':
             return 'button';
-            break;
           case 'select':
             return 'combobox';
-            break;
           case 'textarea':
             return '' ;
-            break;
         }
       }
       return '';
@@ -2420,8 +2437,9 @@ ys: 'whys'
     },
 
     fnGetOwnerDocumentNumber: function (node, aDocumentsList) {
+      var i;
       if (node !== null && aDocumentsList !== null && aDocumentsList.length) {
-        for (var i = 0; i < aDocumentsList.length; i++) {
+        for (i = 0; i < aDocumentsList.length; i++) {
           if (node.ownerDocument === aDocumentsList[i].doc) return i + 1;
         }
       }
@@ -2430,10 +2448,11 @@ ys: 'whys'
 
     fnGetParentFormElement: function (node) {
       // Check if node has a form attribute and if so, does that form exist?
+      var parentFormID, parentForm;
       if (node != null) {
         if (node.getAttribute && node.hasAttribute('form')) {
-          var parentFormID = node.getAttribute('form');
-          var parentForm = node.ownerDocument.getElementById(parentFormID);
+          parentFormID = node.getAttribute('form');
+          parentForm = node.ownerDocument.getElementById(parentFormID);
           if (parentForm != null && parentForm.nodeName && parentForm.nodeName.toLowerCase() == 'form') {
             return parentForm;
           }
@@ -2452,8 +2471,9 @@ ys: 'whys'
     },
 
     fnGetParentFormNumber: function (node, aFormsList) {
+      var i;
       if (node !== null && aFormsList !== null && aFormsList.length) {
-        for (var i = 0; i < aFormsList.length; i++) {
+        for (i = 0; i < aFormsList.length; i++) {
           if (node === aFormsList[i].node) return i + 1;
         }
       }
@@ -2461,12 +2481,13 @@ ys: 'whys'
     },
 
     fnGetElementXPath: function (node) {
-      var sXPath = '';
-      var nodeWalker = node;
-      var segs;
+      var sXPath = '',
+          nodeWalker = node,
+          segs,
+          i, sib;
       if (node != null && node.tagName) {
         for (segs = []; nodeWalker && nodeWalker.nodeType == 1; nodeWalker = nodeWalker.parentNode) {
-          for (var i = 1, sib = nodeWalker.previousSibling; sib; sib = sib.previousSibling) {
+          for (i = 1, sib = nodeWalker.previousSibling; sib; sib = sib.previousSibling) {
             if (sib.localName == nodeWalker.localName) i++;
           }
           segs.unshift(nodeWalker.localName.toLowerCase() + '[' + i + ']');
@@ -2477,9 +2498,13 @@ ys: 'whys'
     },
 
     fnDescribeElement: function (node, maxLength, maxAttributeLength, sMode) {
-      var sDescription = '';
+      var sDescription = '',
+          sAttributes = '',
+          sSrc,
+          attrName,
+          sTagName,
+          i;
       if (node != null && node.tagName) {
-        var sAttributes = '';
         if (node.hasAttribute('type') == true) {
           sAttributes = blr.W15yQC.fnJoin(sAttributes, 'type="' + blr.W15yQC.fnCutoffString(node.getAttribute('type'), maxAttributeLength) + '"', ' ');
         }
@@ -2496,7 +2521,7 @@ ys: 'whys'
           sAttributes = blr.W15yQC.fnJoin(sAttributes, 'role="' + blr.W15yQC.fnCutoffString(node.getAttribute('role'), maxAttributeLength) + '"', ' ');
         }
         if (node.hasAttribute('src') == true) {
-          var sSrc = node.getAttribute('src');
+          sSrc = node.getAttribute('src');
           if (/^\s*data:/.test(sSrc)) {
             sAttributes = blr.W15yQC.fnJoin(sAttributes, 'src="' + blr.W15yQC.fnCutoffString(node.getAttribute('src'), 35) + '"', ' ');
           } else {
@@ -2513,8 +2538,8 @@ ys: 'whys'
           sAttributes = blr.W15yQC.fnJoin(sAttributes, 'summary="' + blr.W15yQC.fnCutoffString(node.getAttribute('summary'), 15) + '"', ' ');
         }
         if (node.attributes && node.attributes.length) {
-          for (var i = 0; i < node.attributes.length; i++) {
-            var attrName = node.attributes[i].name.toLowerCase();
+          for (i = 0; i < node.attributes.length; i++) {
+            attrName = node.attributes[i].name.toLowerCase();
             if (attrName !== 'type' && attrName !== 'id' && attrName !== 'name' && attrName !== 'value' &&
                 attrName !== 'role' && attrName !== 'src' && attrName !== 'alt' && attrName !== 'title' && attrName !== 'summary') {
               sAttributes = blr.W15yQC.fnJoin(sAttributes, node.attributes[i].name + '="' + blr.W15yQC.fnCutoffString(node.attributes[i].value, maxAttributeLength) + '"', ' ');
@@ -2522,7 +2547,7 @@ ys: 'whys'
           }
         }
         sDescription = blr.W15yQC.fnJoin('<' + node.tagName, sAttributes, ' ') + '>';
-        var sTagName = node.tagName.toLowerCase();
+        sTagName = node.tagName.toLowerCase();
         if (sTagName == 'button' || sTagName == 'a') {
           sDescription = blr.W15yQC.fnCutoffString(sDescription + blr.W15yQC.fnCutoffString(blr.W15yQC.fnCleanSpaces(node.innerHTML), maxAttributeLength), maxLength) + '</' + node.tagName + '>';
         } else sDescription = blr.W15yQC.fnCutoffString(sDescription, maxLength);
@@ -2531,6 +2556,7 @@ ys: 'whys'
     },
 
     fnGetLegendText: function (aNode) {
+      var legendNodes;
       if (aNode && aNode.nodeName) {
         //Seek upward until we reach a fieldset node
         // aNode = aNode.parentNode;
@@ -2540,7 +2566,7 @@ ys: 'whys'
 
         if (aNode != null && aNode.nodeName.toLowerCase() == 'fieldset') {
           //We now have the fieldset, look for the legend attribute
-          var legendNodes = aNode.getElementsByTagName("LEGEND");
+          legendNodes = aNode.getElementsByTagName("LEGEND");
           if (legendNodes && legendNodes.length > 0) {
             return blr.W15yQC.fnGetDisplayableTextRecursively(legendNodes[0]);
           }
@@ -2566,12 +2592,14 @@ ys: 'whys'
     },
 
     fnFindLabelNodesForId: function (id, doc) {
-      var aLabelNodesForId = new Array();
+      var aLabelNodesForId = [],
+          aLabels,
+          i,
+          labelNode;
       if (id != null && doc != null && doc.getElementsByTagName) {
-        var aLabels = doc.getElementsByTagName("label");
-        var i;
+        aLabels = doc.getElementsByTagName("label");
         for (i = 0; i < aLabels.length; i++) {
-          var labelNode = aLabels[i];
+          labelNode = aLabels[i];
           if (labelNode.getAttribute) {
             if (labelNode.getAttribute("for") == id) {
               aLabelNodesForId.push(labelNode);
@@ -2583,10 +2611,12 @@ ys: 'whys'
     },
 
     fnGetTextFromIdList: function (sIDList, doc) {
-      var sLabelText = null;
+      var sLabelText = null,
+          aIDs,
+          i;
       if (sIDList && sIDList.split && doc && doc.getElementById) {
-        var aIDs = sIDList.split(' ');
-        for (var i in aIDs) {
+        aIDs = sIDList.split(' ');
+        for (i=0;i<aIDs.length; i++) {
           sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(doc.getElementById(aIDs[i])), ' ');
         }
       }
@@ -2607,18 +2637,21 @@ ys: 'whys'
     },
 
     fnGetFormControlLabelTagText: function (node, doc) {
-      var sLabelText = null;
+      var sLabelText = null,
+          implicitLabelNode,
+          explictLabelsList,
+          i;
       if (node != null && node.getAttribute && doc != null) {
         if (sLabelText == null || sLabelText.length < 1) {
-          var implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+          implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
           if (implicitLabelNode != null) {
             sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
           }
         }
 
         if ((sLabelText == null || sLabelText.length < 1) && node.hasAttribute('id')) {
-          var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-          for (var i = 0; i < explictLabelsList.length; i++) {
+          explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+          for (i = 0; i < explictLabelsList.length; i++) {
             sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
           }
           sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
@@ -2635,13 +2668,18 @@ ys: 'whys'
        * A: Empty aria-label and elements pointed to by aria-labelledby are the same as not having an aria-label or aria-labelled by (JAWS 13 + IE9 - Windows 7 32 bit)
        */
 
-      var sLabelText = '';
+      var sLabelText = '',
+          nTagName,
+          inputType,
+          implicitLabelNode,
+          explictLabelsList,
+          i;
 
       if (node != null && node.tagName) {
-        var nTagName = node.tagName.toLowerCase();
+        nTagName = node.tagName.toLowerCase();
 
         if (nTagName == 'input') {
-          var inputType = '';
+          inputType = '';
           if (node.hasAttribute('type')) inputType = blr.W15yQC.fnCleanSpaces(node.getAttribute('type').toLowerCase());
           if (inputType == '') inputType = 'text'; // default type
           switch (inputType) {
@@ -2724,15 +2762,15 @@ ys: 'whys'
             }
 
             if (sLabelText.length < 1) {
-              var implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+              implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
               if (implicitLabelNode != null) {
                 sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
               }
             }
 
             if (sLabelText.length < 1 && node.hasAttribute('id')) {
-              var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-              for (var i = 0; i < explictLabelsList.length; i++) {
+              explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+              for (i = 0; i < explictLabelsList.length; i++) {
                 sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
               }
               sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
@@ -2759,15 +2797,15 @@ ys: 'whys'
             }
 
             if (sLabelText.length < 1) { // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-              var implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+              implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
               if (implicitLabelNode != null) {
                 sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
               }
             }
 
             if (sLabelText.length < 1 && node.hasAttribute('id')) {
-              var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-              for (var i = 0; i < explictLabelsList.length; i++) {
+              explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+              for (i = 0; i < explictLabelsList.length; i++) {
                 sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
               }
               sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
@@ -2842,15 +2880,15 @@ ys: 'whys'
           }
 
           if (sLabelText.length < 1) {
-            var implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+            implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
             if (implicitLabelNode != null) {
               sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
             }
           }
 
           if (sLabelText.length < 1 && node.hasAttribute('id')) {
-            var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-            for (var i = 0; i < explictLabelsList.length; i++) {
+            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+            for (i = 0; i < explictLabelsList.length; i++) {
               sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
             }
             sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
@@ -2873,14 +2911,14 @@ ys: 'whys'
             sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
           }
           if (sLabelText.length < 1) { // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-            var implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+            implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
             if (implicitLabelNode != null) {
               sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
             }
           }
           if (sLabelText.length < 1 && node.hasAttribute('id')) {
-            var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-            for (var i = 0; i < explictLabelsList.length; i++) {
+            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+            for (i = 0; i < explictLabelsList.length; i++) {
               sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
             }
             sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
@@ -2916,15 +2954,15 @@ ys: 'whys'
             }
 
             if (sLabelText.length < 1) { // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-              var implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+              implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
               if (implicitLabelNode != null) {
                 sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
               }
             }
 
             if (sLabelText.length < 1 && node.hasAttribute('id')) {
-              var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-              for (var i = 0; i < explictLabelsList.length; i++) {
+              explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+              for (i = 0; i < explictLabelsList.length; i++) {
                 sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
               }
               sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
@@ -2982,13 +3020,15 @@ ys: 'whys'
 
     fnGetDisplayableTextRecursively: function (rootNode, bRecursion) {
       // TODO: Vet this with JAWS
+      // TODO: QA THIS, rethink this...
       // TODO: Gan we get this from Firefox? What about ARIA-label and other ARIA attribute?
       // How does display:none, visibility:hidden, and aria-hidden=true affect child text collection?
-      var sNodeChildText = '';
-      var sRecursiveText = null;
+      var sNodeChildText = '',
+          sRecursiveText = null,
+          c;
       if (bRecursion == null) bRecursion = 0;
       if (rootNode != null) {
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1 && c.nodeType !== 3) continue; // Only pay attention to element and text nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // don't get frame contents, but instead check if it has a title attribute
@@ -2998,7 +3038,7 @@ ys: 'whys'
           } else { // keep looking through current document
             if (c.nodeType == 3 && c.nodeValue != null) { // text content
               sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.nodeValue, ' ');
-            } else {}
+            }
             if (c.nodeType == 1 || c.nodeType == 3) {
               if (bRecursion < 100) sRecursiveText = blr.W15yQC.fnGetDisplayableTextRecursively(c, bRecursion + 1);
 
@@ -3015,7 +3055,7 @@ ys: 'whys'
           }
         }
 
-        var sNodeChildText = blr.W15yQC.fnCleanSpaces(sNodeChildText);
+        sNodeChildText = blr.W15yQC.fnCleanSpaces(sNodeChildText);
 
         if ((bRecursion == null || bRecursion == 0) && (sNodeChildText == null || sNodeChildText.length == 0) && rootNode.hasAttribute && rootNode.tagName) {
           if (blr.W15yQC.fnCanTagHaveAlt(rootNode.tagName) && rootNode.hasAttribute('alt') == true) {
@@ -3029,8 +3069,9 @@ ys: 'whys'
     },
 
     fnElementUsesARIA: function (node) {
-      for (var i = 0; i < node.attributes.length; i++) {
-        var attrName = node.attributes[i].name.toLowerCase();
+      var i, attrName;
+      for (i = 0; i < node.attributes.length; i++) {
+        attrName = node.attributes[i].name.toLowerCase();
         if(attrName == 'role' || attrName.match(/^aria-/) != null) return true;
       }
       return false;
@@ -3546,12 +3587,12 @@ ys: 'whys'
     },
 
     fnCheckARIARole: function(no, node, sRole) {
+      var sMsg, i, c, bFoundRequiredChild, bFoundRequiredContainer, cRole;
       if(blr.W15yQC.ARIAChecks.hasOwnProperty(sRole) == true) {
-        var sMsg;
         // Check for required properties
         if(blr.W15yQC.ARIAChecks[sRole].reqProps != null) {
           sMsg=null;
-          for(var i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
+          for(i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
             if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', ');
           }
         }
@@ -3562,11 +3603,11 @@ ys: 'whys'
         // Check for required parents
         if(blr.W15yQC.ARIAChecks[sRole].container != null) {
           sMsg=null;
-          var bFoundRequiredContainer = false;
-          var c=node.parent;
+          bFoundRequiredContainer = false;
+          c=node.parent;
           while(c != null && bFoundRequiredContainer == false) {
             if(c.hasAttribute && c.hasAttribute('role')) {
-              var cRole = c.getAttribute('role');
+              cRole = c.getAttribute('role');
               for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
                 if(cRole == blr.W15yQC.ARIAChecks[sRole].container[i]) {
                   bFoundRequiredContainer = true;
@@ -3576,7 +3617,7 @@ ys: 'whys'
             }
           }
           if(!bFoundRequiredContainer) {
-            for(var i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
+            for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
               blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].container[i],', ');
             }
             if(sMsg != null) blr.W15yQC.fnAddNote(no, 'ariaMissingContainer', [sMsg]); // QA
@@ -3585,7 +3626,7 @@ ys: 'whys'
         // Check for required children
         if(blr.W15yQC.ARIAChecks[sRole].reqChildren != null) {
           sMsg=null;
-          var bFoundRequiredChild = false;
+          bFoundRequiredChild = false;
           // TODO: Finish this
         }        
       }
@@ -3593,11 +3634,12 @@ ys: 'whys'
     },
     
     fnAnalyzeARIAMarkupOnNode: function (node, doc, no) {
+      var sRole, sMissingIDs, sIDs, i;
       blr.W15yQC.fnLog('analyze aria markup-starts:no:'+no+'--'+no.toString());
       if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('role')) {
           // TODO: check role values
-          var sRole = blr.W15yQC.fnTrim(node.getAttribute('role'));
+          sRole = blr.W15yQC.fnTrim(node.getAttribute('role'));
           if (sRole != null && sRole.length > 0) {
             switch (sRole.toLowerCase()) {
               // landmarks
@@ -3686,20 +3728,20 @@ ys: 'whys'
           }
         }
         if (node.hasAttribute('aria-labelledby') == true) {
-          var sMissingIDs = null;
-          var sIDs = node.getAttribute('aria-labelledby').split(' ');
+          sMissingIDs = null;
+          sIDs = node.getAttribute('aria-labelledby').split(' ');
           if (sIDs != null) {
-            for (var i = 0; i < sIDs.length; i++) {
+            for (i = 0; i < sIDs.length; i++) {
               if (doc.getElementById(sIDs[i]) == null) sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, "'" + sIDs[i] + "'", ', ');
             }
             if (sMissingIDs != null) blr.W15yQC.fnAddNote(no, 'ariaLabelledbyIDsMissing',[sMissingIDs]);
           }
         }
         if (node.hasAttribute('aria-describedby') == true) {
-          var sMissingIDs = null;
-          var sIDs = node.getAttribute('aria-describedby').split(' ');
+          sMissingIDs = null;
+          sIDs = node.getAttribute('aria-describedby').split(' ');
           if (sIDs != null) {
-            for (var i = 0; i < sIDs.length; i++) {
+            for (i = 0; i < sIDs.length; i++) {
               if (doc.getElementById(sIDs[i]) == null) sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, sIDs[i], ' ');
             }
             if (sMissingIDs != null) blr.W15yQC.fnAddNote(no, 'ariaDescribedbyIDsMissing',[sMissingIDs]);
@@ -3717,20 +3759,21 @@ ys: 'whys'
     },
 
     fnInitDisplayWindow: function (doc) {
-      var topURL = doc.URL;
-      var titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
-      var outputWindow = window.open('');
-      var reportDoc = outputWindow.document;
+      var topURL, topNav, titleText, outputWindow, reportDoc, bannerDiv, styleRules, styleElement, scriptElement, sScript;
+      topURL = doc.URL;
+      titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
+      outputWindow = window.open('');
+      reportDoc = outputWindow.document;
 
       reportDoc.title = titleText;
 
-      var bannerDiv = reportDoc.createElement('div');
+      bannerDiv = reportDoc.createElement('div');
       bannerDiv.setAttribute('id', 'banner');
       bannerDiv.setAttribute('role', 'banner');
       bannerDiv.innerHTML = '<h1>'+blr.W15yQC.fnGetString('hrsBanner')+'</h1>';
       reportDoc.body.appendChild(bannerDiv);
 
-      var topNav = reportDoc.createElement('ul');
+      topNav = reportDoc.createElement('ul');
       topNav.setAttribute('id', 'topNav');
       topNav.setAttribute('role', 'navigation');
       topNav.innerHTML = '<li><a tabindex="0" class="collapseAll" href="javascript:collapseAll()">Collapse All</a></li><li><a tabindex="0" class="expandAll" href="javascript:expandAll()">Expand All</a></li><li><a id="displayToggle" href="javascript:fnToggleDisplayOfNonIssues()">Show Issues Only</a></li><li><a tabindex="0" href="http://iuadapts.indiana.edu/">Help<span class="auralText"> (opens in a new window)</span></a></li>';
@@ -3739,7 +3782,7 @@ ys: 'whys'
       reportDoc.body.setAttribute('lang', 'en-US'); // TODO: Get this from FF
       reportDoc.body.setAttribute('dir', 'ltr');
 
-      var styleRules = "body { font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; margin:0; padding:0}";
+      styleRules = "body { font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; margin:0; padding:0}";
       styleRules += ".auralText {position:absolute;width:1px;height:1px;overflow:hidden;}";
       styleRules += "a {cursor:pointer !important; color:black; text-decoration:none}";
       styleRules += "a:hover {text-decoration:underline;} a:focus {outline: black dotted thin;}";
@@ -3791,20 +3834,20 @@ ys: 'whys'
       styleRules += "div#AIFooter {background-color:#000;margin-top:10px;padding:0}";
       styleRules += "div#AIFooter p {color:#fff;padding:5px 0 5px 10px;font-size:70%;margin:0}";
 
-      var styleElement = reportDoc.createElement('style');
+      styleElement = reportDoc.createElement('style');
       styleElement.setAttribute("type", "text/css");
       styleElement.appendChild(reportDoc.createTextNode(styleRules));
       reportDoc.head.appendChild(styleElement);
 
-      var scriptElement = reportDoc.createElement('script');
-      var sScript = "function ec(node, sLinkText) { if(node.parentNode.getAttribute('class')=='hideSibling'){node.parentNode.setAttribute('class','');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsHide')+" </span>'+sLinkText}else{node.parentNode.setAttribute('class','hideSibling');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsReveal')+" </span>'+sLinkText}}";
+      scriptElement = reportDoc.createElement('script');
+      sScript = "function ec(node, sLinkText) { if(node.parentNode.getAttribute('class')=='hideSibling'){node.parentNode.setAttribute('class','');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsHide')+" </span>'+sLinkText}else{node.parentNode.setAttribute('class','hideSibling');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsReveal')+" </span>'+sLinkText}}";
       sScript += "function collapseAll() {var nodesList=window.top.content.document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','hideSibling')}}";
       sScript += "function expandAll() {var nodesList=window.top.content.document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','')}}";
       sScript += "function fnToggleDisplayOfNonIssues(){var a=document.getElementById('displayToggle');var b=document.getElementsByTagName('tr');if(/"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"/.test(a.innerHTML)==true){a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowAll')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(/warning|failed/.test(b[c].className)!=true){var d=b[c].getElementsByTagName('th');if(d==null||d.length<1){b[c].setAttribute('style','display:none')}}}}}else{a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(b[c].getAttribute('style')=='display:none'){b[c].setAttribute('style','')}}}}}";
       sScript += "var sortData = function(originalRowNumber, columnData) {this.originalRowNumber = originalRowNumber;this.columnData = columnData;};";
       sScript += "sortData.prototype = {originalRowNumber: null,columnData: null};";
       sScript += "function fnMakeTableSortable(sTableID) {if(sTableID != null){var table = document.getElementById(sTableID);if(table != null && table.getElementsByTagName){var tableHead = table.getElementsByTagName('thead')[0];if(tableHead != null && tableHead.getElementsByTagName) {var tableHeaderCells = tableHead.getElementsByTagName('th'); if(tableHeaderCells != null) { for(var i=0; i<tableHeaderCells.length; i++) { var newTh = tableHeaderCells[i].cloneNode(false); newTh.innerHTML = '<a href=\"javascript:sortTable=\\''+sTableID+'\\';sortCol=\\''+i+'\\';\" onclick=\"fnPerformStableTableSort(\\''+sTableID+'\\','+i+');return false;\">'+tableHeaderCells[i].innerHTML+'</a>'; tableHeaderCells[i].parentNode.replaceChild(newTh, tableHeaderCells[i]); }}}}}}";
-      sScript += "function fnPerformStableTableSort(tableID,sortOnColumnNumber){try{if(tableID!=null&&sortOnColumnNumber!=null){var table=document.getElementById(tableID);if(table!=null&&table.getElementsByTagName){var tableHead=table.getElementsByTagName('thead')[0];var tableBody=table.getElementsByTagName('tbody')[0];if(tableBody!=null&&tableBody.getElementsByTagName){var tableBodyRows=tableBody.getElementsByTagName('tr');if(tableBodyRows!=null&&tableBodyRows.length>1&&tableBodyRows[0].getElementsByTagName){var sortOrder='a';var columnHeaders=tableHead.getElementsByTagName('th');var sortColumnHeader=columnHeaders[sortOnColumnNumber];var currentSortIndicatorMatch=/\\bSorted...(\\d+)\\b/.exec(sortColumnHeader.className);var currentSortDepth=999;if(currentSortIndicatorMatch!=null&&currentSortIndicatorMatch.length>1){currentSortDepth=parseInt(currentSortIndicatorMatch[1]);}if(/\\bSortedAsc/.test(sortColumnHeader.className)== true){sortOrder='d';sortColumnHeader.className=sortColumnHeader.className.replace(/\\bSortedAsc\\d+\\b/,'SortedDes1');}else if(/\\bSortedDes/.test(sortColumnHeader.className)== true){sortOrder='a';sortColumnHeader.className=sortColumnHeader.className.replace(/\\bSortedDes\\d+\\b/,'SortedAsc1');}else{sortOrder='a';sortColumnHeader.className += ' SortedAsc1';}for(var i=0;i<columnHeaders.length;i++){if(i==sortOnColumnNumber)continue;var sortIndicatorMatch=/\\bSorted(...)(\\d+)/.exec(columnHeaders[i].className);if(sortIndicatorMatch!=null){var sortDepth=999;if(sortIndicatorMatch!=null&&sortIndicatorMatch.length>1){sortDepth=parseInt(sortIndicatorMatch[2]);}if(sortDepth<=currentSortDepth){columnHeaders[i].className=columnHeaders[i].className.replace(/\\bSorted...\\d+\\b/,'Sorted'+sortIndicatorMatch[1]+(sortDepth+1));}}}var tableRowsSortDataCache=new Array();var numberOfColumns=0;for(var i=0;i<tableBodyRows.length;i++){var rowDataCells=tableBodyRows[i].getElementsByTagName('td');tableRowsSortDataCache.push(new sortData(i,(/^\\s*\\d+\\s*$/.test(rowDataCells[sortOnColumnNumber].innerHTML)==true?parseInt(rowDataCells[sortOnColumnNumber].innerHTML):rowDataCells[sortOnColumnNumber].innerHTML)));}if(sortOrder=='a'){for(var i=0;i<tableRowsSortDataCache.length;i++){for(var j=i+1;j<tableRowsSortDataCache.length;j++){if(tableRowsSortDataCache[i].columnData>tableRowsSortDataCache[j].columnData ||(tableRowsSortDataCache[i].columnData==tableRowsSortDataCache[i].columnData&&tableRowsSortDataCache[i].originalRowNumber>tableRowsSortDataCache[j].originalRowNumber)){var tmpRow=tableRowsSortDataCache[i];tableRowsSortDataCache[i]=tableRowsSortDataCache[j];tableRowsSortDataCache[j]=tmpRow;}}}}else{for(var i=0;i<tableRowsSortDataCache.length;i++){for(var j=i+1;j<tableRowsSortDataCache.length;j++){if(tableRowsSortDataCache[i].columnData<tableRowsSortDataCache[j].columnData ||(tableRowsSortDataCache[i].columnData==tableRowsSortDataCache[i].columnData&&tableRowsSortDataCache[i].originalRowNumber>tableRowsSortDataCache[j].originalRowNumber)){var tmpRow=tableRowsSortDataCache[i];tableRowsSortDataCache[i]=tableRowsSortDataCache[j];tableRowsSortDataCache[j]=tmpRow;}}}}var sortedTBody=document.createElement('tbody');for(var i=0;i<tableRowsSortDataCache.length;i++){sortedTBody.appendChild(tableBodyRows[tableRowsSortDataCache[i].originalRowNumber].cloneNode(true));}table.replaceChild(sortedTBody,tableBody);}}}}}catch(ex){}}";
+      sScript += "function fnPerformStableTableSort(tableID,sortOnColumnNumber){try{if(tableID!=null&&sortOnColumnNumber!=null){var table=document.getElementById(tableID);if(table!=null&&table.getElementsByTagName){var tableHead=table.getElementsByTagName('thead')[0];var tableBody=table.getElementsByTagName('tbody')[0];if(tableBody!=null&&tableBody.getElementsByTagName){var tableBodyRows=tableBody.getElementsByTagName('tr');if(tableBodyRows!=null&&tableBodyRows.length>1&&tableBodyRows[0].getElementsByTagName){var sortOrder='a';var columnHeaders=tableHead.getElementsByTagName('th');var sortColumnHeader=columnHeaders[sortOnColumnNumber];var currentSortIndicatorMatch=/\\bSorted...(\\d+)\\b/.exec(sortColumnHeader.className);var currentSortDepth=999;if(currentSortIndicatorMatch!=null&&currentSortIndicatorMatch.length>1){currentSortDepth=parseInt(currentSortIndicatorMatch[1],10);}if(/\\bSortedAsc/.test(sortColumnHeader.className)== true){sortOrder='d';sortColumnHeader.className=sortColumnHeader.className.replace(/\\bSortedAsc\\d+\\b/,'SortedDes1');}else if(/\\bSortedDes/.test(sortColumnHeader.className)== true){sortOrder='a';sortColumnHeader.className=sortColumnHeader.className.replace(/\\bSortedDes\\d+\\b/,'SortedAsc1');}else{sortOrder='a';sortColumnHeader.className += ' SortedAsc1';}for(var i=0;i<columnHeaders.length;i++){if(i==sortOnColumnNumber)continue;var sortIndicatorMatch=/\\bSorted(...)(\\d+)/.exec(columnHeaders[i].className);if(sortIndicatorMatch!=null){var sortDepth=999;if(sortIndicatorMatch!=null&&sortIndicatorMatch.length>1){sortDepth=parseInt(sortIndicatorMatch[2],10);}if(sortDepth<=currentSortDepth){columnHeaders[i].className=columnHeaders[i].className.replace(/\\bSorted...\\d+\\b/,'Sorted'+sortIndicatorMatch[1]+(sortDepth+1));}}}var tableRowsSortDataCache=[];var numberOfColumns=0;for(var i=0;i<tableBodyRows.length;i++){var rowDataCells=tableBodyRows[i].getElementsByTagName('td');tableRowsSortDataCache.push(new sortData(i,(/^\\s*\\d+\\s*$/.test(rowDataCells[sortOnColumnNumber].innerHTML)==true?parseInt(rowDataCells[sortOnColumnNumber].innerHTML,10):rowDataCells[sortOnColumnNumber].innerHTML)));}if(sortOrder=='a'){for(var i=0;i<tableRowsSortDataCache.length;i++){for(var j=i+1;j<tableRowsSortDataCache.length;j++){if(tableRowsSortDataCache[i].columnData>tableRowsSortDataCache[j].columnData ||(tableRowsSortDataCache[i].columnData==tableRowsSortDataCache[i].columnData&&tableRowsSortDataCache[i].originalRowNumber>tableRowsSortDataCache[j].originalRowNumber)){var tmpRow=tableRowsSortDataCache[i];tableRowsSortDataCache[i]=tableRowsSortDataCache[j];tableRowsSortDataCache[j]=tmpRow;}}}}else{for(var i=0;i<tableRowsSortDataCache.length;i++){for(var j=i+1;j<tableRowsSortDataCache.length;j++){if(tableRowsSortDataCache[i].columnData<tableRowsSortDataCache[j].columnData ||(tableRowsSortDataCache[i].columnData==tableRowsSortDataCache[i].columnData&&tableRowsSortDataCache[i].originalRowNumber>tableRowsSortDataCache[j].originalRowNumber)){var tmpRow=tableRowsSortDataCache[i];tableRowsSortDataCache[i]=tableRowsSortDataCache[j];tableRowsSortDataCache[j]=tmpRow;}}}}var sortedTBody=document.createElement('tbody');for(var i=0;i<tableRowsSortDataCache.length;i++){sortedTBody.appendChild(tableBodyRows[tableRowsSortDataCache[i].originalRowNumber].cloneNode(true));}table.replaceChild(sortedTBody,tableBody);}}}}}catch(ex){}}";
       sScript += "document.addEventListener('keypress',function(e){if(e.which==104){e.stopPropagation();e.preventDefault();scrollToNextHeading()}else if(e.which==72){e.stopPropagation();e.preventDefault();scrollToPreviousHeading()}},false);function scrollToNextHeading(){var aH2s=document.getElementsByTagName('h2');var bMadeJump=false;for(var i=0;i<aH2s.length-1;i++){if(aH2s[i]===document.activeElement){aH2s[i+1].scrollIntoView(true);aH2s[i+1].focus();var a=aH2s[i-1].getElementsByTagName('a');if(a!=null)a[0].focus();bMadeJump=true;break}}if(bMadeJump==false){for(var i=0;i<aH2s.length;i++){if(nodeY(aH2s[i])>window.scrollY){aH2s[i].scrollIntoView(true);aH2s[i].focus();var a=aH2s[i].getElementsByTagName('a');if(a!=null)a[0].focus();break}}}}function scrollToPreviousHeading(){var aH2s=document.getElementsByTagName('h2');var bMadeJump=false;for(var i=1;i<aH2s.length;i++){if(aH2s[i]===document.activeElement){aH2s[i-1].scrollIntoView(true);aH2s[i-1].focus();var a=aH2s[i-1].getElementsByTagName('a');if(a!=null)a[0].focus();bMadeJump=true;break}}if(bMadeJump==false){var previousElement=document.body;for(var i=0;i<aH2s.length;i++){if(nodeY(aH2s[i])>=window.scrollY){previousElement.scrollIntoView(true);previousElement.focus();var a=previousElement.getElementsByTagName('a');if(a!=null)a[0].focus();break}previousElement=aH2s[i]}}}function nodeY(node){var y=node.offsetTop;while(node.offsetParent!=null&&node.offsetParent!=node.ownerDocument){node=node.offsetParent;y+=node.offsetTop}return y}";
       scriptElement.innerHTML = "/*<![CDATA[*/ " + sScript + " /*]]>*/";
       reportDoc.head.appendChild(scriptElement);
@@ -3813,18 +3856,19 @@ ys: 'whys'
     },
 
     fnDisplayFooter: function (rd) {
-      var div = rd.createElement('div');
+      var div, p, scriptElement, sScript;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIFooter');
       div.setAttribute('role', 'contentinfo');
       div.setAttribute('aria-label', 'Footer');
-      var p = rd.createElement('p');
+      p = rd.createElement('p');
       p.innerHTML = blr.W15yQC.fnGetString('hrsFooter',[blr.W15yQC.version]);
       div.appendChild(p);
       rd.body.appendChild(div);
 
       if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault",false) || Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault",false)) {
-        var scriptElement = rd.createElement('script');
-        var sScript = '';
+        scriptElement = rd.createElement('script');
+        sScript = '';
         if(Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault",false)) {
           sScript = 'collapseAll();';
         }
@@ -3838,25 +3882,25 @@ ys: 'whys'
     },
 
     fnGetFrameTitles: function (doc, rootNode, aFramesList) {
-
-      if (aFramesList == null) aFramesList = new Array();
+      var c, frameTitle, frameSrc, frameId, frameName, role, xPath, nodeDescription, frameDocument;
+      if (aFramesList == null) { aFramesList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        if (rootNode == null) { rootNode = doc.body; }
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // document the frame
-            var frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-            var frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
-            var frameId = blr.W15yQC.fnGetNodeAttribute(c, 'id', null);
-            var frameName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
-            var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-            var xPath = blr.W15yQC.fnGetElementXPath(c);
-            var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+            frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+            frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
+            frameId = blr.W15yQC.fnGetNodeAttribute(c, 'id', null);
+            frameName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
+            role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+            xPath = blr.W15yQC.fnGetElementXPath(c);
+            nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
             aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, frameSrc));
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
           } else { // keep looking through current document
             blr.W15yQC.fnGetFrameTitles(doc, c, aFramesList);
@@ -3867,11 +3911,12 @@ ys: 'whys'
     },
 
     fnAnalyzeFrameTitles: function (aFramesList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var i, framedDocumentBody, j;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
-      for (var i = 0; i < aFramesList.length; i++) {
+      for (i = 0; i < aFramesList.length; i++) {
         aFramesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node, aDocumentsList);
-        var framedDocumentBody = null;
+        framedDocumentBody = null;
         if(aFramesList[i].node != null) {
           if(aFramesList[i].node.contentWindow != null && aFramesList[i].node.contentWindow.document && aFramesList[i].node.contentWindow.document.body) {
             framedDocumentBody = aFramesList[i].node.contentWindow.document.body;
@@ -3887,7 +3932,7 @@ ys: 'whys'
           aFramesList[i].soundex = '';
         }
       }
-      for (var i = 0; i < aFramesList.length; i++) {
+      for (i = 0; i < aFramesList.length; i++) {
         if (blr.W15yQC.fnGetNodeAttribute(aFramesList[i].node, 'src', 'about:blank').toLowerCase() == 'about:blank') {
           blr.W15yQC.fnAddNote(aFramesList[i], 'frameContentScriptGenerated');
         }
@@ -3899,7 +3944,7 @@ ys: 'whys'
           } else if (blr.W15yQC.fnIsMeaningfulDocTitleText (aFramesList[i].title) == false) { // TODO: QA This
             blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotMeaningful'); // TODO: QA This
           }
-          for (var j = 0; j < aFramesList.length; j++) {
+          for (j = 0; j < aFramesList.length; j++) {
             if (j == i) {
               continue;
             } else if (aFramesList[j].title != null && aFramesList[j].title.length > 0) {
@@ -3925,44 +3970,59 @@ ys: 'whys'
     },
 
     fnDisplayWindowDetails: function (rd) {
-      var div = rd.createElement('div');
+      var div, div2, element;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentDetails');
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', blr.W15yQC.fnGetString('hrsWindowDetails'));
-      var div2 = rd.createElement('div');
-      blr.W15yQC.fnAppendElementTo(div2, rd, 'h3', blr.W15yQC.fnGetString('hrsWindowTitle'));
-      blr.W15yQC.fnAppendElementTo(div2, rd, 'p', window.top.content.document.title);
-      blr.W15yQC.fnAppendElementTo(div2, rd, 'h3', blr.W15yQC.fnGetString('hrsWindowURL'));
-      blr.W15yQC.fnAppendElementTo(div2, rd, 'p', window.top.content.document.URL);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnGetString('hrsWindowDetails'));
+      div2 = rd.createElement('div');
+      element = rd.createElement('h3');
+      element.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsWindowTitle')));
+      div2.appendChild(element);
+
+      element = rd.createElement('p');
+      element.appendChild(rd.createTextNode(window.top.content.document.title));
+      div2.appendChild(element);
+
+      element = rd.createElement('h3');
+      element.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsWindowURL')));
+      div2.appendChild(element);
+
+      element = rd.createElement('p');
+      element.appendChild(rd.createTextNode(window.top.content.document.URL));
+      div2.appendChild(element);
+
       div.appendChild(div2);
       rd.body.appendChild(div);
     },
 
     fnDisplayFrameTitleResults: function (rd, aFramesList) {
-      var div = rd.createElement('div');
+      var div, sFrameSectionHeading, table, msgHash, tbody, i, sNotes, sClass;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
 
-      var sFrameSectionHeading;
       if (aFramesList && aFramesList.length && aFramesList.length > 0) {
         if (aFramesList.length > 1) {
           sFrameSectionHeading = aFramesList.length + " " + blr.W15yQC.fnGetString('hrsFrames');
-        } else sFrameSectionHeading = blr.W15yQC.fnGetString('hrs1Frame');
+        } else {
+          sFrameSectionHeading = blr.W15yQC.fnGetString('hrs1Frame');
+        }
       } else {
-        sFrameSectionHeading = blr.W15yQC.fnGetString('hrsNoFrames');;
+        sFrameSectionHeading = blr.W15yQC.fnGetString('hrsNoFrames');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFrameSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sFrameSectionHeading);
 
       if (aFramesList && aFramesList.length > 0) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AIFramesTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
                                                             blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHSrc'),
                                                             blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aFramesList.length; i++) {
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
-          var sClass = '';
+        msgHash = new blr.W15yQC.HashTable();
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aFramesList.length; i++) {
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
+          sClass = '';
           if (aFramesList[i].failed) {
             sClass = 'failed';
           } else if (aFramesList[i].warning) {
@@ -3974,18 +4034,19 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFramesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFramesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFramesDetected'));
       }
       rd.body.appendChild(div);
     },
 
     fnGetDocumentLanguage: function (doc) {
+      var aHTMLList;
       if (doc != null) {
         if (doc.body && doc.body.hasAttribute && doc.body.hasAttribute('lang')) {
           return doc.body.getAttribute('lang');
         }
         if (doc.getElementsByTagName) {
-          var aHTMLList = doc.getElementsByTagName('html');
+          aHTMLList = doc.getElementsByTagName('html');
           if (aHTMLList && aHTMLList.length > 0 && aHTMLList[0].hasAttribute && aHTMLList[0].hasAttribute('lang')) {
             return aHTMLList[0].getAttribute('lang');
           }
@@ -4008,8 +4069,9 @@ ys: 'whys'
     },
 
     fnGetDocType: function (doc) {
+      var sDocType;
       if (doc !== null && doc.doctype !== null && doc.doctype.name !== null) {
-        var sDocType = doc.doctype.name;
+        sDocType = doc.doctype.name;
         if (doc.doctype.publicId) sDocType = sDocType + ' PUBLIC "' + doc.doctype.publicId + '"';
         if (doc.doctype.systemId) sDocType = sDocType + ' "' + doc.doctype.systemId + '"';
         if (doc.doctype.internalSubset) sDocType = sDocType + ' [' + doc.doctype.internalSubset + ']';
@@ -4019,24 +4081,25 @@ ys: 'whys'
     },
 
     fnGetDocuments: function (doc, rootNode, aDocumentsList) {
+      var docNumber, c, sID, idCount, frameDocument;
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
       // TODO: Store framing node (frameset, iframe, object, etc.)
       if (doc != null) {
         if (aDocumentsList == null) {
-          aDocumentsList = new Array();
+          aDocumentsList = [];
           // Put the top window's document in the list
           aDocumentsList.push(new blr.W15yQC.documentDescription(doc, doc.URL, aDocumentsList.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
         }
-        var docNumber = aDocumentsList.length - 1;
+        docNumber = aDocumentsList.length - 1;
 
         if (rootNode == null) rootNode = doc.body;
         if (rootNode != null && rootNode.firstChild != null) {
-          for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+          for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
             if (c.nodeType !== 1) continue; // Only pay attention to element nodes
             if (c.tagName && c.hasAttribute('id') == true) {
-              var sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
-              var idCount = 1;
+              sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
+              idCount = 1;
               if(aDocumentsList[docNumber].idHashTable.hasItem(sID)) {
                 idCount = aDocumentsList[docNumber].idHashTable.getItem(sID)+1;
                 aDocumentsList[docNumber].IDsUnique = false;
@@ -4060,7 +4123,7 @@ ys: 'whys'
 
             if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
               // Document the new document
-              var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
               aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
 
@@ -4076,9 +4139,10 @@ ys: 'whys'
     },
 
     fnAnalyzeDocuments: function (aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var i, aSameTitles, j, sIDList;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aDocumentsList !== null && aDocumentsList.length) {
-        for (var i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
+        for (i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
           if (aDocumentsList[i].title == null) {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleMissing'); // QA iframeTests01.html -- TODO: Can't produce, scan this be detected?
           } else if (blr.W15yQC.fnCleanSpaces(aDocumentsList[i].title).length < 1) {
@@ -4093,9 +4157,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLang'); // QA iframeTests01.html
             }
           }
-          var aSameTitles = [];
+          aSameTitles = [];
           if(aDocumentsList[i].title != null && aDocumentsList[i].title.length>0) {
-            for (var j=0; j < aDocumentsList.length; j++) {
+            for (j=0; j < aDocumentsList.length; j++) {
               if(i == j) continue;
               if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
                 aSameTitles.push(j+1);
@@ -4107,14 +4171,14 @@ ys: 'whys'
           }
           if (aDocumentsList[i].IDsUnique == false) {
             aDocumentsList[i].warning = true;
-            var sIDList = aDocumentsList[i].nonUniqueIDs.toString().replace(/,/g,', ');
+            sIDList = aDocumentsList[i].nonUniqueIDs.toString().replace(/,/g,', ');
             if(aDocumentsList[i].nonUniqueIDsCount>5) sIDList = sIDList + '...';
 
             sIDList = blr.W15yQC.fnCutoffString(sIDList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docNonUniqueIDs',[aDocumentsList[i].nonUniqueIDsCount, sIDList]);  // QA iframeTests01.html
           }
           if (aDocumentsList[i].IDsValid == false) {
-            var sIDList = aDocumentsList[i].invalidIDs.toString().replace(/,/g,', ');
+            sIDList = aDocumentsList[i].invalidIDs.toString().replace(/,/g,', ');
             if(aDocumentsList[i].invalidIDsCount>5) sIDList = sIDList + '...';
             sIDList = blr.W15yQC.fnCutoffString(sIDList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidIDs',[aDocumentsList[i].invalidIDsCount,sIDList]); // QA iframeTests01.html
@@ -4124,10 +4188,10 @@ ys: 'whys'
     },
 
     fnDisplayDocumentsResults: function (rd, aDocumentsList) {
-      var div = rd.createElement('div');
+      var div, sDocumentsSectionHeading, table, msgHash, tbody, i, dd, sNotes, sClass;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
 
-      var sDocumentsSectionHeading;
       if (aDocumentsList && aDocumentsList.length && aDocumentsList.length > 0) {
         if (aDocumentsList.length > 1) {
           sDocumentsSectionHeading = aDocumentsList.length + ' ' + blr.W15yQC.fnGetString('hrsDocuments');
@@ -4135,22 +4199,22 @@ ys: 'whys'
       } else {
         sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrsNoDocuments');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sDocumentsSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sDocumentsSectionHeading);
 
       if (aDocumentsList && aDocumentsList.length > 0) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AIDocumentsTable');
 
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
                                                             blr.W15yQC.fnGetString('hrsTHLanguage'), blr.W15yQC.fnGetString('hrsTHDirection'),
                                                             blr.W15yQC.fnGetString('hrsTHDocumentURL'), blr.W15yQC.fnGetString('hrsTHCompatMode'),
                                                             blr.W15yQC.fnGetString('hrsTHDoctype'),blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aDocumentsList.length; i++) {
-          var dd = aDocumentsList[i];
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(dd, msgHash);
-          var sClass = '';
+        msgHash = new blr.W15yQC.HashTable();
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aDocumentsList.length; i++) {
+          dd = aDocumentsList[i];
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(dd, msgHash);
+          sClass = '';
           if (dd.failed) {
             sClass = 'failed';
           } else if (dd.warning) {
@@ -4162,14 +4226,15 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIDocumentsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
       }
       rd.body.appendChild(div);
     },
 
     fnIsDescendant: function(parent, child) {
+      var node;
       if(child != null) {
-        var node = child.parentNode;
+        node = child.parentNode;
         while (node != null) {
          if (node === parent) return true;
          node = node.parentNode;
@@ -4179,29 +4244,29 @@ ys: 'whys'
     },
 
     fnGetARIALandmarks: function (doc, rootNode, aARIALandmarksList, baseLevel) {
-      if (aARIALandmarksList == null) aARIALandmarksList = new Array();
-      if (baseLevel == null) baseLevel = 0;
-      var level;
+      var c, level, i, frameDocument, sTagName, sRole, xPath, nodeDescription, sARIALabel, sState;
+      if (aARIALandmarksList == null) { aARIALandmarksList = []; } 
+      if (baseLevel == null) { baseLevel = 0; }
 
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // determine level, and then get frame contents
             level = baseLevel+1;
-            for(var i=aARIALandmarksList.length-1; i>=0; i--) {
+            for(i=aARIALandmarksList.length-1; i>=0; i--) {
               if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
                 level = aARIALandmarksList[i].level+1;
                 break;
               }
             }            
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetARIALandmarks(frameDocument, frameDocument.body, aARIALandmarksList, level);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && c.hasAttribute('role') == true) {
-              var sTagName = c.tagName.toLowerCase();
-              var sRole = c.getAttribute('role');
+              sTagName = c.tagName.toLowerCase();
+              sRole = c.getAttribute('role');
               switch (sRole) {
                 case 'application':
                 case 'banner':
@@ -4212,11 +4277,11 @@ ys: 'whys'
                 case 'navigation':
                 case 'search':
                   // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                  var xPath = blr.W15yQC.fnGetElementXPath(c);
-                  var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  var sARIALabel = null;
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  sARIALabel = null;
                   level = baseLevel+1;
-                  for(var i=aARIALandmarksList.length-1; i>=0; i--) {
+                  for(i=aARIALandmarksList.length-1; i>=0; i--) {
                     if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
                       level = aARIALandmarksList[i].level+1;
                       break;
@@ -4227,7 +4292,7 @@ ys: 'whys'
                   } else if (c.hasAttribute('aria-labelledby') == true) {
                     sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
                   }
-                  var sState = blr.W15yQC.fnGetNodeState(c);
+                  sState = blr.W15yQC.fnGetNodeState(c);
                   aARIALandmarksList.push(new blr.W15yQC.ariaLandmarkElement(c, xPath, nodeDescription, doc, aARIALandmarksList.length, level, sRole, sARIALabel, sState));
                   break;
               }
@@ -4240,14 +4305,15 @@ ys: 'whys'
     },
 
     fnAnalyzeARIALandmarks: function (aARIALandmarksList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var iMainLandmarkCount, iBannerLandmarkCount, iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
       
       if (aARIALandmarksList != null && aARIALandmarksList.length) {
-        var iMainLandmarkCount = 0;
-        var iBannerLandmarkCount = 0;
-        var iContentInfoLandmarkCount = 0;
-        for (var i = 0; i < aARIALandmarksList.length; i++) {
+        iMainLandmarkCount = 0;
+        iBannerLandmarkCount = 0;
+        iContentInfoLandmarkCount = 0;
+        for (i = 0; i < aARIALandmarksList.length; i++) {
           aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
           aARIALandmarksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
           if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
@@ -4257,12 +4323,12 @@ ys: 'whys'
           } if(aARIALandmarksList[i].role.toLowerCase() == 'contentinfo') {
             iContentInfoLandmarkCount++;
           } 
-          var sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
+          sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
           
-          var aSameLabelText = [];
-          for (var j = 0; j < aARIALandmarksList.length; j++) {
+          aSameLabelText = [];
+          for (j = 0; j < aARIALandmarksList.length; j++) {
             if (i == j) continue;
-            var sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
+            sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
             if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
               aSameLabelText.push(j+1);
             }
@@ -4301,10 +4367,10 @@ ys: 'whys'
     },
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList) {
-      var div = rd.createElement('div');
+      var div, sARIALandmarksSectionHeading, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
 
-      var sARIALandmarksSectionHeading;
       if (aARIALandmarksList && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
         if (aARIALandmarksList.length > 1) {
           sARIALandmarksSectionHeading = aARIALandmarksList.length + ' ' + blr.W15yQC.fnGetString('hrsARIALandmarks');
@@ -4312,26 +4378,26 @@ ys: 'whys'
       } else {
         sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrsNoARIALandmarks');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sARIALandmarksSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sARIALandmarksSectionHeading);
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevelNotes && aARIALandmarksList.pageLevelNotes.length>0))) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
                                                             blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
-        var tbody = rd.createElement('tbody');
+        msgHash = new blr.W15yQC.HashTable();
+        tbody = rd.createElement('tbody');
         // Elements
-        for (var i = 0; i < aARIALandmarksList.length; i++) {
-          var lo = aARIALandmarksList[i];
-          var sPadding = '';
-          for(var j=1; j<lo.level; j++) {
+        for (i = 0; i < aARIALandmarksList.length; i++) {
+          lo = aARIALandmarksList[i];
+          sPadding = '';
+          for(j=1; j<lo.level; j++) {
             sPadding += '&nbsp;';
           }
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
-          var sClass = '';
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+          sClass = '';
           if (lo.failed) {
             sClass = 'failed';
           } else if (lo.warning) {
@@ -4341,10 +4407,10 @@ ys: 'whys'
         }
         // Page Level
         if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
-          for (var i = 0; i < aARIALandmarksList.pageLevel.notes.length; i++) {
-            var lo = aARIALandmarksList.pageLevel;
-            var sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
-            var sClass = '';
+          for (i = 0; i < aARIALandmarksList.pageLevel.notes.length; i++) {
+            lo = aARIALandmarksList.pageLevel;
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+            sClass = '';
             if (lo.failed) {
               sClass = 'failed';
             } else if (lo.warning) {
@@ -4358,41 +4424,41 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIIARIALandmarksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
       }
       rd.body.appendChild(div);
-
     },
 
     fnGetARIAElements: function (doc, rootNode, aARIAElementsList, ARIAElementStack) {
-      if (aARIAElementsList == null) aARIAElementsList = new Array();
-      if (ARIAElementStack == null) ARIAElementStack = new Array();
+      var c, frameDocument, sTagName, xPath, nodeDescription, sRole, sARIALabel, sState; 
+      if (aARIAElementsList == null) { aARIAElementsList = []; }
+      if (ARIAElementStack == null) { ARIAElementStack = []; }
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetARIAElements(frameDocument, frameDocument.body, aARIAElementsList, null);
           } else { // keep looking through current document
             if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnElementUsesARIA(c) == true) {
-              var sTagName = c.tagName.toLowerCase();
+              sTagName = c.tagName.toLowerCase();
               while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1],c) == false) {
                 ARIAElementStack.pop();
               }
                 // Document ARIA Element: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var sRole = c.getAttribute('role');
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                sRole = c.getAttribute('role');
                 // TODO: Don't restrict this to just an ARIA label, other elements may be involved.
-                var sARIALabel = null;
+                sARIALabel = null;
                 if (c.hasAttribute('aria-label') == true) {
                   sARIALabel = c.getAttribute('aria-label');
                 } else if (c.hasAttribute('aria-labelledby') == true) {
                   sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
                 }
-                var sState = blr.W15yQC.fnGetNodeState(c);
+                sState = blr.W15yQC.fnGetNodeState(c);
                 aARIAElementsList.push(new blr.W15yQC.ariaElement(c, xPath, nodeDescription, doc, aARIAElementsList.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
                 ARIAElementStack.push(c);
             }
@@ -4404,19 +4470,20 @@ ys: 'whys'
     },
 
     fnAnalyzeARIA: function (aARIALandmarksList, aDocumentsList) { // TODO: Finish this
+      var i, sRoleAndLabel, sRoleAndLabel2, j;
       blr.W15yQC.fnLog("+++++WHAT?:fnAnalyzeARIA");
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA
       if (aARIALandmarksList != null && aARIALandmarksList.length) {
 
-        for (var i = 0; i < aARIALandmarksList.length; i++) {
+        for (i = 0; i < aARIALandmarksList.length; i++) {
           aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
 
           aARIALandmarksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
-          var sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
-          for (var j = 0; j < aARIALandmarksList.length; j++) {
+          sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
+          for (j = 0; j < aARIALandmarksList.length; j++) {
             if (i == j) continue;
-            var sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
+            sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
             if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
               if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
                 blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ariaLmkAndLabelNotUnique'); // QA ariaTests01.html
@@ -4438,12 +4505,12 @@ ys: 'whys'
     },
 
     fnDisplayARIAElementsResults: function (rd, aARIAElementsList) {
-      var div = rd.createElement('div');
-      var innerDiv = rd.createElement('div');
+      var div, innerDiv, sARIAElementsHeading, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, divARIAEl, divWidth, sNotesTxt, sMessage, span;
+      div = rd.createElement('div');
+      innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIARIAElementsList');
       div.setAttribute('class', 'AIList');
 
-      var sARIAElementsHeading;
       if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) {
         if (aARIAElementsList.length > 1) {
           sARIAElementsHeading = aARIAElementsList.length + ' ' + blr.W15yQC.fnGetString('hrsARIAEls');
@@ -4451,25 +4518,25 @@ ys: 'whys'
       } else {
         sARIAElementsHeading = blr.W15yQC.fnGetString('hrsNoARIAEls');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sARIAElementsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sARIAElementsHeading);
 
       if (aARIAElementsList && aARIAElementsList.length > 0) {
 
-        var list = new Array();
+        list = [];
         list.push(rd.createElement('ul'));
-        var previousHeadingLevel = 0;
+        previousHeadingLevel = 0;
 
-        var previousDocument = null;
+        previousDocument = null;
         if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) previousDocument = aARIAElementsList[0].doc;
-        for (var i = 0; i < aARIAElementsList.length; i++) {
-          var sDoc = '';
+        for (i = 0; i < aARIAElementsList.length; i++) {
+          sDoc = '';
           if (i == 0) {
             sDoc = 'Contained in doc #' + aARIAElementsList[i].ownerDocumentNumber;
           }
-          var nextLogicalLevel = parseInt(previousHeadingLevel) + 1;
-          for (var j = nextLogicalLevel; j < aARIAElementsList[i].level; j++) {
+          nextLogicalLevel = parseInt(previousHeadingLevel,10) + 1;
+          for (j = nextLogicalLevel; j < aARIAElementsList[i].level; j++) {
             // Add "skipped" heading levels
-            var li = rd.createElement('li');
+            li = rd.createElement('li');
             if (previousDocument != aARIAElementsList[i].doc) {
               blr.W15yQC.fnAddClass(li, 'newDocument');
               sDoc = 'In doc #' + aARIAElementsList[i].ownerDocumentNumber;
@@ -4484,21 +4551,21 @@ ys: 'whys'
             previousHeadingLevel = j;
           }
 
-          var li = rd.createElement('li');
+          li = rd.createElement('li');
           if (previousDocument != aARIAElementsList[i].doc) {
             blr.W15yQC.fnAddClass(li, 'newDocument');
             sDoc = 'In doc #' + aARIAElementsList[i].ownerDocumentNumber;
             previousDocument = aARIAElementsList[i].doc;
           }
-          var divARIAEl = rd.createElement('div');
-          var divWidth = 600-aARIAElementsList[i].level*15;
+          divARIAEl = rd.createElement('div');
+          divWidth = 600-aARIAElementsList[i].level*15;
           divARIAEl.setAttribute('style','float:left;width:'+divWidth+'px');
           divARIAEl.appendChild(rd.createTextNode(aARIAElementsList[i].nodeDescription));
           li.appendChild(divARIAEl);
-          var sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aARIAElementsList[i].notes);
-          var sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aARIAElementsList[i].stateDescription, ', state:'), ' - ');
+          sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aARIAElementsList[i].notes);
+          sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aARIAElementsList[i].stateDescription, ', state:'), ' - ');
           if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
-            var span = rd.createElement('span');
+            span = rd.createElement('span');
 
             span.appendChild(rd.createTextNode(' (' + sMessage + ')'));
             span.setAttribute('class', 'headingNote');
@@ -4520,7 +4587,7 @@ ys: 'whys'
             previousHeadingLevel--;
           }
           list[list.length - 1].appendChild(li);
-          previousHeadingLevel = parseInt(aARIAElementsList[i].level);
+          previousHeadingLevel = parseInt(aARIAElementsList[i].level,10);
         }
         while (list.length > 1) {
           list[list.length - 2].appendChild(list[list.length - 1]);
@@ -4529,7 +4596,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -4556,24 +4623,23 @@ ys: 'whys'
     },
 
     fnComputeWCAG2LuminosityRatio: function(r1,g1,b1, r2,g2,b2) {
-        var l1 = blr.W15yQC.fnCalculateLuminance(r1/255, g1/255, b1/255);
-        var l2 = blr.W15yQC.fnCalculateLuminance(r2/255, g2/255, b2/255);
-        return Math.round(((l1 >= l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05)) *100) / 100;
+        var l1 = blr.W15yQC.fnCalculateLuminance(r1/255, g1/255, b1/255),
+            l2 = blr.W15yQC.fnCalculateLuminance(r2/255, g2/255, b2/255);
+        return Math.round(((l1 >= l2) ? (l1 + 0.05) / (l2 + 0.05) : (l2 + 0.05) / (l1 + 0.05)) *100) / 100;
     },
 
     fnGetColorValues: function(el) {
-      var bdebug=false;
+      var bdebug=false, style, textSize, textWeight, bBgImage, bgTransparent, el2, style2, fgColor, bgColor, aFGColor, aBGColor;
       if(el.innerHTML=='NewsPulse') bdebug=true;
       if(bdebug) blr.W15yQC.fnLog('gcv-newspulse-start');
-      var style = window.getComputedStyle(el, null);
+      style = window.getComputedStyle(el, null);
       if(style!=null) {
-        var textSize = style.getPropertyValue('font-size');
-        var textWeight = style.getPropertyValue('font-weight');
-        var bBgImage = style.getPropertyValue('background-image').toLowerCase()!=='none';
-        var bgTransparent = style.getPropertyValue('background-color').toLowerCase()=='transparent';
+        textSize = style.getPropertyValue('font-size');
+        textWeight = style.getPropertyValue('font-weight');
+        bBgImage = style.getPropertyValue('background-image').toLowerCase()!=='none';
+        bgTransparent = style.getPropertyValue('background-color').toLowerCase()=='transparent';
         if(bdebug) blr.W15yQC.fnLog('gcv-newspulse:'+el.tagName+' '+textSize+' '+textWeight+' '+bBgImage+' ' + bgTransparent+ ' '+style.getPropertyValue('background-color').toLowerCase());
-        var el2=el;
-        var style2;
+        el2=el;
         while(bBgImage==false && bgTransparent==true && el2.parentNode != null) {
         if(bdebug) blr.W15yQC.fnLog('gcv-newspulse-inWhile:'+el2.tagName+' '+textSize+' '+textWeight+' '+bBgImage+' '+bgTransparent);
           el2=el2.parentNode;
@@ -4590,7 +4656,7 @@ ys: 'whys'
           }
         }
 
-        var fgColor=style.getPropertyValue('color');
+        fgColor=style.getPropertyValue('color');
         el2=el;
         while(/transparent/i.test(fgColor) && el2.parentNode != null) {
           el2=el2.parentNode;
@@ -4603,7 +4669,7 @@ ys: 'whys'
         }
         if(/transparent/i.test(fgColor)) fgColor = 'rgb(0, 0, 0)';
         
-        var bgColor=style.getPropertyValue('background-color');
+        bgColor=style.getPropertyValue('background-color');
         el2=el;
         while(/transparent/i.test(bgColor) && el2.parentNode != null) {
           el2=el2.parentNode;
@@ -4616,42 +4682,43 @@ ys: 'whys'
         }
         if(/transparent/i.test(bgColor)) bgColor = 'rgb(255, 255, 255)';
 
-        var aFGColor = blr.W15yQC.fnParseCSSColorValues(fgColor);
-        var aBGColor = blr.W15yQC.fnParseCSSColorValues(bgColor);
+        aFGColor = blr.W15yQC.fnParseCSSColorValues(fgColor);
+        aBGColor = blr.W15yQC.fnParseCSSColorValues(bgColor);
         if(aFGColor != null && aBGColor != null) return [aFGColor[0], aFGColor[1], aFGColor[2], aBGColor[0], aBGColor[1], aBGColor[2], textSize, textWeight, bBgImage];
       }
       return null;
     },
     
     fnGetLuminosityCheckElements: function(doc, rootNode, aLumCheckList, parentsColor, parentsBGColor) {
-      if (aLumCheckList == null) aLumCheckList = new Array();
+      var c, frameDocument, tagName, aColors, xPath, nodeDescription, sText, sTextSize, fgColor, bgColor, textWeight, bBgImage, fgLum, bgLum, lRatio;
+      if (aLumCheckList == null) { aLumCheckList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        if (rootNode == null) { rootNode = doc.body; }
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
                             (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetLuminosityCheckElements(frameDocument, frameDocument.body, aLumCheckList);
           } else { // keep looking through current document
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              var tagName = c.tagName.toLowerCase();
+              tagName = c.tagName.toLowerCase();
               if(tagName != 'script' && tagName != 'style' && tagName != 'option' && blr.W15yQC.fnElementHasOwnContent(c)) {
-                var aColors = blr.W15yQC.fnGetColorValues(c);
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var sText = blr.W15yQC.fnElementsOwnContent(c);
+                aColors = blr.W15yQC.fnGetColorValues(c);
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                sText = blr.W15yQC.fnElementsOwnContent(c);
                 if(aColors != null) {
-                  var fgColor = [aColors[0], aColors[1], aColors[2]];
-                  var bgColor = [aColors[3], aColors[4], aColors[5]];
-                  var sTextSize = aColors[6];
-                  var textWeight = aColors[7];
-                  var bBgImage = aColors[8];
-                  var fgLum;
-                  var bgLum;
-                  var lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
+                  fgColor = [aColors[0], aColors[1], aColors[2]];
+                  bgColor = [aColors[3], aColors[4], aColors[5]];
+                  sTextSize = aColors[6];
+                  textWeight = aColors[7];
+                  bBgImage = aColors[8];
+                  //fgLum;
+                  //bgLum;
+                  lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
                   aLumCheckList.push(new blr.W15yQC.contrastElement(c, xPath, nodeDescription, doc, aLumCheckList.length, sText, sTextSize, textWeight, fgColor, bgColor, bBgImage, fgLum, bgLum, lRatio));
                 }
               }
@@ -4664,17 +4731,18 @@ ys: 'whys'
     },
         
     fnAnalyzeLuminosityCheckElements: function(aLumCheckList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var spec, minRatio, i, textSize, textWeight, lRatio;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       
-      var spec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2AA');
-      var minRatio=7.0;
+      spec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2AA');
+      minRatio=7.0;
 
       if (aLumCheckList != null && aLumCheckList.length) {
-        for (var i = 0; i < aLumCheckList.length; i++) {
+        for (i = 0; i < aLumCheckList.length; i++) {
           aLumCheckList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLumCheckList[i].node, aDocumentsList);
-          var textSize = parseFloat(aLumCheckList[i].textSize);
-          var textWeight = parseInt(aLumCheckList[i].textWeight);
-          var lRatio = parseFloat(aLumCheckList[i].luminosityRatio);
+          textSize = parseFloat(aLumCheckList[i].textSize);
+          textWeight = parseInt(aLumCheckList[i].textWeight,10);
+          lRatio = parseFloat(aLumCheckList[i].luminosityRatio);
           if(textSize>=18) {
             minRatio=spec=='WCAG2AA' ? 3.0 : 4.5;
           } else if(textSize >= 14 && textWeight>=700) {
@@ -4692,39 +4760,38 @@ ys: 'whys'
     },
     
     fnGetImages: function (doc, rootNode, aImagesList) {
-      if (aImagesList == null) aImagesList = new Array();
+      var c, frameDocument, tagName, xPath, nodeDescription, effectiveLabel, role, box, width=null, height=null, title, alt, src, sARIALabel;
+      if (aImagesList == null) aImagesList = [];
 
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetImages(frameDocument, frameDocument.body, aImagesList);
           } else { // keep looking through current document
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              var tagName = c.tagName.toLowerCase();
+              tagName = c.tagName.toLowerCase();
               switch (tagName) {
                 case 'area':
-                  var xPath = blr.W15yQC.fnGetElementXPath(c);
-                  var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
-                  var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                  var box = c.getBoundingClientRect();
-                  var width;
-                  var height;
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  box = c.getBoundingClientRect();
                   if (box != null) {
-                    var width = box.width;
-                    var height = box.height;
+                    width = box.width;
+                    height = box.height;
                   }
-                  var title = null;
+                  title = null;
                   if (c.hasAttribute('title')) title = c.getAttribute('title');
-                  var alt = null;
+                  alt = null;
                   if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
-                  var src = null;
+                  src = null;
                   if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
-                  var sARIALabel = null;
+                  sARIALabel = null;
                   if (c.hasAttribute('aria-label') == true) {
                     sARIALabel = c.getAttribute('aria-label');
                   } else if (c.hasAttribute('aria-labelledby') == true) {
@@ -4734,24 +4801,22 @@ ys: 'whys'
                   break;
               case 'img':
                 // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
-                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                var box = c.getBoundingClientRect();
-                var width;
-                var height;
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                box = c.getBoundingClientRect();
                 if (box != null) {
-                  var width = box.width;
-                  var height = box.height;
+                  width = box.width;
+                  height = box.height;
                 }
-                var title = null;
+                title = null;
                 if (c.hasAttribute('title')) title = c.getAttribute('title');
-                var alt = null;
+                alt = null;
                 if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
-                var src = null;
+                src = null;
                 if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
-                var sARIALabel = null;
+                sARIALabel = null;
                 if (c.hasAttribute('aria-label') == true) {
                   sARIALabel = c.getAttribute('aria-label');
                 } else if (c.hasAttribute('aria-labelledby') == true) {
@@ -4763,23 +4828,21 @@ ys: 'whys'
               case 'input': // TODO: QA This!
                 if (c.hasAttribute('type') && c.getAttribute('type').toLowerCase() == 'image') {
                   // Document image: node, nodeDescription, doc, orderNumber, src, alt, title, ariaLabel
-                  var xPath = blr.W15yQC.fnGetElementXPath(c);
-                  var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  var title = null;
-                  var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
-                  var box = c.getBoundingClientRect();
-                  var width;
-                  var height;
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  title = null;
+                  effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                  box = c.getBoundingClientRect();
                   if (box != null) {
-                    var width = box.width;
-                    var height = box.height;
+                    width = box.width;
+                    height = box.height;
                   }
                   if (c.hasAttribute('title')) title = c.getAttribute('title');
-                  var alt = null;
+                  alt = null;
                   if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
-                  var src = null;
+                  src = null;
                   if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
-                  var sARIALabel = null;
+                  sARIALabel = null;
                   if (c.hasAttribute('aria-label') == true) {
                     sARIALabel = c.getAttribute('aria-label');
                   } else if (c.hasAttribute('aria-labelledby') == true) {
@@ -4787,6 +4850,7 @@ ys: 'whys'
                   }
                   aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
                 }
+                break;
               }
             }
             blr.W15yQC.fnGetImages(doc, c, aImagesList);
@@ -4797,10 +4861,11 @@ ys: 'whys'
     },
 
     fnAnalyzeImages: function (aImagesList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var i, sCombinedLabel;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aImagesList != null && aImagesList.length) {
 
-        for (var i = 0; i < aImagesList.length; i++) {
+        for (i = 0; i < aImagesList.length; i++) {
           aImagesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aImagesList[i].node, aDocumentsList);
           if (aImagesList[i].node != null && aImagesList[i].node.hasAttribute && aImagesList[i].node.hasAttribute('longdesc') == true) {
             aImagesList[i].longdescURL = aImagesList[i].node.getAttribute('longdesc');
@@ -4816,7 +4881,7 @@ ys: 'whys'
           if (aImagesList[i].alt == null && blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node) == false) {
             blr.W15yQC.fnAddNote(aImagesList[i], 'imgMissingAltAttribute'); // QA imageTests01.html
           }
-          var sCombinedLabel = blr.W15yQC.fnTrim(blr.W15yQC.fnJoin(blr.W15yQC.fnJoin(aImagesList[i].alt, aImagesList[i].title, ''), aImagesList[i].ariaLabel, ''));
+          sCombinedLabel = blr.W15yQC.fnTrim(blr.W15yQC.fnJoin(blr.W15yQC.fnJoin(aImagesList[i].alt, aImagesList[i].title, ''), aImagesList[i].ariaLabel, ''));
           if (sCombinedLabel == null || sCombinedLabel.length < 1) {
             if(aImagesList[i].alt != null && blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node)==false) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgNoAltText'); // QA imageTests01.html
@@ -4848,10 +4913,9 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList) {
-      var div = rd.createElement('div');
+      var div = rd.createElement('div'), sImagesSectionHeading, table, msgHash, tbody, i, io, sNotes, sClass;
       div.setAttribute('id', 'AIImagesList');
 
-      var sImagesSectionHeading;
       if (aImagesList && aImagesList.length && aImagesList.length > 0) {
         if (aImagesList.length > 1) {
           sImagesSectionHeading = aImagesList.length + ' ' + blr.W15yQC.fnGetString('hrsImages');
@@ -4859,22 +4923,22 @@ ys: 'whys'
       } else {
         sImagesSectionHeading = blr.W15yQC.fnGetString('hrsNoImages');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sImagesSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sImagesSectionHeading);
 
       if (aImagesList && aImagesList.length > 0) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt'),
                                                             blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
                                                             blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
+        msgHash = new blr.W15yQC.HashTable();
 
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aImagesList.length; i++) {
-          var io = aImagesList[i];
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
-          var sClass = '';
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aImagesList.length; i++) {
+          io = aImagesList[i];
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+          sClass = '';
           if (io.failed) {
             sClass = 'failed';
           } else if (io.warning) {
@@ -4886,33 +4950,34 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIImagesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoImagesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoImagesDetected'));
       }
       rd.body.appendChild(div);
 
     },
 
     fnGetAccessKeys: function (doc, rootNode, aAccessKeysList) {
-      if (aAccessKeysList == null) aAccessKeysList = new Array();
+      var c, frameDocument, tagName, accessKey, xPath, nodeDescription, effectiveLabel, role;
+      if (aAccessKeysList == null) { aAccessKeysList = []; }
 
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetAccessKeys(frameDocument, frameDocument.body, aAccessKeysList);
           } else { // keep looking through current document
             if (c.tagName && c.hasAttribute('accesskey') == true) {
               if (blr.W15yQC.fnNodeIsHidden(c) == false) {
                 // Document accesskey
-                var tagName = c.tagName.toLowerCase();
-                var accessKey = c.getAttribute('accesskey');
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c);
-                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                tagName = c.tagName.toLowerCase();
+                accessKey = c.getAttribute('accesskey');
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c);
+                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                 aAccessKeysList.push(new blr.W15yQC.accessKey(c, xPath, nodeDescription, doc, aAccessKeysList.length, role, accessKey, effectiveLabel));
               }
             }
@@ -4924,8 +4989,9 @@ ys: 'whys'
     },
 
     fnAnalyzeAccessKeys: function (aAccessKeysList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
-      var htMajorConflicts = { // What version of IE? What about the menus in IE 7, IE 8, IE 9? Specify it is the english version...
+      var htMajorConflicts, i, ak, aValuesDuplicated, aLabelsDuplicated, j, ak2;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+      htMajorConflicts = { // What version of IE? What about the menus in IE 7, IE 8, IE 9? Specify it is the english version...
         'c': "Alt+C is used to open the Favorites Center in IE.",
         'd': "Alt+D is used to access the Address Bar in IE.",
         'f': "Alt+F is used to access the File Menu in IE and Opens the Tools menu in Chrome.",
@@ -4941,12 +5007,12 @@ ys: 'whys'
         'z': "Alt+Z is used to open the Add to Favorites Menu in IE."
       }
       if (aAccessKeysList != null && aAccessKeysList.length && aAccessKeysList.length > 0) {
-        for (var i = 0; i < aAccessKeysList.length; i++) {
+        for (i = 0; i < aAccessKeysList.length; i++) {
           aAccessKeysList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aAccessKeysList[i].node, aDocumentsList);
           aAccessKeysList[i].stateDescription = blr.W15yQC.fnGetNodeState(aAccessKeysList[i].node);
         }
-        for (var i = 0; i < aAccessKeysList.length; i++) {
-          var ak = aAccessKeysList[i];
+        for (i = 0; i < aAccessKeysList.length; i++) {
+          ak = aAccessKeysList[i];
           if (htMajorConflicts[ak.accessKey.toLowerCase()] != null && htMajorConflicts[ak.accessKey.toLowerCase()].length) {
             blr.W15yQC.fnAddNote(ak, 'akConflict',[htMajorConflicts[ak.accessKey.toLowerCase()]]); //  QA accesskeyTests01.html
           }
@@ -4958,11 +5024,11 @@ ys: 'whys'
             } else if (blr.W15yQC.fnIsMeaningfulLinkText(ak.effectiveLabel) == false) {
               blr.W15yQC.fnAddNote(ak, 'akLabelNotMeaningful'); //  QA accesskeyTests01.html
             }
-            var aValuesDuplicated = [];
-            var aLabelsDuplicated = [];
-            for (var j = 0; j < aAccessKeysList.length; j++) {
+            aValuesDuplicated = [];
+            aLabelsDuplicated = [];
+            for (j = 0; j < aAccessKeysList.length; j++) {
               if (i == j) continue;
-              var ak2 = aAccessKeysList[j];
+              ak2 = aAccessKeysList[j];
               if (ak2 != null && ak2.accessKey != null) {
                 if (ak.accessKey == ak2.accessKey) {
                   aValuesDuplicated.push(j+1);
@@ -4997,10 +5063,10 @@ ys: 'whys'
     },
 
     fnDisplayAccessKeysResults: function (rd, aAccessKeysList) {
-      var div = rd.createElement('div');
+      var div, sSectionHeading, table, msgHash, tbody, i, ak, sNotes, sClass;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
 
-      var sSectionHeading;
       if (aAccessKeysList && aAccessKeysList.length && aAccessKeysList.length > 0) {
         if (aAccessKeysList.length > 1) {
           sSectionHeading = aAccessKeysList.length + ' ' +blr.W15yQC.fnGetString('hrsAccessKeys');
@@ -5008,22 +5074,22 @@ ys: 'whys'
       } else {
         sSectionHeading = blr.W15yQC.fnGetString('hrsNoAccessKeys');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sSectionHeading);
 
       if (aAccessKeysList != null && aAccessKeysList.length > 0) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AIAccesskeysTable');
 
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
                                                             blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
                                                             blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aAccessKeysList.length; i++) {
-          var ak = aAccessKeysList[i];
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
-          var sClass = '';
+        msgHash = new blr.W15yQC.HashTable();
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aAccessKeysList.length; i++) {
+          ak = aAccessKeysList[i];
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
+          sClass = '';
           if (ak.failed) {
             sClass = 'failed';
           } else if (ak.warning) {
@@ -5035,26 +5101,26 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIAccesskeysTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
       }
       rd.body.appendChild(div);
     },
 
     fnGetHeadings: function (doc, rootNode, aHeadingsList) {
-
-      if (aHeadingsList == null) aHeadingsList = new Array();
+      var c, frameDocument, tagName, headingLevel, xPath, nodeDescription, role, text;
+      if (aHeadingsList == null) { aHeadingsList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        if (rootNode == null) { rootNode = doc.body; }
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetHeadings(frameDocument, frameDocument.body, aHeadingsList);
           } else { // keep looking through current document
             if (c.tagName) {
-              var tagName = c.tagName.toLowerCase();
+              tagName = c.tagName.toLowerCase();
               switch (tagName) {
               case 'h1':
               case 'h2':
@@ -5064,13 +5130,14 @@ ys: 'whys'
               case 'h6':
                 if (blr.W15yQC.fnNodeIsHidden(c) == false) {
                   // Document heading
-                  var headingLevel = tagName.substring(1);
-                  var xPath = blr.W15yQC.fnGetElementXPath(c);
-                  var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                  var text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                  headingLevel = tagName.substring(1);
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
                   aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, headingLevel, text));
                 }
+                break;
               }
             }
             blr.W15yQC.fnGetHeadings(doc, c, aHeadingsList);
@@ -5081,17 +5148,18 @@ ys: 'whys'
     },
 
     fnAnalyzeHeadings: function (aHeadingsList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var i, previousHeadingLevel;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
-        for (var i = 0; i < aHeadingsList.length; i++) {
+        for (i = 0; i < aHeadingsList.length; i++) {
           aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
           if (aHeadingsList[i].text != null && aHeadingsList[i].text.length && aHeadingsList[i].text.length > 0) {
             aHeadingsList[i].text = blr.W15yQC.fnCleanSpaces(aHeadingsList[i].text);
           }
         }
-        var previousHeadingLevel = 0;
-        for (var i = 0; i < aHeadingsList.length; i++) {
+        previousHeadingLevel = 0;
+        for (i = 0; i < aHeadingsList.length; i++) {
           if (aHeadingsList[i].level - previousHeadingLevel > 1) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); //
           }
@@ -5123,38 +5191,40 @@ ys: 'whys'
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList) {
-      var div = rd.createElement('div');
-      var innerDiv = rd.createElement('div');
+      var div, innerDiv, sHeadingsHeading, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
+      div = rd.createElement('div');
+      innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIHeadingsList');
       div.setAttribute('class', 'AIList');
 
-      var sHeadingsHeading;
       if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) {
         if (aHeadingsList.length > 1) {
           sHeadingsHeading = aHeadingsList.length + ' ' + blr.W15yQC.fnGetString('hrsHeadings');
-        } else sHeadingsHeading = blr.W15yQC.fnGetString('hrs1Heading');
+        } else {
+          sHeadingsHeading = blr.W15yQC.fnGetString('hrs1Heading');
+        }
       } else {
         sHeadingsHeading = blr.W15yQC.fnGetString('hrsNoHeadings');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sHeadingsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sHeadingsHeading);
 
       if (aHeadingsList && aHeadingsList.length > 0) {
 
-        var list = new Array();
+        list = [];
         list.push(rd.createElement('ul'));
-        var previousHeadingLevel = 0;
+        previousHeadingLevel = 0;
 
-        var previousDocument = null;
+        previousDocument = null;
         if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) previousDocument = aHeadingsList[0].doc;
-        for (var i = 0; i < aHeadingsList.length; i++) {
-          var sDoc = '';
+        for (i = 0; i < aHeadingsList.length; i++) {
+          sDoc = '';
           if (i == 0) {
             sDoc = 'Contained in doc #' + aHeadingsList[i].ownerDocumentNumber;
           }
-          var nextLogicalLevel = parseInt(previousHeadingLevel) + 1;
-          for (var j = nextLogicalLevel; j < aHeadingsList[i].level; j++) {
+          nextLogicalLevel = parseInt(previousHeadingLevel,10) + 1;
+          for (j = nextLogicalLevel; j < aHeadingsList[i].level; j++) {
             // Add "skipped" heading levels
-            var li = rd.createElement('li');
+            li = rd.createElement('li');
             if (previousDocument != aHeadingsList[i].doc) {
               blr.W15yQC.fnAddClass(li, 'newDocument');
               sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
@@ -5169,7 +5239,7 @@ ys: 'whys'
             previousHeadingLevel = j;
           }
 
-          var li = rd.createElement('li');
+          li = rd.createElement('li');
           if (previousDocument != aHeadingsList[i].doc) {
             blr.W15yQC.fnAddClass(li, 'newDocument');
             sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
@@ -5177,10 +5247,10 @@ ys: 'whys'
           }
           li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
 
-          var sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
-          var sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
+          sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
+          sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
           if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
-            var span = rd.createElement('span');
+            span = rd.createElement('span');
 
             span.appendChild(rd.createTextNode(' (' + sMessage + ')'));
             span.setAttribute('class', 'headingNote');
@@ -5202,7 +5272,7 @@ ys: 'whys'
             previousHeadingLevel--;
           }
           list[list.length - 1].appendChild(li);
-          previousHeadingLevel = parseInt(aHeadingsList[i].level);
+          previousHeadingLevel = parseInt(aHeadingsList[i].level,10);
         }
         while (list.length > 1) {
           list[list.length - 2].appendChild(list[list.length - 1]);
@@ -5211,44 +5281,47 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
       }
       rd.body.appendChild(div);
     },
 
     fnGetFormControls: function (doc, rootNode, aDocumentsList, aFormsList, aFormControlsList) {
-      var bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls',false); 
-      if (aFormControlsList == null) aFormControlsList = new Array();
-      if (aFormsList == null) aFormsList = new Array();
+      var bIncludeLabelControls, c, frameDocument, sXPath, sFormDescription, ownerDocumentNumber, sRole, sName, sAction, sMethod, xPath, sFormElementDescription, parentFormNode,
+          role, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIALabelText, sARIADescriptionText, sStateDescription, sValue;
+          
+      bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls',false); 
+      if (aFormControlsList == null) aFormControlsList = [];
+      if (aFormsList == null) aFormsList = [];
 
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetFormControls(frameDocument, frameDocument.body, aDocumentsList, aFormsList, aFormControlsList);
           } else {
             if (c.tagName != null && c.tagName.toLowerCase() == 'form') {
-              var sXPath = blr.W15yQC.fnGetElementXPath(c);
-              var sFormDescription = blr.W15yQC.fnDescribeElement(c);
-              var ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
-              var sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              var sName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
-              var sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
-              var sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
+              sXPath = blr.W15yQC.fnGetElementXPath(c);
+              sFormDescription = blr.W15yQC.fnDescribeElement(c);
+              ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
+              sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+              sName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
+              sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
+              sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
               aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sName, sRole, sAction, sMethod));
             } else if ((blr.W15yQC.fnIsFormControlNode(c) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(c))) && blr.W15yQC.fnNodeIsHidden(c) == false) {
               // Document the form control
-              var xPath = blr.W15yQC.fnGetElementXPath(c);
-              var sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
-              var parentFormNode = blr.W15yQC.fnGetParentFormElement(c)
-              var sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
-              var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              var sTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-              var sLegendText = '';
-              var sLabelTagText = '';
-              var sEffectiveLabelText = '';
+              xPath = blr.W15yQC.fnGetElementXPath(c);
+              sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
+              parentFormNode = blr.W15yQC.fnGetParentFormElement(c)
+              sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
+              role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+              sTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+              sLegendText = '';
+              sLabelTagText = '';
+              sEffectiveLabelText = '';
               if(blr.W15yQC.fnIsFormControlNode(c)) {
                 sLegendText = blr.W15yQC.fnGetLegendText(c);
                 sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c, doc);
@@ -5267,11 +5340,11 @@ ys: 'whys'
                 }
               sEffectiveLabelText = sLabelTagText;
             }
-              var sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
-              var sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
-              var sStateDescription = blr.W15yQC.fnGetNodeState(c);
-              var sName = c.getAttribute('name');
-              var sValue = c.getAttribute('value');
+              sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
+              sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
+              sStateDescription = blr.W15yQC.fnGetNodeState(c);
+              sName = c.getAttribute('name');
+              sValue = c.getAttribute('value');
 
               aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, role, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, sEffectiveLabelText, sStateDescription, sValue));
             }
@@ -5283,14 +5356,17 @@ ys: 'whys'
     },
 
     fnAnalyzeFormControls: function (aFormsList, aFormControlsList, aDocumentsList) {
+      var i, j, aSameNames, subForms, aSameLabelText, aSoundsTheSame, bShouldntHaveBoth, nodeTagName, nodeTypeValue,
+          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist;
+
       // TODO: Add check that name value is unique to a given form unless it is a radio button
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if form labels are empty, not meaningful, the same as other form controls, or sound like any other label texts
       if (aFormsList != null && aFormsList.length > 0) {
-        for (var i = 0; i < aFormsList.length; i++) {
+        for (i = 0; i < aFormsList.length; i++) {
           aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
-          var aSameNames = [];
-          for (var j = 0; j < aFormsList.length; j++) {
+          aSameNames = [];
+          for (j = 0; j < aFormsList.length; j++) {
             if (i == j) continue;
             // If it has a name, check that the name is unique compared to other forms in the same document
             if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].ownerDocumentNumber == aFormsList[j].ownerDocumentNumber && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
@@ -5304,7 +5380,7 @@ ys: 'whys'
           if (blr.W15yQC.fnGetParentFormElement(aFormsList[i].node.parentNode) != null) {
             blr.W15yQC.fnAddNote(aFormsList[i], 'frmFormIsNested'); //
           }
-          var subForms = aFormsList[i].node.getElementsByTagName('FORM');
+          subForms = aFormsList[i].node.getElementsByTagName('FORM');
           if (subForms != null && subForms.length > 0) {
             blr.W15yQC.fnAddNote(aFormsList[i], 'frmFormContainsForms'); //
           }
@@ -5316,13 +5392,11 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormsList[i], 'frmIDNotUnique'); //
             }
           }
-
         }
-
       }
 
       if (aFormControlsList != null && aFormControlsList.length > 0) {
-        for (var i = 0; i < aFormControlsList.length; i++) {
+        for (i = 0; i < aFormControlsList.length; i++) {
           aFormControlsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormControlsList[i].node, aDocumentsList);
           aFormControlsList[i].parentFormNumber = blr.W15yQC.fnGetParentFormNumber(aFormControlsList[i].parentFormNode, aFormsList);
           aFormControlsList[i].legendText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].legendText);
@@ -5333,7 +5407,7 @@ ys: 'whys'
           aFormControlsList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFormControlsList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFormControlsList[i].effectiveLabelText+' '+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node)) : '';
         }
 
-        for (var i = 0; i < aFormControlsList.length; i++) {
+        for (i = 0; i < aFormControlsList.length; i++) {
           if (aFormControlsList[i].labelTagText == null && aFormControlsList[i].legendText == null && aFormControlsList[i].title == null && (aFormControlsList[i].effectiveLabelText == null || aFormControlsList[i].effectiveLabelText.length < 1)) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); //
           } else if (aFormControlsList[i].effectiveLabelText != null && aFormControlsList[i].effectiveLabelText.length > 0) {
@@ -5345,10 +5419,10 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNotMeaningful'); //
             }
             if(blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node)==false) {
-              var aSameLabelText = [];
-              var aSoundsTheSame = [];
+              aSameLabelText = [];
+              aSoundsTheSame = [];
               
-              for (var j = 0; j < aFormControlsList.length; j++) {
+              for (j = 0; j < aFormControlsList.length; j++) {
                 if (j == i || blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==true) {
                   continue;
                 } else {
@@ -5375,9 +5449,9 @@ ys: 'whys'
           }
 
           // Look for form controls with both keyboard and mouse handlers
-          var bShouldntHaveBoth = false;
-          var nodeTagName = '';
-          var nodeTypeValue = '';
+          bShouldntHaveBoth = false;
+          nodeTagName = '';
+          nodeTypeValue = '';
           if(aFormControlsList[i].node != null && aFormControlsList[i].node.tagName) {
             nodeTagName = aFormControlsList[i].node.tagName.toLowerCase();
             nodeTypeValue = blr.W15yQC.fnGetNodeAttribute(aFormControlsList[i].node,'type','').toLowerCase();
@@ -5397,10 +5471,10 @@ ys: 'whys'
           
           // Check form control's dist from label
           if(aFormControlsList[i].node.hasAttribute('id') == true && (nodeTagName == 'button' || nodeTagName == 'textarea' || nodeTagName == 'select' || nodeTagName == 'input')) {
-            var explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(aFormControlsList[i].node.getAttribute('id'), aFormControlsList[i].doc);
-            var minDist = 10000;
-            var bCheckedLabel = false;
-            for (var j = 0; j < explictLabelsList.length; j++) {
+            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(aFormControlsList[i].node.getAttribute('id'), aFormControlsList[i].doc);
+            minDist = 10000;
+            bCheckedLabel = false;
+            for (j = 0; j < explictLabelsList.length; j++) {
               if(blr.W15yQC.fnNodeIsOffScreen(explictLabelsList[j])== false && blr.W15yQC.fnNodeIsMasked(explictLabelsList[j])== false) {
                 minDist = Math.min(minDist, blr.W15yQC.fnMinDistanceBetweenNodes(explictLabelsList[j], aFormControlsList[i].node));
                 bCheckedLabel=true;
@@ -5415,14 +5489,14 @@ ys: 'whys'
           // TODO: Add empty label check, implicit with no child form control check
           if(nodeTagName == 'label') {
             if(aFormControlsList[i].node.hasAttribute('for') == true) {
-              var sForValue = aFormControlsList[i].node.getAttribute('for');
+              sForValue = aFormControlsList[i].node.getAttribute('for');
               if(sForValue != null && sForValue.length>0) {
                 if(blr.W15yQC.fnIsValidHtmlID(sForValue) == false) {
                   blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlForValInvalid'); //
                 } else if(aDocumentsList[aFormControlsList[i].ownerDocumentNumber-1].idHashTable.getItem(sForValue)>1) {
                   blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlForValIDNotUnique'); //
                 }
-                var targetNode = aFormControlsList[i].doc.getElementById(sForValue);
+                targetNode = aFormControlsList[i].doc.getElementById(sForValue);
                 if(targetNode != null && targetNode.tagName) {
                   if(blr.W15yQC.fnIsFormControlNode(targetNode) == false) {
                     blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNoFrmCtrlForForValue'); //
@@ -5430,7 +5504,7 @@ ys: 'whys'
                   if(blr.W15yQC.fnNodeIsHidden(targetNode) == true) {
                     blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlForForValueIsHidden'); //
                   } else if(blr.W15yQC.fnNodeIsOffScreen(aFormControlsList[i].node)== false && blr.W15yQC.fnNodeIsMasked(aFormControlsList[i].node)== false){
-                    var iDist = blr.W15yQC.fnMinDistanceBetweenNodes(targetNode,aFormControlsList[i].node);
+                    iDist = blr.W15yQC.fnMinDistanceBetweenNodes(targetNode,aFormControlsList[i].node);
                     if( iDist > 100) {
                       blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDistance', [iDist]); //
                     } 
@@ -5459,10 +5533,10 @@ ys: 'whys'
     },
 
     fnDisplayFormResults: function (rd, aFormsList) {
-      var div = rd.createElement('div');
+      var div, sFormsHeading, table, msgHash, tbody, i, fce, sNotes, sClass;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIFormsList');
 
-      var sFormsHeading;
       if (aFormsList && aFormsList.length && aFormsList.length > 0) {
         if (aFormsList.length > 1) {
           sFormsHeading = aFormsList.length + ' ' + blr.W15yQC.fnGetString('hrsForms');
@@ -5470,21 +5544,21 @@ ys: 'whys'
       } else {
         sFormsHeading = blr.W15yQC.fnGetString('hrsNoForms');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFormsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sFormsHeading);
       if (aFormsList && aFormsList.length > 0) {
-        var table = rd.createElement('table');
-        var msgHash = new blr.W15yQC.HashTable();
+        table = rd.createElement('table');
+        msgHash = new blr.W15yQC.HashTable();
         table.setAttribute('id', 'AIFormsTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
                                                             blr.W15yQC.fnGetString('hrsTHFormElement'), blr.W15yQC.fnGetString('hrsTHName'),
                                                             blr.W15yQC.fnGetString('hrsTHAction'), blr.W15yQC.fnGetString('hrsTHMethod'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
 
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aFormsList.length; i++) {
-          var fce = aFormsList[i];
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
-          var sClass = '';
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aFormsList.length; i++) {
+          fce = aFormsList[i];
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+          sClass = '';
           if (fce.failed) {
             sClass = 'failed';
           } else if (fce.warning) {
@@ -5496,16 +5570,18 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFormsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFormsDetected'));
       }
       rd.body.appendChild(div);
     },
 
     fnDisplayFormControlResults: function (rd, aFormControlsList) {
-      var div = rd.createElement('div');
+      var div, i, ak, sFormControlsHeading, bHasARIALabel, bHasLegend, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
+          aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells; 
+
+      div = rd.createElement('div');
       div.setAttribute('id', 'AIFormControlsList');
 
-      var sFormControlsHeading;
       if (aFormControlsList && aFormControlsList.length && aFormControlsList.length > 0) {
         if (aFormControlsList.length > 1) {
           sFormControlsHeading = aFormControlsList.length + ' ' + blr.W15yQC.fnGetString('hrsFormsCtrls');
@@ -5513,18 +5589,18 @@ ys: 'whys'
       } else {
         sFormControlsHeading = blr.W15yQC.fnGetString('hrsNoFormCtrls');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sFormControlsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sFormControlsHeading);
 
       if (aFormControlsList && aFormControlsList.length > 0) {
-        var bHasARIALabel = false;
-        var bHasLegend = false;
-        var bHasTitle = false;
-        var bHasARIADescription = false;
-        var bHasRole = false;
-        var bHasValue = false;
-        var bHasStateDescription = false;
-        for (var i = 0; i < aFormControlsList.length; i++) {
-          var ak = aFormControlsList[i];
+        bHasARIALabel = false;
+        bHasLegend = false;
+        bHasTitle = false;
+        bHasARIADescription = false;
+        bHasRole = false;
+        bHasValue = false;
+        bHasStateDescription = false;
+        for (i = 0; i < aFormControlsList.length; i++) {
+          ak = aFormControlsList[i];
           if (ak.legendText != null && ak.legendText.length > 0) bHasLegend = true;
           if (ak.title != null && ak.title.length > 0) bHasTitle = true;
           if (ak.role != null && ak.role.length > 0) bHasRole = true;
@@ -5534,7 +5610,7 @@ ys: 'whys'
           if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
         }
 
-        var aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
+        aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
         if (bHasLegend) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend'));
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
@@ -5547,22 +5623,22 @@ ys: 'whys'
         if (bHasStateDescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState'));
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AIFormControlsTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
-        var msgHash = new blr.W15yQC.HashTable();
+        msgHash = new blr.W15yQC.HashTable();
 
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aFormControlsList.length; i++) {
-          var fce = aFormControlsList[i];
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
-          var sClass = '';
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aFormControlsList.length; i++) {
+          fce = aFormControlsList[i];
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+          sClass = '';
           if (fce.failed) {
             sClass = 'failed';
           } else if (fce.warning) {
             sClass = 'warning';
           }
-          var aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
+          aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
           if (bHasLegend) aTableCells.push(fce.legendText);
           aTableCells.push(fce.labelTagText);
           if (bHasTitle) aTableCells.push(fce.title);
@@ -5580,45 +5656,45 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
       }
       rd.body.appendChild(div);
     },
 
 
     fnGetLinks: function (doc, rootNode, aLinksList) {
-
-      if (aLinksList == null) aLinksList = new Array();
+      var c, frameDocument, xPath, nodeDescription, role, text, title, target, href, sState;
+      if (aLinksList == null) { aLinksList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        if (rootNode == null) { rootNode = doc.body; }
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
           } else { // keep looking through current document
             if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
               if(c.tagName.toLowerCase()=='a') {  // document the link
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                var text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
-                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-                var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
-                var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
-                var sState = blr.W15yQC.fnGetNodeState(c);
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                sState = blr.W15yQC.fnGetNodeState(c);
                 aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
               } else if(c.tagName.toLowerCase()=='area') {
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                var text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
-                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-                var target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
-                var href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
-                var sState = blr.W15yQC.fnGetNodeState(c);
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
+                title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                sState = blr.W15yQC.fnGetNodeState(c);
                 aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
               }
             }
@@ -5631,10 +5707,12 @@ ys: 'whys'
 
 
     fnAnalyzeLinks: function (aLinksList, aDocumentsList) {
+      var i, aChildImages, j, linkText, maxRect, aSameHrefAndOnclick, aSameLinkText, aSoundsTheSame, aDiffTextSameHref, hrefsAreEqual,
+          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
       blr.W15yQC.fnLog('fnAnalyzeLinks-starts');
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
-      for (var i = 0; i < aLinksList.length; i++) {
+      for (i = 0; i < aLinksList.length; i++) {
         aLinksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLinksList[i].node, aDocumentsList);
         aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
@@ -5649,10 +5727,10 @@ ys: 'whys'
         }
       }
 
-      for (var i = 0; i < aLinksList.length; i++) {
-        var aChildImages=aLinksList[i].node.getElementsByTagName('img');
+      for (i = 0; i < aLinksList.length; i++) {
+        aChildImages=aLinksList[i].node.getElementsByTagName('img');
         if(aChildImages != null && aChildImages.length>0) {
-          for(var j=0; j< aChildImages.length; j++) { 
+          for(j=0; j< aChildImages.length; j++) { 
             if(aChildImages[j].hasAttribute('ismap')==true) {
               blr.W15yQC.fnAddNote(aLinksList[i], 'lnkServerSideImageMap'); // TODO: QA This, determine how ismap is actually used
             }
@@ -5666,7 +5744,7 @@ ys: 'whys'
         if (aLinksList[i].text == null) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
         } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
-          var linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
+          linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtOnlyASCII'); //
           } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(linkText)) {
@@ -5677,24 +5755,24 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
           }
 
-          var maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
+          maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
 
           if(maxRect != null && maxRect[0] < 14 && maxRect[1] < 14 &&
              blr.W15yQC.fnNodeIsMasked(aLinksList[i].node)==false && blr.W15yQC.fnNodeIsOffScreen(aLinksList[i].node)) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
-          var aSameLinkText = [];
-          var aSoundsTheSame = [];
-          var aSameHrefAndOnclick = [];
-          var aDiffTextSameHref = [];
+          aSameLinkText = [];
+          aSoundsTheSame = [];
+          aSameHrefAndOnclick = [];
+          aDiffTextSameHref = [];
 
-          for (var j = 0; j < aLinksList.length; j++) {
+          for (j = 0; j < aLinksList.length; j++) {
             if (j == i) {
               continue;
             } else {
-              var hrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL,aLinksList[i].href, aLinksList[j].doc.URL,aLinksList[j].href);
-              var bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text,aLinksList[j].text);
+              hrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL,aLinksList[i].href, aLinksList[j].doc.URL,aLinksList[j].href);
+              bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text,aLinksList[j].text);
               if (aLinksList[j].text && aLinksList[j].text.length > 0) {
                 if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || hrefsAreEqual == false || aLinksList[i].href.length < 2)) {
                   aSameLinkText.push(j+1);
@@ -5704,7 +5782,7 @@ ys: 'whys'
               }
 
               if (aLinksList[i].href != null && hrefsAreEqual == true && bLinkTextsAreDifferent == true) {
-                var bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
+                bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
                 if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
                   if(bOnclickValuesAreDifferent == false) {
                     aSameHrefAndOnclick.push(j+1);
@@ -5743,12 +5821,12 @@ ys: 'whys'
         if (aLinksList[i].node && aLinksList[i].node.hasAttribute && aLinksList[i].node.hasAttribute('href') == true) {
           // TODO: Check for ambiguious targets - duplicate IDs or Names
           blr.W15yQC.fnLog('Check for ambiguious targets - duplicate IDs or Names');
-          var sHref = aLinksList[i].node.getAttribute('href');
+          sHref = aLinksList[i].node.getAttribute('href');
           if (sHref != null) {
             sHref = blr.W15yQC.fnTrim(sHref);
             if (sHref.length > 1 && sHref[0] == '#') { // Found same page link
-              var sTargetId = sHref.substring(1);
-              var sSamePageLinkTarget = null;
+              sTargetId = sHref.substring(1);
+              sSamePageLinkTarget = null;
               // Same page links seem to target elements with a given id first, named anchors second...
               // First, see if the id matches one of the other links so we can better describe the target
               // New strat: First use getElementById,
@@ -5758,13 +5836,13 @@ ys: 'whys'
               //  5: what if both id and name?
               //  6: what if multiple el with same name?
 
-              var aTargetLinksList=[];
-              var iTargetedLink=null;
+              aTargetLinksList=[];
+              iTargetedLink=null;
               blr.W15yQC.fnLog('sTargetId:');
               blr.W15yQC.fnLog(sTargetId);
-              var targetNode = aLinksList[i].doc.getElementById(sTargetId);
+              targetNode = aLinksList[i].doc.getElementById(sTargetId);
               if (targetNode != null) {
-                for (var j = 0; j < aLinksList.length; j++) {
+                for (j = 0; j < aLinksList.length; j++) {
                   if (aLinksList[j] != null && aLinksList[j].node != null && aLinksList[j].ownerDocumentNumber == aLinksList[i].ownerDocumentNumber &&
                       aLinksList[j].node.hasAttribute &&
                       ((aLinksList[j].node.hasAttribute('id') && aLinksList[j].node.getAttribute('id') == sTargetId) ||
@@ -5876,10 +5954,10 @@ ys: 'whys'
     },
 
     fnDisplayLinkResults: function (rd, aLinksList) {
-      var div = rd.createElement('div');
+      var div, sLinksHeading, table, msgHash, tbody, i, sNotes, sClass;
+      div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
 
-      var sLinksHeading;
       if (aLinksList && aLinksList.length && aLinksList.length > 0) {
         if (aLinksList.length > 1) {
           sLinksHeading = aLinksList.length + ' '+blr.W15yQC.fnGetString('hrsLinks');
@@ -5887,20 +5965,20 @@ ys: 'whys'
       } else {
         sLinksHeading = blr.W15yQC.fnGetString('hrsNoLinks');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sLinksHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sLinksHeading);
       if (aLinksList && aLinksList.length > 0) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
                                                             blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
+        msgHash = new blr.W15yQC.HashTable();
 
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aLinksList.length; i++) {
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
-          var sClass = '';
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aLinksList.length; i++) {
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+          sClass = '';
           if (aLinksList[i].failed) {
             sClass = 'failed';
           } else if (aLinksList[i].warning) {
@@ -5912,40 +5990,41 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AILinksTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoLinksDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoLinksDetected'));
       }
       rd.body.appendChild(div);
     },
 
     fnGetTables: function (doc, rootNode, aTablesList, inTable, nestingDepth) {
+      var c, frameDocument, tagName, xPath, nodeDescription, title, tableSummary, role;
       // TODO: test if inTable is working properly in nested tables
       // TODO: verify nesting level stats
       // TODO: list parent table
-      if (aTablesList == null) aTablesList = new Array();
-      if (nestingDepth == null) nestingDepth = 0;
+      if (aTablesList == null) { aTablesList = []; }
+      if (nestingDepth == null) { nestingDepth = 0; }
 
       if (doc != null) {
         if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType !== 1) continue; // Only pay attention to element nodes
           if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             // get frame contents
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnGetTables(frameDocument, frameDocument.body, aTablesList, null, nestingDepth);
           } else { // keep looking through current document
             if (c.tagName) {
-              var tagName = c.tagName.toLowerCase();
+              tagName = c.tagName.toLowerCase();
               if (tagName == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
                 // Document table
                 if(inTable != null || nestingDepth>0) {
                   nestingDepth += 1;
                 }
-                var tagName = c.tagName.toLowerCase();
-                var xPath = blr.W15yQC.fnGetElementXPath(c);
-                var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                var title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-                var tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(c, 'summary', null));
-                var role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                tagName = c.tagName.toLowerCase();
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(c, 'summary', null));
+                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                 inTable = aTablesList.length;
                 aTablesList.push(new blr.W15yQC.table(c, xPath, nodeDescription, doc, aTablesList.length, role, nestingDepth, title, tableSummary));
                 if(tableSummary != null && tableSummary.length>0) {
@@ -5995,7 +6074,14 @@ ys: 'whys'
     },
 
     fnAnalyzeTables: function (aTablesList, aDocumentsList) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var i, node, j, maxColumns, rowCount, bHasThead, bHasMultipleTheads, bHasTbody, bHasMultipleTbodys, bHasRowsOutsideOfTheadAndTbody,
+      theaderRows, bMarkedAsPresentation, bRowsUnbalanced, bRowspanColspanConflict, firstRowWithContent, firstColumnWithContent,
+      columnHasHeader, columnRowSpans, columnsInRow, bRowHasHeader, bTableUsesThElements, bTableUsesHeadersAttribute, bEveryTdInContentAreaHasHeadersAttribute,
+      bEveryTdCellWithContentHasAHeadersAttribute, bEveryCellWithContentHasARowOrColumnHeader, bEveryTdCellWithContentHasHeaderOfSomeType, nodeStack,
+      bInTableRow, columnsInThisRow, bInThead, bInTbody, maxRowSpanRows, tableNode, tagName, bIsColumnHeader,
+      cellContent, rowSpanValue, colSpanValue, newNode, stackedTagName, crsIndex, sWhyDataTable, colOffset, sColsList;
+      
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // This does not pretend to fully validate a table
       // TODO: Finish this!!!
       // Detects colspan values that colide into rowspan values from above.
@@ -6004,17 +6090,17 @@ ys: 'whys'
       //
       // TODO: Test on a table caption, on nest tables with captions, on multiple captions on a given table
       // QUESTION: If a table has multiple captions, what does JAWS do?
-      for (var i = 0; i < aTablesList.length; i++) {
+      for (i = 0; i < aTablesList.length; i++) {
         aTablesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aTablesList[i].node, aDocumentsList);
         aTablesList[i].stateDescription = blr.W15yQC.fnGetNodeState(aTablesList[i].node);
         // Find parent table element
         if(i>0 && aTablesList[i].nestingLevel>0) {
-          var node = aTablesList[i].node.parentNode;
+          node = aTablesList[i].node.parentNode;
            while(node != null && node.tagName && node.tagName.toLowerCase() != 'table' && node.tagName.toLowerCase() !='body') {
             node = node.parentNode;
            }
            if(node != null && node.tagName && node.tagName.toLowerCase() == 'table') {
-            for(var j=0; j<i; j++) {
+            for(j=0; j<i; j++) {
               if(aTablesList[j].node === node) {
                 aTablesList[i].parentTable = j+1;
                 break;
@@ -6024,39 +6110,39 @@ ys: 'whys'
         }
       }
 
-      for (var i = 0; i < aTablesList.length; i++) {
+      for (i = 0; i < aTablesList.length; i++) {
         // Determine the max number of columns in a row
         // Determine the number of rows
         // Determine if each row has the same number of columns
-        var maxColumns = 0;
-        var rowCount = 0;
-        var bHasThead = false;
-        var bHasMultipleTheads = false;
-        var bHasTbody = false;
-        var bHasMultipleTbodys = false;
-        var bHasRowsOutsideOfTheadAndTbody = false;
-        var theaderRows = 0;
-        var bMarkedAsPresentation = false;
-        var bRowsUnbalanced = false;
-        var bRowspanColspanConflict = false;
-        var firstRowWithContent = 0;
-        var firstColumnWithContent = 0
-        var columnHasHeader = [];
-        var columnRowSpans = [];
-        var columnsInRow = [];
-        var bRowHasHeader = false;
-        var bTableUsesThElements = false;
-        var bTableUsesHeadersAttribute = false;
-        var bEveryTdInContentAreaHasHeadersAttribute = true;
-        var bEveryTdCellWithContentHasAHeadersAttribute = true;
-        var bEveryCellWithContentHasARowOrColumnHeader = true;
-        var bEveryTdCellWithContentHasHeaderOfSomeType = true;
-        var nodeStack = [];
-        var bInTableRow = false;
-        var columnsInThisRow = 0;
-        var bInThead = false;
-        var bInTbody = false;
-        var maxRowSpanRows = 0;
+        maxColumns = 0;
+        rowCount = 0;
+        bHasThead = false;
+        bHasMultipleTheads = false;
+        bHasTbody = false;
+        bHasMultipleTbodys = false;
+        bHasRowsOutsideOfTheadAndTbody = false;
+        theaderRows = 0;
+        bMarkedAsPresentation = false;
+        bRowsUnbalanced = false;
+        bRowspanColspanConflict = false;
+        firstRowWithContent = 0;
+        firstColumnWithContent = 0;
+        columnHasHeader = [];
+        columnRowSpans = [];
+        columnsInRow = [];
+        bRowHasHeader = false;
+        bTableUsesThElements = false;
+        bTableUsesHeadersAttribute = false;
+        bEveryTdInContentAreaHasHeadersAttribute = true;
+        bEveryTdCellWithContentHasAHeadersAttribute = true;
+        bEveryCellWithContentHasARowOrColumnHeader = true;
+        bEveryTdCellWithContentHasHeaderOfSomeType = true;
+        nodeStack = [];
+        bInTableRow = false;
+        columnsInThisRow = 0;
+        bInThead = false;
+        bInTbody = false;
+        maxRowSpanRows = 0;
 
         if((aTablesList[i].node.role != null && aTablesList[i].node.role.toLowerCase() == 'presentation') ||
            (blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(aTablesList[i].node, 'datatable', null)) == '0')) {
@@ -6064,15 +6150,15 @@ ys: 'whys'
            }
 
         if(aTablesList[i].node != null && aTablesList[i].node.tagName && aTablesList[i].node.tagName.toLowerCase() == 'table') {
-          var tableNode = aTablesList[i].node;
-          var node = tableNode.firstChild;
+          tableNode = aTablesList[i].node;
+          node = tableNode.firstChild;
           if(node != null) {
             while(node != null) {
-              var tagName = '';
+              tagName = '';
               if (node.nodeType == 1) {
                 // Only pay attention to element nodes
                 if(node.tagName && node.tagName.length > 0) {
-                  var bIsColumnHeader=false;
+                  bIsColumnHeader=false;
                   tagName = node.tagName.toLowerCase();
                   switch(tagName) {
                     case 'thead':
@@ -6099,7 +6185,7 @@ ys: 'whys'
                         bInTableRow = true;
                       }
                       if(bInTbody == false && bInThead == false) {
-                        bHasRowsOutsideOfTheadAndTbody == true;
+                        bHasRowsOutsideOfTheadAndTbody = true;
                       }
                       columnsInThisRow = 0;
                       bRowHasHeader = false;
@@ -6178,8 +6264,8 @@ ys: 'whys'
                           columnHasHeader[columnsInThisRow]=true;
                         }
                         // Find out if this cell has any content
-                        var content = blr.W15yQC.fnTrim(blr.W15yQC.fnGetDisplayableTextRecursively(node));
-                        if(content != null && content.length>0) {
+                        cellContent = blr.W15yQC.fnTrim(blr.W15yQC.fnGetDisplayableTextRecursively(node));
+                        if(cellContent != null && cellContent.length>0) {
                           //  Is it the first in the row/col?
                           if(columnsInThisRow + 1 < firstColumnWithContent) {
                             firstColumnWithContent = columnsInThisRow + 1;
@@ -6200,19 +6286,19 @@ ys: 'whys'
                           }                         
                         }
                         // Get the rowspan value
-                        var rowSpanValue = 1;
+                        rowSpanValue = 1;
                         if(node.hasAttribute('rowspan') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('rowspan'))) {
-                          rowSpanValue = parseInt(node.getAttribute('rowspan'));
+                          rowSpanValue = parseInt(node.getAttribute('rowspan'),10);
                           // TODO: What happens is rowspan is < 0?
                         }
                         // Find how many columns this cell represents
-                        var colSpanValue = 1;
+                        colSpanValue = 1;
                         if(node.hasAttribute('colspan') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('colspan'))) {
-                          colSpanValue = parseInt(node.getAttribute('colspan'));
+                          colSpanValue = parseInt(node.getAttribute('colspan'),10);
                           // TODO: What happens is colspan is < 0?
                           blr.W15yQC.fnLog(aTablesList[i].caption+' colspan value:'+colSpanValue);
                           // Detect any colspan into rowspan colisions
-                          for(var colOffset=0;colOffset<colSpanValue;colOffset++) {
+                          for(colOffset=0;colOffset<colSpanValue;colOffset++) {
                             if(columnRowSpans.length>=columnsInThisRow+colOffset-1 && columnRowSpans[columnsInThisRow+colOffset]>0) {
                               // colspan colision with rowspan from previous row
                               blr.W15yQC.fnAddNote(aTablesList[i], 'tblColspanRowspanColision', [rowCount,(1+columnsInThisRow),(columnsInThisRow+colOffset+1)]); //
@@ -6236,7 +6322,7 @@ ys: 'whys'
                           colSpanValue--;
                         }
 
-                        if(rowCount>firstRowWithContent && firstRowWithContent>0 && !node.hasAttribute('headers') && content != null && content.length >0) {
+                        if(rowCount>firstRowWithContent && firstRowWithContent>0 && !node.hasAttribute('headers') && cellContent != null && cellContent.length >0) {
                           bEveryTdInContentAreaHasHeadersAttribute = false;
                         }
                       }
@@ -6256,10 +6342,10 @@ ys: 'whys'
                 nodeStack.push(node);
                 node = node.firstChild;
               } else if(node.nextSibling != null || (nodeStack != null && nodeStack.length>0)) {
-                var newNode = null;
+                newNode = null;
                 do { // Handle leaving a node...
                   if (node.nodeType == 1 && node.tagName != null) {
-                    var stackedTagName = node.tagName.toLowerCase();
+                    stackedTagName = node.tagName.toLowerCase();
                     switch(stackedTagName) {
                       case 'tr':
                         blr.W15yQC.fnLog('leaving tr:columnRowSpans:'+columnRowSpans.toString());
@@ -6281,7 +6367,7 @@ ys: 'whys'
                         }
                         columnsInRow.push(columnsInThisRow);
                         bInTableRow = false;
-                        for(var crsIndex=0;crsIndex<columnRowSpans.length;crsIndex++) {
+                        for(crsIndex=0;crsIndex<columnRowSpans.length;crsIndex++) {
                           if(columnRowSpans[crsIndex]>0) columnRowSpans[crsIndex]--;
                         }
                         break;
@@ -6317,7 +6403,7 @@ ys: 'whys'
           }
         }
 
-        for(var crsIndex=0;crsIndex<columnRowSpans.length;crsIndex++) {
+        for(crsIndex=0;crsIndex<columnRowSpans.length;crsIndex++) {
           if(columnRowSpans[crsIndex]>0) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblRowpanExceedsTableRows',[(crsIndex+1)]); //
             break;
@@ -6327,7 +6413,7 @@ ys: 'whys'
         aTablesList[i].maxCols = maxColumns;
 
         if(aTablesList[i].isDataTable == true) { // Looks like it is a data table
-          var sWhyDataTable='';
+          sWhyDataTable='';
           if(aTablesList[i].bHasTHCells == true) sWhyDataTable = 'Has TH Cells';
           if(aTablesList[i].bHasHeadersAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', '); 
           if(aTablesList[i].bHasScopeAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has scope attributes',', ');
@@ -6372,7 +6458,7 @@ ys: 'whys'
         // End of table analysis, now provide any warning / failure notices
         if(bRowsUnbalanced) {
           aTablesList[i].warning = true;
-          var sColsList = '';
+          sColsList = '';
           if(columnsInRow != null && columnsInRow.length>0 && columnsInRow.length<100) {
             sColsList = ': ['+columnsInRow.toString()+'].';
           } else {
@@ -6397,10 +6483,11 @@ ys: 'whys'
     },
 
     fnDisplayTableResults: function (rd, aTablesList) {
-      var div = rd.createElement('div');
+      var div, sTablesHeading, table, msgHash, tbody, i, sNotes, sClass, sSize;
+      
+      div = rd.createElement('div');
       div.setAttribute('id', 'AITablesList');
 
-      var sTablesHeading;
       if (aTablesList && aTablesList.length && aTablesList.length > 0) {
         if (aTablesList.length > 1) {
           sTablesHeading = aTablesList.length + ' ' + blr.W15yQC.fnGetString('hrsTables');
@@ -6408,33 +6495,33 @@ ys: 'whys'
       } else {
         sTablesHeading = blr.W15yQC.fnGetString('hrsNoTables');
       }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'h2', sTablesHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sTablesHeading);
       if (aTablesList && aTablesList.length > 0) {
-        var table = rd.createElement('table');
+        table = rd.createElement('table');
         table.setAttribute('id', 'AITablesTable');
         // TODO: Make summary and caption columns so they only appear when needed.
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHSummary'),
                                                             blr.W15yQC.fnGetString('hrsTHCaption'), blr.W15yQC.fnGetString('hrsTHSizeCR'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
-        var msgHash = new blr.W15yQC.HashTable();
-        var tbody = rd.createElement('tbody');
-        for (var i = 0; i < aTablesList.length; i++) {
-          var sNotes = blr.W15yQC.fnMakeHTMLNotesList(aTablesList[i], msgHash);
-          var sClass = '';
+        msgHash = new blr.W15yQC.HashTable();
+        tbody = rd.createElement('tbody');
+        for (i = 0; i < aTablesList.length; i++) {
+          sNotes = blr.W15yQC.fnMakeHTMLNotesList(aTablesList[i], msgHash);
+          sClass = '';
           if (aTablesList[i].failed) {
             sClass = 'failed';
           } else if (aTablesList[i].warning) {
             sClass = 'warning';
           }
-          var sSize = aTablesList[i].maxCols+' x '+aTablesList[i].maxRows;
+          sSize = aTablesList[i].maxCols+' x '+aTablesList[i].maxRows;
           blr.W15yQC.fnAppendTableRow2(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aTablesList[i].nodeDescription), aTablesList[i].ownerDocumentNumber, aTablesList[i].summary, aTablesList[i].caption, sSize, aTablesList[i].state, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AITablesTable');
       } else {
-        blr.W15yQC.fnAppendElementTo(div, rd, 'p', blr.W15yQC.fnGetString('hrsNoTablesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoTablesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6446,16 +6533,17 @@ ys: 'whys'
      */
 
     fnInspectWindowTitle: function (rd) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnDisplayWindowDetails(rd);
     },
 
     fnInspectDocuments: function (rd) {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var aDocumentsList;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale());
       blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
 
-      var aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+      aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
       blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
       blr.W15yQC.fnDisplayDocumentsResults(rd, aDocumentsList);
       return aDocumentsList;
@@ -6486,9 +6574,9 @@ ys: 'whys'
     },
 
     fnInspectForms: function (rd, aDocumentsList) {
-      var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.top.content.document, null, aDocumentsList);
-      var aFormControlsList = aFormControlsLists[1];
-      var aFormsList = aFormControlsLists[0];
+      var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.top.content.document, null, aDocumentsList),
+          aFormControlsList = aFormControlsLists[1],
+          aFormsList = aFormControlsLists[0];
       blr.W15yQC.fnAnalyzeFormControls(aFormsList, aFormControlsList, aDocumentsList);
       blr.W15yQC.fnDisplayFormResults(rd, aFormsList);
       blr.W15yQC.fnDisplayFormControlResults(rd, aFormControlsList);
@@ -6529,7 +6617,8 @@ ys: 'whys'
      */
 
     fnInspect: function () {
-      if(blr.W15yQC.sb == null) blr.W15yQC.fnInitStringBundles();
+      var reportDoc, aDocumentsList, dialogID, dialogPath;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Inspect ARIA Landmarks
       blr.W15yQC.fnNonDOMIntegrityTests();
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -6538,9 +6627,9 @@ ys: 'whys'
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal');
       }
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document);
         blr.W15yQC.fnInspectWindowTitle(reportDoc);
-        var aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
+        aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
         blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
@@ -6557,39 +6646,40 @@ ys: 'whys'
     },
 
     fnRemoveStyles: function () {
-      var outputWindow = window.open('');
-      var reportDoc = outputWindow.document;
-      var srcDoc = window.top.content.document;
-      var metaElements = srcDoc.head.getElementsByTagName('meta');
+      var i, rd, nsIFilePicker, fp, rv, foStream, file, converter, outputWindow, reportDoc, srcDoc, metaElements;
+      outputWindow = window.open('');
+      reportDoc = outputWindow.document;
+      srcDoc = window.top.content.document;
+      metaElements = srcDoc.head.getElementsByTagName('meta');
       if(metaElements != null && metaElements.length>0) {
-        for(var i=0;i<metaElements.length;i++) {
+        for(i=0;i<metaElements.length;i++) {
           reportDoc.head.appendChild(reportDoc.importNode(metaElements[i], false));
         }
       }
       reportDoc.title = 'Removed Style View - '+srcDoc.title+' - W15yQC';
       blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, srcDoc);
-      var rd=reportDoc;
+      rd=reportDoc;
               if(rd != null) {
-          var nsIFilePicker = Components.interfaces.nsIFilePicker;
+          nsIFilePicker = Components.interfaces.nsIFilePicker;
   
-          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
           fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
           fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
-          var rv = fp.show();
+          rv = fp.show();
           if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
             
-            var file = fp.file;
+            file = fp.file;
             // work with returned nsILocalFile...
             if(/\.html?$/.test(file.path)==false) {
               file.initWithPath(file.path+'.html');
             }
   
-            var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
+            foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
                            createInstance(Components.interfaces.nsIFileOutputStream);  
               
             // use 0x02 | 0x10 to open file for appending.  
-            foStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
-            var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
+            foStream.init(file, 0x2A, 438, 0);
+            converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
             converter.init(foStream, "UTF-8", 0, 0);  
             converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
             converter.close(); // this closes foStream            
@@ -6599,30 +6689,30 @@ ys: 'whys'
     },
     
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
+      var node, c, frameDocument, div, p, thisFrameNumber, i;
       if(oValues == null) {
         oValues = {
           iNumberOfLinks: 0,
           iNumberOfFrames: 0,
           iNumberOfARIALandmarks: 0
-        }
+        };
       }
       if (doc != null) {
-        var node;
         if (rootNode == null) rootNode = doc.body;
         if (appendNode == null) appendNode = rd.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if(c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
             if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
                               (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-              var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-              var div = rd.createElement('div');
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              div = rd.createElement('div');
               div.setAttribute('style','border:thin solid black');
               appendNode.appendChild(div);
-              var p=rd.createElement('p');
+              p=rd.createElement('p');
               p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
               oValues.iNumberOfFrames++;
               p.innerHTML = 'Frame('+oValues.iNumberOfFrames+'): '+(c.hasAttribute('title') ? 'Title: '+c.getAttribute('title') : 'Missing Title');
-              var thisFrameNumber = oValues.iNumberOfFrames;
+              thisFrameNumber = oValues.iNumberOfFrames;
               div.appendChild(p);
               blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
               p=rd.createElement('p');
@@ -6639,7 +6729,7 @@ ys: 'whys'
                     node.setAttribute('src','dont-load-'+node.getAttribute('src'));
                   }
                 }
-                for(var i=0;i<node.attributes.length;i++) {
+                for(i=0;i<node.attributes.length;i++) {
                   if(/^(on[a-z]+|style|class|align|border)$/i.test(node.attributes[i].name)==true) {
                     node.removeAttribute(node.attributes[i].name);
                   } else if(/^javascript:/i.test(node.attributes[i].value)) {
@@ -6663,100 +6753,100 @@ ys: 'whys'
       return appendNode.parent || appendNode;
     },
 
-    fnBuildSemanticView: function (rd, doc, rootNode, baseLevel, list, oValues) {
-      /* What does JAWS Read at startup?
-       *
-       *  1. Number of Links, Frames, Landmarks
-       *     - Crawl page, display semantics, then fill this back in.
-       *  2. Page title
-       *  3. Page Blocks Containers:
-       *     - Landmarks
-       *     - Frames
-       *     - Paragraphs
-       *     - Lists
-       *  4. Closed Containers:
-       *     - Headings
-       *     -
-       *
-       */
+    //fnBuildSemanticView: function (rd, doc, rootNode, baseLevel, list, oValues) {
+    //  /* What does JAWS Read at startup?
+    //   *
+    //   *  1. Number of Links, Frames, Landmarks
+    //   *     - Crawl page, display semantics, then fill this back in.
+    //   *  2. Page title
+    //   *  3. Page Blocks Containers:
+    //   *     - Landmarks
+    //   *     - Frames
+    //   *     - Paragraphs
+    //   *     - Lists
+    //   *  4. Closed Containers:
+    //   *     - Headings
+    //   *     -
+    //   *
+    //   */
+    //  var level, c, i, frameDocument, sTagName, sRole, sARIALabel, sState;
+      
+      //if(oValues == null) {
+      //  oValues = {
+      //    iNumberOfLinks: 0,
+      //    iNumberOfFrames: 0,
+      //    iNumberOfARIALandmarks: 0
+      //  };
+      //}
+      //if (baseLevel == null) { baseLevel = 0; }
+      //if(list == null) { list = []; }
+      //
+      //if (doc != null) {
+      //  if (rootNode == null) rootNode = doc.body;
+      //  for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
+      //    if (c.nodeType !== 1) continue; // Only pay attention to element nodes
+      //    if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+      //      oValues.iNumberOfFrames++;
+      //      // determine level, and then get frame contents
+      //      level = baseLevel+1;
+      //      for(i=aARIALandmarksList.length-1; i>=0; i--) {
+      //        if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
+      //          level = aARIALandmarksList[i].level+1;
+      //          break;
+      //        }
+      //      }
+      //      frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+      //      blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
+      //    } else { // keep looking through current document
+      //      if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+      //        // Do we need to close some blocks?
+      //        while(list.length>0 && blr.W15yQC.fnIsDescendant(list[list.length-1],c)==false) {
+      //          // close last list item
+      //          list.pop();
+      //        }
+      //        sTagName = c.tagName.toLowerCase();
+      //        sRole = c.getAttribute('role');
+      //        switch (sRole) {
+      //          case 'application':
+      //          case 'banner':
+      //          case 'complementary':
+      //          case 'contentinfo':
+      //          case 'form':
+      //          case 'main':
+      //          case 'navigation':
+      //          case 'search':
+      //            // Landmark Role
+      //            //var xPath = blr.W15yQC.fnGetElementXPath(c);
+      //            //var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+      //            sARIALabel = null;
+      //            level = baseLevel+1;
+      //            for(i=aARIALandmarksList.length-1; i>=0; i--) {
+      //              if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
+      //                level = aARIALandmarksList[i].level+1;
+      //                break;
+      //              }
+      //            }
+      //            if (c.hasAttribute('aria-label') == true) {
+      //              sARIALabel = c.getAttribute('aria-label');
+      //            } else if (c.hasAttribute('aria-labelledby') == true) {
+      //              sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
+      //            }
+      //            sState = blr.W15yQC.fnGetNodeState(c);
+      //            aARIALandmarksList.push(new blr.W15yQC.ariaLandmarkElement(c, xPath, nodeDescription, doc, aARIALandmarksList.length, level, sRole, sARIALabel, sState));
+      //            break;
+      //        }
+      //        blr.W15yQC.fnBuildSemanticView(rd, doc, c, level, list, oValues);
+      //      }
+      //    }
+      //  }
+      //}
+      //// Do we need to close some blocks?
+      //while(list.length>0 && blr.W15yQC.fnIsDescendant(list[list.length-1],c)==false) {
+      //  // close last list item
+      //  list.pop();
+      //}
 
-      if(oValues == null) {
-        oValues = {
-          iNumberOfLinks: 0,
-          iNumberOfFrames: 0,
-          iNumberOfARIALandmarks: 0
-        }
-      }
-      if (baseLevel == null) baseLevel = 0;
-      if(list == null) list = new Array();
-      var level;
-
-      if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
-        for (var c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            oValues.iNumberOfFrames++;
-            // determine level, and then get frame contents
-            level = baseLevel+1;
-            for(var i=aARIALandmarksList.length-1; i>=0; i--) {
-              if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
-                level = aARIALandmarksList[i].level+1;
-                break;
-              }
-            }
-            var frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnBuildSemanticView(rd, frameDocument, frameDocument.body, level, list, oValues);
-          } else { // keep looking through current document
-            if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              // Do we need to close some blocks?
-              while(list.length>0 && blr.W15yQC.fnIsDescendant(list[list.length-1],c)==false) {
-                // close last list item
-                list.pop();
-              }
-              var sTagName = c.tagName.toLowerCase();
-              var sRole = c.getAttribute('role');
-              switch (sRole) {
-                case 'application':
-                case 'banner':
-                case 'complementary':
-                case 'contentinfo':
-                case 'form':
-                case 'main':
-                case 'navigation':
-                case 'search':
-                  // Landmark Role
-                  //var xPath = blr.W15yQC.fnGetElementXPath(c);
-                  //var nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  var sARIALabel = null;
-                  level = baseLevel+1;
-                  for(var i=aARIALandmarksList.length-1; i>=0; i--) {
-                    if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
-                      level = aARIALandmarksList[i].level+1;
-                      break;
-                    }
-                  }
-                  if (c.hasAttribute('aria-label') == true) {
-                    sARIALabel = c.getAttribute('aria-label');
-                  } else if (c.hasAttribute('aria-labelledby') == true) {
-                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
-                  }
-                  var sState = blr.W15yQC.fnGetNodeState(c);
-                  aARIALandmarksList.push(new blr.W15yQC.ariaLandmarkElement(c, xPath, nodeDescription, doc, aARIALandmarksList.length, level, sRole, sARIALabel, sState));
-                  break;
-              }
-              blr.W15yQC.fnBuildSemanticView(rd, doc, c, level, list, oValues);
-            }
-          }
-        }
-      }
-      // Do we need to close some blocks?
-      while(list.length>0 && blr.W15yQC.fnIsDescendant(list[list.length-1],c)==false) {
-        // close last list item
-        list.pop();
-      }
-
-    },
+    //},
 
     fnNonDOMIntegrityTests: function () {
       if (blr.W15yQC.fnMaxDecimalPlaces(10.234324, 2).toString() != "10.23") {
@@ -7239,9 +7329,10 @@ ys: 'whys'
 
   blr.W15yQC.HashTable = function (obj)
 { // http://www.mojavelinux.com/articles/javascript_hashes.html
+    var p;
     this.length = 0;
     this.items = {};
-    for (var p in obj) {
+    for (p in obj) {
         if (obj.hasOwnProperty(p)) {
             this.items[p] = obj[p];
             this.length++;
@@ -7250,7 +7341,7 @@ ys: 'whys'
 
     this.setItem = function(key, value)
     {
-        var previous = undefined;
+        var previous;
         if (this.hasItem(key)) {
             previous = this.items[key];
         }
@@ -7262,61 +7353,62 @@ ys: 'whys'
     }
 
     this.getItem = function(key) {
-        return this.hasItem(key) ? this.items[key] : undefined;
+      return this.hasItem(key) ? this.items[key] : undefined;
     }
 
     this.hasItem = function(key)
     {
-        return this.items.hasOwnProperty(key);
+      return this.items.hasOwnProperty(key);
     }
 
     this.removeItem = function(key)
     {
-        if (this.hasItem(key)) {
-            previous = this.items[key];
-            this.length--;
-            delete this.items[key];
-            return previous;
-        }
-        else {
-            return undefined;
-        }
+      var previous;
+      if (this.hasItem(key)) {
+        previous = this.items[key];
+        this.length--;
+        delete this.items[key];
+        return previous;
+      }
+      else {
+        return undefined;
+      }
     }
 
     this.keys = function()
     {
-        var keys = [];
-        for (var k in this.items) {
-            if (this.hasItem(k)) {
-                keys.push(k);
-            }
-        }
-        return keys;
+      var keys = [], k;
+      for (k in this.items) {
+          if (this.hasItem(k)) {
+              keys.push(k);
+          }
+      }
+      return keys;
     }
 
     this.values = function()
     {
-        var values = [];
-        for (var k in this.items) {
-            if (this.hasItem(k)) {
-                values.push(this.items[k]);
-            }
+      var values = [], k;
+      for (k in this.items) {
+        if (this.hasItem(k)) {
+          values.push(this.items[k]);
         }
-        return values;
+      }
+      return values;
     }
 
     this.each = function(fn) {
-        for (var k in this.items) {
-            if (this.hasItem(k)) {
-                fn(k, this.items[k]);
-            }
+      for (k in this.items) {
+        if (this.hasItem(k)) {
+          fn(k, this.items[k]);
         }
+      }
     }
 
     this.clear = function()
     {
-        this.items = {}
-        this.length = 0;
+      this.items = {}
+      this.length = 0;
     }
   }
 }
