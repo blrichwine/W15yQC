@@ -1194,18 +1194,20 @@ ys: 'whys'
     },
 
     fnCreateTableHeaders: function (doc, table, aTableHeaders) {
-        var thead,
-            tr,
-            i,
-            th;
+      var thead, tr, i, j, th, thTextArray;
       if (doc && table && aTableHeaders && aTableHeaders.length > 0) {
         thead = doc.createElement('thead');
         tr = doc.createElement('tr');
         for (i = 0; i < aTableHeaders.length; i++) {
           th = doc.createElement('th');
           th.setAttribute('scope', 'col');
-          //th.appendChild(doc.createTextNode(aTableHeaders[i]));
-          th.innerHTML = aTableHeaders[i]; // Switched to innerHTML to allow <br> elements in headings
+          thTextArray=aTableHeaders[i].split('<br>');
+          for(j=0;j<thTextArray.length;j++) {
+            if(j>0) {
+              th.appendChild(doc.createElement('br'));
+            }
+            th.appendChild(doc.createTextNode(thTextArray[j]));
+          }
           tr.appendChild(th);
         }
         thead.appendChild(tr);
@@ -1321,7 +1323,7 @@ ys: 'whys'
     openDialog: function (sDialogName) {
       var dialogPath = null;
       var dialogID = null;
-
+      
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
         dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
@@ -3759,12 +3761,22 @@ ys: 'whys'
     },
 
     fnInitDisplayWindow: function (doc) {
-      var topURL, topNav, titleText, outputWindow, reportDoc, bannerDiv, styleRules, styleElement, scriptElement, sScript;
+      var topURL, topNav, titleText, outputWindow, reportDoc, bannerDiv, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
+      
       topURL = doc.URL;
       titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
       outputWindow = window.open('');
       reportDoc = outputWindow.document;
+      
+      contentMeta = reportDoc.createElement('meta');
+      contentMeta.setAttribute('name','generator');
+      contentMeta.setAttribute('content','W15yQC Web Accessibility Quick Check');
 
+      genMeta = reportDoc.createElement('meta');
+      genMeta.setAttribute('http-equiv','Content-Type');
+      genMeta.setAttribute('content','text/html; charset=utf-8');
+      reportDoc.head.appendChild(contentMeta);
+      reportDoc.head.appendChild(genMeta);
       reportDoc.title = titleText;
 
       bannerDiv = reportDoc.createElement('div');
