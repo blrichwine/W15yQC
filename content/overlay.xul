@@ -17,7 +17,7 @@
                   oncommand="blr.W15yQC.onMenuItemCommand(true);"/>
         <menuseparator/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
-                  oncommand="blr.W15yQC.openDialog('accessKeys');"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',Firebug);}}catch(ex){blr.W15yQC.openDialog('accessKeys',Firebug);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="A" label="ARIA Landmarks" 
                   oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="D" label="Documents" 
@@ -31,7 +31,7 @@
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="I" label="Images" 
                   oncommand="blr.W15yQC.openDialog('images');"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="L" label="Links" 
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}}catch(ex){blr.W15yQC.openDialog('links',Firebug);}"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}else{blr.W15yQC.openDialog('links',Firebug);}}catch(ex){blr.W15yQC.openDialog('links',Firebug);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="T" label="Tables" 
                   oncommand="blr.W15yQC.openDialog('tables');"/>
         <menu id="W15yQC_menuEntry_toolsMenu" accesskey="o" label="Tools">
