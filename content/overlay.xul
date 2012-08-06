@@ -19,7 +19,7 @@
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',Firebug);}}catch(ex){blr.W15yQC.openDialog('accessKeys',Firebug);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="A" label="ARIA Landmarks" 
-                  oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('ariaLandmarks',Firebug);});}else{blr.W15yQC.openDialog('ariaLandmarks',Firebug);}}catch(ex){blr.W15yQC.openDialog('ariaLandmarks',Firebug);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="D" label="Documents" 
                   oncommand="blr.W15yQC.openDialog('documents');"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="C" label="Form Controls" 
