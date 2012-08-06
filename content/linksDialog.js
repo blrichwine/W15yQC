@@ -149,7 +149,7 @@ blr.W15yQC.LinksDialog = {
     },
     
     cleanup: function() {
-        if(aDocumentsList != null) {
+        if(blr.W15yQC.LinksDialog.aDocumentsList != null) {
             for(var i=0;i<blr.W15yQC.LinksDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LinksDialog.aDocumentsList[i].doc);
             blr.W15yQC.LinksDialog.aDocumentsList=null;
             blr.W15yQC.LinksDialog.aLinksList=null;
