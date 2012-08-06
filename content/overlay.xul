@@ -4,7 +4,6 @@
 <overlay id="W15yQC-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="overlay.js"/>
-
   <stringbundleset id="stringbundleset">
     <stringbundle id="overlay-string-bundle" src="chrome://W15yQC/locale/overlay.properties"/>
   </stringbundleset>
@@ -32,7 +31,7 @@
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="I" label="Images" 
                   oncommand="blr.W15yQC.openDialog('images');"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="L" label="Links" 
-                  oncommand="blr.W15yQC.openDialog('links');"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}}catch(ex){blr.W15yQC.openDialog('links',Firebug);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="T" label="Tables" 
                   oncommand="blr.W15yQC.openDialog('tables');"/>
         <menu id="W15yQC_menuEntry_toolsMenu" accesskey="o" label="Tools">

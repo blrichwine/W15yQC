@@ -17,11 +17,11 @@
 
  * File:        overlay.js
  * Description: Inspects for common accessibility coding issues
- * Author:	Brian Richwine
- * Created:	2011.11.11
+ * Author:  Brian Richwine
+ * Created: 2011.11.11
  * Modified:
- * Language:	JavaScript
- * Project:	Quick Web Accessibility Checker
+ * Language:  JavaScript
+ * Project: Quick Web Accessibility Checker
  *
  */
 
@@ -42,7 +42,6 @@ if (!blr.W15yQC) {
     userExpertLevel: null,
     userLocale: null,
     bEnglishLocale: true,
-
     sb: null,
 
     // Homophones object for sounds like routine
@@ -660,7 +659,7 @@ ys: 'whys'
       return blr.W15yQC.bEnglishLocale;
     },
     
-    fnGetUserLocale: function() {
+    fnGetUserLocale: function() { //Used to decide if need to disable the english only text checks
       blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
       return blr.W15yQC.userLocale;
     },
@@ -1297,7 +1296,7 @@ ys: 'whys'
       }
     },
     
-    openDialog: function (sDialogName) {
+    openDialog: function (sDialogName,firebugObj) {
       var dialogPath = null;
       var dialogID = null;
       
@@ -1354,7 +1353,7 @@ ys: 'whys'
           dialogPath = 'chrome://W15yQC/content/luminosityCheckDialog.xul';
           break;
         }
-        if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen'); }
+        if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
       }
     },
 
@@ -1531,8 +1530,8 @@ ys: 'whys'
           firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
           if(firstPart != null) {
             sUrl = firstPart[1]+firstPart[2]+sUrl;
-    			} else {
-      			firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
+          } else {
+            firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
             if(firstPart != null) {
               if(sUrl.match(/^[\/\\]/) != null) {
                 sUrl = firstPart[1]+firstPart[2]+sUrl;
@@ -1540,7 +1539,7 @@ ys: 'whys'
                 sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
               }
             }
-    			}
+          }
         }
       }
       if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
@@ -1793,9 +1792,9 @@ ys: 'whys'
         return ("");
       }
 
-		if(blr.W15yQC.homophones.hasOwnProperty(WordString.toLowerCase())) {
-			WordString = blr.W15yQC.homophones[WordString.toLowerCase()];
-		}
+    if(blr.W15yQC.homophones.hasOwnProperty(WordString.toLowerCase())) {
+      WordString = blr.W15yQC.homophones[WordString.toLowerCase()];
+    }
 
       WordString = WordString.toUpperCase();
 
@@ -1956,7 +1955,7 @@ ys: 'whys'
     },
 
     fnIsMeaningfulLinkText: function(sText, minLength) {
-      if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
+      if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
         if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
@@ -1964,7 +1963,7 @@ ys: 'whys'
         if(sText == 'go' || sText == 'faq' || sText == 'map') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
+          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
           case 'click':
           case 'click here':
@@ -1998,45 +1997,45 @@ ys: 'whys'
         if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
+        if(sText == 'go' || sText == 'faq' || sText == 'map') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
         }
       }
       return false;
     },
 
     fnIsMeaningfulDocTitleText: function(sText, minLength) {
-      if (minLength == null) minLength = 3; // TODO: What should the minimum doc title be?
+      if (minLength == null) { minLength = 3; } // TODO: What should the minimum doc title be?
       if(sText != null && sText.toLowerCase) {
-        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
+          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
           case 'home':
           case 'home page':
           case 'homepage':
             return false;
           }
-          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
         }
       }
       return false;
     },
 
     fnIsMeaningfulFormLabelText: function(sText, minLength) {
-      if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
+      if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go') return true;
+        if(sText == 'go') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
+          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
           case 'click':
           case 'click here':
@@ -2058,22 +2057,22 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
         }
       }
       return false;
     },
 
     fnIsMeaningfulText: function (sText, minLength) { // TODO: Where is this used? Should it be a specific instance?
-      if (minLength == null) minLength = 3; // TODO: Make this a pref parameter
+      if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
-        if(blr.W15yQC.bEnglishLocale) sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') return true;
+        if(sText == 'go' || sText == 'faq' || sText == 'map') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return false;
+          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
           case 'click':
           case 'click here':
@@ -2095,7 +2094,7 @@ ys: 'whys'
           case 'tap here':
             return false;
           }
-          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) return true;
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
         }
       }
       return false;
@@ -2147,7 +2146,7 @@ ys: 'whys'
       if(sText != null && sText.match && sText.length && sText.length>0) {
         if(sText != null && sText.match(/^((http|ftp|https):\/\/[\w\-]+(\.[\w\-]+)+(:\d+)?([\\\/]~)?)?[\w\-\.,@^=%&\\\/]+\.([xs]?html?|php|asp|txt)([#\?].*)?\s*$/i) != null) {
           return true;
-      	}
+        }
       }
       return false;
     },
@@ -2223,9 +2222,9 @@ ys: 'whys'
 
     fnIsOnlyNextOrPreviousText: function (str) { // TODO: What about other languages?
       if(str != null && str.replace) {
-        if(blr.W15yQC.bEnglishLocale) str=str.replace(/[^a-z0-9\s]/ig,' ');
+        if(blr.W15yQC.bEnglishLocale) { str=str.replace(/[^a-z0-9\s]/ig,' '); }
         str = blr.W15yQC.fnCleanSpaces(str);
-        if(str.match(/^(next|prev|previous)$/i)) return true;
+        if(str.match(/^(next|prev|previous)$/i)) { return true; }
       }
       return false;
     },
@@ -2419,7 +2418,7 @@ ys: 'whys'
       var i;
       if (node !== null && aDocumentsList !== null && aDocumentsList.length) {
         for (i = 0; i < aDocumentsList.length; i++) {
-          if (node.ownerDocument === aDocumentsList[i].doc) return i + 1;
+          if (node.ownerDocument === aDocumentsList[i].doc) { return i + 1; }
         }
       }
       return 'huh?';
@@ -2442,9 +2441,8 @@ ys: 'whys'
         }
         if (node != null && node.nodeName && node.nodeName.toLowerCase() == 'form') {
           return node;
-        } else {
-          return null;
-        }
+        } 
+        return null;
       }
       return null;
     },
@@ -2453,7 +2451,7 @@ ys: 'whys'
       var i;
       if (node !== null && aFormsList !== null && aFormsList.length) {
         for (i = 0; i < aFormsList.length; i++) {
-          if (node === aFormsList[i].node) return i + 1;
+          if (node === aFormsList[i].node) { return i + 1; }
         }
       }
       return 'Orphan';
@@ -2467,7 +2465,7 @@ ys: 'whys'
       if (node != null && node.tagName) {
         for (segs = []; nodeWalker && nodeWalker.nodeType == 1; nodeWalker = nodeWalker.parentNode) {
           for (i = 1, sib = nodeWalker.previousSibling; sib; sib = sib.previousSibling) {
-            if (sib.localName == nodeWalker.localName) i++;
+            if (sib.localName == nodeWalker.localName) { i++; }
           }
           segs.unshift(nodeWalker.localName.toLowerCase() + '[' + i + ']');
         }
@@ -2529,7 +2527,9 @@ ys: 'whys'
         sTagName = node.tagName.toLowerCase();
         if (sTagName == 'button' || sTagName == 'a') {
           sDescription = blr.W15yQC.fnCutoffString(sDescription + blr.W15yQC.fnCutoffString(blr.W15yQC.fnCleanSpaces(node.innerHTML), maxAttributeLength), maxLength) + '</' + node.tagName + '>';
-        } else sDescription = blr.W15yQC.fnCutoffString(sDescription, maxLength);
+        } else {
+          sDescription = blr.W15yQC.fnCutoffString(sDescription, maxLength);
+        }
       }
       return sDescription;
     },
@@ -2659,8 +2659,8 @@ ys: 'whys'
 
         if (nTagName == 'input') {
           inputType = '';
-          if (node.hasAttribute('type')) inputType = blr.W15yQC.fnCleanSpaces(node.getAttribute('type').toLowerCase());
-          if (inputType == '') inputType = 'text'; // default type
+          if (node.hasAttribute('type')) { inputType = blr.W15yQC.fnCleanSpaces(node.getAttribute('type').toLowerCase()); }
+          if (inputType == '') { inputType = 'text'; } // default type
           switch (inputType) {
           case 'submit':
             // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
@@ -3005,30 +3005,31 @@ ys: 'whys'
       var sNodeChildText = '',
           sRecursiveText = null,
           c;
-      if (bRecursion == null) bRecursion = 0;
+      if (bRecursion == null) { bRecursion = 0; }
       if (rootNode != null) {
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1 && c.nodeType !== 3) continue; // Only pay attention to element and text nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // don't get frame contents, but instead check if it has a title attribute
-            if (c.hasAttribute('title')) {
-              sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('title'), ' ');
-            }
-          } else { // keep looking through current document
-            if (c.nodeType == 3 && c.nodeValue != null) { // text content
-              sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.nodeValue, ' ');
-            }
-            if (c.nodeType == 1 || c.nodeType == 3) {
-              if (bRecursion < 100) sRecursiveText = blr.W15yQC.fnGetDisplayableTextRecursively(c, bRecursion + 1);
-
-              if (sRecursiveText == null || (c.nodeType == 1 && blr.W15yQC.fnTrim(sRecursiveText).length == 0)) {
-                if (c.tagName != null && blr.W15yQC.fnCanTagHaveAlt(c.tagName) && c.hasAttribute('alt') == true) {
-                  sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('alt'));
-                } else if (c.hasAttribute && c.hasAttribute('title')) {
-                  sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('title'));
+          if (c.nodeType == 1 || c.nodeType == 3) { // Only pay attention to element and text nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // don't get frame contents, but instead check if it has a title attribute
+              if (c.hasAttribute('title')) {
+                sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('title'), ' ');
+              }
+            } else { // keep looking through current document
+              if (c.nodeType == 3 && c.nodeValue != null) { // text content
+                sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.nodeValue, ' ');
+              }
+              if (c.nodeType == 1 || c.nodeType == 3) {
+                if (bRecursion < 100) { sRecursiveText = blr.W15yQC.fnGetDisplayableTextRecursively(c, bRecursion + 1); }
+  
+                if (sRecursiveText == null || (c.nodeType == 1 && blr.W15yQC.fnTrim(sRecursiveText).length == 0)) {
+                  if (c.tagName != null && blr.W15yQC.fnCanTagHaveAlt(c.tagName) && c.hasAttribute('alt') == true) {
+                    sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('alt'));
+                  } else if (c.hasAttribute && c.hasAttribute('title')) {
+                    sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, c.getAttribute('title'));
+                  }
+                } else {
+                  sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, sRecursiveText, ' ');
                 }
-              } else {
-                sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, sRecursiveText, ' ');
               }
             }
           }
@@ -3051,498 +3052,498 @@ ys: 'whys'
       var i, attrName;
       for (i = 0; i < node.attributes.length; i++) {
         attrName = node.attributes[i].name.toLowerCase();
-        if(attrName == 'role' || attrName.match(/^aria-/) != null) return true;
+        if(attrName == 'role' || attrName.match(/^aria-/) != null) { return true; }
       }
       return false;
     },
 
     ARIAChecks : {
-         	"alert" : {
-         		container : null,
-         		validProps : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "alert" : {
+            container : null,
+            validProps : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"alertdialog" : {
-         		container : null,
-         		validProps : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "alertdialog" : {
+            container : null,
+            validProps : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"application" : {
-         		container : null,
-         		validProps : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "application" : {
+            container : null,
+            validProps : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"article" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "article" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"banner" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "banner" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"button" : {
-         		container : null,
-         		props : ["aria-expanded", "aria-pressed"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "button" : {
+            container : null,
+            props : ["aria-expanded", "aria-pressed"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"checkbox" : {
-         		container : null,
-         		props : null,
-         		reqProps : ["aria-checked"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "checkbox" : {
+            container : null,
+            props : null,
+            reqProps : ["aria-checked"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
           "columnheader" : {
-         		container : ["row"],
-         		props : ["aria-expanded", "aria-sort", "aria-readonly", "aria-selected", "aria-required"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+            container : ["row"],
+            props : ["aria-expanded", "aria-sort", "aria-readonly", "aria-selected", "aria-required"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"combobox" : {
-         		container : null,
-         		props : ["aria-autocomplete", "aria-required", "aria-activedescendant"],
-         		reqProps : ["aria-expanded"],
-         		reqChildren : ["listbox", "textbox"],
-         		roleType : "widget"
-         	},
+          "combobox" : {
+            container : null,
+            props : ["aria-autocomplete", "aria-required", "aria-activedescendant"],
+            reqProps : ["aria-expanded"],
+            reqChildren : ["listbox", "textbox"],
+            roleType : "widget"
+          },
 
-         	"complementry" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : ["aria-labelledby"],
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "complementry" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : ["aria-labelledby"],
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"contentinfo" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : ["aria-labelledby"],
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "contentinfo" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : ["aria-labelledby"],
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"definition" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "definition" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"dialog" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "dialog" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"directory" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "directory" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"document" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "document" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"form" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "form" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"grid" : {
-         		container : null,
-         		props : ["aria-level", "aria-multiselectable", "aria-readonly", "aria-activedescendant", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : ["row", "rowgroup"],
-         		roleType : null
-         	},
+          "grid" : {
+            container : null,
+            props : ["aria-level", "aria-multiselectable", "aria-readonly", "aria-activedescendant", "aria-expanded"],
+            reqProps : null,
+            reqChildren : ["row", "rowgroup"],
+            roleType : null
+          },
 
-         	"gridcell" : {
-         		container : ["row"],
-         		props : ["aria-readonly", "aria-selected", "aria-expanded", "aria-required"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "gridcell" : {
+            container : ["row"],
+            props : ["aria-readonly", "aria-selected", "aria-expanded", "aria-required"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"group" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "group" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"heading" : {
-         		container : null,
-         		props : ["aria-level", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "heading" : {
+            container : null,
+            props : ["aria-level", "aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"img" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "img" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"link" : {
-         		container : null,
-         		props : null,
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "link" : {
+            container : null,
+            props : null,
+            reqProps : null,
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"list" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : ["group", "listitem"],
-         		roleType : null
-         	},
+          "list" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : ["group", "listitem"],
+            roleType : null
+          },
 
-         	"listbox" : {
-         		container : null,
-         		props : ["aria-expanded", "aria-activedescendant", "aria-multiselectable", "aria-required"],
-         		reqProps : null,
-         		reqChildren : ["option"],
-         		roleType : null
-         	},
+          "listbox" : {
+            container : null,
+            props : ["aria-expanded", "aria-activedescendant", "aria-multiselectable", "aria-required"],
+            reqProps : null,
+            reqChildren : ["option"],
+            roleType : null
+          },
 
-         	"listitem" : {
-         		container : ["list"],
-         		props : ["aria-expanded", "aria-level", "aria-posinset", "aria-setsize"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "listitem" : {
+            container : ["list"],
+            props : ["aria-expanded", "aria-level", "aria-posinset", "aria-setsize"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"log" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "log" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"main" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "main" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"marquee" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "marquee" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"math" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "math" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"menu" : {
-         		container : null,
-         		props : ["aria-expanded", "aria-activedescendant"],
-         		reqProps : null,
-         		reqChildren : ["menuitem", "menuitemcheckbox", "menuitemradio"],
-         		roleType : null
-         	},
+          "menu" : {
+            container : null,
+            props : ["aria-expanded", "aria-activedescendant"],
+            reqProps : null,
+            reqChildren : ["menuitem", "menuitemcheckbox", "menuitemradio"],
+            roleType : null
+          },
 
-         	"menubar" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "menubar" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"menuitem" : {
-         		container : ["menu", "menubar"],
-         		props : null,
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "menuitem" : {
+            container : ["menu", "menubar"],
+            props : null,
+            reqProps : null,
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"menuitemcheckbox" : {
-         		container : ["menu", "menubar"],
-         		props : null,
-         		reqProps : ["aria-checked"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "menuitemcheckbox" : {
+            container : ["menu", "menubar"],
+            props : null,
+            reqProps : ["aria-checked"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"menuitemradio" : {
-         		container : ["menu", "menubar"],
-         		props : ["aria-selected", "aria-posinset", "aria-setsize"],
-         		reqProps : ["aria-checked"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "menuitemradio" : {
+            container : ["menu", "menubar"],
+            props : ["aria-selected", "aria-posinset", "aria-setsize"],
+            reqProps : ["aria-checked"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"navigation" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : ["aria-labelledby"],
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "navigation" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : ["aria-labelledby"],
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"note" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "note" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"option" : {
-         		container : ["listbox"],
-         		props : ["aria-expanded", "aria-checked", "aria-selected", "aria-posinset", "aria-setsize"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "option" : {
+            container : ["listbox"],
+            props : ["aria-expanded", "aria-checked", "aria-selected", "aria-posinset", "aria-setsize"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"presentation" : {
-         		container : null,
-         		props : null,
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "presentation" : {
+            container : null,
+            props : null,
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"progressbar" : {
-         		container : null,
-         		props : ["aria-valuetext", "aria-valuenow", "aria-valuemax", "aria-valuemin"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "progressbar" : {
+            container : null,
+            props : ["aria-valuetext", "aria-valuenow", "aria-valuemax", "aria-valuemin"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"radio" : {
-         		container : null,
-         		props : ["aria-selected", "aria-posinset", "aria-setsize"],
-         		reqProps : ["aria-checked"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "radio" : {
+            container : null,
+            props : ["aria-selected", "aria-posinset", "aria-setsize"],
+            reqProps : ["aria-checked"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"radiogroup" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-expanded", "aria-required"],
-         		reqProps : ["aria-labelledby"],
-         		reqChildren : ["radio"],
-         		roleType : null
-         	},
+          "radiogroup" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-expanded", "aria-required"],
+            reqProps : ["aria-labelledby"],
+            reqChildren : ["radio"],
+            roleType : null
+          },
 
-         	"region" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "region" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"row" : {
-         		container : ["grid", "treegrid", "rowgroup"],
-         		props : ["aria-level", "aria-selected", "aria-activedescendant", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : ["gridcell", "rowheader", "columnheader"],
-         		roleType : null
-         	},
+          "row" : {
+            container : ["grid", "treegrid", "rowgroup"],
+            props : ["aria-level", "aria-selected", "aria-activedescendant", "aria-expanded"],
+            reqProps : null,
+            reqChildren : ["gridcell", "rowheader", "columnheader"],
+            roleType : null
+          },
 
-         	"rowgroup" : {
-         		container : ["grid"],
-         		props : ["aria-expanded", "aria-activedescendant"],
-         		reqProps : null,
-         		reqChildren : ["row"],
-         		roleType : null
-         	},
+          "rowgroup" : {
+            container : ["grid"],
+            props : ["aria-expanded", "aria-activedescendant"],
+            reqProps : null,
+            reqChildren : ["row"],
+            roleType : null
+          },
 
-         	"rowheader" : {
-         		container : ["row"],
-         		props : ["aria-expanded", "aria-sort", "aria-required", "aria-readonly", "aria-selected"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "rowheader" : {
+            container : ["row"],
+            props : ["aria-expanded", "aria-sort", "aria-required", "aria-readonly", "aria-selected"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"scrollbar" : {
-         		container : null,
-         		props : ["aria-valuetext"],
-         		reqProps : ["aria-controls", "aria-orientation", "aria-valuenow", "aria-valuemax", "aria-valuemin"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "scrollbar" : {
+            container : null,
+            props : ["aria-valuetext"],
+            reqProps : ["aria-controls", "aria-orientation", "aria-valuenow", "aria-valuemax", "aria-valuemin"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"search" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : ["aria-labelledby"],
-         		reqChildren : null,
-         		roleType : "landmark"
-         	},
+          "search" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : ["aria-labelledby"],
+            reqChildren : null,
+            roleType : "landmark"
+          },
 
-         	"separator" : {
-         		container : null,
-         		props : ["aria-expanded", "aria-orientation"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "separator" : {
+            container : null,
+            props : ["aria-expanded", "aria-orientation"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"slider" : {
-         		container : null,
-         		props : ["aria-orientation", "aria-valuetext"],
-         		reqProps : ["aria-valuemax", "aria-valuenow", "aria-valuemin"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "slider" : {
+            container : null,
+            props : ["aria-orientation", "aria-valuetext"],
+            reqProps : ["aria-valuemax", "aria-valuenow", "aria-valuemin"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"spinbutton" : {
-         		container : null,
-         		props : ["aria-required", "aria-valuetext"],
-         		reqProps : ["aria-valuemax", "aria-valuenow", "aria-valuemin"],
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "spinbutton" : {
+            container : null,
+            props : ["aria-required", "aria-valuetext"],
+            reqProps : ["aria-valuemax", "aria-valuenow", "aria-valuemin"],
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"status" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "status" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"tab" : {
-         		container : ["tablist"],
-         		props : ["aria-selected", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "tab" : {
+            container : ["tablist"],
+            props : ["aria-selected", "aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"tablist" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-expanded", "aria-level"],
-         		reqProps : null,
-         		reqChildren : ["tab"],
-         		roleType : null
-         	},
+          "tablist" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-expanded", "aria-level"],
+            reqProps : null,
+            reqChildren : ["tab"],
+            roleType : null
+          },
 
-         	"tabpanel" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "tabpanel" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"textbox" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-autocomplete", "aria-multiline", "aria-readonly", "aria-required"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : "widget"
-         	},
+          "textbox" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-autocomplete", "aria-multiline", "aria-readonly", "aria-required"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : "widget"
+          },
 
-         	"timer" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "timer" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"toolbar" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "toolbar" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"tooltip" : {
-         		container : null,
-         		props : ["aria-expanded"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
-         	},
+          "tooltip" : {
+            container : null,
+            props : ["aria-expanded"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
+          },
 
-         	"tree" : {
-         		container : null,
-         		props : ["aria-multiselectable", "aria-activedescendant", "aria-expanded", "aria-required"],
-         		reqProps : null,
-         		reqChildren : ["group", "treeitem"],
-         		roleType : null
-         	},
+          "tree" : {
+            container : null,
+            props : ["aria-multiselectable", "aria-activedescendant", "aria-expanded", "aria-required"],
+            reqProps : null,
+            reqChildren : ["group", "treeitem"],
+            roleType : null
+          },
 
-         	"treegrid" : {
-         		container : null,
-         		props : ["aria-activedescendant", "aria-expanded", "aria-level", "aria-multiselectable", "aria-readonly", "aria-required"],
-         		reqProps : null,
-         		reqChildren : ["row"],
-         		roleType : null
-         	},
+          "treegrid" : {
+            container : null,
+            props : ["aria-activedescendant", "aria-expanded", "aria-level", "aria-multiselectable", "aria-readonly", "aria-required"],
+            reqProps : null,
+            reqChildren : ["row"],
+            roleType : null
+          },
 
-         	"treeitem" : {
-         		container : ["group", "tree"],
-         		props : ["aria-checked", "aria-selected", "aria-expanded", "aria-level", "aria-posinset", "aria-setsize"],
-         		reqProps : null,
-         		reqChildren : null,
-         		roleType : null
+          "treeitem" : {
+            container : ["group", "tree"],
+            props : ["aria-checked", "aria-selected", "aria-expanded", "aria-level", "aria-posinset", "aria-setsize"],
+            reqProps : null,
+            reqChildren : null,
+            roleType : null
             }
         },
 
@@ -3572,10 +3573,10 @@ ys: 'whys'
         if(blr.W15yQC.ARIAChecks[sRole].reqProps != null) {
           sMsg=null;
           for(i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
-            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', ');
+            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
           }
         }
-        if(sMsg != null) blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); // QA
+        if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); } // QA
         // Check validity of the ARIA- attributes
         // TODO: finish this
         
@@ -3599,7 +3600,7 @@ ys: 'whys'
             for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
               blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].container[i],', ');
             }
-            if(sMsg != null) blr.W15yQC.fnAddNote(no, 'ariaMissingContainer', [sMsg]); // QA
+            if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingContainer', [sMsg]); } // QA
           }
         }
         // Check for required children
@@ -3711,9 +3712,9 @@ ys: 'whys'
           sIDs = node.getAttribute('aria-labelledby').split(' ');
           if (sIDs != null) {
             for (i = 0; i < sIDs.length; i++) {
-              if (doc.getElementById(sIDs[i]) == null) sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, "'" + sIDs[i] + "'", ', ');
+              if (doc.getElementById(sIDs[i]) == null) { sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, "'" + sIDs[i] + "'", ', '); }
             }
-            if (sMissingIDs != null) blr.W15yQC.fnAddNote(no, 'ariaLabelledbyIDsMissing',[sMissingIDs]);
+            if (sMissingIDs != null) { blr.W15yQC.fnAddNote(no, 'ariaLabelledbyIDsMissing',[sMissingIDs]); }
           }
         }
         if (node.hasAttribute('aria-describedby') == true) {
@@ -3721,9 +3722,9 @@ ys: 'whys'
           sIDs = node.getAttribute('aria-describedby').split(' ');
           if (sIDs != null) {
             for (i = 0; i < sIDs.length; i++) {
-              if (doc.getElementById(sIDs[i]) == null) sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, sIDs[i], ' ');
+              if (doc.getElementById(sIDs[i]) == null) { sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, sIDs[i], ' '); }
             }
-            if (sMissingIDs != null) blr.W15yQC.fnAddNote(no, 'ariaDescribedbyIDsMissing',[sMissingIDs]);
+            if (sMissingIDs != null) { blr.W15yQC.fnAddNote(no, 'ariaDescribedbyIDsMissing',[sMissingIDs]); }
           }
         }
       }
@@ -3733,7 +3734,7 @@ ys: 'whys'
 
     fnMakeTableSortable: function (node, doc, sTableId) {
       var script = doc.createElement('script');
-      script.appendChild(doc.createTextNode('fnMakeTableSortable("' + sTableId + '");'));;
+      script.appendChild(doc.createTextNode('fnMakeTableSortable("' + sTableId + '");'));
       node.appendChild(script);
     },
 
@@ -3918,22 +3919,23 @@ ys: 'whys'
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // document the frame
-            frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-            frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
-            frameId = blr.W15yQC.fnGetNodeAttribute(c, 'id', null);
-            frameName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
-            role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-            xPath = blr.W15yQC.fnGetElementXPath(c);
-            nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-            aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, frameSrc));
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
-          } else { // keep looking through current document
-            blr.W15yQC.fnGetFrameTitles(doc, c, aFramesList);
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // document the frame
+              frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+              frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
+              frameId = blr.W15yQC.fnGetNodeAttribute(c, 'id', null);
+              frameName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
+              role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+              xPath = blr.W15yQC.fnGetElementXPath(c);
+              nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+              aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, frameSrc));
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
+            } else { // keep looking through current document
+              blr.W15yQC.fnGetFrameTitles(doc, c, aFramesList);
+            }
           }
         }
       }
@@ -3975,8 +3977,14 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotMeaningful'); // TODO: QA This
           }
           for (j = 0; j < aFramesList.length; j++) {
-            if (j == i) {
-              continue;
+            if (j != i) {
+              if (aFramesList[j].title != null && aFramesList[j].title.length > 0) {
+                if (blr.W15yQC.fnStringsEffectivelyEqual(aFramesList[i].title, aFramesList[j].title)) {
+                  blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotUnique'); // QA iframeTests01.html
+                } else if (aFramesList[i].soundex.length>2 && aFramesList[i].soundex == aFramesList[j].soundex) {
+                  blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleSoundsSame'); // QA iframeTests01.html
+                }
+              }
             } else if (aFramesList[j].title != null && aFramesList[j].title.length > 0) {
               if (blr.W15yQC.fnStringsEffectivelyEqual(aFramesList[i].title, aFramesList[j].title)) {
                 blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotUnique'); // QA iframeTests01.html
@@ -4102,9 +4110,9 @@ ys: 'whys'
       var sDocType;
       if (doc !== null && doc.doctype !== null && doc.doctype.name !== null) {
         sDocType = doc.doctype.name;
-        if (doc.doctype.publicId) sDocType = sDocType + ' PUBLIC "' + doc.doctype.publicId + '"';
-        if (doc.doctype.systemId) sDocType = sDocType + ' "' + doc.doctype.systemId + '"';
-        if (doc.doctype.internalSubset) sDocType = sDocType + ' [' + doc.doctype.internalSubset + ']';
+        if (doc.doctype.publicId) { sDocType = sDocType + ' PUBLIC "' + doc.doctype.publicId + '"'; }
+        if (doc.doctype.systemId) { sDocType = sDocType + ' "' + doc.doctype.systemId + '"'; }
+        if (doc.doctype.internalSubset) { sDocType = sDocType + ' [' + doc.doctype.internalSubset + ']'; }
         return sDocType;
       }
       return null;
@@ -4123,44 +4131,45 @@ ys: 'whys'
         }
         docNumber = aDocumentsList.length - 1;
 
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         if (rootNode != null && rootNode.firstChild != null) {
           for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-            if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-            if (c.tagName && c.hasAttribute('id') == true) {
-              sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
-              idCount = 1;
-              if(aDocumentsList[docNumber].idHashTable.hasItem(sID)) {
-                idCount = aDocumentsList[docNumber].idHashTable.getItem(sID)+1;
-                aDocumentsList[docNumber].IDsUnique = false;
-                if(idCount == 2) {
-                  if(aDocumentsList[docNumber].nonUniqueIDs.length<5) {
-                    aDocumentsList[docNumber].nonUniqueIDs.push(sID);
+            if (c.nodeType == 1) { // Only pay attention to element nodes
+              if (c.tagName && c.hasAttribute('id') == true) {
+                sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
+                idCount = 1;
+                if(aDocumentsList[docNumber].idHashTable.hasItem(sID)) {
+                  idCount = aDocumentsList[docNumber].idHashTable.getItem(sID)+1;
+                  aDocumentsList[docNumber].IDsUnique = false;
+                  if(idCount == 2) {
+                    if(aDocumentsList[docNumber].nonUniqueIDs.length<5) {
+                      aDocumentsList[docNumber].nonUniqueIDs.push(sID);
+                    }
+                    aDocumentsList[docNumber].nonUniqueIDsCount++;
+                    blr.W15yQC.fnLog('non unique id found');
                   }
-                  aDocumentsList[docNumber].nonUniqueIDsCount++;
-                  blr.W15yQC.fnLog('non unique id found');
+                }
+                aDocumentsList[docNumber].idHashTable.setItem(sID, idCount);
+                if(blr.W15yQC.fnIsValidHtmlID(sID) == false) {
+                  aDocumentsList[docNumber].IDsValid = false;
+                  if(idCount < 2 && aDocumentsList[docNumber].invalidIDs.length<5) {
+                    aDocumentsList[docNumber].invalidIDs.push(sID);
+                    aDocumentsList[docNumber].invalidIDsCount++;
+                  }
                 }
               }
-              aDocumentsList[docNumber].idHashTable.setItem(sID, idCount);
-              if(blr.W15yQC.fnIsValidHtmlID(sID) == false) {
-                aDocumentsList[docNumber].IDsValid = false;
-                if(idCount < 2 && aDocumentsList[docNumber].invalidIDs.length<5) {
-                  aDocumentsList[docNumber].invalidIDs.push(sID);
-                  aDocumentsList[docNumber].invalidIDsCount++;
-                }
+  
+              if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+                // Document the new document
+                frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+                // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
+                aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
+  
+                // get frame contents
+                blr.W15yQC.fnGetDocuments(frameDocument, frameDocument.body, aDocumentsList);
+              } else { // keep looking through current document
+                blr.W15yQC.fnGetDocuments(doc, c, aDocumentsList);
               }
-            }
-
-            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-              // Document the new document
-              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-              // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
-              aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
-
-              // get frame contents
-              blr.W15yQC.fnGetDocuments(frameDocument, frameDocument.body, aDocumentsList);
-            } else { // keep looking through current document
-              blr.W15yQC.fnGetDocuments(doc, c, aDocumentsList);
             }
           }
         }
@@ -4190,9 +4199,10 @@ ys: 'whys'
           aSameTitles = [];
           if(aDocumentsList[i].title != null && aDocumentsList[i].title.length>0) {
             for (j=0; j < aDocumentsList.length; j++) {
-              if(i == j) continue;
-              if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
-                aSameTitles.push(j+1);
+              if(i != j) {
+                if(blr.W15yQC.fnStringsEffectivelyEqual(aDocumentsList[i].title, aDocumentsList[j].title)) {
+                  aSameTitles.push(j+1);
+                }
               }
             }
             if(aSameTitles.length>0) {
@@ -4202,14 +4212,14 @@ ys: 'whys'
           if (aDocumentsList[i].IDsUnique == false) {
             aDocumentsList[i].warning = true;
             sIDList = aDocumentsList[i].nonUniqueIDs.toString().replace(/,/g,', ');
-            if(aDocumentsList[i].nonUniqueIDsCount>5) sIDList = sIDList + '...';
+            if(aDocumentsList[i].nonUniqueIDsCount>5) { sIDList = sIDList + '...'; }
 
             sIDList = blr.W15yQC.fnCutoffString(sIDList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docNonUniqueIDs',[aDocumentsList[i].nonUniqueIDsCount, sIDList]);  // QA iframeTests01.html
           }
           if (aDocumentsList[i].IDsValid == false) {
             sIDList = aDocumentsList[i].invalidIDs.toString().replace(/,/g,', ');
-            if(aDocumentsList[i].invalidIDsCount>5) sIDList = sIDList + '...';
+            if(aDocumentsList[i].invalidIDsCount>5) { sIDList = sIDList + '...'; }
             sIDList = blr.W15yQC.fnCutoffString(sIDList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidIDs',[aDocumentsList[i].invalidIDsCount,sIDList]); // QA iframeTests01.html
           }
@@ -4225,7 +4235,9 @@ ys: 'whys'
       if (aDocumentsList && aDocumentsList.length && aDocumentsList.length > 0) {
         if (aDocumentsList.length > 1) {
           sDocumentsSectionHeading = aDocumentsList.length + ' ' + blr.W15yQC.fnGetString('hrsDocuments');
-        } else sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrs1Document');
+        } else {
+          sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrs1Document');
+        }
       } else {
         sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrsNoDocuments');
       }
@@ -4266,7 +4278,7 @@ ys: 'whys'
       if(child != null) {
         node = child.parentNode;
         while (node != null) {
-         if (node === parent) return true;
+         if (node === parent) { return true; }
          node = node.parentNode;
         }
       }
@@ -4279,55 +4291,56 @@ ys: 'whys'
       if (baseLevel == null) { baseLevel = 0; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // determine level, and then get frame contents
-            level = baseLevel+1;
-            for(i=aARIALandmarksList.length-1; i>=0; i--) {
-              if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
-                level = aARIALandmarksList[i].level+1;
-                break;
-              }
-            }            
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetARIALandmarks(frameDocument, frameDocument.body, aARIALandmarksList, level);
-          } else { // keep looking through current document
-            if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && c.hasAttribute('role') == true) {
-              sTagName = c.tagName.toLowerCase();
-              sRole = c.getAttribute('role');
-              switch (sRole) {
-                case 'application':
-                case 'banner':
-                case 'complementary':
-                case 'contentinfo':
-                case 'form':
-                case 'main':
-                case 'navigation':
-                case 'search':
-                  // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                  xPath = blr.W15yQC.fnGetElementXPath(c);
-                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  sARIALabel = null;
-                  level = baseLevel+1;
-                  for(i=aARIALandmarksList.length-1; i>=0; i--) {
-                    if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
-                      level = aARIALandmarksList[i].level+1;
-                      break;
-                    }
-                  }
-                  if (c.hasAttribute('aria-label') == true) {
-                    sARIALabel = c.getAttribute('aria-label');
-                  } else if (c.hasAttribute('aria-labelledby') == true) {
-                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
-                  }
-                  sState = blr.W15yQC.fnGetNodeState(c);
-                  aARIALandmarksList.push(new blr.W15yQC.ariaLandmarkElement(c, xPath, nodeDescription, doc, aARIALandmarksList.length, level, sRole, sARIALabel, sState));
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // determine level, and then get frame contents
+              level = baseLevel+1;
+              for(i=aARIALandmarksList.length-1; i>=0; i--) {
+                if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
+                  level = aARIALandmarksList[i].level+1;
                   break;
+                }
+              }            
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetARIALandmarks(frameDocument, frameDocument.body, aARIALandmarksList, level);
+            } else { // keep looking through current document
+              if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && c.hasAttribute('role') == true) {
+                sTagName = c.tagName.toLowerCase();
+                sRole = c.getAttribute('role');
+                switch (sRole) {
+                  case 'application':
+                  case 'banner':
+                  case 'complementary':
+                  case 'contentinfo':
+                  case 'form':
+                  case 'main':
+                  case 'navigation':
+                  case 'search':
+                    // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                    xPath = blr.W15yQC.fnGetElementXPath(c);
+                    nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                    sARIALabel = null;
+                    level = baseLevel+1;
+                    for(i=aARIALandmarksList.length-1; i>=0; i--) {
+                      if(blr.W15yQC.fnIsDescendant(aARIALandmarksList[i].node,c)==true) {
+                        level = aARIALandmarksList[i].level+1;
+                        break;
+                      }
+                    }
+                    if (c.hasAttribute('aria-label') == true) {
+                      sARIALabel = c.getAttribute('aria-label');
+                    } else if (c.hasAttribute('aria-labelledby') == true) {
+                      sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
+                    }
+                    sState = blr.W15yQC.fnGetNodeState(c);
+                    aARIALandmarksList.push(new blr.W15yQC.ariaLandmarkElement(c, xPath, nodeDescription, doc, aARIALandmarksList.length, level, sRole, sARIALabel, sState));
+                    break;
+                }
               }
+              blr.W15yQC.fnGetARIALandmarks(doc, c, aARIALandmarksList);
             }
-            blr.W15yQC.fnGetARIALandmarks(doc, c, aARIALandmarksList);
           }
         }
       }
@@ -4357,10 +4370,11 @@ ys: 'whys'
           
           aSameLabelText = [];
           for (j = 0; j < aARIALandmarksList.length; j++) {
-            if (i == j) continue;
-            sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
-            if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
-              aSameLabelText.push(j+1);
+            if (i != j) {
+              sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
+              if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
+                aSameLabelText.push(j+1);
+              }
             }
           }
           
@@ -4404,7 +4418,9 @@ ys: 'whys'
       if (aARIALandmarksList && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
         if (aARIALandmarksList.length > 1) {
           sARIALandmarksSectionHeading = aARIALandmarksList.length + ' ' + blr.W15yQC.fnGetString('hrsARIALandmarks');
-        } else sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrs1ARIALandmark');
+        } else {
+          sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrs1ARIALandmark');
+        }
       } else {
         sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrsNoARIALandmarks');
       }
@@ -4464,35 +4480,36 @@ ys: 'whys'
       if (aARIAElementsList == null) { aARIAElementsList = []; }
       if (ARIAElementStack == null) { ARIAElementStack = []; }
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetARIAElements(frameDocument, frameDocument.body, aARIAElementsList, null);
-          } else { // keep looking through current document
-            if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnElementUsesARIA(c) == true) {
-              sTagName = c.tagName.toLowerCase();
-              while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1],c) == false) {
-                ARIAElementStack.pop();
-              }
-                // Document ARIA Element: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                sRole = c.getAttribute('role');
-                // TODO: Don't restrict this to just an ARIA label, other elements may be involved.
-                sARIALabel = null;
-                if (c.hasAttribute('aria-label') == true) {
-                  sARIALabel = c.getAttribute('aria-label');
-                } else if (c.hasAttribute('aria-labelledby') == true) {
-                  sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetARIAElements(frameDocument, frameDocument.body, aARIAElementsList, null);
+            } else { // keep looking through current document
+              if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnElementUsesARIA(c) == true) {
+                sTagName = c.tagName.toLowerCase();
+                while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1],c) == false) {
+                  ARIAElementStack.pop();
                 }
-                sState = blr.W15yQC.fnGetNodeState(c);
-                aARIAElementsList.push(new blr.W15yQC.ariaElement(c, xPath, nodeDescription, doc, aARIAElementsList.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
-                ARIAElementStack.push(c);
+                  // Document ARIA Element: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  sRole = c.getAttribute('role');
+                  // TODO: Don't restrict this to just an ARIA label, other elements may be involved.
+                  sARIALabel = null;
+                  if (c.hasAttribute('aria-label') == true) {
+                    sARIALabel = c.getAttribute('aria-label');
+                  } else if (c.hasAttribute('aria-labelledby') == true) {
+                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'), doc);
+                  }
+                  sState = blr.W15yQC.fnGetNodeState(c);
+                  aARIAElementsList.push(new blr.W15yQC.ariaElement(c, xPath, nodeDescription, doc, aARIAElementsList.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
+                  ARIAElementStack.push(c);
+              }
+              blr.W15yQC.fnGetARIAElements(doc, c, aARIAElementsList, ARIAElementStack);
             }
-            blr.W15yQC.fnGetARIAElements(doc, c, aARIAElementsList, ARIAElementStack);
           }
         }
       }
@@ -4512,13 +4529,14 @@ ys: 'whys'
           aARIALandmarksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
           sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].label, ' '));
           for (j = 0; j < aARIALandmarksList.length; j++) {
-            if (i == j) continue;
-            sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
-            if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
-              if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
-                blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ariaLmkAndLabelNotUnique'); // QA ariaTests01.html
-              } else {
-                blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ariaLmkNotUnique'); // QA ariaTests01.html
+            if (i != j) {
+              sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].label, ' '));
+              if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
+                if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
+                  blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ariaLmkAndLabelNotUnique'); // QA ariaTests01.html
+                } else {
+                  blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ariaLmkNotUnique'); // QA ariaTests01.html
+                }
               }
             }
           }
@@ -4544,7 +4562,8 @@ ys: 'whys'
       if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) {
         if (aARIAElementsList.length > 1) {
           sARIAElementsHeading = aARIAElementsList.length + ' ' + blr.W15yQC.fnGetString('hrsARIAEls');
-        } else sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
+        } else { sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
+        }
       } else {
         sARIAElementsHeading = blr.W15yQC.fnGetString('hrsNoARIAEls');
       }
@@ -4557,7 +4576,7 @@ ys: 'whys'
         previousHeadingLevel = 0;
 
         previousDocument = null;
-        if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) previousDocument = aARIAElementsList[0].doc;
+        if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) { previousDocument = aARIAElementsList[0].doc; }
         for (i = 0; i < aARIAElementsList.length; i++) {
           sDoc = '';
           if (i == 0) {
@@ -4607,14 +4626,16 @@ ys: 'whys'
           } else if (aARIAElementsList[i].warning) {
             li.setAttribute('class', 'warning');
           }
-          if (aARIAElementsList[i].nodeDescription != null) li.setAttribute('title', aARIAElementsList[i].nodeDescription);
+          if (aARIAElementsList[i].nodeDescription != null) { li.setAttribute('title', aARIAElementsList[i].nodeDescription); }
 
           if (aARIAElementsList[i].level > previousHeadingLevel && previousHeadingLevel > 0) {
             list.push(rd.createElement('ul'));
-          } else while (aARIAElementsList[i].level < previousHeadingLevel) {
-            list[list.length - 2].appendChild(list[list.length - 1]);
-            list.pop();
-            previousHeadingLevel--;
+          } else {
+            while (aARIAElementsList[i].level < previousHeadingLevel) {
+              list[list.length - 2].appendChild(list[list.length - 1]);
+              list.pop();
+              previousHeadingLevel--;
+            }
           }
           list[list.length - 1].appendChild(li);
           previousHeadingLevel = parseInt(aARIAElementsList[i].level,10);
@@ -4692,7 +4713,7 @@ ys: 'whys'
             }
           }
         }
-        if(/transparent/i.test(fgColor)) fgColor = 'rgb(0, 0, 0)';
+        if(/transparent/i.test(fgColor)) { fgColor = 'rgb(0, 0, 0)'; }
         
         bgColor=style.getPropertyValue('background-color');
         el2=el;
@@ -4705,11 +4726,11 @@ ys: 'whys'
             }
           }
         }
-        if(/transparent/i.test(bgColor)) bgColor = 'rgb(255, 255, 255)';
+        if(/transparent/i.test(bgColor)) { bgColor = 'rgb(255, 255, 255)'; }
 
         aFGColor = blr.W15yQC.fnParseCSSColorValues(fgColor);
         aBGColor = blr.W15yQC.fnParseCSSColorValues(bgColor);
-        if(aFGColor != null && aBGColor != null) return [aFGColor[0], aFGColor[1], aFGColor[2], aBGColor[0], aBGColor[1], aBGColor[2], textSize, textWeight, bBgImage];
+        if(aFGColor != null && aBGColor != null) { return [aFGColor[0], aFGColor[1], aFGColor[2], aBGColor[0], aBGColor[1], aBGColor[2], textSize, textWeight, bBgImage]; }
       }
       return null;
     },
@@ -4721,34 +4742,35 @@ ys: 'whys'
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
-                            (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetLuminosityCheckElements(frameDocument, frameDocument.body, aLumCheckList);
-          } else { // keep looking through current document
-            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              tagName = c.tagName.toLowerCase();
-              if(tagName != 'script' && tagName != 'style' && tagName != 'option' && blr.W15yQC.fnElementHasOwnContent(c)) {
-                aColors = blr.W15yQC.fnGetColorValues(c);
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                sText = blr.W15yQC.fnElementsOwnContent(c);
-                if(aColors != null) {
-                  fgColor = [aColors[0], aColors[1], aColors[2]];
-                  bgColor = [aColors[3], aColors[4], aColors[5]];
-                  sTextSize = aColors[6];
-                  textWeight = aColors[7];
-                  bBgImage = aColors[8];
-                  //fgLum;
-                  //bgLum;
-                  lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
-                  aLumCheckList.push(new blr.W15yQC.contrastElement(c, xPath, nodeDescription, doc, aLumCheckList.length, sText, sTextSize, textWeight, fgColor, bgColor, bBgImage, fgLum, bgLum, lRatio));
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
+                              (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetLuminosityCheckElements(frameDocument, frameDocument.body, aLumCheckList);
+            } else { // keep looking through current document
+              if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                tagName = c.tagName.toLowerCase();
+                if(tagName != 'script' && tagName != 'style' && tagName != 'option' && blr.W15yQC.fnElementHasOwnContent(c)) {
+                  aColors = blr.W15yQC.fnGetColorValues(c);
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  sText = blr.W15yQC.fnElementsOwnContent(c);
+                  if(aColors != null) {
+                    fgColor = [aColors[0], aColors[1], aColors[2]];
+                    bgColor = [aColors[3], aColors[4], aColors[5]];
+                    sTextSize = aColors[6];
+                    textWeight = aColors[7];
+                    bBgImage = aColors[8];
+                    //fgLum;
+                    //bgLum;
+                    lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
+                    aLumCheckList.push(new blr.W15yQC.contrastElement(c, xPath, nodeDescription, doc, aLumCheckList.length, sText, sTextSize, textWeight, fgColor, bgColor, bBgImage, fgLum, bgLum, lRatio));
+                  }
                 }
               }
+              blr.W15yQC.fnGetLuminosityCheckElements(doc, c, aLumCheckList);
             }
-            blr.W15yQC.fnGetLuminosityCheckElements(doc, c, aLumCheckList);
           }
         }
       }
@@ -4786,21 +4808,46 @@ ys: 'whys'
     
     fnGetImages: function (doc, rootNode, aImagesList) {
       var c, frameDocument, tagName, xPath, nodeDescription, effectiveLabel, role, box, width=null, height=null, title, alt, src, sARIALabel;
-      if (aImagesList == null) aImagesList = [];
+      if (aImagesList == null) { aImagesList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetImages(frameDocument, frameDocument.body, aImagesList);
-          } else { // keep looking through current document
-            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              tagName = c.tagName.toLowerCase();
-              switch (tagName) {
-                case 'area':
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetImages(frameDocument, frameDocument.body, aImagesList);
+            } else { // keep looking through current document
+              if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                tagName = c.tagName.toLowerCase();
+                switch (tagName) {
+                  case 'area':
+                    xPath = blr.W15yQC.fnGetElementXPath(c);
+                    nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                    effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                    role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                    box = c.getBoundingClientRect();
+                    if (box != null) {
+                      width = box.width;
+                      height = box.height;
+                    }
+                    title = null;
+                    if (c.hasAttribute('title')) { title = c.getAttribute('title'); }
+                    alt = null;
+                    if (c.hasAttribute('alt')) { alt = c.getAttribute('alt'); }
+                    src = null;
+                    if (c.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200); }
+                    sARIALabel = null;
+                    if (c.hasAttribute('aria-label') == true) {
+                      sARIALabel = c.getAttribute('aria-label');
+                    } else if (c.hasAttribute('aria-labelledby') == true) {
+                      sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
+                    }
+                    aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                    break;
+                case 'img':
+                  // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
                   xPath = blr.W15yQC.fnGetElementXPath(c);
                   nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                   effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
@@ -4811,74 +4858,50 @@ ys: 'whys'
                     height = box.height;
                   }
                   title = null;
-                  if (c.hasAttribute('title')) title = c.getAttribute('title');
+                  if (c.hasAttribute('title')) { title = c.getAttribute('title'); }
                   alt = null;
-                  if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
+                  if (c.hasAttribute('alt')) { alt = c.getAttribute('alt'); }
                   src = null;
-                  if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
+                  if (c.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200); }
                   sARIALabel = null;
                   if (c.hasAttribute('aria-label') == true) {
                     sARIALabel = c.getAttribute('aria-label');
                   } else if (c.hasAttribute('aria-labelledby') == true) {
                     sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
                   }
+                  blr.W15yQC.fnLog('Image el:'+effectiveLabel);
                   aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
                   break;
-              case 'img':
-                // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
-                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                box = c.getBoundingClientRect();
-                if (box != null) {
-                  width = box.width;
-                  height = box.height;
-                }
-                title = null;
-                if (c.hasAttribute('title')) title = c.getAttribute('title');
-                alt = null;
-                if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
-                src = null;
-                if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
-                sARIALabel = null;
-                if (c.hasAttribute('aria-label') == true) {
-                  sARIALabel = c.getAttribute('aria-label');
-                } else if (c.hasAttribute('aria-labelledby') == true) {
-                  sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
-                }
-                blr.W15yQC.fnLog('Image el:'+effectiveLabel);
-                aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
-                break;
-              case 'input': // TODO: QA This!
-                if (c.hasAttribute('type') && c.getAttribute('type').toLowerCase() == 'image') {
-                  // Document image: node, nodeDescription, doc, orderNumber, src, alt, title, ariaLabel
-                  xPath = blr.W15yQC.fnGetElementXPath(c);
-                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  title = null;
-                  effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
-                  box = c.getBoundingClientRect();
-                  if (box != null) {
-                    width = box.width;
-                    height = box.height;
+                case 'input': // TODO: QA This!
+                  if (c.hasAttribute('type') && c.getAttribute('type').toLowerCase() == 'image') {
+                    // Document image: node, nodeDescription, doc, orderNumber, src, alt, title, ariaLabel
+                    xPath = blr.W15yQC.fnGetElementXPath(c);
+                    nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                    title = null;
+                    effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                    box = c.getBoundingClientRect();
+                    if (box != null) {
+                      width = box.width;
+                      height = box.height;
+                    }
+                    if (c.hasAttribute('title')) { title = c.getAttribute('title'); }
+                    alt = null;
+                    if (c.hasAttribute('alt')) { alt = c.getAttribute('alt'); }
+                    src = null;
+                    if (c.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200); }
+                    sARIALabel = null;
+                    if (c.hasAttribute('aria-label') == true) {
+                      sARIALabel = c.getAttribute('aria-label');
+                    } else if (c.hasAttribute('aria-labelledby') == true) {
+                      sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
+                    }
+                    aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
                   }
-                  if (c.hasAttribute('title')) title = c.getAttribute('title');
-                  alt = null;
-                  if (c.hasAttribute('alt')) alt = c.getAttribute('alt');
-                  src = null;
-                  if (c.hasAttribute('src')) src = blr.W15yQC.fnCutoffString(c.getAttribute('src'), 200);
-                  sARIALabel = null;
-                  if (c.hasAttribute('aria-label') == true) {
-                    sARIALabel = c.getAttribute('aria-label');
-                  } else if (c.hasAttribute('aria-labelledby') == true) {
-                    sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
-                  }
-                  aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                  break;
                 }
-                break;
               }
+              blr.W15yQC.fnGetImages(doc, c, aImagesList);
             }
-            blr.W15yQC.fnGetImages(doc, c, aImagesList);
           }
         }
       }
@@ -4944,7 +4967,9 @@ ys: 'whys'
       if (aImagesList && aImagesList.length && aImagesList.length > 0) {
         if (aImagesList.length > 1) {
           sImagesSectionHeading = aImagesList.length + ' ' + blr.W15yQC.fnGetString('hrsImages');
-        } else sImagesSectionHeading = blr.W15yQC.fnGetString('hrs1Image');
+        } else {
+          sImagesSectionHeading = blr.W15yQC.fnGetString('hrs1Image');
+        }
       } else {
         sImagesSectionHeading = blr.W15yQC.fnGetString('hrsNoImages');
       }
@@ -4986,27 +5011,28 @@ ys: 'whys'
       if (aAccessKeysList == null) { aAccessKeysList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetAccessKeys(frameDocument, frameDocument.body, aAccessKeysList);
-          } else { // keep looking through current document
-            if (c.tagName && c.hasAttribute('accesskey') == true) {
-              if (blr.W15yQC.fnNodeIsHidden(c) == false) {
-                // Document accesskey
-                tagName = c.tagName.toLowerCase();
-                accessKey = c.getAttribute('accesskey');
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c);
-                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                aAccessKeysList.push(new blr.W15yQC.accessKey(c, xPath, nodeDescription, doc, aAccessKeysList.length, role, accessKey, effectiveLabel));
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetAccessKeys(frameDocument, frameDocument.body, aAccessKeysList);
+            } else { // keep looking through current document
+              if (c.tagName && c.hasAttribute('accesskey') == true) {
+                if (blr.W15yQC.fnNodeIsHidden(c) == false) {
+                  // Document accesskey
+                  tagName = c.tagName.toLowerCase();
+                  accessKey = c.getAttribute('accesskey');
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c);
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  aAccessKeysList.push(new blr.W15yQC.accessKey(c, xPath, nodeDescription, doc, aAccessKeysList.length, role, accessKey, effectiveLabel));
+                }
               }
+              blr.W15yQC.fnGetAccessKeys(doc, c, aAccessKeysList);
             }
-            blr.W15yQC.fnGetAccessKeys(doc, c, aAccessKeysList);
           }
         }
       }
@@ -5030,7 +5056,7 @@ ys: 'whys'
         'r': "Alt+R is used to open the Print Menu in IE.",
         's': "Alt+S is used to open the Safety Menu in IE and to read the Status Bar in the WindowEyes Screen-reader.",
         'z': "Alt+Z is used to open the Add to Favorites Menu in IE."
-      }
+      };
       if (aAccessKeysList != null && aAccessKeysList.length && aAccessKeysList.length > 0) {
         for (i = 0; i < aAccessKeysList.length; i++) {
           aAccessKeysList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aAccessKeysList[i].node, aDocumentsList);
@@ -5052,14 +5078,15 @@ ys: 'whys'
             aValuesDuplicated = [];
             aLabelsDuplicated = [];
             for (j = 0; j < aAccessKeysList.length; j++) {
-              if (i == j) continue;
-              ak2 = aAccessKeysList[j];
-              if (ak2 != null && ak2.accessKey != null) {
-                if (ak.accessKey == ak2.accessKey) {
-                  aValuesDuplicated.push(j+1);
-                }
-                if (blr.W15yQC.fnStringsEffectivelyEqual(ak.effectiveLabel, ak2.effectiveLabel)) {
-                  aLabelsDuplicated.push(j+1);
+              if (i != j) {
+                ak2 = aAccessKeysList[j];
+                if (ak2 != null && ak2.accessKey != null) {
+                  if (ak.accessKey == ak2.accessKey) {
+                    aValuesDuplicated.push(j+1);
+                  }
+                  if (blr.W15yQC.fnStringsEffectivelyEqual(ak.effectiveLabel, ak2.effectiveLabel)) {
+                    aLabelsDuplicated.push(j+1);
+                  }
                 }
               }
             }
@@ -5095,7 +5122,9 @@ ys: 'whys'
       if (aAccessKeysList && aAccessKeysList.length && aAccessKeysList.length > 0) {
         if (aAccessKeysList.length > 1) {
           sSectionHeading = aAccessKeysList.length + ' ' +blr.W15yQC.fnGetString('hrsAccessKeys');
-        } else sSectionHeading = blr.W15yQC.fnGetString('hrs1AccessKey');
+        } else {
+          sSectionHeading = blr.W15yQC.fnGetString('hrs1AccessKey');
+        }
       } else {
         sSectionHeading = blr.W15yQC.fnGetString('hrsNoAccessKeys');
       }
@@ -5138,34 +5167,35 @@ ys: 'whys'
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetHeadings(frameDocument, frameDocument.body, aHeadingsList);
-          } else { // keep looking through current document
-            if (c.tagName) {
-              tagName = c.tagName.toLowerCase();
-              switch (tagName) {
-              case 'h1':
-              case 'h2':
-              case 'h3':
-              case 'h4':
-              case 'h5':
-              case 'h6':
-                if (blr.W15yQC.fnNodeIsHidden(c) == false) {
-                  // Document heading
-                  headingLevel = tagName.substring(1);
-                  xPath = blr.W15yQC.fnGetElementXPath(c);
-                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                  text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
-                  aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, headingLevel, text));
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetHeadings(frameDocument, frameDocument.body, aHeadingsList);
+            } else { // keep looking through current document
+              if (c.tagName) {
+                tagName = c.tagName.toLowerCase();
+                switch (tagName) {
+                case 'h1':
+                case 'h2':
+                case 'h3':
+                case 'h4':
+                case 'h5':
+                case 'h6':
+                  if (blr.W15yQC.fnNodeIsHidden(c) == false) {
+                    // Document heading
+                    headingLevel = tagName.substring(1);
+                    xPath = blr.W15yQC.fnGetElementXPath(c);
+                    nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                    role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                    text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                    aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, headingLevel, text));
+                  }
+                  break;
                 }
-                break;
               }
+              blr.W15yQC.fnGetHeadings(doc, c, aHeadingsList);
             }
-            blr.W15yQC.fnGetHeadings(doc, c, aHeadingsList);
           }
         }
       }
@@ -5240,7 +5270,7 @@ ys: 'whys'
         previousHeadingLevel = 0;
 
         previousDocument = null;
-        if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) previousDocument = aHeadingsList[0].doc;
+        if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) { previousDocument = aHeadingsList[0].doc; }
         for (i = 0; i < aHeadingsList.length; i++) {
           sDoc = '';
           if (i == 0) {
@@ -5287,14 +5317,16 @@ ys: 'whys'
           } else if (aHeadingsList[i].warning) {
             li.setAttribute('class', 'warning');
           }
-          if (aHeadingsList[i].nodeDescription != null) li.setAttribute('title', aHeadingsList[i].nodeDescription);
+          if (aHeadingsList[i].nodeDescription != null) { li.setAttribute('title', aHeadingsList[i].nodeDescription); }
 
           if (aHeadingsList[i].level > previousHeadingLevel && previousHeadingLevel > 0) {
             list.push(rd.createElement('ul'));
-          } else while (aHeadingsList[i].level < previousHeadingLevel) {
-            list[list.length - 2].appendChild(list[list.length - 1]);
-            list.pop();
-            previousHeadingLevel--;
+          } else {
+            while (aHeadingsList[i].level < previousHeadingLevel) {
+              list[list.length - 2].appendChild(list[list.length - 1]);
+              list.pop();
+              previousHeadingLevel--;
+            }
           }
           list[list.length - 1].appendChild(li);
           previousHeadingLevel = parseInt(aHeadingsList[i].level,10);
@@ -5316,64 +5348,65 @@ ys: 'whys'
           role, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIALabelText, sARIADescriptionText, sStateDescription, sValue;
           
       bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls',false); 
-      if (aFormControlsList == null) aFormControlsList = [];
-      if (aFormsList == null) aFormsList = [];
+      if (aFormControlsList == null) { aFormControlsList = []; }
+      if (aFormsList == null) { aFormsList = []; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetFormControls(frameDocument, frameDocument.body, aDocumentsList, aFormsList, aFormControlsList);
-          } else {
-            if (c.tagName != null && c.tagName.toLowerCase() == 'form') {
-              sXPath = blr.W15yQC.fnGetElementXPath(c);
-              sFormDescription = blr.W15yQC.fnDescribeElement(c);
-              ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
-              sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              sName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
-              sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
-              sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
-              aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sName, sRole, sAction, sMethod));
-            } else if ((blr.W15yQC.fnIsFormControlNode(c) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(c))) && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              // Document the form control
-              xPath = blr.W15yQC.fnGetElementXPath(c);
-              sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
-              parentFormNode = blr.W15yQC.fnGetParentFormElement(c)
-              sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
-              role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              sTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-              sLegendText = '';
-              sLabelTagText = '';
-              sEffectiveLabelText = '';
-              if(blr.W15yQC.fnIsFormControlNode(c)) {
-                sLegendText = blr.W15yQC.fnGetLegendText(c);
-                sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c, doc);
-                sEffectiveLabelText = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
-              } else {
-                blr.W15yQC.fnLog("---In front of switch:"+c.tagName.toLowerCase());
-                switch(c.tagName.toLowerCase()) {
-                  case 'fieldset':
-                    sLabelTagText = blr.W15yQC.fnGetLegendText(c);
-                    break;
-                  case 'legend':                    
-                  case 'label':
-                  default:
-                    sLabelTagText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(c));
-                    break;
-                }
-              sEffectiveLabelText = sLabelTagText;
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Dig into frames!
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetFormControls(frameDocument, frameDocument.body, aDocumentsList, aFormsList, aFormControlsList);
+            } else {
+              if (c.tagName != null && c.tagName.toLowerCase() == 'form') {
+                sXPath = blr.W15yQC.fnGetElementXPath(c);
+                sFormDescription = blr.W15yQC.fnDescribeElement(c);
+                ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
+                sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                sName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
+                sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
+                sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
+                aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sName, sRole, sAction, sMethod));
+              } else if ((blr.W15yQC.fnIsFormControlNode(c) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(c))) && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                // Document the form control
+                xPath = blr.W15yQC.fnGetElementXPath(c);
+                sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                parentFormNode = blr.W15yQC.fnGetParentFormElement(c);
+                sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
+                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                sTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                sLegendText = '';
+                sLabelTagText = '';
+                sEffectiveLabelText = '';
+                if(blr.W15yQC.fnIsFormControlNode(c)) {
+                  sLegendText = blr.W15yQC.fnGetLegendText(c);
+                  sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c, doc);
+                  sEffectiveLabelText = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                } else {
+                  blr.W15yQC.fnLog("---In front of switch:"+c.tagName.toLowerCase());
+                  switch(c.tagName.toLowerCase()) {
+                    case 'fieldset':
+                      sLabelTagText = blr.W15yQC.fnGetLegendText(c);
+                      break;
+                    case 'legend':                    
+                    case 'label':
+                    default:
+                      sLabelTagText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(c));
+                      break;
+                  }
+                sEffectiveLabelText = sLabelTagText;
+              }
+                sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
+                sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
+                sStateDescription = blr.W15yQC.fnGetNodeState(c);
+                sName = c.getAttribute('name');
+                sValue = c.getAttribute('value');
+  
+                aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, role, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, sEffectiveLabelText, sStateDescription, sValue));
+              }
+              blr.W15yQC.fnGetFormControls(doc, c, aDocumentsList, aFormsList, aFormControlsList);
             }
-              sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
-              sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
-              sStateDescription = blr.W15yQC.fnGetNodeState(c);
-              sName = c.getAttribute('name');
-              sValue = c.getAttribute('value');
-
-              aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, role, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, sEffectiveLabelText, sStateDescription, sValue));
-            }
-            blr.W15yQC.fnGetFormControls(doc, c, aDocumentsList, aFormsList, aFormControlsList);
           }
         }
       }
@@ -5392,10 +5425,11 @@ ys: 'whys'
           aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
           aSameNames = [];
           for (j = 0; j < aFormsList.length; j++) {
-            if (i == j) continue;
-            // If it has a name, check that the name is unique compared to other forms in the same document
-            if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].ownerDocumentNumber == aFormsList[j].ownerDocumentNumber && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
-              aSameNames.push(j+1);
+            if (i != j) {
+              // If it has a name, check that the name is unique compared to other forms in the same document
+              if (aFormsList[i].name != null && aFormsList[j].name != null && aFormsList[i].ownerDocumentNumber == aFormsList[j].ownerDocumentNumber && aFormsList[i].name.toLowerCase() == aFormsList[j].name.toLowerCase()) {
+                aSameNames.push(j+1);
+              }
             }
           }
           if(aSameNames.length>0) {
@@ -5448,9 +5482,7 @@ ys: 'whys'
               aSoundsTheSame = [];
               
               for (j = 0; j < aFormControlsList.length; j++) {
-                if (j == i || blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==true) {
-                  continue;
-                } else {
+                if (j != i || blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==false) {
                   if (aFormControlsList[j].effectiveLabelText != null && aFormControlsList[j].effectiveLabelText.length > 0) {
                     if (blr.W15yQC.fnStringsEffectivelyEqual(aFormControlsList[i].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node),
                         aFormControlsList[j].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[j].node))) {
@@ -5565,7 +5597,9 @@ ys: 'whys'
       if (aFormsList && aFormsList.length && aFormsList.length > 0) {
         if (aFormsList.length > 1) {
           sFormsHeading = aFormsList.length + ' ' + blr.W15yQC.fnGetString('hrsForms');
-        } else sFormsHeading = blr.W15yQC.fnGetString('hrs1Form');
+        } else {
+          sFormsHeading = blr.W15yQC.fnGetString('hrs1Form');
+        }
       } else {
         sFormsHeading = blr.W15yQC.fnGetString('hrsNoForms');
       }
@@ -5610,7 +5644,9 @@ ys: 'whys'
       if (aFormControlsList && aFormControlsList.length && aFormControlsList.length > 0) {
         if (aFormControlsList.length > 1) {
           sFormControlsHeading = aFormControlsList.length + ' ' + blr.W15yQC.fnGetString('hrsFormsCtrls');
-        } else sFormControlsHeading = blr.W15yQC.fnGetString('hrs1FormCtrl');
+        } else {
+          sFormControlsHeading = blr.W15yQC.fnGetString('hrs1FormCtrl');
+        }
       } else {
         sFormControlsHeading = blr.W15yQC.fnGetString('hrsNoFormCtrls');
       }
@@ -5626,26 +5662,26 @@ ys: 'whys'
         bHasStateDescription = false;
         for (i = 0; i < aFormControlsList.length; i++) {
           ak = aFormControlsList[i];
-          if (ak.legendText != null && ak.legendText.length > 0) bHasLegend = true;
-          if (ak.title != null && ak.title.length > 0) bHasTitle = true;
-          if (ak.role != null && ak.role.length > 0) bHasRole = true;
-          if (ak.value != null && ak.value.length > 0) bHasValue = true;
-          if (ak.ARIALabelText != null && ak.ARIALabelText.length > 0) bHasARIALabel = true;
-          if (ak.ARIADescriptionText != null && ak.ARIADescriptionText.length > 0) bHasARIADescription = true;
-          if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
+          if (ak.legendText != null && ak.legendText.length > 0) { bHasLegend = true; }
+          if (ak.title != null && ak.title.length > 0) { bHasTitle = true; }
+          if (ak.role != null && ak.role.length > 0) { bHasRole = true; }
+          if (ak.value != null && ak.value.length > 0) { bHasValue = true; }
+          if (ak.ARIALabelText != null && ak.ARIALabelText.length > 0) { bHasARIALabel = true; }
+          if (ak.ARIADescriptionText != null && ak.ARIADescriptionText.length > 0) { bHasARIADescription = true; }
+          if (ak.stateDescription != null && ak.stateDescription.length > 0) { bHasStateDescription = true; }
         }
 
         aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
-        if (bHasLegend) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend'));
+        if (bHasLegend) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend')); }
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
-        if (bHasTitle) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
-        if (bHasARIALabel) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+        if (bHasTitle) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
+        if (bHasARIALabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
-        if (bHasARIADescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIADescription'));
+        if (bHasARIADescription) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIADescription')); }
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHName'));
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHValue'));
-        if (bHasStateDescription) aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState'));
+        if (bHasStateDescription) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState')); }
         aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
         table = rd.createElement('table');
@@ -5664,15 +5700,15 @@ ys: 'whys'
             sClass = 'warning';
           }
           aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
-          if (bHasLegend) aTableCells.push(fce.legendText);
+          if (bHasLegend) { aTableCells.push(fce.legendText); }
           aTableCells.push(fce.labelTagText);
-          if (bHasTitle) aTableCells.push(fce.title);
-          if (bHasARIALabel) aTableCells.push(fce.ARIALabelText);
+          if (bHasTitle) { aTableCells.push(fce.title); }
+          if (bHasARIALabel) { aTableCells.push(fce.ARIALabelText); }
           aTableCells.push(fce.effectiveLabelText);
-          if (bHasARIADescription) aTableCells.push(fce.ARIADescriptionText);
+          if (bHasARIADescription) { aTableCells.push(fce.ARIADescriptionText); }
           aTableCells.push(fce.name);
           aTableCells.push(fce.value);
-          if (bHasStateDescription) aTableCells.push(fce.stateDescription);
+          if (bHasStateDescription) { aTableCells.push(fce.stateDescription); }
           aTableCells.push(sNotes);
 
           blr.W15yQC.fnAppendTableRow(rd, tbody, aTableCells, sClass);
@@ -5694,36 +5730,37 @@ ys: 'whys'
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
-          } else { // keep looking through current document
-            if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              if(c.tagName.toLowerCase()=='a') {  // document the link
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
-                title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-                target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
-                href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
-                sState = blr.W15yQC.fnGetNodeState(c);
-                aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
-              } else if(c.tagName.toLowerCase()=='area') {
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
-                title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-                target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
-                href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
-                sState = blr.W15yQC.fnGetNodeState(c);
-                aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
+            } else { // keep looking through current document
+              if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                if(c.tagName.toLowerCase()=='a') {  // document the link
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                  title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                  target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                  href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                  sState = blr.W15yQC.fnGetNodeState(c);
+                  aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+                } else if(c.tagName.toLowerCase()=='area') {
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
+                  title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                  target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
+                  href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
+                  sState = blr.W15yQC.fnGetNodeState(c);
+                  aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
+                }
               }
+              blr.W15yQC.fnGetLinks(doc, c, aLinksList);
             }
-            blr.W15yQC.fnGetLinks(doc, c, aLinksList);
           }
         }
       }
@@ -5793,9 +5830,7 @@ ys: 'whys'
           aDiffTextSameHref = [];
 
           for (j = 0; j < aLinksList.length; j++) {
-            if (j == i) {
-              continue;
-            } else {
+            if (j != i) {
               hrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL,aLinksList[i].href, aLinksList[j].doc.URL,aLinksList[j].href);
               bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text,aLinksList[j].text);
               if (aLinksList[j].text && aLinksList[j].text.length > 0) {
@@ -5813,7 +5848,7 @@ ys: 'whys'
                     aSameHrefAndOnclick.push(j+1);
                   }
                 } else { // unless javascript:;, #, javascript:void(0)
-                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) aDiffTextSameHref.push(j+1);
+                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) { aDiffTextSameHref.push(j+1); }
                 }
               }
             }
@@ -5873,7 +5908,7 @@ ys: 'whys'
                       ((aLinksList[j].node.hasAttribute('id') && aLinksList[j].node.getAttribute('id') == sTargetId) ||
                        (aLinksList[j].node.hasAttribute('name') && aLinksList[j].node.getAttribute('name') == sTargetId))) {
                     aTargetLinksList.push(j + 1);
-                    if(targetNode===aLinksList[j].node) iTargetedLink=j+1; // Note which one actually was targeted
+                    if(targetNode===aLinksList[j].node) { iTargetedLink=j+1; } // Note which one actually was targeted
                   }
                 }
                 if(iTargetedLink != null) { // getElementById returned a link in the list
@@ -5986,7 +6021,9 @@ ys: 'whys'
       if (aLinksList && aLinksList.length && aLinksList.length > 0) {
         if (aLinksList.length > 1) {
           sLinksHeading = aLinksList.length + ' '+blr.W15yQC.fnGetString('hrsLinks');
-        } else sLinksHeading = blr.W15yQC.fnGetString('hrs1Link');
+        } else {
+          sLinksHeading = blr.W15yQC.fnGetString('hrs1Link');
+        }
       } else {
         sLinksHeading = blr.W15yQC.fnGetString('hrsNoLinks');
       }
@@ -6029,69 +6066,70 @@ ys: 'whys'
       if (nestingDepth == null) { nestingDepth = 0; }
 
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
+        if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType !== 1) continue; // Only pay attention to element nodes
-          if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-            // get frame contents
-            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnGetTables(frameDocument, frameDocument.body, aTablesList, null, nestingDepth);
-          } else { // keep looking through current document
-            if (c.tagName) {
-              tagName = c.tagName.toLowerCase();
-              if (tagName == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-                // Document table
-                if(inTable != null || nestingDepth>0) {
-                  nestingDepth += 1;
-                }
+          if (c.nodeType == 1) { // Only pay attention to element nodes
+            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              // get frame contents
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnGetTables(frameDocument, frameDocument.body, aTablesList, null, nestingDepth);
+            } else { // keep looking through current document
+              if (c.tagName) {
                 tagName = c.tagName.toLowerCase();
-                xPath = blr.W15yQC.fnGetElementXPath(c);
-                nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-                tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(c, 'summary', null));
-                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                inTable = aTablesList.length;
-                aTablesList.push(new blr.W15yQC.table(c, xPath, nodeDescription, doc, aTablesList.length, role, nestingDepth, title, tableSummary));
-                if(tableSummary != null && tableSummary.length>0) {
-                  aTablesList[inTable].isDataTable=true;
-                }
-              } else if(inTable != null) {
-                switch(tagName) {
-                  case 'th':
+                if (tagName == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                  // Document table
+                  if(inTable != null || nestingDepth>0) {
+                    nestingDepth += 1;
+                  }
+                  tagName = c.tagName.toLowerCase();
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
+                  tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(c, 'summary', null));
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  inTable = aTablesList.length;
+                  aTablesList.push(new blr.W15yQC.table(c, xPath, nodeDescription, doc, aTablesList.length, role, nestingDepth, title, tableSummary));
+                  if(tableSummary != null && tableSummary.length>0) {
                     aTablesList[inTable].isDataTable=true;
-                    aTablesList[inTable].bHasTHCells = true;
-                    if(c.hasAttribute('rowspan') || c.hasAttribute('colspan')) {
-                      aTablesList[inTable].isComplex=true;
-                    }
-                    break;
-                  case 'caption':
-                    aTablesList[inTable].isDataTable=true;
-                    aTablesList[inTable].bHasCaption = true;
-                    if(aTablesList[inTable].caption == null) {
-                      aTablesList[inTable].caption = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(c));
-                    } else {
-                      blr.W15yQC.fnAddNote(aTablesList[inTable], 'tblMultipleCaptions'); // TODO: QA THIS
-                    }
-                    break;
-                  case 'td':
-                    if(c.hasAttribute('rowspan') || c.hasAttribute('colspan')) {
-                      aTablesList[inTable].isComplex=true;
-                    }
-                    if(c.hasAttribute('headers')) {
+                  }
+                } else if(inTable != null) {
+                  switch(tagName) {
+                    case 'th':
                       aTablesList[inTable].isDataTable=true;
-                      aTablesList[inTable].bHasHeadersAttr = true;
-                    }
-                    break;
-                  case 'tr':
-                    break;
+                      aTablesList[inTable].bHasTHCells = true;
+                      if(c.hasAttribute('rowspan') || c.hasAttribute('colspan')) {
+                        aTablesList[inTable].isComplex=true;
+                      }
+                      break;
+                    case 'caption':
+                      aTablesList[inTable].isDataTable=true;
+                      aTablesList[inTable].bHasCaption = true;
+                      if(aTablesList[inTable].caption == null) {
+                        aTablesList[inTable].caption = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(c));
+                      } else {
+                        blr.W15yQC.fnAddNote(aTablesList[inTable], 'tblMultipleCaptions'); // TODO: QA THIS
+                      }
+                      break;
+                    case 'td':
+                      if(c.hasAttribute('rowspan') || c.hasAttribute('colspan')) {
+                        aTablesList[inTable].isComplex=true;
+                      }
+                      if(c.hasAttribute('headers')) {
+                        aTablesList[inTable].isDataTable=true;
+                        aTablesList[inTable].bHasHeadersAttr = true;
+                      }
+                      break;
+                    case 'tr':
+                      break;
+                  }
                 }
               }
             }
-          }
-          blr.W15yQC.fnGetTables(doc, c, aTablesList, inTable, nestingDepth);
-          if(inTable != null && c.tagName.toLowerCase() == 'table') {
-            inTable = null;
-            if(nestingDepth>0) nestingDepth += -1;
+            blr.W15yQC.fnGetTables(doc, c, aTablesList, inTable, nestingDepth);
+            if(inTable != null && c.tagName.toLowerCase() == 'table') {
+              inTable = null;
+              if(nestingDepth>0) { nestingDepth += -1; }
+            }
           }
         }
       }
@@ -6187,12 +6225,12 @@ ys: 'whys'
                   tagName = node.tagName.toLowerCase();
                   switch(tagName) {
                     case 'thead':
-                      if(bHasThead) bHasMultipleTheads = true;
+                      if(bHasThead) { bHasMultipleTheads = true; }
                       bHasThead = true;
                       bInThead = true;
                       break;
                     case 'tbody':
-                      if(bHasTbody) bHasMultipleTbodys = true;
+                      if(bHasTbody) { bHasMultipleTbodys = true; }
                       bHasTbody = true;
                       bInTbody = true;
                       break;
@@ -6341,7 +6379,7 @@ ys: 'whys'
                             // rowspan colision with rowspan from previous row
                             blr.W15yQC.fnAddNote(aTablesList[i], 'tblRowspanRowspanColision', [rowCount,columnsInThisRow]); //
                           }
-                          if(columnRowSpans[columnsInThisRow] < rowSpanValue) columnRowSpans[columnsInThisRow] = rowSpanValue;
+                          if(columnRowSpans[columnsInThisRow] < rowSpanValue) { columnRowSpans[columnsInThisRow] = rowSpanValue; }
                           blr.W15yQC.fnLog(aTablesList[i].caption+' rc:'+rowCount+' col:'+columnsInThisRow+' rowspan:'+rowSpanValue);
                           columnsInThisRow++;
                           colSpanValue--;
@@ -6393,7 +6431,7 @@ ys: 'whys'
                         columnsInRow.push(columnsInThisRow);
                         bInTableRow = false;
                         for(crsIndex=0;crsIndex<columnRowSpans.length;crsIndex++) {
-                          if(columnRowSpans[crsIndex]>0) columnRowSpans[crsIndex]--;
+                          if(columnRowSpans[crsIndex]>0) { columnRowSpans[crsIndex]--; }
                         }
                         break;
 
@@ -6439,11 +6477,11 @@ ys: 'whys'
 
         if(aTablesList[i].isDataTable == true) { // Looks like it is a data table
           sWhyDataTable='';
-          if(aTablesList[i].bHasTHCells == true) sWhyDataTable = 'Has TH Cells';
-          if(aTablesList[i].bHasHeadersAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', '); 
-          if(aTablesList[i].bHasScopeAttr == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has scope attributes',', ');
-          if(aTablesList[i].bHasCaption == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a caption',', ');
-          if(aTablesList[i].node.hasAttribute('summary') == true) sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a summary',', ');
+          if(aTablesList[i].bHasTHCells == true) { sWhyDataTable = 'Has TH Cells'; }
+          if(aTablesList[i].bHasHeadersAttr == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', '); }
+          if(aTablesList[i].bHasScopeAttr == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has scope attributes',', '); }
+          if(aTablesList[i].bHasCaption == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a caption',', '); }
+          if(aTablesList[i].node.hasAttribute('summary') == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a summary',', '); }
           
           blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsDataTable', [sWhyDataTable+'.']); //
           // Warn that they should check if the table needs either a caption or a summary
@@ -6516,7 +6554,9 @@ ys: 'whys'
       if (aTablesList && aTablesList.length && aTablesList.length > 0) {
         if (aTablesList.length > 1) {
           sTablesHeading = aTablesList.length + ' ' + blr.W15yQC.fnGetString('hrsTables');
-        } else sTablesHeading = blr.W15yQC.fnGetString('hrs1Table');
+        } else {
+          sTablesHeading = blr.W15yQC.fnGetString('hrs1Table');
+        }
       } else {
         sTablesHeading = blr.W15yQC.fnGetString('hrsNoTables');
       }
@@ -6566,7 +6606,6 @@ ys: 'whys'
       var aDocumentsList;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale());
-      blr.W15yQC.userLocale = Application.prefs.getValue('general.useragent.locale','');
 
       aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
       blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
@@ -6658,7 +6697,7 @@ ys: 'whys'
         blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
-        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
+        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) { blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList); }
         blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList);
         blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList);
@@ -6723,8 +6762,8 @@ ys: 'whys'
         };
       }
       if (doc != null) {
-        if (rootNode == null) rootNode = doc.body;
-        if (appendNode == null) appendNode = rd.body;
+        if (rootNode == null) { rootNode = doc.body; }
+        if (appendNode == null) { appendNode = rd.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if(c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
             if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
@@ -6769,7 +6808,7 @@ ys: 'whys'
             }
           } else {
             node = rd.importNode(c, true);
-            if(node.removeAttribute) node.removeAttribute('style');
+            if(node.removeAttribute) { node.removeAttribute('style'); }
             appendNode.appendChild(node); //alert('appending:'+c.nodeName+' to:'+appendNode.tagName);
             blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
           }

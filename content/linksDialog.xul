@@ -13,8 +13,8 @@
       onload="aResults = blr.W15yQC.LinksDialog.init(this)">
    <xul:script>
       var aResults = null;
+			blr=this.arguments[0];
    </xul:script>
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/linksDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="700" width="900">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
@@ -94,6 +94,10 @@
 	 <xul:button id="button-generateHTMLReport"
 		 label="View Report"
 		 oncommand="blr.W15yQC.LinksDialog.generateReportHTML(aResults);"
+		 accesskey=""/>
+	 <xul:button id="button-showInFirebug"
+		 label="Show in Firebug"
+		 oncommand="blr.W15yQC.LinksDialog.showInFirebug(aResults);"
 		 accesskey=""/>
          <xul:spacer flex="1"/>
          <xul:button id="button-activate"
