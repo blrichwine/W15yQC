@@ -291,7 +291,7 @@ blr.W15yQC.LuminosityCheckDialog = {
             var ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
             var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));
             var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
-            var newWin=window.openDialog('chrome://W15yQC/content/contrastDialog.xul', 'contrastToolDialog', 'chrome,resizable=yes,centerscreen', fgC,bgC);
+            var newWin=window.openDialog('chrome://W15yQC/content/contrastDialog.xul', 'contrastToolDialog', 'chrome,resizable=yes,centerscreen', blr, fgC, bgC);
         }        
     },
     

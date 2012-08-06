@@ -48,9 +48,9 @@ blr.W15yQC.ContrastDialog = {
     color2enabled: false,
     
     init: function(dialog) {
-        if(dialog!=null && dialog.arguments != null && dialog.arguments.length>1) {
-            blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(dialog.arguments[0]);
-            blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(dialog.arguments[1]);
+        if(dialog!=null && dialog.arguments != null && dialog.arguments.length>2) {
+            blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(dialog.arguments[1]);
+            blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(dialog.arguments[2]);
         }
         blr.W15yQC.ContrastDialog.fnColor1SliderChange();
         blr.W15yQC.ContrastDialog.fnColor2SliderChange();
@@ -59,7 +59,18 @@ blr.W15yQC.ContrastDialog = {
     },
     
     forceMinSize: function(dialog) {
-        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<940 || dialog.outerHeight!=595)) dialog.resizeTo(Math.max(940,dialog.outerWidth),595);
+        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<940 || dialog.outerHeight!=610)) { dialog.resizeTo(Math.max(940,dialog.outerWidth),610); }
+        var gbc1=document.getElementById('gbColor1');
+        var resultsC1BG=document.getElementById('resultsC1BG'); 
+        if(gbc1!=null && resultsC1BG!=null) {
+            var rect = gbc1.getBoundingClientRect();
+            if(rect!=null) {
+                var width=rect.right-rect.left;
+                if(width>50) {
+                    resultsC1BG.setAttribute('style','max-width:'+width.toString()+'px');
+                }
+            }
+        }
     },
     
     fnGetColorString: function(ic) {
@@ -437,6 +448,17 @@ blr.W15yQC.ContrastDialog = {
         document.getElementById(id2).style.backgroundColor = (lRatio >= 3) ? '#FDFDFD' : '#FFA6A6';
         document.getElementById(id3).style.backgroundColor = (lRatio >= 7) ? '#FDFDFD' : '#FFA6A6';
         document.getElementById(id4).style.backgroundColor = (lRatio >= 4.5) ? '#FDFDFD' : '#FFA6A6';
+    },
+ 
+    addSecondColor: function() {
+        var gbColor2=document.getElementById('gbColor2');
+        var resultsC1C2=document.getElementById('resultsC1C2');
+        var resultsC2BG=document.getElementById('resultsC2BG');
+        var buttonaddColor=document.getElementById('button-addColor');
+        gbColor2.hidden=false;
+        resultsC1C2.hidden=false;
+        resultsC2BG.hidden=false;
+        buttonaddColor.hidden=true;
     },
     
     cleanup: function() {

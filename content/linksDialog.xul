@@ -12,7 +12,7 @@
       buttons="" 
       onload="blr.W15yQC.LinksDialog.init(this)">
    <xul:script>
-			blr=this.arguments[0];
+			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/linksDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="700" width="900">

@@ -11,7 +11,9 @@
       ondialogcancel="blr.W15yQC.LicenseDialog.cleanup(false);return true"
       buttons="" 
       onload="blr.W15yQC.LicenseDialog.init(this)">
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/licenseDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="400" width="500">
 			<xul:label control="license-text" value="License Agreement:" style="margin: 5px 0 0 3px"/>		

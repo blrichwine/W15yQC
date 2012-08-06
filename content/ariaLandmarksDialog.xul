@@ -12,7 +12,7 @@
       buttons="" 
       onload="blr.W15yQC.LandmarksDialog.init(this)">
    <xul:script>
-			blr=this.arguments[0];
+			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/ariaLandmarksDialog.js"/>

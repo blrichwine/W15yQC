@@ -12,7 +12,9 @@
 			onresize="blr.W15yQC.ContrastDialog.forceMinSize(this)"
       buttons="," 
       onload="blr.W15yQC.ContrastDialog.init(this)">
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/contrastDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="494" width="900">
 			<xul:hbox id="box-button" align="right">
@@ -54,7 +56,7 @@
 							 <xul:textbox value="100" observes="sBrightness1" readonly="true" disabled="true" size="3" style="-moz-appearance: none;border:none;padding:1px;text-align:right;max-width:40px;min-width:35px"/>
 						</xul:hbox>
 				 </xul:groupbox>
-				 <xul:groupbox id="gbColor2" align="stretch" flex="1">
+				 <xul:groupbox id="gbColor2" align="stretch" flex="1" hidden="true">
 						<xul:caption label="Color 2:" style="margin-top:0;padding-top:0"/>
 						<xul:label control="tbHTMLColor2" value="HTML Color:" style="margin: 0px 0 0 0px"/>
 						<xul:hbox style="margin:0">
@@ -134,7 +136,7 @@
 
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 				 <xul:hbox>
-						<xul:groupbox id="resultsC1BG" align="stretch" flex="1">
+						<xul:groupbox id="resultsC1BG" align="stretch" flex="1" style="max-width:400px">
 							 <xul:caption label="Color 1 - Background Results:"/>
 							 <xul:hbox align="right">
 									<xul:iframe id="iframeC1BG" src="about:blank" type="content" height="55" flex="1"/>
@@ -160,7 +162,7 @@
 									<xul:textbox id="C1BGWCAG2AAACompliant18p" readonly="true" tabindex="-1" size="4" style="-moz-appearance: none;border:none;padding:1px;text-align:right;max-width:40px;min-width:35px"/>
 							 </xul:hbox>
 						</xul:groupbox>
-						<xul:groupbox id="resultsC2BG" align="stretch" flex="1">
+						<xul:groupbox id="resultsC2BG" align="stretch" flex="1" hidden="true">
 							 <xul:caption label="Color 2 - Background Results:"/>
 							 <xul:hbox align="right">
 									<xul:iframe id="iframeC2BG" src="about:blank" type="content" height="55" flex="1"/>
@@ -186,7 +188,7 @@
 									<xul:textbox id="C2BGWCAG2AAACompliant18p" readonly="true" tabindex="-1" size="4" style="-moz-appearance: none;border:none;padding:1px;text-align:right;max-width:40px;min-width:35px"/>
 							 </xul:hbox>
 						</xul:groupbox>
-						<xul:groupbox id="resultsC1C2" align="stretch" flex="1">
+						<xul:groupbox id="resultsC1C2" align="stretch" flex="1" hidden="true">
 							 <xul:caption label="Color 1 - Color 2 Results:"/>
 							 <xul:hbox align="right">
 									<xul:iframe id="iframeC1C2" src="about:blank" type="content" height="55" flex="1" style="overflow:hidden"/>
@@ -214,5 +216,14 @@
 						</xul:groupbox>
 				 </xul:hbox>
       </xul:vbox>
+				 <xul:hbox>
+						<xul:button id="button-addColor"
+							label="Add Second Color"
+							oncommand="blr.W15yQC.ContrastDialog.addSecondColor();"/>
+						<xul:spacer flex="1"/>
+						<xul:button id="button-close"
+							label="Close"
+							oncommand="window.close();"/>
+				 </xul:hbox>
    </xul:vbox>
 </xul:dialog>
