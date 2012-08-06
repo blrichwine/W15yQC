@@ -13,8 +13,8 @@
       onload="aResults = blr.W15yQC.ImagesDialog.init(this)">
    <xul:script>
       var aResults = null;
+			var blr=this.arguments[0];
    </xul:script>
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/imagesDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
