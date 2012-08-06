@@ -41,7 +41,7 @@
             <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Remove Styles" 
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
             <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="s" label="Contrast Checker" 
-                      oncommand="blr.W15yQC.openDialog('lumCheck');"/>
+                      oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',Firebug);}}catch(ex){blr.W15yQC.openDialog('lumCheck',Firebug);}"/>
           </menupopup>
         </menu>
         <menuseparator/>

@@ -186,6 +186,7 @@ blr.W15yQC.AccessKeyDialog = {
                     //blr.W15yQC.AccessKeyDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.AccessKeyDialog.nodeToInspect);});
                     //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
                     //blr.W15yQC.AccessKeyDialog.FirebugO.
+                    for(var i=0;i<blr.W15yQC.AccessKeyDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.AccessKeyDialog.aDocumentsList[i].doc);
                     blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node.ownerDocument.defaultView.focus();
                     void function(arg){blr.W15yQC.AccessKeyDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.AccessKeyDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
                     //blr.W15yQC.showInFirebug(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node,blr.W15yQC.AccessKeyDialog.firebugO);

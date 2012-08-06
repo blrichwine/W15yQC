@@ -146,7 +146,6 @@ blr.W15yQC.LinksDialog = {
         
         blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList);
         if(blr.W15yQC.LinksDialog.FirebugO == null || !blr.W15yQC.LinksDialog.FirebugO.Inspector ) { document.getElementById('button-showInFirebug').hidden=true; }
-        return [aDocumentsList, aLinksList];
     },
     
     cleanup: function() {
@@ -217,6 +216,9 @@ blr.W15yQC.LinksDialog = {
                     //blr.W15yQC.LinksDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.LinksDialog.nodeToInspect);});
                     //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
                     //blr.W15yQC.LinksDialog.FirebugO.
+                    if(blr.W15yQC.LinksDialog.aDocumentsList != null) {
+                        for(var i=0;i<blr.W15yQC.LinksDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LinksDialog.aDocumentsList[i].doc);
+                    }
                     blr.W15yQC.LinksDialog.aLinksList[selectedRow].node.ownerDocument.defaultView.focus();
                     void function(arg){blr.W15yQC.LinksDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LinksDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node);
                     //blr.W15yQC.showInFirebug(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node,blr.W15yQC.LinksDialog.firebugO);
