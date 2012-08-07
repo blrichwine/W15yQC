@@ -909,6 +909,8 @@ ys: 'whys'
       frmCtrlForForValueIsHidden: [1,1,false,null],
       frmCtrlForValueEmpty: [2,0,false,null],
       frmCtrlImplicitLabel: [2,0,false,null],
+      frmCtrlLegendWOFieldset: [2,0,false,null],
+      frmCtrlFieldsetWOLegend: [2,0,false,null],
       frmCtrlIDNotValid: [2,0,false,null],
       frmCtrlIDNotUnique: [2,0,false,null],
 
@@ -1127,6 +1129,16 @@ ys: 'whys'
         }
       }
       return blr.W15yQC.fnCleanSpaces(sText);
+    },
+    
+    fnElementIsChildOf: function(childNode, sParentTagName) {
+      if(childNode != null && childNode.parentNode && childNode.parentNode != null && sParentTagName != null) {
+        sParentTagName=sParentTagName.toLowerCase();
+        var node=childNode.parentNode;
+        while(node!=null && node.tagName && node.tagName.toLowerCase() !== sParentTagName) { node=node.parentNode;}
+         if (node != null && node.tagName && node.tagName.toLowerCase()==sParentTagName) return true;
+      }
+      return false;
     },
     
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
@@ -5482,7 +5494,7 @@ ys: 'whys'
               aSoundsTheSame = [];
               
               for (j = 0; j < aFormControlsList.length; j++) {
-                if (j != i || blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==false) {
+                if (j != i && blr.W15yQC.fnIsLabelControlNode(aFormControlsList[j].node)==false) {
                   if (aFormControlsList[j].effectiveLabelText != null && aFormControlsList[j].effectiveLabelText.length > 0) {
                     if (blr.W15yQC.fnStringsEffectivelyEqual(aFormControlsList[i].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[i].node),
                         aFormControlsList[j].effectiveLabelText.toLowerCase()+blr.W15yQC.fnJAWSAnnouncesControlAs(aFormControlsList[j].node))) {
@@ -5575,7 +5587,17 @@ ys: 'whys'
             } else {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); //
             }
+          } else if(nodeTagName == 'legend') {
+            if(blr.W15yQC.fnElementIsChildOf(aFormControlsList[i].node,'fieldset')==false) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLegendWOFieldset'); 
+            }
+          } else if(nodeTagName == 'fieldset') {
+            var legels=aFormControlsList[i].node.getElementsByTagName('legend');
+            if(legels==null || legels.length!=1) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlFieldsetWOLegend'); 
+            }
           }
+          
           aFormControlsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aFormControlsList[i].node, aFormControlsList[i].doc, aFormControlsList[i]);
           if(aFormControlsList[i].node != null && aFormControlsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aFormControlsList[i].node.getAttribute('id'))==false) {
