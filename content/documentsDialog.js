@@ -32,7 +32,6 @@
  * 
  */
 if (!blr) { var blr = {}; }
-if (!blr.a11yTools) blr.a11yTools = {};
 
 /*
  * Object:  QuickW15yDocumentsDialog
@@ -101,7 +100,6 @@ blr.W15yQC.DocumentsDialog = {
     init: function(dialog) {
         blr.W15yQC.DocumentsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.DocumentsDialog.aDocumentsList);
-        
         blr.W15yQC.DocumentsDialog.fnPopulateTree(blr.W15yQC.DocumentsDialog.aDocumentsList);
     },
     

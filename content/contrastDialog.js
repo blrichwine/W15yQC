@@ -32,7 +32,6 @@
  * 
  */
 if (!blr) { var blr = {}; }
-if (!blr.a11yTools) blr.a11yTools = {};
 
 /*
  * Object:  QuickW15yContrastDialog
