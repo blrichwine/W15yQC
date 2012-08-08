@@ -56,7 +56,8 @@
           </menupopup>
         </menu>
         <menuseparator/>
-        <menuitem id="W15yQC_menuEntry_options" label="Options" />
+        <menuitem id="W15yQC_menuEntry_options" label="Options"
+                  oncommand="blr.W15yQC.openDialog('options');"/>
       </menupopup>
     </menu>
   </menupopup>

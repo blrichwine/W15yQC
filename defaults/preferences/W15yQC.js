@@ -5,5 +5,5 @@ pref("extensions.W15yQC.HTMLReport.collapsedByDefault", false);
 pref("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", false);
 pref("extensions.W15yQC.getElements.includeLabelElementsInFormControls", false);
 pref("extensions.W15yQC.getElements.includeHiddenElements", false);
-pref("extensions.W15yQC.testContrast.MinSpec","WCAG2AA");
-pref("extensions.W15yQC.rulesToExcludeList","");
+pref("extensions.W15yQC.testContrast.MinSpec", 'WCAG2 AA');
+pref("extensions.W15yQC.rulesToExcludeList", "");

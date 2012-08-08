@@ -15,12 +15,16 @@ treechildren::-moz-tree-row(warning) {
   background-color: #ffc900;
 }
 
+treechildren::-moz-tree-cell-text(selected){
+  font-weight: 500;
+}
+
 treechildren::-moz-tree-row(failed, selected){
-  background-color:#e66f6f;
+  background-color:#8A4343;
 }
 
 treechildren::-moz-tree-row(warning, selected) {
-  background-color: #f1bd00;
+  background-color: #6b5600;
 }
 
 treechildren::-moz-tree-cell(center) {

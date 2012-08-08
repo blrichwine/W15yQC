@@ -55,8 +55,8 @@
 						<label control="mlCCS" value="Color Contrast Spec:" style="font-weight: bold;padding-top:5px"/>
 						<menulist id="mlCCS" preference="testContrastMinSpec">
 							<menupopup>
-								<menuitem label="WCAG 2 AA" value="WCAG2AA"/>
-								<menuitem label="WCAG 2 AAA" value="WCAG2AAA"/>
+								<menuitem label="WCAG 2 AA" value="WCAG2 AA"/>
+								<menuitem label="WCAG 2 AAA" value="WCAG2 AAA"/>
 							</menupopup>
 						</menulist>
 					</hbox>

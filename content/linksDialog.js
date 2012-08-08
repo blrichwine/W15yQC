@@ -137,6 +137,7 @@ blr.W15yQC.LinksDialog = {
     },
     
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.LinksDialog.FirebugO=dialog.arguments[1];
         blr.W15yQC.LinksDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LinksDialog.aDocumentsList);

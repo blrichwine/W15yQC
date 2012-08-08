@@ -41,7 +41,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     FirebugO: null,
     aDocumentsList: null,
     aLumCheckList: null,
-    
+    iLastSelectedRow: 0,
     fnPopulateTree: function(aDocumentsList, aLumCheckList) {
         if(aDocumentsList != null && aLumCheckList != null && aLumCheckList.length && aLumCheckList.length > 0) {
             var tbc = document.getElementById('treeboxChildren');
@@ -143,6 +143,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
         
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.LuminosityCheckDialog.FirebugO=dialog.arguments[1];
         blr.W15yQC.LuminosityCheckDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LuminosityCheckDialog.aDocumentsList); //http://stackoverflow.com/questions/1030747/how-to-set-a-xulrunner-main-windows-minimum-size
@@ -221,13 +222,30 @@ blr.W15yQC.LuminosityCheckDialog = {
         } else {
             sMeetsLimitText='just meets AA compliance.';
         }
-        var sLimitMsg = 'For text that is '+sTextDescription+', the minimum required contrast ratio to meet WCAG 2.0 AA compliance is: '+AALimit+
+        
+        var sLimitMsg;
+        var sSpec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2 AA');
+        if(sSpec=='WCAG2 AA') {
+            if(lRatio<AALimit) {
+                sLimitMsg='Failed to meet';
+            } else {
+                sLimitMsg='Meets'
+            }
+        } else {
+            if(lRatio<AAALimit) {
+                sLimitMsg='Failed to meet';
+            } else {
+                sLimitMsg='Meets'
+            }
+        }
+        
+        sLimitMsg += ' '+sSpec+': For text that is '+sTextDescription+', the minimum required contrast ratio to meet WCAG 2.0 AA compliance is: '+AALimit+
         ":1, and to meet AAA compliance is: "+AAALimit+':1. The contrast ratio of '+lRatio+':1 '+sMeetsLimitText;
         
         if(ak.hasBackgroundImage==true) {
             textbox.value = blr.W15yQC.fnJoin(textbox.value, "NOTICE: Element appears to be over a background image. Contrast results may be invalid. Verify styling against sample on the right.", "\n\n");
         }
-
+        
         textbox.value = blr.W15yQC.fnJoin(textbox.value, sLimitMsg+"\n\n"+ak.nodeDescription, "\n\n");
         
         if(ak.node != null) {

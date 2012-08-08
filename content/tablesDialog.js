@@ -145,6 +145,7 @@ blr.W15yQC.TablesDialog = {
     },
         
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.TablesDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.TablesDialog.aDocumentsList);
         

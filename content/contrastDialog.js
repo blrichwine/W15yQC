@@ -47,6 +47,7 @@ blr.W15yQC.ContrastDialog = {
     color2enabled: false,
     
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
         if(dialog!=null && dialog.arguments != null && dialog.arguments.length>2) {
             blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(dialog.arguments[1]);
             blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(dialog.arguments[2]);

@@ -106,10 +106,6 @@
 		 </xul:hbox>
 	 </xul:vbox>
 	 <xul:hbox id="box-button" align="right">
-			<xul:button id="button-generateHTMLReport"
-				label="View Report"
-				oncommand=""
-				accesskey=""/>
 			<xul:button id="button-showInFirebug"
 				label="Show in Firebug"
 				oncommand="blr.W15yQC.LuminosityCheckDialog.showInFirebug();"
@@ -123,7 +119,7 @@
 				oncommand="blr.W15yQC.LuminosityCheckDialog.moveFocusToSelectedElement()"
 				accesskey=""/>
 			<xul:button id="button-openInContrastTool"
-				label="Open Contrast Tool"
+				label="Open In Contrast Tool"
 				oncommand="blr.W15yQC.LuminosityCheckDialog.openColorsInContrastTool()"
 				accesskey=""/>
 	 	 <xul:checkbox id="chkbox-highlighton" label="Highlight Selected Element" checked="true" oncommand="blr.W15yQC.LuminosityCheckDialog.toggleHighlighting();"/>

@@ -113,6 +113,7 @@ blr.W15yQC.LandmarksDialog = {
     },
     
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.LandmarksDialog.FirebugO=dialog.arguments[1];
         blr.W15yQC.LandmarksDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LandmarksDialog.aDocumentsList);

@@ -241,6 +241,7 @@ blr.W15yQC.FormControlsDialog = {
     },
     
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.FormControlsDialog.FirebugO=dialog.arguments[1];
         blr.W15yQC.FormControlsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);

@@ -42,6 +42,7 @@ if (!blr.W15yQC) {
     userExpertLevel: null,
     userLocale: null,
     bEnglishLocale: true,
+    bIncludeHidden: false,
     sb: null,
 
     // Homophones object for sounds like routine
@@ -1364,6 +1365,10 @@ ys: 'whys'
           dialogID = 'luminosityCheckDialog';
           dialogPath = 'chrome://W15yQC/content/luminosityCheckDialog.xul';
           break;
+        case 'options':
+          dialogID = 'optionsDialog';
+          dialogPath = 'chrome://W15yQC/content/options.xul';
+          break;
         }
         if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
       }
@@ -1421,6 +1426,7 @@ ys: 'whys'
           node.scrollIntoView(false);
           node.removeAttribute('tabindex');
         }
+        node.ownerDocument.defaultView.focus();
       }
     },
     
@@ -2243,6 +2249,7 @@ ys: 'whys'
 
     fnNodeIsHidden: function (node) { // TODO: Improve and QA This!
       //returns true if element should be invisible to screen-readers.
+      if(blr.W15yQC.bIncludeHidden) { return false; }
       if (node != null) {
         if (node.tagName.toLowerCase() == 'input' && node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'hidden') {
           return true;
@@ -4787,7 +4794,7 @@ ys: 'whys'
       var spec, minRatio, i, textSize, textWeight, lRatio;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       
-      spec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2AA');
+      spec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2 AA');
       minRatio=7.0;
 
       if (aLumCheckList != null && aLumCheckList.length) {
@@ -5836,7 +5843,7 @@ ys: 'whys'
           maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
 
           if(maxRect != null && maxRect[0] < 14 && maxRect[1] < 14 &&
-             blr.W15yQC.fnNodeIsMasked(aLinksList[i].node)==false && blr.W15yQC.fnNodeIsOffScreen(aLinksList[i].node)) {
+             blr.W15yQC.fnNodeIsMasked(aLinksList[i].node)==false && blr.W15yQC.fnNodeIsOffScreen(aLinksList[i].node)==false) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
@@ -6614,11 +6621,13 @@ ys: 'whys'
      */
 
     fnInspectWindowTitle: function (rd) {
+      blr.W15yQC.fnReadUserPrefs();
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnDisplayWindowDetails(rd);
     },
 
     fnInspectDocuments: function (rd) {
+      blr.W15yQC.fnReadUserPrefs();
       var aDocumentsList;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale());
@@ -6630,30 +6639,35 @@ ys: 'whys'
     },
 
     fnInspectFrameTitles: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aFramesList = blr.W15yQC.fnGetFrameTitles(window.top.content.document);
       blr.W15yQC.fnAnalyzeFrameTitles(aFramesList, aDocumentsList);
       blr.W15yQC.fnDisplayFrameTitleResults(rd, aFramesList);
     },
 
     fnInspectHeadings: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aHeadingsList = blr.W15yQC.fnGetHeadings(window.top.content.document);
       blr.W15yQC.fnAnalyzeHeadings(aHeadingsList, aDocumentsList);
       blr.W15yQC.fnDisplayHeadingsResults(rd, aHeadingsList);
     },
 
     fnInspectARIALandmarks: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(window.top.content.document);
       blr.W15yQC.fnAnalyzeARIALandmarks(aARIALandmarksList, aDocumentsList);
       blr.W15yQC.fnDisplayARIALandmarksResults(rd, aARIALandmarksList);
     },
 
     fnInspectARIAElements: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aARIAElementsList = blr.W15yQC.fnGetARIAElements(window.top.content.document);
       // blr.W15yQC.fnAnalyzeARIAElements(aARIALandmarksList, aDocumentsList);
       blr.W15yQC.fnDisplayARIAElementsResults(rd, aARIAElementsList);
     },
 
     fnInspectForms: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.top.content.document, null, aDocumentsList),
           aFormControlsList = aFormControlsLists[1],
           aFormsList = aFormControlsLists[0];
@@ -6663,28 +6677,33 @@ ys: 'whys'
     },
 
     fnInspectLinks: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aLinksList = blr.W15yQC.fnGetLinks(window.top.content.document);
       blr.W15yQC.fnAnalyzeLinks(aLinksList, aDocumentsList);
       blr.W15yQC.fnDisplayLinkResults(rd, aLinksList);
     },
 
     fnInspectImages: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aImagesList = blr.W15yQC.fnGetImages(window.top.content.document);
       blr.W15yQC.fnAnalyzeImages(aImagesList, aDocumentsList);
       blr.W15yQC.fnDisplayImagesResults(rd, aImagesList);
     },
 
     fnInspectLuminosityRatios: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.top.content.document);
     },
 
     fnInspectAccessKeys: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aAccessKeysList = blr.W15yQC.fnGetAccessKeys(window.top.content.document);
       blr.W15yQC.fnAnalyzeAccessKeys(aAccessKeysList, aDocumentsList);
       blr.W15yQC.fnDisplayAccessKeysResults(rd, aAccessKeysList);
     },
 
     fnInspectTables: function (rd, aDocumentsList) {
+      blr.W15yQC.fnReadUserPrefs();
       var aTablesList = blr.W15yQC.fnGetTables(window.top.content.document);
       blr.W15yQC.fnAnalyzeTables(aTablesList, aDocumentsList);
       blr.W15yQC.fnDisplayTableResults(rd, aTablesList);
@@ -6723,6 +6742,14 @@ ys: 'whys'
         return reportDoc;
       }
       return null;
+    },
+    
+    fnReadUserPrefs: function() {
+      if(Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec",'')=='') {
+        Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
+      }
+
+      blr.W15yQC.bIncludeHidden = Application.prefs.getValue("extensions.W15yQC.getElements.includeHiddenElements",false);
     },
 
     fnRemoveStyles: function () {
