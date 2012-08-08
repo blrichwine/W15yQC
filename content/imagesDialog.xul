@@ -10,7 +10,7 @@
       ondialogaccept="blr.W15yQC.ImagesDialog.cleanup();return true"
       ondialogcancel="blr.W15yQC.ImagesDialog.cleanup();return true"
       buttons="" 
-      onload="aResults = blr.W15yQC.ImagesDialog.init(this)">
+      onload="blr.W15yQC.ImagesDialog.init(this)">
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>

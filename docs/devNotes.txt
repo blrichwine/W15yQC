@@ -47,6 +47,7 @@
  * TODO:
  *    *** FIX ASAP***
         - Table sort in HTML results is not ignoring case: Link Text on links table
+        - Frames analysis does not list frame with duplicate titles
         - QA Form Control Test [].
         - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
         - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
