@@ -31,7 +31,7 @@
  *    
  * 
  */
-if (!blr) var blr = {};
+if (!blr) { var blr = {}; }
 if (!blr.a11yTools) blr.a11yTools = {};
 
 /*
@@ -209,7 +209,7 @@ blr.W15yQC.TablesDialog = {
                 if(aResults[0][i].doc != null) {
                     var element = aResults[0][i].doc.createElement('style');
                     element.innerHTML = 'table {outline: 1px solid red !important; } th {outline: 1px solid blue !important; } td {outline: 1px dotted  blue !important; } ';
-                    element.setAttribute('id', 'A11yInspectorTableHighlightStyle');
+                    element.setAttribute('id', 'W15yQCTableHighlightStyle');
                     aResults[0][i].doc.head.appendChild(element);
                 }
             }

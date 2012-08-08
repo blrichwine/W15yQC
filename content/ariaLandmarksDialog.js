@@ -31,7 +31,7 @@
  *    
  * 
  */
-if (!blr) var blr = {};
+if (!blr) { var blr = {}; }
 
 /*
  * Object:  QuickW15yLandmarksDialog

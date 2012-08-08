@@ -7,18 +7,17 @@
       title="Documents List - W15y Quick Check"
       xmlns:html="http://www.w3.org/1999/xhtml"
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-      ondialogaccept="blr.W15yQC.DocumentsDialog.cleanup(aResults);aResults=null;return true"
-      ondialogcancel="blr.W15yQC.DocumentsDialog.cleanup(aResults);aResults=null;return true"
+      ondialogaccept="blr.W15yQC.DocumentsDialog.cleanup();return true"
+      ondialogcancel="blr.W15yQC.DocumentsDialog.cleanup();return true"
       buttons="" 
-      onload="aResults = blr.W15yQC.DocumentsDialog.init(this)">
+      onload="blr.W15yQC.DocumentsDialog.init(this)">
    <xul:script>
-      var aResults = null;
 			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/documentsDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
-      onselect="blr.W15yQC.DocumentsDialog.updateNotesField(aResults)">
+      onselect="blr.W15yQC.DocumentsDialog.updateNotesField()">
          <xul:treecols>
 	    <xul:treecol ordinal="1" id="col-header-sourceOrder"
 	       label=" # "
@@ -69,15 +68,15 @@
       <xul:hbox id="box-button" align="right">
 	 <xul:button id="button-generateHTMLReport"
 		 label="View Report"
-		 oncommand="blr.W15yQC.DocumentsDialog.generateReportHTML(aResults);"
+		 oncommand="blr.W15yQC.DocumentsDialog.generateReportHTML();"
 		 accesskey=""/>
 	 <xul:button id="button-validateContents"
 		 label="Validate Document DOM"
-		 oncommand="blr.W15yQC.DocumentsDialog.validateDocumentContents(aResults);"
+		 oncommand="blr.W15yQC.DocumentsDialog.validateDocumentContents();"
 		 accesskey=""/>
 	 <xul:button id="button-validateURL"
 		 label="Validate Document by URL"
-		 oncommand="blr.W15yQC.DocumentsDialog.validateDocumentURL(aResults);"
+		 oncommand="blr.W15yQC.DocumentsDialog.validateDocumentURL();"
 		 accesskey=""/>
          <xul:spacer flex="1"/>
          <xul:button id="button-activate"
