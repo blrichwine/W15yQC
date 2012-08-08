@@ -5353,7 +5353,7 @@ ys: 'whys'
       var bIncludeLabelControls, c, frameDocument, sXPath, sFormDescription, ownerDocumentNumber, sRole, sName, sAction, sMethod, xPath, sFormElementDescription, parentFormNode,
           role, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIALabelText, sARIADescriptionText, sStateDescription, sValue;
           
-      bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls',false); 
+      bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false); 
       if (aFormControlsList == null) { aFormControlsList = []; }
       if (aFormsList == null) { aFormsList = []; }
 
