@@ -4804,11 +4804,11 @@ ys: 'whys'
           textWeight = parseInt(aLumCheckList[i].textWeight,10);
           lRatio = parseFloat(aLumCheckList[i].luminosityRatio);
           if(textSize>=18) {
-            minRatio=spec=='WCAG2AA' ? 3.0 : 4.5;
+            minRatio=spec=='WCAG2 AA' ? 3.0 : 4.5;
           } else if(textSize >= 14 && textWeight>=700) {
-            minRatio=spec=='WCAG2AA' ? 3.0 : 4.5;
+            minRatio=spec=='WCAG2 AA' ? 3.0 : 4.5;
           } else {
-            minRatio=spec=='WCAG2AA' ? 4.5 : 7.0;
+            minRatio=spec=='WCAG2 AA' ? 4.5 : 7.0;
           }
           if(lRatio<=minRatio) {
             aLumCheckList[i].failed=true;
@@ -5108,7 +5108,7 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aValuesDuplicated.toString(),99)]); //
             }
             if(aLabelsDuplicated.length>0) {
-              blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aLabelsDuplicated.toString(),99)]); //
+              blr.W15yQC.fnAddNote(ak, 'akLabelNotUnique', [blr.W15yQC.fnCutoffString(aLabelsDuplicated.toString(),99)]); //
             }
           } else {
             blr.W15yQC.fnAddNote(ak, 'akLabelEmpty'); // QA accesskeyTests01.html
@@ -5229,29 +5229,29 @@ ys: 'whys'
         previousHeadingLevel = 0;
         for (i = 0; i < aHeadingsList.length; i++) {
           if (aHeadingsList[i].level - previousHeadingLevel > 1) {
-              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); //
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); // QA: headings01.html
           }
           previousHeadingLevel = aHeadingsList[i].level;
 
           if (aHeadingsList[i].text == null) {
-            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtMissing'); //
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtMissing'); // Not sure this can happen
           } else if (aHeadingsList[i].text.length && aHeadingsList[i].text.length > 0) {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aHeadingsList[i].text)) {
-              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtOnlyASCII'); //
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtOnlyASCII'); // QA: headings01.html
             } else if (blr.W15yQC.fnIsMeaningfulHeadingText(aHeadingsList[i].text) == false) {
-              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtNotMeaninfgul'); //
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtNotMeaninfgul'); // QA: headings01.html
             }
           } else {
-            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtEmpty'); //
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtEmpty'); // QA: headings01.html
           }
 
           aHeadingsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aHeadingsList[i].node, aHeadingsList[i].doc, aHeadingsList[i]);
           if(aHeadingsList[i].node != null && aHeadingsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aHeadingsList[i].node.getAttribute('id'))==false) {
-              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotValid'); //
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotValid'); // QA: headings01.html
             }
             if(aDocumentsList[aHeadingsList[i].ownerDocumentNumber-1].idHashTable.getItem(aHeadingsList[i].node.getAttribute('id'))>1) {
-              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); //
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); // QA: headings01.html
             }
           }
         }

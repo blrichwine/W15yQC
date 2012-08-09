@@ -82,6 +82,10 @@
 		 label="View Report"
 		 oncommand="blr.W15yQC.HeadingsDialog.generateReportHTML();"
 		 accesskey=""/>
+	 <xul:button id="button-showInFirebug"
+		 label="Show in Firebug"
+		 oncommand="blr.W15yQC.HeadingsDialog.showInFirebug();"
+		 accesskey=""/>
          <xul:spacer flex="1"/>
          <xul:button id="button-activate"
             dlgtype="accept"
