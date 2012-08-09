@@ -125,6 +125,7 @@ blr.W15yQC.FramesDialog = {
         blr.W15yQC.FramesDialog.aFramesList = blr.W15yQC.fnGetFrameTitles(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeFrameTitles(blr.W15yQC.FramesDialog.aFramesList, blr.W15yQC.FramesDialog.aDocumentsList);
         blr.W15yQC.FramesDialog.fnPopulateTree(blr.W15yQC.FramesDialog.aDocumentsList, blr.W15yQC.FramesDialog.aFramesList);
+        if(blr.W15yQC.FramesDialog.FirebugO == null || !blr.W15yQC.FramesDialog.FirebugO.Inspector ) { document.getElementById('button-showInFirebug').hidden=true; }
     },
     
     cleanup: function() {

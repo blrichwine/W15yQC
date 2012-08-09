@@ -123,7 +123,7 @@ blr.W15yQC.AccessKeyDialog = {
     
     init: function(dialog) {
         blr.W15yQC.fnReadUserPrefs();
-        blr.W15yQC.AccessKeyDialog.FirebugO=dialog.arguments[1];
+        if(dialog!= null && dialog.arguments != null && dialog.arguments.length>1) { blr.W15yQC.AccessKeyDialog.FirebugO=dialog.arguments[1]; }
         blr.W15yQC.AccessKeyDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.AccessKeyDialog.aDocumentsList);
         

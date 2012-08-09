@@ -29,7 +29,7 @@
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="H" label="Headings" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('headings',Firebug);});}else{blr.W15yQC.openDialog('headings',null);}}catch(ex){blr.W15yQC.openDialog('headings',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="I" label="Images" 
-                  oncommand="blr.W15yQC.openDialog('images');"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('images',Firebug);});}else{blr.W15yQC.openDialog('images',null);}}catch(ex){blr.W15yQC.openDialog('images',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="L" label="Links" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}else{blr.W15yQC.openDialog('links',null);}}catch(ex){blr.W15yQC.openDialog('links',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="T" label="Tables" 

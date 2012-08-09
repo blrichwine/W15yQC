@@ -134,6 +134,7 @@ blr.W15yQC.HeadingsDialog = {
         blr.W15yQC.HeadingsDialog.aHeadingsList = blr.W15yQC.fnGetHeadings(window.opener.parent._content.document);
         blr.W15yQC.fnAnalyzeHeadings(blr.W15yQC.HeadingsDialog.aHeadingsList, blr.W15yQC.HeadingsDialog.aDocumentsList);
         blr.W15yQC.HeadingsDialog.fnPopulateTree(blr.W15yQC.HeadingsDialog.aDocumentsList, blr.W15yQC.HeadingsDialog.aHeadingsList);
+        if(blr.W15yQC.HeadingsDialog.FirebugO == null || !blr.W15yQC.HeadingsDialog.FirebugO.Inspector ) { document.getElementById('button-showInFirebug').hidden=true; }
     },
     
     cleanup: function() {
