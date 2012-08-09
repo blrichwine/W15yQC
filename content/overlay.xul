@@ -25,7 +25,7 @@
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="C" label="Form Controls" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('formControls',Firebug);});}else{blr.W15yQC.openDialog('formControls',null);}}catch(ex){blr.W15yQC.openDialog('formControls',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="F" label="Frames" 
-                  oncommand="blr.W15yQC.openDialog('frames');"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('frames',Firebug);});}else{blr.W15yQC.openDialog('frames',null);}}catch(ex){blr.W15yQC.openDialog('frames',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="H" label="Headings" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('headings',Firebug);});}else{blr.W15yQC.openDialog('headings',null);}}catch(ex){blr.W15yQC.openDialog('headings',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="I" label="Images" 
