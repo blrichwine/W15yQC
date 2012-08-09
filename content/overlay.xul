@@ -33,7 +33,7 @@
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="L" label="Links" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}else{blr.W15yQC.openDialog('links',null);}}catch(ex){blr.W15yQC.openDialog('links',null);}"/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="T" label="Tables" 
-                  oncommand="blr.W15yQC.openDialog('tables');"/>
+                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('tables',Firebug);});}else{blr.W15yQC.openDialog('tables',null);}}catch(ex){blr.W15yQC.openDialog('tables',null);}"/>
         <menu id="W15yQC_menuEntry_toolsMenu" accesskey="o" label="Tools">
           <menupopup>
             <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="c" label="Contrast Tool" 
