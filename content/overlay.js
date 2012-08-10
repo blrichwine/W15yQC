@@ -2295,15 +2295,26 @@ ys: 'whys'
       // TODO: Some masked nodes only use clip: rect(1px, 1px, 1px, 1px) --- how do we detect this?
       if (node != null) {
         do {
+          var compStyle = window.getComputedStyle (node, null);
 
-          if (/absolute|fixed/.test(window.getComputedStyle(node, null).getPropertyValue("position").toLowerCase()) == true &&
-              /hidden/.test(window.getComputedStyle(node, null).getPropertyValue("overflow").toLowerCase()) == true &&
-              (parseInt(window.getComputedStyle(node, null).getPropertyValue("width"),10) <= 1 || parseInt(window.getComputedStyle(node, null).getPropertyValue("height"),10) <= 1) &&
-              parseInt(window.getComputedStyle(node, null).getPropertyValue("top"),10) > -1 &&
-              parseInt(window.getComputedStyle(node, null).getPropertyValue("left"),10) > -1) {
-            return true;
+          if (/absolute|fixed/.test(compStyle.getPropertyValue("position").toLowerCase()) == true) {
+            if (/hidden/.test(compStyle.getPropertyValue("overflow").toLowerCase()) == true &&
+              (parseInt(compStyle.getPropertyValue("width"),10) <= 1 || parseInt(compStyle.getPropertyValue("height"),10) <= 1) &&
+              parseInt(compStyle.getPropertyValue("top"),10) > -1 &&
+              parseInt(compStyle.getPropertyValue("left"),10) > -1) { return true; }
+            var value = compStyle.getPropertyCSSValue ("clip");
+            if (value!=null) {
+              var valueType = value.primitiveType;
+              if (valueType == CSSPrimitiveValue.CSS_RECT) {
+                  var rect = value.getRectValue ();
+                  var topPX = rect.top.getFloatValue (CSSPrimitiveValue.CSS_PX);
+                  var rightPX = rect.right.getFloatValue (CSSPrimitiveValue.CSS_PX);
+                  var bottomPX = rect.bottom.getFloatValue (CSSPrimitiveValue.CSS_PX);
+                  var leftPX = rect.left.getFloatValue (CSSPrimitiveValue.CSS_PX);
+                  if(topPX<1.1 && rightPX<1.1 && bottomPX<1.1 && leftPX<1.1) { return true; }
+              }
+            }
           }
-
           node = node.nodeParent;
         } while (node != null && node.tagName != null && node.tagName.toLowerCase() != 'body');
       }
