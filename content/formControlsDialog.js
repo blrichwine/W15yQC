@@ -296,8 +296,10 @@ blr.W15yQC.FormControlsDialog = {
     },
     
     updateNotesField2: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox2');
-        var textbox = document.getElementById('note-text');
+        var idCounter=null,
+            aFC=null, 
+            treebox = document.getElementById('treebox2'),
+            textbox = document.getElementById('note-text');
 
         if(blr.W15yQC.FormControlsDialog.aFormControlsList!=null && blr.W15yQC.FormControlsDialog.aFormControlsList.length>0) {
         
@@ -308,25 +310,63 @@ blr.W15yQC.FormControlsDialog = {
                 selectedRow = 0;
                 bHighlightElement = false;
             }
-    
-            if(blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].notes != null) {
-                textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow]);
+            aFC=blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow];
+            if(aFC.notes != null) {
+                textbox.value = blr.W15yQC.fnMakeTextNotesList(aFC);
             } else {
                 textbox.value = '';
             }
             
-            textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].nodeDescription, "\n\n");
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.nodeDescription, "\n\n");
             
-            if(blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node != null) {
-                var box = blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node.getBoundingClientRect();
+            if(aFC.node != null) {
+                var box = aFC.node.getBoundingClientRect();
                 if(box != null) {
                     textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");
                 }
             }
-            textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].xpath, "\n");
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.xpath, "\n");
     
             for(var i=0;i<blr.W15yQC.FormControlsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.FormControlsDialog.aDocumentsList[i].doc);
-            if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].doc);
+            
+            if(bHighlightElement != false) {
+                idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', 0);
+                if(blr.W15yQC.fnIsFormControlNode(aFC.node)==true) {
+                    if(aFC.node.hasAttribute('aria-labelledby')) {
+                        aIDs=aFC.node.getAttribute('aria-labelledby').split(' ');
+                        for(i=0;i<aIDs.length;i++) {
+                            el=aFC.node.ownerDocument.getElementById(aIDs[i]);
+                            if(el!=null) {idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', idCounter);}
+                        }
+                    } else {
+                        el=aFC.node.parentNode;
+                        while(el!=null && el.tagName.toLowerCase() != 'label' && el.tagName.toLowerCase() != 'body') {el=el.parentNode;}
+                        if(el!=null && el.tagName.toLowerCase()=='label') {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, 'blue', idCounter);}
+                        el=aFC.node.parentNode;
+                        while(el!=null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {el=el.parentNode;}
+                        if(el!=null && el.tagName.toLowerCase()=='fieldset') {
+                            aLabels=el.getElementsByTagName('legend');
+                            if(aLabels!=null && aLabels.length>0) {idCounter=blr.W15yQC.highlightElement(aLabels[0], aLabels[0].ownerDocument, '#AAAAFF', idCounter);}
+                        }
+                        if(aFC.node.hasAttribute('id')) {
+                            nodeID=aFC.node.getAttribute('id');
+                            aLabels=aFC.node.ownerDocument.getElementsByTagName('label');
+                            if(aLabels!=null && aLabels.length>0) {
+                                for(i=0;i<aLabels.length;i++) {
+                                    if(aLabels[i].getAttribute('for')==nodeID) {idCounter=blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, 'blue', idCounter);}
+                                }
+                            }
+                        }
+                    }
+                    if(aFC.node.hasAttribute('aria-describedby')) {
+                        aIDs=aFC.node.getAttribute('aria-describedby').split(' ');
+                        for(i=0;i<aIDs.length;i++) {
+                            el=aFC.node.ownerDocument.getElementById(aIDs[i]);
+                            if(el!=null) {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, 'green', idCounter);}
+                        }
+                    }                    
+                }
+            }
         }
     },
 

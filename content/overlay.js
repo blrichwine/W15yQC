@@ -1,4 +1,3 @@
-
 /*
     This file is part of W15y Quick Check
     Copyright (C) 2011, 2012  Brian L. Richwine
@@ -1430,14 +1429,17 @@ ys: 'whys'
       }
     },
     
-    highlightElement: function (node, doc) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
+    highlightElement: function (node, doc, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-        var div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, idCounter;
-
+      var div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i;
+      if(highlightBGColor==null) { highlightBGColor='yellow'; }
       if (doc != null && node != null) {
-        blr.W15yQC.resetHighlightElement(doc);
+        if(idCounter==null) {
+          idCounter=0;
+          blr.W15yQC.resetHighlightElement(doc);
+        }
+        
         div = null;
-
         box = node.getBoundingClientRect();
         scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
         scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
@@ -1465,8 +1467,9 @@ ys: 'whys'
           h = 'auto';
           div = doc.createElement('div');
           div.appendChild(doc.createTextNode(blr.W15yQC.fnGetString('heOffscreen')));
-          div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
-          div.setAttribute('id', 'W15yQCElementHighlight');
+          div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
+          idCounter=idCounter+1;
+          div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
           doc.body.appendChild(div);
         } else if (w < 2 && h < 2 && w > 0 && h > 0) {
           o = 0.9;
@@ -1476,13 +1479,13 @@ ys: 'whys'
           h = 'auto';
           div = doc.createElement('div');
           div.appendChild(doc.createTextNode(blr.W15yQC.fnGetString('heMasked')));
-          div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
-          div.setAttribute('id', 'W15yQCElementHighlight');
+          div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
+          idCounter=idCounter+1;
+          div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
           doc.body.appendChild(div);
         } else {
           rects = node.getClientRects();
           if(rects != null && rects.length>1) {
-            idCounter=0;
             for(i=0;i<rects.length;i++) {
               rect = rects[i];
               x = rect.left + scrollLeft;
@@ -1495,8 +1498,8 @@ ys: 'whys'
                 w = w + 'px';
                 h = h + 'px';
                 div = doc.createElement('div');
-                div.setAttribute('style', "position:absolute;top:" + y + "px;left:" + x + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
-                idCounter++;
+                div.setAttribute('style', "position:absolute;top:" + y + "px;left:" + x + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
+                idCounter=idCounter+1;
                 div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
                 doc.body.appendChild(div);
               }
@@ -1505,13 +1508,15 @@ ys: 'whys'
             w = w + 'px';
             h = h + 'px';
             div = doc.createElement('div');
-            div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:yellow;outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
-            div.setAttribute('id', 'W15yQCElementHighlight');
+            div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
+            idCounter=idCounter+1;
+            div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
             doc.body.appendChild(div);
           }
         }
 
       }
+      return idCounter;
     },
 
     resetHighlightElement: function (doc) {

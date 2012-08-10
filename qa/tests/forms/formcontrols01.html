@@ -72,6 +72,17 @@
 			<input id="rb09" type="radio" name="group1" value="Fish"> <label for="rb09">Fish</label>
 		</fieldset>
 
+		<p>Here is a form control that has three labels:</p>
+		<label for="tbw3labels">Label 1</label>
+		<label for="tbw3labels">Label 2</label>
+		<label for="tbw3labels">Label 3</label>
+		<input type="text" id="tbw3labels" name="threeLabels" aria-describedby="tbw3labelsdesc" /><br>
+		<span id="tbw3labelsdesc">Description for the text box above</span><br>
+		
+		<label>Here is a label that does not label a control.</label>
+		
+		<p>Here is a form control that has the same id as another control and it's label. </p>
+		<input id="wlln" type="text" name="nonUniqueIDLabelTest" />
 	</form>
 	
 </body>
