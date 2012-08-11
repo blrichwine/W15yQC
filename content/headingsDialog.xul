@@ -74,23 +74,31 @@
 	 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
-	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
-	 <xul:textbox id="note-text" readonly="true" multiline="true" rows="5" flex="1" />
+				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
+				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="5" flex="1" />
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
-	 <xul:button id="button-generateHTMLReport"
-		 label="View Report"
-		 oncommand="blr.W15yQC.HeadingsDialog.generateReportHTML();"
-		 accesskey=""/>
-	 <xul:button id="button-showInFirebug"
-		 label="Show in Firebug"
-		 oncommand="blr.W15yQC.HeadingsDialog.showInFirebug();"
-		 accesskey=""/>
+				 <xul:button id="button-generateHTMLReport"
+					 label="View Report"
+					 oncommand="blr.W15yQC.HeadingsDialog.generateReportHTML();"
+					 accesskey=""/>
+				 <xul:button id="button-showInFirebug"
+					 label="Show in Firebug"
+					 oncommand="blr.W15yQC.HeadingsDialog.showInFirebug();"
+					 accesskey=""/>
+				 <xul:button id="button-moveToSelectedElement"
+					 label="Scroll To"
+					 oncommand="blr.W15yQC.HeadingsDialog.moveToSelectedElement()"
+					 accesskey=""/>
+				 <xul:button id="button-moveFocusToSelectedElement"
+					 label="Move Focus To"
+					 oncommand="blr.W15yQC.HeadingsDialog.moveFocusToSelectedElement()"
+					 accesskey=""/>
          <xul:spacer flex="1"/>
          <xul:button id="button-activate"
             dlgtype="accept"
             label="OK"
- 	    oncommand=""
+			 	    oncommand=""
             accesskey=""
          />
          <xul:button id="button-close"
