@@ -3846,7 +3846,7 @@ ys: 'whys'
       topNavLI=reportDoc.createElement('li');
       topNavA=reportDoc.createElement('a');
       topNavA.setAttribute('tabindex','0');
-      topNavA.setAttribute('href','http://iuadapts.indiana.edu/');
+      topNavA.setAttribute('href','http://blrichwine.github.com/W15yQC/');
       topNavA.appendChild(reportDoc.createTextNode('Help')); // TODO: i18n
       topNavSpan=reportDoc.createElement('span');
       topNavSpan.setAttribute('class','auralText');

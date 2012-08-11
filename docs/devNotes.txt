@@ -45,6 +45,16 @@
  *
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average Nesting Level is 3. Warn if greater than 5
  * TODO:
+      Documentation:
+          Screenshots
+          FAQ
+            Can W15yQC work with Firebug?
+            How do I install W15yQC
+            What is ___.xpi
+            How do I uninstall W15yQC
+            I cannot find the W15yQC toolbar button. Where is it?
+            One of the W15yQC keyboard shortcuts overrides a shortcut used by another important extension of mine. What can I do?
+            Tips and Tricks
  *    *** FIX ASAP***
         - Table sort in HTML results is not ignoring case: Link Text on links table
         - Frames analysis does not list frame with duplicate titles
