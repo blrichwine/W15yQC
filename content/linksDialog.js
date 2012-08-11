@@ -151,7 +151,7 @@ blr.W15yQC.LinksDialog = {
     
     cleanup: function() {
         if(blr.W15yQC.LinksDialog.aDocumentsList != null) {
-            for(var i=0;i<blr.W15yQC.LinksDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LinksDialog.aDocumentsList[i].doc);
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
             blr.W15yQC.LinksDialog.aDocumentsList=null;
             blr.W15yQC.LinksDialog.aLinksList=null;
         }
@@ -186,7 +186,7 @@ blr.W15yQC.LinksDialog = {
         }
         textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LinksDialog.aLinksList[selectedRow].xpath, "\n");
 
-        for(var i=0;i<blr.W15yQC.LinksDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LinksDialog.aDocumentsList[i].doc);
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node, blr.W15yQC.LinksDialog.aLinksList[treebox.currentIndex].doc);
     },
     
@@ -204,25 +204,37 @@ blr.W15yQC.LinksDialog = {
         return out;
     },
     
+    moveToSelectedElement: function() {
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
+            blr.W15yQC.highlightElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node, blr.W15yQC.LinksDialog.aLinksList[selectedRow].doc);
+            blr.W15yQC.fnMoveToElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node);
+        }        
+    },
+    
+    moveFocusToSelectedElement: function() {
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
+            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node);
+        }        
+    },
+    
     showInFirebug: function() {
         if(blr.W15yQC.LinksDialog.FirebugO!=null) {
             try{
                 if(blr.W15yQC.LinksDialog.aLinksList != null && blr.W15yQC.LinksDialog.aLinksList.length && blr.W15yQC.LinksDialog.aLinksList.length>0) {
                     var treebox = document.getElementById('treebox');
                     var selectedRow = treebox.currentIndex;
-                    if(selectedRow == null || treebox.currentIndex < 0) {
-                        selectedRow = 0;
-                    }
-                    //blr.W15yQC.LinksDialog.nodeToInspect = blr.W15yQC.LinksDialog.aLinksList[selectedRow].node;
-                    //blr.W15yQC.LinksDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.LinksDialog.nodeToInspect);});
-                    //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
-                    //blr.W15yQC.LinksDialog.FirebugO.
+                    if(selectedRow == null || treebox.currentIndex < 0) { selectedRow = 0; }
                     if(blr.W15yQC.LinksDialog.aDocumentsList != null) {
-                        for(var i=0;i<blr.W15yQC.LinksDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LinksDialog.aDocumentsList[i].doc);
+                        blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
                     }
                     blr.W15yQC.LinksDialog.aLinksList[selectedRow].node.ownerDocument.defaultView.focus();
                     void function(arg){blr.W15yQC.LinksDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LinksDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node);
-                    //blr.W15yQC.showInFirebug(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node,blr.W15yQC.LinksDialog.firebugO);
                 }
             } catch(ex) {}
         }
