@@ -15,7 +15,7 @@
 			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/linksDialog.js"/>
-   <xul:vbox id="vb" align="stretch" flex="1" height="700" width="900">
+   <xul:vbox id="vb" align="stretch" flex="1" height="500" width="900">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
       onselect="blr.W15yQC.LinksDialog.updateNotesField()">
          <xul:treecols>
