@@ -255,7 +255,7 @@ blr.W15yQC.LuminosityCheckDialog = {
             }
         }
         
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.xpath, "\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+ak.xpath, "\n");
 
         var if1 = document.getElementById("iframeCSample");
         var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));

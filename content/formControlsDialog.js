@@ -296,7 +296,7 @@ blr.W15yQC.FormControlsDialog = {
                 textbox.value = '';
             }
             textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].nodeDescription, "\n\n");
-            textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].xpath, "\n\n");
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].xpath, "\n\n");
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
             if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
         }

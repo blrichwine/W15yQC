@@ -162,7 +162,7 @@ blr.W15yQC.FramesDialog = {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");                
             }
         }
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FramesDialog.aFramesList[selectedRow].xpath, "\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.FramesDialog.aFramesList[selectedRow].xpath, "\n");
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.FramesDialog.aDocumentsList);
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FramesDialog.aFramesList[selectedRow].node, blr.W15yQC.FramesDialog.aFramesList[selectedRow].doc);

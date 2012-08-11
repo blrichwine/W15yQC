@@ -184,7 +184,7 @@ blr.W15yQC.LinksDialog = {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n");
             }
         }
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LinksDialog.aLinksList[selectedRow].xpath, "\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.LinksDialog.aLinksList[selectedRow].xpath, "\n");
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node, blr.W15yQC.LinksDialog.aLinksList[treebox.currentIndex].doc);

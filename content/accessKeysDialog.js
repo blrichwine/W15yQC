@@ -162,7 +162,7 @@ blr.W15yQC.AccessKeyDialog = {
         }
                 
         textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].nodeDescription, "\n\n");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].xpath, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].xpath, "\n\n");
         
         if(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node != null) {
             var box = blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node.getBoundingClientRect();

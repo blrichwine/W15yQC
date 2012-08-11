@@ -151,7 +151,7 @@ blr.W15yQC.LandmarksDialog = {
         }
         
         textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].nodeDescription, "\n\n");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].xpath, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].xpath, "\n\n");
         
         if(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node != null) {
             var box = blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node.getBoundingClientRect();
