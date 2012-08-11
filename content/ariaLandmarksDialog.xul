@@ -68,7 +68,7 @@
       </xul:tree>
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
-	 <xul:textbox id="note-text" readonly="true" multiline="true" rows="5" flex="1" />
+	 <xul:textbox id="note-text" readonly="true" multiline="true" rows="7" flex="1" />
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
 				 <xul:button id="button-generateHTMLReport"
