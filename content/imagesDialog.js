@@ -172,7 +172,7 @@ blr.W15yQC.ImagesDialog = {
     
     cleanup: function() {
         if(blr.W15yQC.ImagesDialog.aDocumentsList != null) {
-            for(var i=0;i<blr.W15yQC.ImagesDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.ImagesDialog.aDocumentsList[i].doc);
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
             blr.W15yQC.ImagesDialog.aDocumentsList=null;
             blr.W15yQC.ImagesDialog.aImagesList=null;
         }
@@ -205,8 +205,27 @@ blr.W15yQC.ImagesDialog = {
         }
         textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.ImagesDialog.aImagesList[selectedRow].xpath, "\n");
 
-        for(var i=0;i<blr.W15yQC.ImagesDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.ImagesDialog.aDocumentsList[i].doc);
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node, blr.W15yQC.ImagesDialog.aImagesList[selectedRow].doc);
+    },
+    
+    moveToSelectedElement: function() {
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
+            blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node, blr.W15yQC.ImagesDialog.aImagesList[selectedRow].doc);
+            blr.W15yQC.fnMoveToElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node);
+        }        
+    },
+    
+    moveFocusToSelectedElement: function() {
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
+            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node);
+        }        
     },
     
     showInFirebug: function() {
@@ -222,7 +241,7 @@ blr.W15yQC.ImagesDialog = {
                     //blr.W15yQC.ImagesDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.ImagesDialog.nodeToInspect);});
                     //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
                     //blr.W15yQC.ImagesDialog.FirebugO.
-                    for(var i=0;i<blr.W15yQC.ImagesDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.ImagesDialog.aDocumentsList[i].doc);
+                    blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
                     blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node.ownerDocument.defaultView.focus();
                     void function(arg){blr.W15yQC.ImagesDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.ImagesDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node);
                     //blr.W15yQC.showInFirebug(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node,blr.W15yQC.ImagesDialog.firebugO);
