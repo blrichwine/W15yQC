@@ -106,7 +106,7 @@ blr.W15yQC.DocumentsDialog = {
     
     cleanup: function() {
         if(blr.W15yQC.DocumentsDialog.aDocumentsList != null) {
-            for(var i=0;i<blr.W15yQC.DocumentsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[i].doc);
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
             blr.W15yQC.DocumentsDialog.aDocumentsList=null;
         }
     },
@@ -130,11 +130,11 @@ blr.W15yQC.DocumentsDialog = {
         } else {
             textbox.value = '';
         }
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Title: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].title, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Compatibility Mode: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].compatMode, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Document Type: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].docType, "\n\n");
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].URL, "\n\n");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].title, "\nTitle: ");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].compatMode, "\nCompatibility Mode: ");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].docType, "\nDocument Type: ");
-        for(var i=0;i<blr.W15yQC.DocumentsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[i].doc);
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.body, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc);
         }        
     },

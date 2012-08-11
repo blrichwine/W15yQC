@@ -781,6 +781,8 @@ ys: 'whys'
       if (sSeparator == null) { sSeparator = ' '; }
       s1 = blr.W15yQC.fnCleanSpaces(s1, true);
       s2 = blr.W15yQC.fnCleanSpaces(s2, true);
+      if (s1 == '') { return s2; }
+      if (s2 == '') { return s1; }
       if (s1.length > 0 && s2.length > 0) {
         sRet = s1 + sSeparator + s2;
       } else {
@@ -794,6 +796,8 @@ ys: 'whys'
       if (s2 == null) { return s1; }
       s1 = blr.W15yQC.fnCleanSpaces(s1, true);
       s2 = blr.W15yQC.fnCleanSpaces(s2, true);
+      if (s1 == '') { return s2; }
+      if (s2 == '') { return s1; }
       if (s1.indexOf(s2) < 0 && s2.indexOf(s1) < 0) { // Join if s2 is not in s1 and vice versa
         return blr.W15yQC.fnJoin(s1, s2, sSeparator);
       }
@@ -819,8 +823,10 @@ ys: 'whys'
       docLangNotSpecified: [2,0,true,null],
       docInvalidLang: [2,0,false,null],
       docTitleNotUnique: [1,0,false,null],
+      docCSSSuppressingOutline: [1,0,true,null],
       docNonUniqueIDs: [1,1,false,null],
       docInvalidIDs: [1,1,false,null],
+      
       frameContentScriptGenerated: [0,0,false,null],
       frameTitleMissing: [2,0,false,null],
       frameTitleOnlyASCII: [2,0,false,null],
@@ -4213,10 +4219,11 @@ ys: 'whys'
     },
 
     fnAnalyzeDocuments: function (aDocumentsList) {
-      var i, aSameTitles, j, sIDList;
+      var i, aSameTitles, j, k, sIDList, selectorTest, doc, suspectCSS='';
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aDocumentsList !== null && aDocumentsList.length) {
         for (i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
+          suspectCSS='';
           if (aDocumentsList[i].title == null) {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleMissing'); // QA iframeTests01.html -- TODO: Can't produce, scan this be detected?
           } else if (blr.W15yQC.fnCleanSpaces(aDocumentsList[i].title).length < 1) {
@@ -4257,6 +4264,19 @@ ys: 'whys'
             if(aDocumentsList[i].invalidIDsCount>5) { sIDList = sIDList + '...'; }
             sIDList = blr.W15yQC.fnCutoffString(sIDList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidIDs',[aDocumentsList[i].invalidIDsCount,sIDList]); // QA iframeTests01.html
+          }
+
+          selectorTest = /{[^:]outline[^:]*:[^;}]+(\b0|none)/;
+          doc=aDocumentsList[i].doc;
+          for(j = 0; j < doc.styleSheets.length; ++j) {
+            for(k = 0; k < doc.styleSheets[j].cssRules.length; ++k) {
+              if(selectorTest.test(doc.styleSheets[j].cssRules[k].cssText)){
+                suspectCSS=blr.W15yQC.fnJoinIfNew(suspectCSS, doc.styleSheets[j].cssRules[k].cssText,' ');
+              }
+            }
+          }
+          if(suspectCSS!='') {
+            blr.W15yQC.fnAddNote(aDocumentsList[i], 'docCSSSuppressingOutline',[blr.W15yQC.fnCutoffString(suspectCSS,500)]); // 
           }
         }
       }
