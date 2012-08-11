@@ -42,6 +42,8 @@ blr.W15yQC.FormControlsDialog = {
     aDocumentsList: null,
     aFormsList: null,
     aFormControlsList: null,
+    oLastTreeviewToHaveFocus: null,
+    aLastList: null,
     fnPopulateTree: function(aDocumentsList, aFormsList, aFormControlsList) {
         if(aDocumentsList != null && aFormControlsList != null && aFormControlsList.length && aFormControlsList.length > 0) {
             var bHasId = false;
@@ -229,9 +231,9 @@ blr.W15yQC.FormControlsDialog = {
                     treeitem.appendChild(treerow);
                     tbc.appendChild(treeitem);
                 }
-                blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+                blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox2'));
                 if(aFormControlsList.length==1) {
-                    blr.W15yQC.FormControlsDialog.updateNotesField([aDocumentsList,aFormControlsList], false);
+                    blr.W15yQC.FormControlsDialog.updateNotesField2([aDocumentsList,aFormControlsList], false);
                 }
             }
         } else {
@@ -261,13 +263,18 @@ blr.W15yQC.FormControlsDialog = {
             blr.W15yQC.FormControlsDialog.aDocumentsList=null;
             blr.W15yQC.FormControlsDialog.aFormControlsList=null;
             blr.W15yQC.FormControlsDialog.aFormsList=null;
+            blr.W15yQC.FormControlsDialog.FirebugO=null;
+            blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=null;
+            blr.W15yQC.FormControlsDialog.aLastList=null;
         }
     },
     
     updateNotesField1: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox1');
-        var textbox = document.getElementById('note-text');
+        var treebox = document.getElementById('treebox1'),
+            textbox = document.getElementById('note-text');
 
+        blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=treebox;
+            blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormsList;
         if(blr.W15yQC.FormControlsDialog.aFormsList!=null && blr.W15yQC.FormControlsDialog.aFormsList.length>0) {
             if(bHighlightElement === null) bHighlightElement = true;
     
@@ -297,10 +304,16 @@ blr.W15yQC.FormControlsDialog = {
     
     updateNotesField2: function(bHighlightElement) {
         var idCounter=null,
-            aFC=null, 
+            aFC=null,
+            el,
+            nodeID,
+            aLabels,
+            aIDs,
+            i,
             treebox = document.getElementById('treebox2'),
             textbox = document.getElementById('note-text');
-
+            blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=treebox;
+            blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormControlsList;
         if(blr.W15yQC.FormControlsDialog.aFormControlsList!=null && blr.W15yQC.FormControlsDialog.aFormControlsList.length>0) {
         
             if(bHighlightElement === null) bHighlightElement = true;
@@ -327,7 +340,7 @@ blr.W15yQC.FormControlsDialog = {
             }
             textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.xpath, "\n");
     
-            for(var i=0;i<blr.W15yQC.FormControlsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.FormControlsDialog.aDocumentsList[i].doc);
+            for(i=0;i<blr.W15yQC.FormControlsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.FormControlsDialog.aDocumentsList[i].doc);
             
             if(bHighlightElement != false) {
                 idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', 0);
@@ -371,29 +384,63 @@ blr.W15yQC.FormControlsDialog = {
     },
 
     showInFirebug: function() {
+        var treebox,aList;
         if(blr.W15yQC.FormControlsDialog.FirebugO!=null) {
             try{
                 if(blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length && blr.W15yQC.FormControlsDialog.aFormControlsList.length>0) {
-                    var treebox = document.getElementById('treebox2');
+                    if(blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
+                        treebox=blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
+                        aList=blr.W15yQC.FormControlsDialog.aLastList;
+                    } else {
+                        treebox = document.getElementById('treebox2');
+                        aList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+                    }
                     var selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) {
                         selectedRow = 0;
                     }
-                    //blr.W15yQC.FormControlsDialog.nodeToInspect = blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node;
-                    //blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.FormControlsDialog.nodeToInspect);});
-                    //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
-                    //blr.W15yQC.FormControlsDialog.FirebugO.
                     if(blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
                         for(var i=0;i<blr.W15yQC.FormControlsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.FormControlsDialog.aDocumentsList[i].doc);
                     }
-                    blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node);
-                    //blr.W15yQC.showInFirebug(blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow].node,blr.W15yQC.FormControlsDialog.firebugO);
+                    blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node.ownerDocument.defaultView.focus();
+                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
                 }
             } catch(ex) {}
         }
     },
     
+     moveToSelectedElement: function() {
+        var treebox, aList;
+        if(blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
+            treebox=blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
+            aList=blr.W15yQC.FormControlsDialog.aLastList;
+        } else {
+            treebox = document.getElementById('treebox2');
+            aList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+        }
+        var selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+        }        
+    },
+    
+    moveFocusToSelectedElement: function() {
+        var treebox, aList;
+        if(blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
+            treebox=blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
+            aList=blr.W15yQC.FormControlsDialog.aLastList;
+        } else {
+            treebox = document.getElementById('treebox2');
+            aList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+        }
+        var selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            if(blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
+                for(var i=0;i<blr.W15yQC.FormControlsDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.FormControlsDialog.aDocumentsList[i].doc);
+            }
+            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+        }        
+    },
     
     generateReportHTML: function() {
         var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);

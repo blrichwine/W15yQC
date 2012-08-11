@@ -1417,12 +1417,10 @@ ys: 'whys'
           var oldTIValue=node.getAttribute('tabindex');
           node.setAttribute('tabindex',-1);
           node.focus();
-          node.scrollIntoView(false);
           node.setAttribute('tabindex',oldTIValue);
         } else {
           node.setAttribute('tabindex',-1);
           node.focus();
-          node.scrollIntoView(false);
           node.removeAttribute('tabindex');
         }
         node.ownerDocument.defaultView.focus();
