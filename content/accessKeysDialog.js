@@ -136,9 +136,10 @@ blr.W15yQC.AccessKeyDialog = {
     
     cleanup: function() {
         if(blr.W15yQC.AccessKeyDialog.aDocumentsList != null) {
-            for(var i=0;i<blr.W15yQC.AccessKeyDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.AccessKeyDialog.aDocumentsList[i].doc);
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
             blr.W15yQC.AccessKeyDialog.aDocumentsList=null;
             blr.W15yQC.AccessKeyDialog.aAccessKeysList=null;
+            blr.W15yQC.AccessKeyDialog.FirebugO=null;
         }
     },
     
@@ -170,7 +171,7 @@ blr.W15yQC.AccessKeyDialog = {
             }
         }
 
-        for(var i=0;i<blr.W15yQC.AccessKeyDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.AccessKeyDialog.aDocumentsList[i].doc);
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node, blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].doc);
     },
     
@@ -183,19 +184,31 @@ blr.W15yQC.AccessKeyDialog = {
                     if(selectedRow == null || treebox.currentIndex < 0) {
                         selectedRow = 0;
                     }
-                    //blr.W15yQC.AccessKeyDialog.nodeToInspect = blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node;
-                    //blr.W15yQC.AccessKeyDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.AccessKeyDialog.nodeToInspect);});
-                    //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
-                    //blr.W15yQC.AccessKeyDialog.FirebugO.
-                    for(var i=0;i<blr.W15yQC.AccessKeyDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.AccessKeyDialog.aDocumentsList[i].doc);
+                    blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
                     blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node.ownerDocument.defaultView.focus();
                     void function(arg){blr.W15yQC.AccessKeyDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.AccessKeyDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
-                    //blr.W15yQC.showInFirebug(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node,blr.W15yQC.AccessKeyDialog.firebugO);
                 }
             } catch(ex) {}
         }
     },
     
+    moveToSelectedElement: function() {
+        var treebox = document.getElementById('treebox');
+        var selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnMoveToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
+        }        
+    },
+    
+    moveFocusToSelectedElement: function() {
+        var treebox = document.getElementById('treebox');
+        var selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
+            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
+        }        
+    },
+
     generateReportHTML: function() {
         var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
         blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, blr.W15yQC.AccessKeyDialog.aAccessKeysList);

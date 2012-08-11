@@ -1517,6 +1517,14 @@ ys: 'whys'
       return idCounter;
     },
 
+    fnResetHighlights: function(aDocumentsList) {
+      var i;
+      if(aDocumentsList!=null && aDocumentsList.length>0) {
+        for(i=0;i<aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(aDocumentsList[i].doc);
+        for(i=0;i<aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(aDocumentsList[i].doc);
+      }
+    },
+
     resetHighlightElement: function (doc) {
       var he, idCounter, failureCount;
       if (doc != null) {

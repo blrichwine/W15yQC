@@ -159,7 +159,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     
     cleanup: function() {
         if(blr.W15yQC.LuminosityCheckDialog.aDocumentsList != null) {
-            for(var i=0;i<blr.W15yQC.LuminosityCheckDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LuminosityCheckDialog.aDocumentsList[i].doc);
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
             blr.W15yQC.LuminosityCheckDialog.aDocumentsList=null;
             blr.W15yQC.LuminosityCheckDialog.aLumCheckList=null;
         }
@@ -268,7 +268,7 @@ blr.W15yQC.LuminosityCheckDialog = {
         if1.contentDocument.body.style.padding='4px';
         if1.contentDocument.body.innerHTML='Example text at '+textSize+' points. <i>Example text in italic.</i> <b>Example text in bold.</b>';
 
-        for(var i=0;i<blr.W15yQC.LuminosityCheckDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LuminosityCheckDialog.aDocumentsList[i].doc);
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
         var highlightElementsCB = document.getElementById('chkbox-highlighton');
         if(highlightElementsCB.checked && bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
     },
@@ -282,7 +282,7 @@ blr.W15yQC.LuminosityCheckDialog = {
                 blr.W15yQC.highlightElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node, blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].doc);
             }        
         } else {
-            for(var i=0;i<blr.W15yQC.LuminosityCheckDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LuminosityCheckDialog.aDocumentsList[i].doc);
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
         }
     },
     
@@ -298,6 +298,7 @@ blr.W15yQC.LuminosityCheckDialog = {
         var treebox = document.getElementById('treebox');
         var selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
             blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
         }        
     },
@@ -319,19 +320,10 @@ blr.W15yQC.LuminosityCheckDialog = {
                 if(blr.W15yQC.LuminosityCheckDialog.aLumCheckList != null && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length>0) {
                     var treebox = document.getElementById('treebox');
                     var selectedRow = treebox.currentIndex;
-                    if(selectedRow == null || treebox.currentIndex < 0) {
-                        selectedRow = 0;
-                    }
-                    //blr.W15yQC.LuminosityCheckDialog.nodeToInspect = blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node;
-                    //blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.LuminosityCheckDialog.nodeToInspect);});
-                    //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
-                    //blr.W15yQC.LuminosityCheckDialog.FirebugO.
-                    if(blr.W15yQC.LuminosityCheckDialog.aDocumentsList != null) {
-                        for(var i=0;i<blr.W15yQC.LuminosityCheckDialog.aDocumentsList.length;i++) blr.W15yQC.resetHighlightElement(blr.W15yQC.LuminosityCheckDialog.aDocumentsList[i].doc);
-                    }
+                    if(selectedRow == null || treebox.currentIndex < 0) { selectedRow = 0; }
+                    blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
                     blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node.ownerDocument.defaultView.focus();
                     void function(arg){blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
-                    //blr.W15yQC.showInFirebug(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node,blr.W15yQC.LuminosityCheckDialog.firebugO);
                 }
             } catch(ex) {}
         }
