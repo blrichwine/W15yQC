@@ -48,6 +48,8 @@
       Documentation:
           Screenshots
           FAQ
+            EXAMPLES:
+              http://www.downloadhelper.net/faq.php#how-install
             Can W15yQC work with Firebug?
             How do I install W15yQC
             What is ___.xpi
@@ -55,7 +57,8 @@
             I cannot find the W15yQC toolbar button. Where is it?
             One of the W15yQC keyboard shortcuts overrides a shortcut used by another important extension of mine. What can I do?
             Tips and Tricks
- *    *** FIX ASAP***
+      *** FIX ASAP***
+        - The view->Toolbars->Customize... doesn't show the icon for W15yQC
         - Table sort in HTML results is not ignoring case: Link Text on links table
         - Frames analysis does not list frame with duplicate titles
         - QA Form Control Test [].
