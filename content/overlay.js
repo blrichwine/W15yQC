@@ -1374,9 +1374,18 @@ ys: 'whys'
           dialogID = 'optionsDialog';
           dialogPath = 'chrome://W15yQC/content/options.xul';
           break;
+        case 'about':
+          dialogID = 'aboutDialog';
+          dialogPath = 'chrome://W15yQC/content/aboutDialog.xul';
+          break;
         }
         if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
       }
+    },
+
+    fnOpenURL: function(url) {
+      var win = window.open(url);
+      return win.content.document;
     },
 
     fnGetMaxNodeRectangleDimensions: function(node) {
