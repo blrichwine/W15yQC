@@ -12,7 +12,7 @@ dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
+figure, figcaption, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
   margin: 0;
@@ -63,11 +63,11 @@ h1 {
 }
 
 h2 {
-	font-size: 24px;
+	font-size: 18px;
 }
 
 h3 {
-	font-size: 18px;
+	font-size: 16px;
 }
 
 h4, h5, h6 {
@@ -76,7 +76,7 @@ h4, h5, h6 {
 }
 
 a {
-  color:#C30000;
+  color:#B00000;
   font-weight:200;
   text-decoration:none;
 }
@@ -222,6 +222,10 @@ header {
 	-webkit-font-smoothing: antialiased;
 }
 
+header h2 {
+	color: white;
+}
+
 p.header {
 	font-size: 16px;
 }
@@ -233,6 +237,15 @@ h1.header {
 	line-height: 1.3em;
 	border-bottom: none;
 	margin-top: 0;
+	padding:1px 0 0 32px;
+	background-image:url('../images/document-inspector32x32.png');
+	background-repeat:no-repeat;
+	background-position:left center;
+	text-decoration: none !important;
+}
+
+header a:first-child {
+	text-decoration: none !important;
 }
 
 
@@ -255,7 +268,7 @@ header ul {
 
 header li {
 	list-style-type: none;
-  width:132px;
+  width:140px;
   height:15px;
 	margin-bottom: 12px;
 	line-height: 1em;
@@ -318,11 +331,28 @@ section {
 /* Footer */
 
 footer {
-  width:170px;
+	width:100%;
   float:left;
-  position:fixed;
-  bottom:10px;
-	padding-left: 50px;
+	border-top: 1px solid #999;
+	margin:10px 0 0 0;
+	padding:0;	
+}
+
+footer ul, footer p {
+	margin:0;
+	padding:0;
+}
+footer li {
+	display: inline;
+	list-style-type: none;
+	margin:0;
+	padding:0px 10px 0px 10px;
+	border-left: thin solid #999;
+}
+
+footer li:first-child {
+	padding:0px 10px 0px 0px;
+	border: none;
 }
 
 @media print, screen and (max-width: 960px) {
@@ -339,11 +369,11 @@ footer {
   }
 
 	footer {
-		border-top: 1px solid #ccc;
-		margin:0 84px 0 50px;
+		border-top: 1px solid #000;
+		margin:10px 0 0 0;
 		padding:0;
 	}
-
+	
   header {
     padding-right:320px;
   }
