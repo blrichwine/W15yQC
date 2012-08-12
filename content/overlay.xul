@@ -63,10 +63,10 @@
   </menupopup>
   
   <toolbarpalette id="BrowserToolbarPalette">
-  <toolbarbutton id="W15yToolbarPaletteButton" 
-    label="&W15yQCLabel;" tooltiptext="&W15yQCLabel;"
-    oncommand="blr.W15yQC.fnInspect();" />
-</toolbarpalette>
+    <toolbarbutton id="W15yToolbarPaletteButton" 
+      label="&W15yQCLabel;" tooltiptext="&W15yQCLabel;" class="toolbarbutton-1 chromeclass-toolbar-additional custombutton" style="list-style-image: url('chrome://w15yqc/skin/W15yQCIcon16x16.png') !important"
+      oncommand="blr.W15yQC.fnInspect();" />
+  </toolbarpalette>
   
   <toolbar id="addon-bar">
     <toolbarbutton

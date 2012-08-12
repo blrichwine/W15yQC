@@ -3,7 +3,7 @@
    cursor: pointer;
 }
 #W15yToolbarPaletteButton {
-   list-style-image: url("chrome://W15yQC/skin/W15yQC52x16.png");
+   list-style-image: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") !important;
    cursor: pointer;
 }
 
