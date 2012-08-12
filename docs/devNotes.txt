@@ -57,6 +57,14 @@
             I cannot find the W15yQC toolbar button. Where is it?
             One of the W15yQC keyboard shortcuts overrides a shortcut used by another important extension of mine. What can I do?
             Tips and Tricks
+          Screencasts to make:
+            Installing
+            Configuring icons
+            Setting options
+            Uninstalling
+            Using contrast tools
+            Using an inspector dialog
+            
       *** FIX ASAP***
         - The view->Toolbars->Customize... doesn't show the icon for W15yQC
         - Table sort in HTML results is not ignoring case: Link Text on links table
