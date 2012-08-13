@@ -342,6 +342,7 @@ footer ul, footer p {
 	margin:0;
 	padding:0;
 }
+
 footer li {
 	display: inline;
 	list-style-type: none;
@@ -387,14 +388,20 @@ footer li:first-child {
     display:inline;
   }
 
-  header ul {
+	div#downloads2 {
     position:absolute;
-    right:130px;
-    top:84px;
+    right:300px;
+    top:40px;
+  }
+
+  div#downloads1 {
+    position:absolute;
+    right:110px;
+    top:40px;
   }
 }
 
-@media print, screen and (max-width: 720px) {
+@media print, screen and (max-width: 800px) {
   body {
     word-wrap:break-word;
   }
@@ -404,6 +411,16 @@ footer li:first-child {
 		margin-right: 0;
   }
 
+  div#downloads1 {
+    position:absolute;
+    right:80px;
+    top:20px;
+  }
+
+	div#downloads2 {
+		display:none;
+	}
+	
 	section {
     padding:10px 0 10px 20px;
     margin:0 0 30px;
@@ -418,12 +435,12 @@ footer li:first-child {
   }
 }
 
-@media print, screen and (max-width: 480px) {
+@media print, screen and (max-width: 500px) {
 
-  header ul li.download {
+  div#downloads1, div#downloads2 {
     display:none;
   }
-
+	
 	footer {
 		margin: 0 0 0 20px;
 	}
