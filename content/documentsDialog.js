@@ -31,14 +31,14 @@
  *    
  * 
  */
-if (!blr) var blr = {};
-if (!blr.a11yTools) blr.a11yTools = {};
+if (!blr) { var blr = {}; }
 
 /*
  * Object:  QuickW15yDocumentsDialog
  * Returns:
  */
 blr.W15yQC.DocumentsDialog = {
+    aDocumentsList: null,
     fnPopulateTree: function(aDocumentsList) {
         if(aDocumentsList != null && aDocumentsList.length && aDocumentsList.length > 0) {
             var tbc = document.getElementById('treeboxChildren');
@@ -98,26 +98,24 @@ blr.W15yQC.DocumentsDialog = {
     },
     
     init: function(dialog) {
-        var aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-        blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
-        
-        blr.W15yQC.DocumentsDialog.fnPopulateTree(aDocumentsList);
-        
-        return [aDocumentsList];
+        blr.W15yQC.fnReadUserPrefs();
+        blr.W15yQC.DocumentsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
+        blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.DocumentsDialog.aDocumentsList);
+        blr.W15yQC.DocumentsDialog.fnPopulateTree(blr.W15yQC.DocumentsDialog.aDocumentsList);
     },
     
-    cleanup: function(aResults) {
-        if(aResults != null) {
-            for(var i=0;i<aResults[0].length;i++) blr.W15yQC.resetHighlightElement(aResults[0][i].doc);
-            aResults[0]=null;
+    cleanup: function() {
+        if(blr.W15yQC.DocumentsDialog.aDocumentsList != null) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
+            blr.W15yQC.DocumentsDialog.aDocumentsList=null;
         }
     },
     
-    updateNotesField: function(aResults, bHighlightElement) {
+    updateNotesField: function(bHighlightElement) {
         var treebox = document.getElementById('treebox');
         var textbox = document.getElementById('note-text');
         
-        if(aResults != null && aResults.length>0) {
+        if(blr.W15yQC.DocumentsDialog.aDocumentsList != null && blr.W15yQC.DocumentsDialog.aDocumentsList.length>0) {
         if(bHighlightElement === null) bHighlightElement = true;
 
         var selectedRow = treebox.currentIndex;
@@ -127,27 +125,27 @@ blr.W15yQC.DocumentsDialog = {
         }
         
         
-        if(aResults[0][selectedRow].notes != null) {
-            textbox.value = blr.W15yQC.fnMakeTextNotesList(aResults[0][selectedRow]);
+        if(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].notes != null) {
+            textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow]);
         } else {
             textbox.value = '';
         }
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: '+aResults[0][selectedRow].URL, "\n\n");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[0][selectedRow].title, "\nTitle: ");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[0][selectedRow].compatMode, "\nCompatibility Mode: ");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[0][selectedRow].docType, "\nDocument Type: ");
-        for(var i=0;i<aResults[0].length;i++) blr.W15yQC.resetHighlightElement(aResults[0][i].doc);
-        if(bHighlightElement != false) blr.W15yQC.highlightElement(aResults[0][selectedRow].doc.body, aResults[0][selectedRow].doc);
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Title: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].title, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Compatibility Mode: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].compatMode, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Document Type: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].docType, "\n\n");
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: '+blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].URL, "\n\n");
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
+        if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.body, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc);
         }        
     },
     
-    generateReportHTML: function(aResults) {
+    generateReportHTML: function() {
         var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayDocumentsResults(reportDoc, aResults[0]);
+        blr.W15yQC.fnDisplayDocumentsResults(reportDoc, blr.W15yQC.DocumentsDialog.aDocumentsList);
         blr.W15yQC.fnDisplayFooter(reportDoc);        
     },
     
-    validateDocumentContents: function(aResults) {
+    validateDocumentContents: function() {
 
         var treebox = document.getElementById('treebox');
         var selectedRow = treebox.currentIndex;
@@ -159,7 +157,7 @@ blr.W15yQC.DocumentsDialog = {
             form.setAttribute('action', 'http://validator.w3.org/check');
             form.setAttribute('enctype', 'multipart/form-data');
     
-            var de = aResults[0][selectedRow].doc.documentElement;
+            var de = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.documentElement;
             var ie = reportDoc.createElement('input');
             ie.setAttribute('id', 'direct_prefill_no');
             ie.setAttribute('name', 'prefill');
@@ -177,11 +175,11 @@ blr.W15yQC.DocumentsDialog = {
         }
     },
 
-    validateDocumentURL: function(aResults) {
+    validateDocumentURL: function() {
         var treebox = document.getElementById('treebox');
         var selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
-            var URL = aResults[0][selectedRow].doc.URL;
+            var URL = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.URL;
             if(URL != null) {
                 window.open('http://validator.w3.org/check?uri='+encodeURI(URL)+'&charset=%28detect+automatically%29&doctype=Inline&group=0');
             }    

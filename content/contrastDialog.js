@@ -31,8 +31,7 @@
  *    
  * 
  */
-if (!blr) var blr = {};
-if (!blr.a11yTools) blr.a11yTools = {};
+if (!blr) { var blr = {}; }
 
 /*
  * Object:  QuickW15yContrastDialog
@@ -48,9 +47,30 @@ blr.W15yQC.ContrastDialog = {
     color2enabled: false,
     
     init: function(dialog) {
+        blr.W15yQC.fnReadUserPrefs();
+        if(dialog!=null && dialog.arguments != null && dialog.arguments.length>2) {
+            blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(dialog.arguments[1]);
+            blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(dialog.arguments[2]);
+        }
         blr.W15yQC.ContrastDialog.fnColor1SliderChange();
         blr.W15yQC.ContrastDialog.fnColor2SliderChange();
         blr.W15yQC.ContrastDialog.fnBGSliderChange();
+        blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
+    },
+    
+    forceMinSize: function(dialog) {
+        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<940 || dialog.outerHeight!=610)) { dialog.resizeTo(Math.max(940,dialog.outerWidth),610); }
+        var gbc1=document.getElementById('gbColor1');
+        var resultsC1BG=document.getElementById('resultsC1BG'); 
+        if(gbc1!=null && resultsC1BG!=null) {
+            var rect = gbc1.getBoundingClientRect();
+            if(rect!=null) {
+                var width=rect.right-rect.left;
+                if(width>50) {
+                    resultsC1BG.setAttribute('style','max-width:'+width.toString()+'px');
+                }
+            }
+        }
     },
     
     fnGetColorString: function(ic) {
@@ -157,8 +177,9 @@ blr.W15yQC.ContrastDialog = {
     
 // ----- Color 1
 
-    fnColor1HTMLColorChange: function() {
+    fnColor1HTMLColorChange: function(newColor) {
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
+            if(newColor!=null) document.getElementById('tbHTMLColor1').value=newColor;
             blr.W15yQC.ContrastDialog.updatingValues = true;
             var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor1').value);
             var r = document.getElementById('sRed1').value = RGB[0];
@@ -298,8 +319,9 @@ blr.W15yQC.ContrastDialog = {
     
 // ------ BG Color
 
-    fnBGHTMLColorChange: function() {
+    fnBGHTMLColorChange: function(newColor) {
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
+            if(newColor!=null) document.getElementById('tbHTMLColorBG').value=newColor;
             blr.W15yQC.ContrastDialog.updatingValues = true;
             var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColorBG').value);
             var r = document.getElementById('sRedBG').value = RGB[0];
@@ -387,21 +409,10 @@ blr.W15yQC.ContrastDialog = {
         document.getElementById('resultsC2BGContrast').value = lrc2bg;
         document.getElementById('resultsC1C2Contrast').value = lrc1rc2;
         
-        document.getElementById('C1BGWCAG2AACompliant').value = (lrc1bg >= 4.5) ? 'Yes' : 'No';
-        document.getElementById('C1BGWCAG2AACompliant18p').value = (lrc1bg >= 3) ? 'Yes' : 'No';
-        document.getElementById('C1BGWCAG2AAACompliant').value = (lrc1bg >= 7) ? 'Yes' : 'No';
-        document.getElementById('C1BGWCAG2AAACompliant18p').value = (lrc1bg >= 4.5) ? 'Yes' : 'No';
-        
-        document.getElementById('C2BGWCAG2AACompliant').value = (lrc2bg >= 4.5) ? 'Yes' : 'No';
-        document.getElementById('C2BGWCAG2AACompliant18p').value = (lrc2bg >= 3) ? 'Yes' : 'No';
-        document.getElementById('C2BGWCAG2AAACompliant').value = (lrc2bg >= 7) ? 'Yes' : 'No';
-        document.getElementById('C2BGWCAG2AAACompliant18p').value = (lrc2bg >= 4.5) ? 'Yes' : 'No';
-        
-        document.getElementById('C1C2WCAG2AACompliant').value = (lrc1rc2 >= 4.5) ? 'Yes' : 'No';
-        document.getElementById('C1C2WCAG2AACompliant18p').value = (lrc1rc2 >= 3) ? 'Yes' : 'No';
-        document.getElementById('C1C2WCAG2AAACompliant').value = (lrc1rc2 >= 7) ? 'Yes' : 'No';
-        document.getElementById('C1C2WCAG2AAACompliant18p').value = (lrc1rc2 >= 4.5) ? 'Yes' : 'No';
-        
+        blr.W15yQC.ContrastDialog.setResults(lrc1bg,'C1BGWCAG2AACompliant','C1BGWCAG2AACompliant18p','C1BGWCAG2AAACompliant','C1BGWCAG2AAACompliant18p');
+        blr.W15yQC.ContrastDialog.setResults(lrc2bg,'C2BGWCAG2AACompliant','C2BGWCAG2AACompliant18p','C2BGWCAG2AAACompliant','C2BGWCAG2AAACompliant18p');
+        blr.W15yQC.ContrastDialog.setResults(lrc1rc2,'C1C2WCAG2AACompliant','C1C2WCAG2AACompliant18p','C1C2WCAG2AAACompliant','C1C2WCAG2AAACompliant18p');
+
         var if1 = document.getElementById("iframeC1BG");
         var c1=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
         var c2=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc2);
@@ -423,9 +434,31 @@ blr.W15yQC.ContrastDialog = {
         if3.contentDocument.body.style.color=c1;
         if3.contentDocument.body.style.backgroundColor=bg;
         if3.contentDocument.body.style.margin='0';
-        if3.contentDocument.body.style.padding='10px';
+        if3.contentDocument.body.style.padding='7px';
         if3.contentDocument.body.innerHTML='<div style="width:16px;height:16px;background-color:'+c1+';margin:3px;float:left"></div><div style="width:16px;height:16px;background-color:'+c2+';margin:3px;float:left"></div><div style="color:'+c1+';float:right;width:210px">This has <span style="color:'+c2+'">two different</span> colors in it.</div>';
         
+    },
+    
+    setResults: function(lRatio,id1,id2,id3,id4) {
+        document.getElementById(id1).value = (lRatio >= 4.5) ? 'Yes' : 'No';
+        document.getElementById(id2).value = (lRatio >= 3) ? 'Yes' : 'No';
+        document.getElementById(id3).value = (lRatio >= 7) ? 'Yes' : 'No';
+        document.getElementById(id4).value = (lRatio >= 4.5) ? 'Yes' : 'No';
+        document.getElementById(id1).style.backgroundColor = (lRatio >= 4.5) ? '#FDFDFD' : '#FFA6A6';
+        document.getElementById(id2).style.backgroundColor = (lRatio >= 3) ? '#FDFDFD' : '#FFA6A6';
+        document.getElementById(id3).style.backgroundColor = (lRatio >= 7) ? '#FDFDFD' : '#FFA6A6';
+        document.getElementById(id4).style.backgroundColor = (lRatio >= 4.5) ? '#FDFDFD' : '#FFA6A6';
+    },
+ 
+    addSecondColor: function() {
+        var gbColor2=document.getElementById('gbColor2');
+        var resultsC1C2=document.getElementById('resultsC1C2');
+        var resultsC2BG=document.getElementById('resultsC2BG');
+        var buttonaddColor=document.getElementById('button-addColor');
+        gbColor2.hidden=false;
+        resultsC1C2.hidden=false;
+        resultsC2BG.hidden=false;
+        buttonaddColor.hidden=true;
     },
     
     cleanup: function() {

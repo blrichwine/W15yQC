@@ -91,7 +91,7 @@ mkdir -v -p $TMP_DIR/chrome
 JAR_FILE=$TMP_DIR/chrome/$APP_NAME.jar
 echo "Generating $JAR_FILE..."
 for CHROME_SUBDIR in $CHROME_PROVIDERS; do
-  find $CHROME_SUBDIR \( -path '*CVS*' -o -path '*.svn*' \) -prune -o -type f -print | grep -v \~ >> files
+  find $CHROME_SUBDIR \( -path '*/.git/*' -o -path '*.DS_Store*' \) -prune -o -type f -print | grep -v \~ >> files
 done
 
 #zip -0 -r $JAR_FILE -@ < files

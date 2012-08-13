@@ -31,8 +31,7 @@
  *    
  * 
  */
-if (!blr) var blr = {};
-if (!blr.a11yTools) blr.a11yTools = {};
+if (!blr) { var blr = {}; }
 
 /*
  * Object:  QuickW15yLicenseDialog

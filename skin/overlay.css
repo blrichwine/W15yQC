@@ -2,8 +2,24 @@
    list-style-image: url("chrome://W15yQC/skin/W15yQC52x16.png");
    cursor: pointer;
 }
-#W15yToolbarPaletteButton {
-   list-style-image: url("chrome://W15yQC/skin/W15yQC52x16.png");
+#W15yNavBarPaletteButton {
+   list-style-image: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") !important;
+   cursor: pointer;
+}
+#W15yTPB-HTMLReport {
+   list-style-image: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") !important;
+   cursor: pointer;
+}
+#W15yTPB-InspectorDialogs {
+   list-style-image: url("chrome://w15yqc/skin/inspectorIcon16x16.png") !important;
+   cursor: pointer;
+}
+#W15yTPB-Tools {
+   list-style-image: url("chrome://w15yqc/skin/toolsIcon16x16.png") !important;
+   cursor: pointer;
+}
+#W15yTPB-Options {
+   list-style-image: url("chrome://w15yqc/skin/optionsIcon16x16.png") !important;
    cursor: pointer;
 }
 
@@ -15,14 +31,49 @@ treechildren::-moz-tree-row(warning) {
   background-color: #ffc900;
 }
 
+treechildren::-moz-tree-cell-text(selected){
+  font-weight: 500;
+}
+
 treechildren::-moz-tree-row(failed, selected){
-  background-color:#e66f6f;
+  background-color:#8A4343;
 }
 
 treechildren::-moz-tree-row(warning, selected) {
-  background-color: #f1bd00;
+  background-color: #6b5600;
 }
 
 treechildren::-moz-tree-cell(center) {
   text-align:center;
+}
+
+dialog#aboutDialog .name {
+  background: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") no-repeat left center !important;
+  font-size: large;
+  font-weight: bold;
+  padding-left:20px;
+}
+
+dialog#aboutDialog .version {
+  font-size: medium;
+  font-weight: bold;
+  padding-left:20px;
+}
+
+dialog#aboutDialog .title {
+   margin-top: 5px;
+   font-size: medium;
+   font-weight: bold;
+   padding-left:20px;
+}
+
+dialog#aboutDialog .text {
+   margin-left: 35px;
+}
+
+dialog#aboutDialog .url {
+   margin-left: 35px;
+   color:blue;
+   text-decoration: underline;
+   cursor: pointer;
 }

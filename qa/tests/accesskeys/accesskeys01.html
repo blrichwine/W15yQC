@@ -1,0 +1,67 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--
+Checks covered:
+ akConfict
+
+
+
+ -->
+  <style>
+	  iframe {
+			height: 50px;
+			width: 700px;
+		}
+		.skip {
+			position: absolute !important;
+			clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+			clip: rect(1px, 1px, 1px, 1px);
+			padding:0 !important;
+			border:0 !important;
+			height: 1px !important;
+			width: 1px !important;
+			overflow: hidden;
+		}
+		.hiddenFromAll {
+			display:none;
+			visibility:hidden;
+		}
+	</style>
+</head>
+<body lang="en-US"> 
+	<h1>Accesskey Tests</h1>
+	<h2>Checks Covered:</h2>
+		<ul>
+			<li></li>
+		</ul>
+		
+	<p>Here is a named anchor with accesskey a:
+	<a id="l1" name="namedAnchor01" accesskey="a"></a></p>
+
+	<p>Here is a a typical link with accesskey e: 
+	<a id="l2" href="http://www.google.com" accesskey="e">Google</a></p>
+	
+	<p><a id="a3#4" href="http://www.nowhereville.org" accesskey="b">Here is a link with an invalid ID</a></p>
+
+	<p id="if5"><a id="if5" href="non-unique.html" accesskey="i">Here is an link with a non-unique ID:</a></p>
+	
+	<p><a id="l6" href="outer.html" accesskey="l">This link has a conflict with IE.</a></p>
+	
+	<p>Here is a non-unique accesskey: <a href="where.html" accesskey="q">more...</a></p>
+
+	<p>Here is a link with the same accesskey: <a href="where.html" accesskey="q">junk...</a></p>
+
+	<p>Here is a link that leaves a user wondering what <a href="next.html">next ></a></p>
+	
+	<p>Here is a link that should fail due to being only ascii <a href="next.html" accesskey="w">></a></p>
+	
+	<p>Here is an accesskey that has no link text or other label<a href="danger.html" accesskey="t"></a>.</p>
+	
+	<p>Here is an accesskey that has no link text but has a title<a href="danger.html" accesskey="u" title="title text for accesskey=u"></a>.</p>
+	
+	<p>Here is an accesskey that has no link text but has a title<a href="danger.html" accesskey="v" aria-label="aria label for v"></a>.</p>
+
+	<p>Here is an accesskey that has has a non unique label <a href="danger.html" accesskey="x" title="title text for accesskey=u"></a>.</p>
+</body>
+</html>

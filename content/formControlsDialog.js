@@ -31,15 +31,19 @@
  *    
  * 
  */
-if (!blr) var blr = {};
-if (!blr.a11yTools) blr.a11yTools = {};
+if (!blr) { var blr = {}; }
 
 /*
  * Object:  QuickW15yFormControlsDialog
  * Returns:
  */
 blr.W15yQC.FormControlsDialog = {
-    
+    FirebugO: null,
+    aDocumentsList: null,
+    aFormsList: null,
+    aFormControlsList: null,
+    oLastTreeviewToHaveFocus: null,
+    aLastList: null,
     fnPopulateTree: function(aDocumentsList, aFormsList, aFormControlsList) {
         if(aDocumentsList != null && aFormControlsList != null && aFormControlsList.length && aFormControlsList.length > 0) {
             var bHasId = false;
@@ -227,106 +231,218 @@ blr.W15yQC.FormControlsDialog = {
                     treeitem.appendChild(treerow);
                     tbc.appendChild(treeitem);
                 }
-                blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+                blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox2'));
                 if(aFormControlsList.length==1) {
-                    blr.W15yQC.FormControlsDialog.updateNotesField([aDocumentsList,aFormControlsList], false);
+                    blr.W15yQC.FormControlsDialog.updateNotesField2([aDocumentsList,aFormControlsList], false);
                 }
             }
         } else {
             var textbox = document.getElementById('note-text');
             textbox.value = "No form elements were detected.";
         }
-        return aFormsList;
     },
     
     init: function(dialog) {
-        var aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-        blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
+        blr.W15yQC.fnReadUserPrefs();
+        blr.W15yQC.FormControlsDialog.FirebugO=dialog.arguments[1];
+        blr.W15yQC.FormControlsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
+        blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);
 
-        var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.opener.parent._content.document, null, aDocumentsList);
-        var aFormControlsList = aFormControlsLists[1];
-        var aFormsList = aFormControlsLists[0];
-        blr.W15yQC.fnAnalyzeFormControls(aFormsList, aFormControlsList, aDocumentsList);
+        var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.opener.parent._content.document, null, blr.W15yQC.FormControlsDialog.aDocumentsList);
+        blr.W15yQC.FormControlsDialog.aFormControlsList = aFormControlsLists[1];
+        blr.W15yQC.FormControlsDialog.aFormsList = aFormControlsLists[0];
+        blr.W15yQC.fnAnalyzeFormControls(blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList, blr.W15yQC.FormControlsDialog.aDocumentsList);
         
-        blr.W15yQC.FormControlsDialog.fnPopulateTree(aDocumentsList, aFormsList, aFormControlsList);
-        
-        return [aDocumentsList, aFormControlsList, aFormsList];
+        blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
+        if(blr.W15yQC.FormControlsDialog.FirebugO == null || !blr.W15yQC.FormControlsDialog.FirebugO.Inspector ) { document.getElementById('button-showInFirebug').hidden=true; }
     },
     
-    cleanup: function(aResults) {
-        if(aResults != null) {
-            for(var i=0;i<aResults[0].length;i++) blr.W15yQC.resetHighlightElement(aResults[0][i].doc);
-            aResults[0]=null;
-            aResults[1]=null;
-            aResults[2]=null;
-            aResults=null;
+    cleanup: function() {
+        if(blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            blr.W15yQC.FormControlsDialog.aDocumentsList=null;
+            blr.W15yQC.FormControlsDialog.aFormControlsList=null;
+            blr.W15yQC.FormControlsDialog.aFormsList=null;
+            blr.W15yQC.FormControlsDialog.FirebugO=null;
+            blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=null;
+            blr.W15yQC.FormControlsDialog.aLastList=null;
         }
     },
     
-    updateNotesField1: function(aResults, bHighlightElement) {
-        var treebox = document.getElementById('treebox1');
-        var textbox = document.getElementById('note-text');
+    updateNotesField1: function(bHighlightElement) {
+        var treebox = document.getElementById('treebox1'),
+            textbox = document.getElementById('note-text');
 
-        if(bHighlightElement === null) bHighlightElement = true;
-
-        var selectedRow = treebox.currentIndex;
-        if(selectedRow == null || treebox.currentIndex < 0) {
-            selectedRow = 0;
-            bHighlightElement = false;
-        }
-        
-        if(aResults[2][selectedRow].notes != null) {
-            var sPrefix = 'Notes';
-            if(aResults[2][selectedRow].failed) {
-                sPrefix = 'Failed';
-            } else if(aResults[2][selectedRow].warning) {
-                sPrefix = 'Warning';
+        blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=treebox;
+            blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormsList;
+        if(blr.W15yQC.FormControlsDialog.aFormsList!=null && blr.W15yQC.FormControlsDialog.aFormsList.length>0) {
+            if(bHighlightElement === null) bHighlightElement = true;
+    
+            var selectedRow = treebox.currentIndex;
+            if(selectedRow == null || treebox.currentIndex < 0) {
+                selectedRow = 0;
+                bHighlightElement = false;
             }
-            textbox.value = sPrefix+': '+aResults[2][selectedRow].notes;
-        } else {
-            textbox.value = '';
+            
+            if(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].notes != null) {
+                var sPrefix = 'Notes';
+                if(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].failed) {
+                    sPrefix = 'Failed';
+                } else if(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].warning) {
+                    sPrefix = 'Warning';
+                }
+                textbox.value = sPrefix+': '+blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].notes;
+            } else {
+                textbox.value = '';
+            }
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].nodeDescription, "\n\n");
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].xpath, "\n\n");
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
         }
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[2][selectedRow].nodeDescription, "\n\n");
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[2][selectedRow].xpath, "\n\n");
-        for(var i=0;i<aResults[0].length;i++) blr.W15yQC.resetHighlightElement(aResults[0][i].doc);
-        if(bHighlightElement != false) blr.W15yQC.highlightElement(aResults[2][selectedRow].node, aResults[2][selectedRow].doc);
     },
     
-    updateNotesField2: function(aResults, bHighlightElement) {
-        var treebox = document.getElementById('treebox2');
-        var textbox = document.getElementById('note-text');
+    updateNotesField2: function(bHighlightElement) {
+        var idCounter=null,
+            aFC=null,
+            el,
+            nodeID,
+            aLabels,
+            aIDs,
+            i,
+            treebox = document.getElementById('treebox2'),
+            textbox = document.getElementById('note-text');
+            blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=treebox;
+            blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+        if(blr.W15yQC.FormControlsDialog.aFormControlsList!=null && blr.W15yQC.FormControlsDialog.aFormControlsList.length>0) {
         
-        if(bHighlightElement === null) bHighlightElement = true;
-
-        var selectedRow = treebox.currentIndex;
-        if(selectedRow == null || treebox.currentIndex < 0) {
-            selectedRow = 0;
-            bHighlightElement = false;
-        }
-
-        if(aResults[1][selectedRow].notes != null) {
-            textbox.value = blr.W15yQC.fnMakeTextNotesList(aResults[1][selectedRow]);
-        } else {
-            textbox.value = '';
-        }
-        
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[1][selectedRow].nodeDescription, "\n\n");
-        
-        if(aResults[1][selectedRow].node != null) {
-            var box = aResults[1][selectedRow].node.getBoundingClientRect();
-            if(box != null) {
-                textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");
+            if(bHighlightElement === null) bHighlightElement = true;
+    
+            var selectedRow = treebox.currentIndex;
+            if(selectedRow == null || treebox.currentIndex < 0) {
+                selectedRow = 0;
+                bHighlightElement = false;
+            }
+            aFC=blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow];
+            if(aFC.notes != null) {
+                textbox.value = blr.W15yQC.fnMakeTextNotesList(aFC);
+            } else {
+                textbox.value = '';
+            }
+            
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.nodeDescription, "\n\n");
+            
+            if(aFC.node != null) {
+                var box = aFC.node.getBoundingClientRect();
+                if(box != null) {
+                    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");
+                }
+            }
+            textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.xpath, "\n");
+    
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            
+            if(bHighlightElement != false) {
+                idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', 0);
+                if(blr.W15yQC.fnIsFormControlNode(aFC.node)==true) {
+                    if(aFC.node.hasAttribute('aria-labelledby')) {
+                        aIDs=aFC.node.getAttribute('aria-labelledby').split(' ');
+                        for(i=0;i<aIDs.length;i++) {
+                            el=aFC.node.ownerDocument.getElementById(aIDs[i]);
+                            if(el!=null) {idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', idCounter);}
+                        }
+                    } else {
+                        el=aFC.node.parentNode;
+                        while(el!=null && el.tagName.toLowerCase() != 'label' && el.tagName.toLowerCase() != 'body') {el=el.parentNode;}
+                        if(el!=null && el.tagName.toLowerCase()=='label') {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, 'blue', idCounter);}
+                        el=aFC.node.parentNode;
+                        while(el!=null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {el=el.parentNode;}
+                        if(el!=null && el.tagName.toLowerCase()=='fieldset') {
+                            aLabels=el.getElementsByTagName('legend');
+                            if(aLabels!=null && aLabels.length>0) {idCounter=blr.W15yQC.highlightElement(aLabels[0], aLabels[0].ownerDocument, '#AAAAFF', idCounter);}
+                        }
+                        if(aFC.node.hasAttribute('id')) {
+                            nodeID=aFC.node.getAttribute('id');
+                            aLabels=aFC.node.ownerDocument.getElementsByTagName('label');
+                            if(aLabels!=null && aLabels.length>0) {
+                                for(i=0;i<aLabels.length;i++) {
+                                    if(aLabels[i].getAttribute('for')==nodeID) {idCounter=blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, 'blue', idCounter);}
+                                }
+                            }
+                        }
+                    }
+                    if(aFC.node.hasAttribute('aria-describedby')) {
+                        aIDs=aFC.node.getAttribute('aria-describedby').split(' ');
+                        for(i=0;i<aIDs.length;i++) {
+                            el=aFC.node.ownerDocument.getElementById(aIDs[i]);
+                            if(el!=null) {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, 'green', idCounter);}
+                        }
+                    }                    
+                }
             }
         }
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, aResults[1][selectedRow].xpath, "\n");
+    },
 
-        for(var i=0;i<aResults[0].length;i++) blr.W15yQC.resetHighlightElement(aResults[0][i].doc);
-        if(bHighlightElement != false) blr.W15yQC.highlightElement(aResults[1][selectedRow].node, aResults[1][selectedRow].doc);
+    showInFirebug: function() {
+        var treebox,aList;
+        if(blr.W15yQC.FormControlsDialog.FirebugO!=null) {
+            try{
+                if(blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length && blr.W15yQC.FormControlsDialog.aFormControlsList.length>0) {
+                    if(blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
+                        treebox=blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
+                        aList=blr.W15yQC.FormControlsDialog.aLastList;
+                    } else {
+                        treebox = document.getElementById('treebox2');
+                        aList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+                    }
+                    var selectedRow = treebox.currentIndex;
+                    if(selectedRow == null || treebox.currentIndex < 0) {
+                        selectedRow = 0;
+                    }
+                    if(blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
+                        blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+                    }
+                    blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node.ownerDocument.defaultView.focus();
+                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+                }
+            } catch(ex) {}
+        }
     },
     
-    generateReportHTML: function(aResults) {
+     moveToSelectedElement: function() {
+        var treebox, aList;
+        if(blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
+            treebox=blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
+            aList=blr.W15yQC.FormControlsDialog.aLastList;
+        } else {
+            treebox = document.getElementById('treebox2');
+            aList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+        }
+        var selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+        }        
+    },
+    
+    moveFocusToSelectedElement: function() {
+        var treebox, aList;
+        if(blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
+            treebox=blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
+            aList=blr.W15yQC.FormControlsDialog.aLastList;
+        } else {
+            treebox = document.getElementById('treebox2');
+            aList=blr.W15yQC.FormControlsDialog.aFormControlsList;
+        }
+        var selectedRow = treebox.currentIndex;
+        if(selectedRow != null && treebox.currentIndex >= 0) {
+            blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+        }        
+    },
+    
+    generateReportHTML: function() {
         var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayFormControlResults(reportDoc, aResults[1]);
+        blr.W15yQC.fnDisplayFormControlResults(reportDoc, blr.W15yQC.FormControlsDialog.aFormControlsList);
         blr.W15yQC.fnDisplayFooter(reportDoc);        
     }
     
