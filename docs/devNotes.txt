@@ -58,7 +58,8 @@
             One of the W15yQC keyboard shortcuts overrides a shortcut used by another important extension of mine. What can I do?
             Tips and Tricks
           Screencasts to make:
-            Installing
+            Installing: http://screencast.com/t/vQWcAIoU3YB
+            
             Configuring icons
             Setting options
             Uninstalling
@@ -66,7 +67,11 @@
             Using an inspector dialog
             
       *** FIX ASAP***
-        - The view->Toolbars->Customize... doesn't show the icon for W15yQC
+        - Add support for ARIA headings
+        - Check for elements that activate TOC heading level mode and warn at the doc level
+        - Add tool to detect non-unique, invalid IDs
+        - Add warning for radio buttons that don't have fieldsets
+        - [FIXED]The view->Toolbars->Customize... doesn't show the icon for W15yQC
         - Table sort in HTML results is not ignoring case: Link Text on links table
         - Frames analysis does not list frame with duplicate titles
         - QA Form Control Test [].
