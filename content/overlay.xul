@@ -40,8 +40,10 @@
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
             <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="s" label="Remove Styles" 
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
-            <menuitem id="W15yQC_menuEntry_contrastCheckerDialog" accesskey="s" label="Contrast Checker" 
+            <menuitem id="W15yQC_menuEntry_contrastCheckerDialog" accesskey="o" label="Contrast Checker" 
                       oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
+            <menuitem id="W15yQC_menuEntry_idsChecker" accesskey="p" label="Problem IDs Checker"
+                      oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
           </menupopup>
         </menu>
         <menuseparator/>
@@ -88,6 +90,7 @@
           <menuitem id="W15yTPBMI-ContrastChecker" accesskey="" label="Contrast Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
           <menuitem id="W15yTPBMI-ContrastTool" accesskey="" label="Contrast Tool" oncommand="blr.W15yQC.openDialog('contrast');"/>
           <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Remove Styles" oncommand="blr.W15yQC.fnRemoveStyles();"/>
+          <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Options" label="Options" type="menu" onmouseover="" class="toolbarbutton">

@@ -827,6 +827,9 @@ ys: 'whys'
       docNonUniqueIDs: [1,1,false,null],
       docInvalidIDs: [1,1,false,null],
       
+      idIsNotUnique: [2,1,false,null],
+      idIsNotValid: [1,1,false,null],
+
       frameContentScriptGenerated: [0,0,false,null],
       frameTitleMissing: [2,0,false,null],
       frameTitleOnlyASCII: [2,0,false,null],
@@ -1369,6 +1372,10 @@ ys: 'whys'
         case 'lumCheck':
           dialogID = 'luminosityCheckDialog';
           dialogPath = 'chrome://W15yQC/content/luminosityCheckDialog.xul';
+          break;
+        case 'idsCheck':
+          dialogID = 'badIDResultsDialog';
+          dialogPath = 'chrome://W15yQC/content/badIDsDialog.xul';
           break;
         case 'options':
           dialogID = 'optionsDialog';
@@ -6665,6 +6672,55 @@ ys: 'whys'
       rd.body.appendChild(div);
     },
 
+
+    fnGetBadIDs: function (doc, aDocumentsList, rootNode, aBadIDsList) {
+      var docNumber, c, sID, idCount, frameDocument, bNotUnique, bNotValid, xPath, nodeDescription;
+      if (doc != null) {
+        if (aBadIDsList == null) { aBadIDsList = []; }
+        if (rootNode == null) { rootNode = doc.body; }
+        if (rootNode != null && rootNode.firstChild != null) {
+          for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
+            if (c.nodeType == 1) { // Only pay attention to element nodes
+              if (c.tagName && c.hasAttribute('id') == true) {
+                bNotUnique=false;
+                bNotValid=false;
+                sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
+                if(docNumber==null) { docNumber = blr.W15yQC.fnGetOwnerDocumentNumber(rootNode, aDocumentsList); }
+
+                if(aDocumentsList[docNumber-1].idHashTable.getItem(sID)>1) { bNotUnique=true; }  
+                if(blr.W15yQC.fnIsValidHtmlID(sID)==false) { bNotValid=true; }
+
+                if(bNotUnique == true || bNotValid==true) {
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  aBadIDsList.push(new blr.W15yQC.badId(c, xPath, nodeDescription, doc, aBadIDsList.length, docNumber, sID));
+                  if(bNotUnique==true) {
+                    blr.W15yQC.fnAddNote(aBadIDsList[aBadIDsList.length-1], 'idIsNotUnique');
+                    aBadIDsList[aBadIDsList.length-1].failed = true;
+                  } 
+                  if(bNotValid==true) {
+                    blr.W15yQC.fnAddNote(aBadIDsList[aBadIDsList.length-1], 'idIsNotValid');
+                    aBadIDsList[aBadIDsList.length-1].warning = true;
+                  } 
+                }
+              }
+
+              if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+                // get frame contents
+                frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+                blr.W15yQC.fnGetBadIDs(frameDocument, aDocumentsList, frameDocument.body, aBadIDsList);
+              } else { // keep looking through current document
+                blr.W15yQC.fnGetBadIDs(doc, aDocumentsList, c, aBadIDsList);
+              }
+            }
+          }
+        }
+      }
+      return aBadIDsList;
+    },
+
+
+
     /*
      *
      * ======== Inspect methods ========
@@ -7441,6 +7497,29 @@ ys: 'whys'
     failed: false,
     warning: false,
     stateDescription: null
+  };
+
+  blr.W15yQC.badId = function (node, xpath, nodeDescription, doc, orderNumber, ownerDocumentNumber, sID) {
+    this.node = node;
+    this.xpath = xpath;
+    this.nodeDescription = nodeDescription;
+    this.doc = doc;
+    this.orderNumber = orderNumber;
+    this.ownerDocumentNumber = ownerDocumentNumber;
+    this.id = sID;
+  };
+
+  blr.W15yQC.badId.prototype = {
+    node: null,
+    xpath: null,
+    nodeDescription: null,
+    doc: null,
+    orderNumber: null,
+    ownerDocumentNumber: null,
+    id: null,
+    notes: null,
+    failed: false,
+    warning: false
   };
 
   blr.W15yQC.table = function (node, xpath, nodeDescription, doc, orderNumber, role, nestingLevel, title, summary) {
