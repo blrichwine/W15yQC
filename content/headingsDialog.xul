@@ -49,7 +49,6 @@
 	    <xul:treecol ordinal="9" id="col-header-role"
 	       label="Role"
 	       sortDirection=""
-	       flex="1"
 	       onclick=""/>
             <xul:splitter ordinal="10" class="tree-splitter" />
 	    <xul:treecol ordinal="11" id="col-header-level"

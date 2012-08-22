@@ -851,6 +851,9 @@ ys: 'whys'
       
       ariaLmkAndLabelNotUnique: [2,0,false,null],
       ariaLmkNotUnique: [2,0,false,null],
+      ariaLevelAttributeValueInvalid: [2,0,false,null],
+      ariaHeadingMissingAriaLevel: [1,0,true,null],
+      ariaHasBothLabelAndLabelledBy: [2,0,true,null],
       ariaIDNotValid: [1,0,false,null],
       ariaIDNotUnique: [2,0,false,null],
 
@@ -2560,6 +2563,9 @@ ys: 'whys'
         if (node.hasAttribute('role') == true) {
           sAttributes = blr.W15yQC.fnJoin(sAttributes, 'role="' + blr.W15yQC.fnCutoffString(node.getAttribute('role'), maxAttributeLength) + '"', ' ');
         }
+        if (node.hasAttribute('aria-level') == true) {
+          sAttributes = blr.W15yQC.fnJoin(sAttributes, 'aria-level="' + blr.W15yQC.fnCutoffString(node.getAttribute('aria-level'), maxAttributeLength) + '"', ' ');
+        }
         if (node.hasAttribute('src') == true) {
           sSrc = node.getAttribute('src');
           if (/^\s*data:/.test(sSrc)) {
@@ -2581,7 +2587,7 @@ ys: 'whys'
           for (i = 0; i < node.attributes.length; i++) {
             attrName = node.attributes[i].name.toLowerCase();
             if (attrName !== 'type' && attrName !== 'id' && attrName !== 'name' && attrName !== 'value' &&
-                attrName !== 'role' && attrName !== 'src' && attrName !== 'alt' && attrName !== 'title' && attrName !== 'summary') {
+                attrName !== 'role' && attrName !== 'aria-level' && attrName !== 'src' && attrName !== 'alt' && attrName !== 'title' && attrName !== 'summary') {
               sAttributes = blr.W15yQC.fnJoin(sAttributes, node.attributes[i].name + '="' + blr.W15yQC.fnCutoffString(node.attributes[i].value, maxAttributeLength) + '"', ' ');
             }
           }
@@ -3769,6 +3775,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(no, 'ariaUnknownRole');
             }
           }
+        }
+        if(node.hasAttribute('aria-level')==true && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==false) {
+          blr.W15yQC.fnAddNote(no, 'ariaLevelAttributeValueInvalid', [node.getAttribute('aria-level')]);
+        }
+        if (node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='heading' && node.hasAttribute('aria-level')==false) {
+          blr.W15yQC.fnAddNote(no, 'ariaHeadingMissingAriaLevel');
+        }
+        if (node.hasAttribute('aria-label')==true && node.hasAttribute('aria-labelledby')==true && node.getAttribute('aria-label')>' ' && node.getAttribute('aria-labelledby')>' ') {
+          blr.W15yQC.fnAddNote(no, 'ariaHasBothLabelAndLabelledBy'); // TODO: Make this a real check for content getting replaced.
         }
         if (node.hasAttribute('aria-labelledby') == true) {
           sMissingIDs = null;
@@ -5232,7 +5247,7 @@ ys: 'whys'
     },
 
     fnGetHeadings: function (doc, rootNode, aHeadingsList) {
-      var c, frameDocument, tagName, headingLevel, xPath, nodeDescription, role, text;
+      var c, frameDocument, tagName, headingLevel, xPath, nodeDescription, role, text, bFoundHeading;
       if (aHeadingsList == null) { aHeadingsList = []; }
 
       if (doc != null) {
@@ -5245,24 +5260,37 @@ ys: 'whys'
               blr.W15yQC.fnGetHeadings(frameDocument, frameDocument.body, aHeadingsList);
             } else { // keep looking through current document
               if (c.tagName) {
+                bFoundHeading=false;
                 tagName = c.tagName.toLowerCase();
-                switch (tagName) {
-                case 'h1':
-                case 'h2':
-                case 'h3':
-                case 'h4':
-                case 'h5':
-                case 'h6':
-                  if (blr.W15yQC.fnNodeIsHidden(c) == false) {
-                    // Document heading
-                    headingLevel = tagName.substring(1);
-                    xPath = blr.W15yQC.fnGetElementXPath(c);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                    role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                    text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
-                    aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, headingLevel, text));
+                if(c.hasAttribute && c.hasAttribute('role') && c.getAttribute('role').toLowerCase()=='heading') {
+                  bFoundHeading=true;
+                  if(c.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))==true) {
+                    headingLevel=parseInt(c.getAttribute('aria-level'));
+                  } else { // TODO: Look deeper at this. JAWS 13 seems to default to heading level 2 if not specified
+                    headingLevel=2;
                   }
-                  break;
+                } else {
+                  switch (tagName) {
+                  case 'h1':
+                  case 'h2':
+                  case 'h3':
+                  case 'h4':
+                  case 'h5':
+                  case 'h6':
+                    if (blr.W15yQC.fnNodeIsHidden(c) == false) {
+                      // Document heading
+                      bFoundHeading=true;
+                      headingLevel = tagName.substring(1);
+                    }
+                    break;
+                  }
+                }
+                if(bFoundHeading==true) {
+                  xPath = blr.W15yQC.fnGetElementXPath(c);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                  role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                  text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
+                  aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, headingLevel, text));
                 }
               }
               blr.W15yQC.fnGetHeadings(doc, c, aHeadingsList);
