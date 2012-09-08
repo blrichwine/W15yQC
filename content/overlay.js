@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B01',
+    version: '1.0-B02',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -2014,7 +2014,7 @@ ys: 'whys'
         if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') { return true; }
+        if(sText == 'go' || sText == 'faq' || sText == 'map' | sText=='iu') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
@@ -2033,7 +2033,6 @@ ys: 'whys'
           case 'see here':
           case 'seehere':
           case 'touch':
-          case 'press':
           case 'touch here':
           case 'press here':
           case 'tap here':
@@ -2449,6 +2448,12 @@ ys: 'whys'
           return true;
         }
       }
+      if (node.hasAttribute && node.hasAttribute('role')) {
+        switch (node.getAttribute('role')) {
+        case 'radiogroup':
+          return true;
+        }
+      }
       return false;
     },
     
@@ -2465,7 +2470,7 @@ ys: 'whys'
           switch (node.getAttribute('role')) {
           case 'button':
           case 'checkbox':
-          case 'radiobutton':
+          case 'radio':
             return true;
           }
         }
@@ -2603,15 +2608,27 @@ ys: 'whys'
       return sDescription;
     },
 
-    fnGetLegendText: function (aNode) {
-      var legendNodes;
+    fnGetLegendText: function (aNode, bARIAOnly) {
+      var legendNodes, sLabelText=null;
+      if(bARIAOnly == null) bARIAOnly=false;
       if (aNode && aNode.nodeName) {
         //Seek upward until we reach a fieldset node
         // aNode = aNode.parentNode;
-        while ((aNode != null) && (aNode.nodeName.toLowerCase() != 'fieldset') && (aNode.nodeName.toLowerCase() != 'form') && (aNode.nodeName.toLowerCase() != 'body')) {
+        while ((aNode != null) && (aNode.nodeName.toLowerCase() != 'fieldset' || bARIAOnly==true) && (aNode.nodeName.toLowerCase() != 'form') && (aNode.nodeName.toLowerCase() != 'body') &&
+               (!aNode.hasAttribute || aNode.hasAttribute('role')==false || aNode.getAttribute('role').toLowerCase() != 'radiogroup')) {
           aNode = aNode.parentNode;
         }
-
+        if( (aNode.hasAttribute && aNode.hasAttribute('role') && aNode.getAttribute('role').toLowerCase() == 'radiogroup')) {
+          if (aNode.hasAttribute('aria-label')) {
+            sLabelText = blr.W15yQC.fnCleanSpaces(aNode.getAttribute('aria-label'));
+          }
+          if ((sLabelText == null || sLabelText.length < 1) && aNode.hasAttribute('aria-labelledby')) {
+            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(aNode.getAttribute('aria-labelledby'), aNode.ownerDocument));
+          }
+        }
+        if (sLabelText != null && sLabelText.length > 0) {
+          return sLabelText;
+        }
         if (aNode != null && aNode.nodeName.toLowerCase() == 'fieldset') {
           //We now have the fieldset, look for the legend attribute
           legendNodes = aNode.getElementsByTagName("LEGEND");
@@ -2662,7 +2679,7 @@ ys: 'whys'
       var sLabelText = null,
           aIDs,
           i;
-      if (sIDList && sIDList.split && doc && doc.getElementById) {
+      if (sIDList != null && doc != null) {
         aIDs = sIDList.split(' ');
         for (i=0;i<aIDs.length; i++) {
           sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(doc.getElementById(aIDs[i])), ' ');
@@ -2690,19 +2707,21 @@ ys: 'whys'
           explictLabelsList,
           i;
       if (node != null && node.getAttribute && doc != null) {
-        if (sLabelText == null || sLabelText.length < 1) {
+        if(node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') {
+          sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);
+        } else {
           implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
           if (implicitLabelNode != null) {
             sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
           }
-        }
-
-        if ((sLabelText == null || sLabelText.length < 1) && node.hasAttribute('id')) {
-          explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-          for (i = 0; i < explictLabelsList.length; i++) {
-            sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
+  
+          if ((sLabelText == null || sLabelText.length < 1) && node.hasAttribute('id')) {
+            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+            for (i = 0; i < explictLabelsList.length; i++) {
+              sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
+            }
+            sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
           }
-          sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
         }
       }
       return sLabelText;
@@ -2715,7 +2734,6 @@ ys: 'whys'
       /* Q: Is the decision that JAWS makes from the lack of the attribute or the string, does aria-label="" stop progression the same as no title attribute?
        * A: Empty aria-label and elements pointed to by aria-labelledby are the same as not having an aria-label or aria-labelled by (JAWS 13 + IE9 - Windows 7 32 bit)
        */
-
       var sLabelText = '',
           nTagName,
           inputType,
@@ -3022,6 +3040,13 @@ ys: 'whys'
 
             if (sLabelText.length < 1 && node.hasAttribute('alt')) {
               sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
+            }
+            
+            if(node.getAttribute('role').toLowerCase()=='radio') {
+              if (sLabelText.length < 1) { // TODO: Make sure this is correct
+                sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
+              }
+              sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node,true), sLabelText, ' '); // ARIA Radiogroups only apply to role='radio'
             }
           }
       }

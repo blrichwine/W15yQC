@@ -67,9 +67,12 @@
             Using an inspector dialog
             
       *** FIX ASAP***
-        - Add support for ARIA headings
+        - DETERMINE WHICH ELEMENTS FIELDSET LEGENDS APPLY TO, RADIOGROUPs
+        - Do <label>, <fieldset> work on ARIA form control roles (button, radio, etc.) IF NOT, fix effectiveLabel function
+        - Which elements have child text that works as a label for ARIA form control roles (radio?)
+        - QA support for ARIA headings
         - Check for elements that activate TOC heading level mode and warn at the doc level
-        - Add tool to detect non-unique, invalid IDs
+        - QA Add tool to detect non-unique, invalid IDs
         - Add warning for radio buttons that don't have fieldsets
         - [FIXED]The view->Toolbars->Customize... doesn't show the icon for W15yQC
         - Table sort in HTML results is not ignoring case: Link Text on links table
