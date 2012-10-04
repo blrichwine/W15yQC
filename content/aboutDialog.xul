@@ -11,7 +11,7 @@
 	 ondialogcancel=""
 	 buttons="accept" 
 	 onload="">
-	 <xul:vbox id="webdeveloper-about-details">
+	 <xul:vbox id="aboutDialog">
 			<xul:description value="W15y Quick Check" class="name"/>
 			<xul:description value="Version 1.0 - Beta 01" class="version"/>
 			<xul:description value="Released:" class="title"/>

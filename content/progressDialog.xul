@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:window
+	 id="progressDialog"
+	 title="Report Progress - W15y Quick Check"
+	 xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	 <xul:hbox id="w15yQCProgressDialog">
+			<xul:vbox flex="1" width="400" height="60" style="margin:10px">
+				 <xul:description id="titleText">Report Progress:</xul:description>
+				 <xul:progressmeter id="percent" mode="determined" value="0"/>
+				 <xul:description id="detailText" style="text-align:center"></xul:description>
+			</xul:vbox>
+	 </xul:hbox>
+</xul:window>

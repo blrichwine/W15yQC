@@ -644,6 +644,15 @@ ys: 'whys'
       }
       return 'String Bundle System Unavailable. Something serious is wrong!';
     },
+    
+    fnDoEvents: function() {
+      var thread;
+      try {
+        thread = Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThread;
+        while (thread.hasPendingEvents()) thread.processNextEvent(false);
+      } catch(ex) {
+      }
+    },
 
     fnIsValidLocale: function(sLocale) {
       return (/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/).test(sLocale); // QA iframeTests01.html
@@ -2023,19 +2032,25 @@ ys: 'whys'
           case 'click here':
           case 'click here for more':
           case 'click here to find out more':
+          case 'click this':
+          case 'click this for more':
+          case 'click this to find out more':
           case 'even more':
           case 'here':
           case 'more':
           case 'read':
+          case 'read this':
           case 'read more':
           case 'read more here':
           case 'see':
           case 'see here':
+          case 'see all':
           case 'seehere':
           case 'touch':
           case 'touch here':
           case 'press here':
           case 'tap here':
+          case 'this':
             return false;
           }
           if(!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
@@ -4400,12 +4415,13 @@ ys: 'whys'
       var c, level, i, frameDocument, sTagName, sRole, xPath, nodeDescription, sARIALabel, sState;
       if (aARIALandmarksList == null) { aARIALandmarksList = []; } 
       if (baseLevel == null) { baseLevel = 0; }
+      return aARIALandmarksList;
 
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
           if (c.nodeType == 1) { // Only pay attention to element nodes
-            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+            if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
               // determine level, and then get frame contents
               level = baseLevel+1;
               for(i=aARIALandmarksList.length-1; i>=0; i--) {
@@ -4417,7 +4433,7 @@ ys: 'whys'
               frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               blr.W15yQC.fnGetARIALandmarks(frameDocument, frameDocument.body, aARIALandmarksList, level);
             } else { // keep looking through current document
-              if (c != null && c.hasAttribute && c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && c.hasAttribute('role') == true) {
+              if (c.hasAttribute && c.hasAttribute('role') == true && blr.W15yQC.fnNodeIsHidden(c) == false) {
                 sTagName = c.tagName.toLowerCase();
                 sRole = c.getAttribute('role');
                 switch (sRole) {
@@ -5326,7 +5342,7 @@ ys: 'whys'
       return aHeadingsList;
     },
 
-    fnAnalyzeHeadings: function (aHeadingsList, aDocumentsList) {
+    fnAnalyzeHeadings: function (aHeadingsList, aDocumentsList, progressWindow) {
       var i, previousHeadingLevel;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
@@ -5339,6 +5355,14 @@ ys: 'whys'
         }
         previousHeadingLevel = 0;
         for (i = 0; i < aHeadingsList.length; i++) {
+          if((i % 4) == 0) {
+            if(progressWindow != null) {
+              progressWindow.document.getElementById('percent').value=Math.round(3*i/aHeadingsList.length)+12;
+              progressWindow.document.getElementById('detailText').value='Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString();
+              progressWindow.focus();
+              blr.W15yQC.fnDoEvents();
+            }
+          }
           if (aHeadingsList[i].level - previousHeadingLevel > 1) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); // QA: headings01.html
           }
@@ -5902,7 +5926,7 @@ ys: 'whys'
     },
 
 
-    fnAnalyzeLinks: function (aLinksList, aDocumentsList) {
+    fnAnalyzeLinks: function (aLinksList, aDocumentsList, progressWindow) {
       var i, aChildImages, j, linkText, maxRect, aSameHrefAndOnclick, aSameLinkText, aSoundsTheSame, aDiffTextSameHref, hrefsAreEqual,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
       blr.W15yQC.fnLog('fnAnalyzeLinks-starts');
@@ -5924,6 +5948,15 @@ ys: 'whys'
       }
 
       for (i = 0; i < aLinksList.length; i++) {
+        if(i>20 && (i % 5)==0){
+          if(progressWindow != null) {
+            progressWindow.document.getElementById('percent').value=Math.round(51*i/aLinksList.length)+24;
+            progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString();
+            progressWindow.focus();
+          }
+          blr.W15yQC.fnDoEvents();
+        }
+
         aChildImages=aLinksList[i].node.getElementsByTagName('img');
         if(aChildImages != null && aChildImages.length>0) {
           for(j=0; j< aChildImages.length; j++) { 
@@ -5968,7 +6001,7 @@ ys: 'whys'
               hrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL,aLinksList[i].href, aLinksList[j].doc.URL,aLinksList[j].href);
               bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text,aLinksList[j].text);
               if (aLinksList[j].text && aLinksList[j].text.length > 0) {
-                if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || hrefsAreEqual == false || aLinksList[i].href.length < 2)) {
+                if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || hrefsAreEqual == false || aLinksList[i].href.length < 1)) {
                   aSameLinkText.push(j+1);
                 } else if (aLinksList[i].length>2 && aLinksList[i].soundex == aLinksList[j].soundex && hrefsAreEqual == false) {
                   aSoundsTheSame.push(j+1);
@@ -6786,66 +6819,73 @@ ys: 'whys'
       blr.W15yQC.fnDisplayWindowDetails(rd);
     },
 
-    fnInspectDocuments: function (rd) {
+    fnInspectDocuments: function (rd, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aDocumentsList;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale());
 
       aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 2, 'Analyzing Documents');
       blr.W15yQC.fnAnalyzeDocuments(aDocumentsList);
       blr.W15yQC.fnDisplayDocumentsResults(rd, aDocumentsList);
       return aDocumentsList;
     },
 
-    fnInspectFrameTitles: function (rd, aDocumentsList) {
+    fnInspectFrameTitles: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aFramesList = blr.W15yQC.fnGetFrameTitles(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 7, 'Analyzing Frames');
       blr.W15yQC.fnAnalyzeFrameTitles(aFramesList, aDocumentsList);
       blr.W15yQC.fnDisplayFrameTitleResults(rd, aFramesList);
     },
 
-    fnInspectHeadings: function (rd, aDocumentsList) {
+    fnInspectHeadings: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aHeadingsList = blr.W15yQC.fnGetHeadings(window.top.content.document);
-      blr.W15yQC.fnAnalyzeHeadings(aHeadingsList, aDocumentsList);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 12, 'Analyzing Headings');
+      blr.W15yQC.fnAnalyzeHeadings(aHeadingsList, aDocumentsList, progressWindow);
       blr.W15yQC.fnDisplayHeadingsResults(rd, aHeadingsList);
     },
 
-    fnInspectARIALandmarks: function (rd, aDocumentsList) {
+    fnInspectARIALandmarks: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 17, 'Analyzing Landmarks');
       blr.W15yQC.fnAnalyzeARIALandmarks(aARIALandmarksList, aDocumentsList);
       blr.W15yQC.fnDisplayARIALandmarksResults(rd, aARIALandmarksList);
     },
 
-    fnInspectARIAElements: function (rd, aDocumentsList) {
+    fnInspectARIAElements: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aARIAElementsList = blr.W15yQC.fnGetARIAElements(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 22, 'Analyzing ARIA');
       // blr.W15yQC.fnAnalyzeARIAElements(aARIALandmarksList, aDocumentsList);
       blr.W15yQC.fnDisplayARIAElementsResults(rd, aARIAElementsList);
     },
 
-    fnInspectForms: function (rd, aDocumentsList) {
+    fnInspectForms: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.top.content.document, null, aDocumentsList),
           aFormControlsList = aFormControlsLists[1],
           aFormsList = aFormControlsLists[0];
+      blr.W15yQC.fnUpdateProgress(progressWindow, 80, 'Analyzing Forms');
       blr.W15yQC.fnAnalyzeFormControls(aFormsList, aFormControlsList, aDocumentsList);
       blr.W15yQC.fnDisplayFormResults(rd, aFormsList);
       blr.W15yQC.fnDisplayFormControlResults(rd, aFormControlsList);
     },
 
-    fnInspectLinks: function (rd, aDocumentsList) {
+    fnInspectLinks: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aLinksList = blr.W15yQC.fnGetLinks(window.top.content.document);
-      blr.W15yQC.fnAnalyzeLinks(aLinksList, aDocumentsList);
+      blr.W15yQC.fnAnalyzeLinks(aLinksList, aDocumentsList, progressWindow);
       blr.W15yQC.fnDisplayLinkResults(rd, aLinksList);
     },
 
-    fnInspectImages: function (rd, aDocumentsList) {
+    fnInspectImages: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aImagesList = blr.W15yQC.fnGetImages(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 87, 'Analyzing Images');
       blr.W15yQC.fnAnalyzeImages(aImagesList, aDocumentsList);
       blr.W15yQC.fnDisplayImagesResults(rd, aImagesList);
     },
@@ -6855,16 +6895,18 @@ ys: 'whys'
       var aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.top.content.document);
     },
 
-    fnInspectAccessKeys: function (rd, aDocumentsList) {
+    fnInspectAccessKeys: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aAccessKeysList = blr.W15yQC.fnGetAccessKeys(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 92, 'Analyzing Access Keys');
       blr.W15yQC.fnAnalyzeAccessKeys(aAccessKeysList, aDocumentsList);
       blr.W15yQC.fnDisplayAccessKeysResults(rd, aAccessKeysList);
     },
 
-    fnInspectTables: function (rd, aDocumentsList) {
+    fnInspectTables: function (rd, aDocumentsList, progressWindow) {
       blr.W15yQC.fnReadUserPrefs();
       var aTablesList = blr.W15yQC.fnGetTables(window.top.content.document);
+      blr.W15yQC.fnUpdateProgress(progressWindow, 97, 'Analyzing Tables');
       blr.W15yQC.fnAnalyzeTables(aTablesList, aDocumentsList);
       blr.W15yQC.fnDisplayTableResults(rd, aTablesList);
     },
@@ -6875,10 +6917,19 @@ ys: 'whys'
      *
      */
 
+    fnUpdateProgress: function(progressWindow, v, detailText) {
+      if(progressWindow != null && progressWindow.document) {
+        progressWindow.document.getElementById('percent').value=v;
+        progressWindow.document.getElementById('detailText').value=detailText;
+        progressWindow.focus();
+      }
+      blr.W15yQC.fnDoEvents();
+    },
+        
     fnInspect: function () {
-      var reportDoc, aDocumentsList, dialogID, dialogPath;
+      var reportDoc, aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
-      // Inspect ARIA Landmarks
+      // Sanity checks against the code:
       blr.W15yQC.fnNonDOMIntegrityTests();
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -6886,19 +6937,47 @@ ys: 'whys'
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
       }
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
+        blr.W15yQC.fnDoEvents();
         reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document);
         blr.W15yQC.fnInspectWindowTitle(reportDoc);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
+ 
         aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
+
         blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 10, 'Getting Headings');
+
+        blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList, progressWindow);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 15, 'Getting ARIA Landmarks');
+
         blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
-        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) { blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList); }
-        blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList);
-        blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList);
+
+        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+          blr.W15yQC.fnUpdateProgress(progressWindow, 18, 'Getting ARIA');
+          blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
+          }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 24, 'Getting Links');
+
+        blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList, progressWindow);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 75, 'Getting Forms');
+
+        blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList, progressWindow);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Geting Images');
+
+        blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList, progressWindow);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 90, 'Getting Access Keys');
+
+        blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList, progressWindow);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 95, 'Getting Tables');
+
+        blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList, progressWindow);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
         blr.W15yQC.fnDisplayFooter(reportDoc);
+        progressWindow.close();
+        progressWindow = null;
+        reportDoc.defaultView.focus();
         return reportDoc;
       }
       return null;

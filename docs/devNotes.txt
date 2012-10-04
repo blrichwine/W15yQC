@@ -66,15 +66,64 @@
             Using contrast tools
             Using an inspector dialog
             
+      *** Feature Expansion ***
+        ** Page Summary
+        ** Page Review History
+        ** Manual Page Review Checks
+        ** Storage of Page Results
+        ** Data table inspector
+        ** Site indexer
+             Pages listed in a file
+             URL [depth 0=infinite, 1-...N] M:regex I:regex
+             Pages under a specific page
+             Pages that match a specific URL, URL Pattern
+             Max link depth
+             Pages that don't match a specific URL, URL Pattern
+             Max number of pages, max number of pages from one page
+             Summary of results
+             Store notes on checked pages
+             Share results with others (send results from site as a file...)
+             Ignore robots.txt, no index.file
+             Spider delay
+             Drop out certain checks for speed when spidering
+            
+            
+      Accessibility Quick Checks:
+         Page title
+         Page language
+         Skip Navigation
+         Page Headings
+         Links
+         Form Labels
+         
+      According to Penn State:
+        Image ALT Tag Tips
+        Page or Document Title
+        Headings and Subheadings
+        Link Text
+        Table Headers and Captions
+        Form Design Considerations
+        Contrast or Luminosity/Brightness
+        Color Issues
+        Fonts and Text Layout
+        Text Reading Order
+        Charts & Accessibility
+
+            
+            
       *** FIX ASAP***
+        - Detect code <font,i,b,em,etc tags> and add a manual check to make sure the information if important, is somehow described accessibly
+        - Detect skip to main content links, make sure they are close to the top. Analyze coding used on edu sites and how deep they are in the code after the body element.
+        - Add warning for radio buttons that don't have fieldsets
         - DETERMINE WHICH ELEMENTS FIELDSET LEGENDS APPLY TO, RADIOGROUPs
         - Do <label>, <fieldset> work on ARIA form control roles (button, radio, etc.) IF NOT, fix effectiveLabel function
+        - URL normalization does not work with https:// (not sure this is true, appears to be working fine)
+        - URL normalization does not work with // links (this needs fixed!!!)
+        - QUESTION: Do div's that have a title attribute and can get focus get announced by screen-readers when they get focus?
         - Which elements have child text that works as a label for ARIA form control roles (radio?)
         - QA support for ARIA headings
         - Check for elements that activate TOC heading level mode and warn at the doc level
         - QA Add tool to detect non-unique, invalid IDs
-        - Add warning for radio buttons that don't have fieldsets
-        - [FIXED]The view->Toolbars->Customize... doesn't show the icon for W15yQC
         - Table sort in HTML results is not ignoring case: Link Text on links table
         - Frames analysis does not list frame with duplicate titles
         - QA Form Control Test [].
@@ -157,7 +206,10 @@
  *    - Allow configurable values that can be added to not meaningful exceptions (i.e. 'IU', etc.)
       - Allow configurable values that are listed as not meaningful
       
-      
+FIXED:
+
+        - [FIXED]The view->Toolbars->Customize... doesn't show the icon for W15yQC
+
  DoD
  
  
