@@ -1270,6 +1270,68 @@ ys: 'whys'
       return tableBody;
     },
 
+    fnInstallFocusInspector: function() {
+      function indicateFocus(e) {
+        try {
+          if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+            w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+          }
+        } catch(ex)
+        {
+        }
+        
+        w15yqcPrevElWithFocus = e.target;
+        var origNode = w15yqcPrevElWithFocus;
+        var box = w15yqcPrevElWithFocus.getBoundingClientRect();
+        while(box != null && box.width == 0 && box.height==0 && w15yqcPrevElWithFocus.firstChild && w15yqcPrevElWithFocus.firstChild != null) {
+          w15yqcPrevElWithFocus = w15yqcPrevElWithFocus.firstChild;
+          if(w15yqcPrevElWithFocus.getBoundingClientRect) {
+            box = w15yqcPrevElWithFocus.getBoundingClientRect();
+          }
+        }
+        if(box == null || box.width == 0 || box.height==0) {
+          w15yqcPrevElWithFocus=origNode;
+        }
+
+        if (w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+          w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("outline");
+          w15yqcPrevElWithFocus.style.outline = "solid 2px red";
+          w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("position");
+          w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
+          if(w15yqcOriginalItemPosition=="static") {
+            w15yqcPrevElWithFocus.style.position = "relative";
+          }
+          w15yqcPrevElWithFocus.style.zIndex = "210000";
+          blr.W15yQC.highlightElement(e.target, e.target.ownerDocument);
+        }
+      }
+      
+      function removeFocusIndication(e) {
+        if(e != null && e.target && e.target.ownerDocument) {
+          blr.W15yQC.resetHighlightElement(e.target.ownerDocument);
+        }
+        try {
+          if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+            w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+            w15yqcPrevElWithFocus.style.position = w15yqcOriginalItemPosition;
+            w15yqcPrevElWithFocus.style.zIndex = w15yqcOriginalItemZIndex;
+            w15yqcPrevElWithFocus = null;
+          }
+        }catch(ex)
+        {
+        }
+      }
+      if (window.top.content.document.addEventListener) {
+        var frames = window.top.content.document.defaultView.frames; // or // var frames = window.parent.frames;
+        window.top.content.document.addEventListener( 'focus', indicateFocus, true);
+        window.top.content.document.addEventListener( 'blur', removeFocusIndication, true);
+        for (var i = 0; i < frames.length; i++) {
+          frames[i].document.addEventListener( 'focus', indicateFocus, true);
+          frames[i].document.addEventListener( 'blur', removeFocusIndication, true);
+        }
+      }
+    },
+    
     setUserLevelBasic: function() {
       blr.W15yQC.userExpertLevel=0;
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
@@ -1463,7 +1525,7 @@ ys: 'whys'
     
     highlightElement: function (node, doc, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-      var div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i;
+      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
       if (doc != null && node != null) {
         if(idCounter==null) {
@@ -1471,11 +1533,22 @@ ys: 'whys'
           blr.W15yQC.resetHighlightElement(doc);
         }
         
+        origNode = node;
         div = null;
         box = node.getBoundingClientRect();
+        while(box != null && box.width == 0 && box.height==0 && node.firstChild && node.firstChild != null) {
+          node = node.firstChild;
+          if(node.getBoundingClientRect) {
+            box = node.getBoundingClientRect();
+          }
+        }
+        if(box == null || box.width == 0 || box.height==0) {
+          node=origNode;
+        }
         scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
         scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
 
+        
         x = 0;
         y = 0;
         w = 0;
