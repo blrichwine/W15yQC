@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B02',
+    version: '1.0-B04',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -42,6 +42,7 @@ if (!blr.W15yQC) {
     userLocale: null,
     bEnglishLocale: true,
     bIncludeHidden: false,
+    highlightTimeoutID: null,
     sb: null,
 
     // Homophones object for sounds like routine
@@ -645,6 +646,7 @@ ys: 'whys'
       return 'String Bundle System Unavailable. Something serious is wrong!';
     },
     
+    // TODO: Try replacing processNextEvent with http://dbaron.org/log/20100309-faster-timeouts  window.postMessage
     fnDoEvents: function() {
       var thread;
       try {
@@ -1301,7 +1303,7 @@ ys: 'whys'
           if(w15yqcOriginalItemPosition=="static") {
             w15yqcPrevElWithFocus.style.position = "relative";
           }
-          w15yqcPrevElWithFocus.style.zIndex = "210000";
+          w15yqcPrevElWithFocus.style.zIndex = "199999";
           blr.W15yQC.highlightElement(e.target, e.target.ownerDocument);
         }
       }
@@ -1528,6 +1530,9 @@ ys: 'whys'
       var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
       if (doc != null && node != null) {
+        if(typeof blr.W15yQC.highlightTimeoutID == "number") {
+          clearTimeout(blr.W15yQC.highlightTimeoutID);
+        }
         if(idCounter==null) {
           idCounter=0;
           blr.W15yQC.resetHighlightElement(doc);
@@ -1576,6 +1581,9 @@ ys: 'whys'
           idCounter=idCounter+1;
           div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
           doc.body.appendChild(div);
+          blr.W15yQC.highlightTimeoutID=setTimeout(function (doc,id) {
+            doc.getElementById(id).style.opacity='0.1';
+          }(doc,'W15yQCElementHighlight'+idCounter), 500);
         } else if (w < 2 && h < 2 && w > 0 && h > 0) {
           o = 0.9;
           l = 4;
@@ -1588,6 +1596,9 @@ ys: 'whys'
           idCounter=idCounter+1;
           div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
           doc.body.appendChild(div);
+          blr.W15yQC.highlightTimeoutID=setTimeout(function (doc,id) {
+            doc.getElementById(id).style.opacity='0.1';
+          }(doc,'W15yQCElementHighlight'+idCounter), 500);
         } else {
           rects = node.getClientRects();
           if(rects != null && rects.length>1) {
@@ -1607,6 +1618,9 @@ ys: 'whys'
                 idCounter=idCounter+1;
                 div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
                 doc.body.appendChild(div);
+                blr.W15yQC.highlightTimeoutID=setTimeout(function (doc,id) {
+                  doc.getElementById(id).style.opacity='0.1';
+                }(doc,'W15yQCElementHighlight'+idCounter), 500);
               }
             }
           } else {
@@ -1614,9 +1628,14 @@ ys: 'whys'
             h = h + 'px';
             div = doc.createElement('div');
             div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
+            div.setAttribute('onmouseover','this.style.zIndex="-50000";');
+            //div.setAttribute('onmouseout','this.style.zIndex="200000";');
             idCounter=idCounter+1;
             div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
             doc.body.appendChild(div);
+            blr.W15yQC.highlightTimeoutID=setTimeout(function () {
+              doc.getElementById('W15yQCElementHighlight'+idCounter).style.backgroundColor='transparent';
+            }, 500);
           }
         }
 
@@ -4103,6 +4122,24 @@ ys: 'whys'
       
     },
 
+    fnMakeHeadingCountsString: function (warnings, failures) {
+      var s;
+      try{
+        if(warnings==1) {
+          s='(1 warning, ';
+        } else {
+          s='('+warnings.toString()+' with warnings, ';
+        }
+        if(failures==1) {
+          s=s+'1 failure)';
+        } else {
+          s=s+failures.toString()+' with failures)';
+        }
+      }
+      catch(ex){ s='FAILED';}
+      return s;
+    },
+    
     fnGetFrameTitles: function (doc, rootNode, aFramesList) {
       var c, frameTitle, frameSrc, frameId, frameName, role, xPath, nodeDescription, frameDocument;
       if (aFramesList == null) { aFramesList = []; }
@@ -4134,7 +4171,7 @@ ys: 'whys'
     },
 
     fnAnalyzeFrameTitles: function (aFramesList, aDocumentsList) {
-      var i, framedDocumentBody, j;
+      var i, framedDocumentBody, j, failedCount=0, warningCount=0;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
       for (i = 0; i < aFramesList.length; i++) {
@@ -4189,7 +4226,14 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aFramesList[i], 'frameIDNotUnique'); // QA iframeTests01.html
           }
         }
+        if(aFramesList[i].failed==true){
+          failedCount++;
+        } else if(aFramesList[i].warning==true) {
+          warningCount++;
+        }
       }
+      aFramesList.failedCount=failedCount;
+      aFramesList.warningCount=warningCount;
     },
 
     fnDisplayWindowDetails: function (rd) {
@@ -4229,6 +4273,7 @@ ys: 'whys'
         } else {
           sFrameSectionHeading = blr.W15yQC.fnGetString('hrs1Frame');
         }
+        sFrameSectionHeading = sFrameSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aFramesList.warningCount,aFramesList.failedCount);
       } else {
         sFrameSectionHeading = blr.W15yQC.fnGetString('hrsNoFrames');
       }
@@ -4363,7 +4408,7 @@ ys: 'whys'
     },
 
     fnAnalyzeDocuments: function (aDocumentsList) {
-      var i, aSameTitles, j, k, sIDList, selectorTest, doc, suspectCSS='';
+      var i, aSameTitles, j, k, sIDList, selectorTest, doc, suspectCSS='', failedCount=0, warningCount=0;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aDocumentsList !== null && aDocumentsList.length) {
         for (i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
@@ -4422,8 +4467,15 @@ ys: 'whys'
           if(suspectCSS!='') {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docCSSSuppressingOutline',[blr.W15yQC.fnCutoffString(suspectCSS,500)]); // 
           }
+          if(aDocumentsList[i].failed==true){
+            failedCount++;
+          } else if(aDocumentsList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aDocumentsList.failedCount=failedCount;
+      aDocumentsList.warningCount=warningCount;
     },
 
     fnDisplayDocumentsResults: function (rd, aDocumentsList) {
@@ -4437,6 +4489,7 @@ ys: 'whys'
         } else {
           sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrs1Document');
         }
+        sDocumentsSectionHeading = sDocumentsSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList.warningCount, aDocumentsList.failedCount);
       } else {
         sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrsNoDocuments');
       }
@@ -4548,7 +4601,7 @@ ys: 'whys'
     },
 
     fnAnalyzeARIALandmarks: function (aARIALandmarksList, aDocumentsList) {
-      var iMainLandmarkCount, iBannerLandmarkCount, iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2;
+      var iMainLandmarkCount, iBannerLandmarkCount, iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2, warningCount=0, failedCount=0;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
       
@@ -4594,6 +4647,11 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkIDNotUnique');
             }
           }
+          if(aARIALandmarksList[i].failed==true){
+            failedCount++;
+          } else if(aARIALandmarksList[i].warning==true) {
+            warningCount++;
+          }
         }
         if(iMainLandmarkCount < 1) {
           blr.W15yQC.fnAddPageLevelNote(aARIALandmarksList, 'ldmkMainLandmarkMissing'); // TODO: QA This
@@ -4607,7 +4665,8 @@ ys: 'whys'
           blr.W15yQC.fnAddPageLevelNote(aARIALandmarksList, 'ldmkMultipleContentInfoLandmarks', [iContentInfoLandmarkCount]); // TODO: QA This
         }
       }
-      
+      aARIALandmarksList.failedCount=failedCount;
+      aARIALandmarksList.warningCount=warningCount;
     },
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList) {
@@ -4621,6 +4680,7 @@ ys: 'whys'
         } else {
           sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrs1ARIALandmark');
         }
+        sARIALandmarksSectionHeading = sARIALandmarksSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList.warningCount, aARIALandmarksList.failedCount);
       } else {
         sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrsNoARIALandmarks');
       }
@@ -4717,7 +4777,7 @@ ys: 'whys'
     },
 
     fnAnalyzeARIA: function (aARIALandmarksList, aDocumentsList) { // TODO: Finish this
-      var i, sRoleAndLabel, sRoleAndLabel2, j;
+      var i, sRoleAndLabel, sRoleAndLabel2, j, warningCount=0, failedCount=0;
       blr.W15yQC.fnLog("+++++WHAT?:fnAnalyzeARIA");
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA
@@ -4748,8 +4808,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ariaIDNotUnique');
             }
           }
+          if(aARIALandmarksList[i].failed==true){
+            failedCount++;
+          } else if(aARIALandmarksList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aARIALandmarksList.failedCount=failedCount;
+      aARIALandmarksList.warningCount=warningCount;
     },
 
     fnDisplayARIAElementsResults: function (rd, aARIAElementsList) {
@@ -4762,8 +4829,10 @@ ys: 'whys'
       if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) {
         if (aARIAElementsList.length > 1) {
           sARIAElementsHeading = aARIAElementsList.length + ' ' + blr.W15yQC.fnGetString('hrsARIAEls');
-        } else { sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
+        } else {
+          sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
         }
+        sARIAElementsHeading = sARIAElementsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList.warningCount, aARIAElementsList.failedCount);
       } else {
         sARIAElementsHeading = blr.W15yQC.fnGetString('hrsNoARIAEls');
       }
@@ -5109,7 +5178,7 @@ ys: 'whys'
     },
 
     fnAnalyzeImages: function (aImagesList, aDocumentsList) {
-      var i, sCombinedLabel;
+      var i, sCombinedLabel, warningCount=0, failedCount=0;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aImagesList != null && aImagesList.length) {
 
@@ -5156,8 +5225,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgIDNotUnique'); // QA imageTests01.html
             }
           }
+          if(aImagesList[i].failed==true){
+            failedCount++;
+          } else if(aImagesList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aImagesList.failedCount=failedCount;
+      aImagesList.warningCount=warningCount;
     },
 
     fnDisplayImagesResults: function (rd, aImagesList) {
@@ -5170,6 +5246,7 @@ ys: 'whys'
         } else {
           sImagesSectionHeading = blr.W15yQC.fnGetString('hrs1Image');
         }
+        sImagesSectionHeading = sImagesSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aImagesList.warningCount, aImagesList.failedCount);
       } else {
         sImagesSectionHeading = blr.W15yQC.fnGetString('hrsNoImages');
       }
@@ -5240,7 +5317,7 @@ ys: 'whys'
     },
 
     fnAnalyzeAccessKeys: function (aAccessKeysList, aDocumentsList) {
-      var htMajorConflicts, i, ak, aValuesDuplicated, aLabelsDuplicated, j, ak2;
+      var htMajorConflicts, i, ak, aValuesDuplicated, aLabelsDuplicated, j, ak2, warningCount=0, failedCount=0;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       htMajorConflicts = { // What version of IE? What about the menus in IE 7, IE 8, IE 9? Specify it is the english version...
         'c': "Alt+C is used to open the Favorites Center in IE.",
@@ -5310,8 +5387,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(ak, 'akIDNotUnique'); // QA accesskeyTests01.html
             }
           }
+          if(aAccessKeysList[i].failed==true){
+            failedCount++;
+          } else if(aAccessKeysList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aAccessKeysList.failedCount=failedCount;
+      aAccessKeysList.warningCount=warningCount;
     },
 
     fnDisplayAccessKeysResults: function (rd, aAccessKeysList) {
@@ -5325,6 +5409,7 @@ ys: 'whys'
         } else {
           sSectionHeading = blr.W15yQC.fnGetString('hrs1AccessKey');
         }
+        sSectionHeading = sSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList.warningCount, aAccessKeysList.failedCount);
       } else {
         sSectionHeading = blr.W15yQC.fnGetString('hrsNoAccessKeys');
       }
@@ -5416,7 +5501,7 @@ ys: 'whys'
     },
 
     fnAnalyzeHeadings: function (aHeadingsList, aDocumentsList, progressWindow) {
-      var i, previousHeadingLevel;
+      var i, previousHeadingLevel, warningCount=0, failedCount=0;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         for (i = 0; i < aHeadingsList.length; i++) {
@@ -5462,8 +5547,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); // QA: headings01.html
             }
           }
+          if(aHeadingsList[i].failed==true) {
+            failedCount++;
+          } else if(aHeadingsList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aHeadingsList.failedCount=failedCount;
+      aHeadingsList.warningCount=warningCount;
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList) {
@@ -5479,6 +5571,7 @@ ys: 'whys'
         } else {
           sHeadingsHeading = blr.W15yQC.fnGetString('hrs1Heading');
         }
+        sHeadingsHeading = sHeadingsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList.warningCount, aHeadingsList.failedCount);
       } else {
         sHeadingsHeading = blr.W15yQC.fnGetString('hrsNoHeadings');
       }
@@ -5636,7 +5729,7 @@ ys: 'whys'
 
     fnAnalyzeFormControls: function (aFormsList, aFormControlsList, aDocumentsList) {
       var i, j, aSameNames, subForms, aSameLabelText, aSoundsTheSame, bShouldntHaveBoth, nodeTagName, nodeTypeValue,
-          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist;
+          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist, warningCount=0, failedCount=0;
 
       // TODO: Add check that name value is unique to a given form unless it is a radio button
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
@@ -5672,9 +5765,19 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormsList[i], 'frmIDNotUnique'); //
             }
           }
+          if(aFormsList[i].failed==true) {
+            failedCount++;
+          } else if(aFormsList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aFormsList.failedCount=failedCount;
+      aFormsList.warningCount=warningCount;
 
+      failedCount=0;
+      warningCount=0;
+      
       if (aFormControlsList != null && aFormControlsList.length > 0) {
         for (i = 0; i < aFormControlsList.length; i++) {
           aFormControlsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormControlsList[i].node, aDocumentsList);
@@ -5816,8 +5919,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlIDNotUnique'); //
             }
           }
+          if(aFormControlsList[i].failed==true) {
+            failedCount++;
+          } else if(aFormControlsList[i].warning==true) {
+            warningCount++;
+          }
         }
       }
+      aFormControlsList.failedCount=failedCount;
+      aFormControlsList.warningCount=warningCount;
     },
 
     fnDisplayFormResults: function (rd, aFormsList) {
@@ -5831,6 +5941,7 @@ ys: 'whys'
         } else {
           sFormsHeading = blr.W15yQC.fnGetString('hrs1Form');
         }
+        sFormsHeading = sFormsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aFormsList.warningCount, aFormsList.failedCount);
       } else {
         sFormsHeading = blr.W15yQC.fnGetString('hrsNoForms');
       }
@@ -5878,6 +5989,7 @@ ys: 'whys'
         } else {
           sFormControlsHeading = blr.W15yQC.fnGetString('hrs1FormCtrl');
         }
+        sFormControlsHeading = sFormControlsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList.warningCount, aFormControlsList.failedCount);
       } else {
         sFormControlsHeading = blr.W15yQC.fnGetString('hrsNoFormCtrls');
       }
@@ -6001,7 +6113,7 @@ ys: 'whys'
 
     fnAnalyzeLinks: function (aLinksList, aDocumentsList, progressWindow) {
       var i, aChildImages, j, linkText, maxRect, aSameHrefAndOnclick, aSameLinkText, aSoundsTheSame, aDiffTextSameHref, hrefsAreEqual,
-          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
+          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, warningCount=0, failedCount=0;
       blr.W15yQC.fnLog('fnAnalyzeLinks-starts');
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
@@ -6059,7 +6171,7 @@ ys: 'whys'
 
           maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
 
-          if(maxRect != null && maxRect[0] < 14 && maxRect[1] < 14 &&
+          if(maxRect != null && maxRect[0] < 14 && maxRect[1] < 14 && (maxRect[0] > 0 && maxRect[1]>0) &&
              blr.W15yQC.fnNodeIsMasked(aLinksList[i].node)==false && blr.W15yQC.fnNodeIsOffScreen(aLinksList[i].node)==false) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
@@ -6250,7 +6362,14 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIDNotUnique'); //
           }
         }
+        if(aLinksList[i].failed==true) {
+          failedCount++;
+        } else if(aLinksList[i].warning==true) {
+          warningCount++;
+        }
       }
+      aLinksList.failedCount=failedCount;
+      aLinksList.warningCount=warningCount;
     },
 
     fnDisplayLinkResults: function (rd, aLinksList) {
@@ -6264,6 +6383,7 @@ ys: 'whys'
         } else {
           sLinksHeading = blr.W15yQC.fnGetString('hrs1Link');
         }
+        sLinksHeading = sLinksHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aLinksList.warningCount, aLinksList.failedCount);
       } else {
         sLinksHeading = blr.W15yQC.fnGetString('hrsNoLinks');
       }
@@ -6382,7 +6502,7 @@ ys: 'whys'
       columnHasHeader, columnRowSpans, columnsInRow, bRowHasHeader, bTableUsesThElements, bTableUsesHeadersAttribute, bEveryTdInContentAreaHasHeadersAttribute,
       bEveryTdCellWithContentHasAHeadersAttribute, bEveryCellWithContentHasARowOrColumnHeader, bEveryTdCellWithContentHasHeaderOfSomeType, nodeStack,
       bInTableRow, columnsInThisRow, bInThead, bInTbody, maxRowSpanRows, tableNode, tagName, bIsColumnHeader,
-      cellContent, rowSpanValue, colSpanValue, newNode, stackedTagName, crsIndex, sWhyDataTable, colOffset, sColsList;
+      cellContent, rowSpanValue, colSpanValue, newNode, stackedTagName, crsIndex, sWhyDataTable, colOffset, sColsList, warningCount=0, failedCount=0;
       
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // This does not pretend to fully validate a table
@@ -6782,7 +6902,14 @@ ys: 'whys'
           }
 
         }
+        if(aTablesList[i].failed==true) {
+          failedCount++;
+        } else if(aTablesList[i].warning==true) {
+          warningCount++;
+        }
       }
+      aTablesList.failedCount=failedCount;
+      aTablesList.warningCount=warningCount;
     },
 
     fnDisplayTableResults: function (rd, aTablesList) {
@@ -6797,6 +6924,7 @@ ys: 'whys'
         } else {
           sTablesHeading = blr.W15yQC.fnGetString('hrs1Table');
         }
+        sTablesHeading = sTablesHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aTablesList.warningCount, aTablesList.failedCount);
       } else {
         sTablesHeading = blr.W15yQC.fnGetString('hrsNoTables');
       }
