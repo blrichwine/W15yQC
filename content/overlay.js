@@ -713,10 +713,10 @@ ys: 'whys'
     },
 
     fnLog: function (sMsg) {
-      //try {
-      //  var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-      //  consoleServ.logStringMessage(sMsg);
-      //} catch (ex) {};
+      try {
+        var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
+        consoleServ.logStringMessage(sMsg);
+      } catch (ex) {};
     },
 
     autoAdjustColumnWidths: function (treebox, iLimitCounter) {
@@ -1525,14 +1525,29 @@ ys: 'whys'
       }
     },
     
+    fnSetHighlightTimeout: function(doc,id) {
+      try{
+        blr.W15yQC.highlightTimeoutID.push(setTimeout(function () { doc.getElementById('W15yQCElementHighlight'+id.toString()).style.backgroundColor='transparent'; }, 500));
+      } catch(ex) {
+      }
+    },
+    
     highlightElement: function (node, doc, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i;
+      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
       if (doc != null && node != null) {
-        if(typeof blr.W15yQC.highlightTimeoutID == "number") {
-          clearTimeout(blr.W15yQC.highlightTimeoutID);
+        if(idCounter==null && Array.isArray( blr.W15yQC.highlightTimeoutID )) {
+          bSetTimeouts=true;
+          for(i=0;i<blr.W15yQC.highlightTimeoutID.length;i++) {
+            blr.W15yQC.fnLog('clearTimeout:'+i.toString()+' '+blr.W15yQC.highlightTimeoutID[i].toString());
+            clearTimeout(blr.W15yQC.highlightTimeoutID[i]);
+            blr.W15yQC.highlightTimeoutID = [];
+          }
+        } else {
+          blr.W15yQC.highlightTimeoutID = [];
         }
+        
         if(idCounter==null) {
           idCounter=0;
           blr.W15yQC.resetHighlightElement(doc);
@@ -1552,7 +1567,6 @@ ys: 'whys'
         }
         scrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft;
         scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
-
         
         x = 0;
         y = 0;
@@ -1579,11 +1593,9 @@ ys: 'whys'
           div.appendChild(doc.createTextNode(blr.W15yQC.fnGetString('heOffscreen')));
           div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
           idCounter=idCounter+1;
-          div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
+          div.setAttribute('id', 'W15yQCElementHighlight'+idCounter.toString());
           doc.body.appendChild(div);
-          blr.W15yQC.highlightTimeoutID=setTimeout(function (doc,id) {
-            doc.getElementById(id).style.opacity='0.1';
-          }(doc,'W15yQCElementHighlight'+idCounter), 500);
+          if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
         } else if (w < 2 && h < 2 && w > 0 && h > 0) {
           o = 0.9;
           l = 4;
@@ -1594,11 +1606,9 @@ ys: 'whys'
           div.appendChild(doc.createTextNode(blr.W15yQC.fnGetString('heMasked')));
           div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
           idCounter=idCounter+1;
-          div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
+          div.setAttribute('id', 'W15yQCElementHighlight'+idCounter.toString());
           doc.body.appendChild(div);
-          blr.W15yQC.highlightTimeoutID=setTimeout(function (doc,id) {
-            doc.getElementById(id).style.opacity='0.1';
-          }(doc,'W15yQCElementHighlight'+idCounter), 500);
+          if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
         } else {
           rects = node.getClientRects();
           if(rects != null && rects.length>1) {
@@ -1616,11 +1626,9 @@ ys: 'whys'
                 div = doc.createElement('div');
                 div.setAttribute('style', "position:absolute;top:" + y + "px;left:" + x + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
                 idCounter=idCounter+1;
-                div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
+                div.setAttribute('id', 'W15yQCElementHighlight'+idCounter.toString());
                 doc.body.appendChild(div);
-                blr.W15yQC.highlightTimeoutID=setTimeout(function (doc,id) {
-                  doc.getElementById(id).style.opacity='0.1';
-                }(doc,'W15yQCElementHighlight'+idCounter), 500);
+                if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
               }
             }
           } else {
@@ -1631,11 +1639,9 @@ ys: 'whys'
             div.setAttribute('onmouseover','this.style.zIndex="-50000";');
             //div.setAttribute('onmouseout','this.style.zIndex="200000";');
             idCounter=idCounter+1;
-            div.setAttribute('id', 'W15yQCElementHighlight'+idCounter);
+            div.setAttribute('id', 'W15yQCElementHighlight'+idCounter.toString());
             doc.body.appendChild(div);
-            blr.W15yQC.highlightTimeoutID=setTimeout(function () {
-              doc.getElementById('W15yQCElementHighlight'+idCounter).style.backgroundColor='transparent';
-            }, 500);
+            if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
           }
         }
 
@@ -1660,7 +1666,7 @@ ys: 'whys'
         failureCount = 0;
         do {
           idCounter++;
-          he = doc.getElementById('W15yQCElementHighlight'+idCounter);
+          he = doc.getElementById('W15yQCElementHighlight'+idCounter.toString());
           if (he != null && he.parentNode != null) {
             he.parentNode.removeChild(he);
           } else {

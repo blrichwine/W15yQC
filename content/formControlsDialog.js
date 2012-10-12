@@ -343,7 +343,7 @@ blr.W15yQC.FormControlsDialog = {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
             
             if(bHighlightElement != false) {
-                idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', 0);
+                idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow');
                 if(blr.W15yQC.fnIsFormControlNode(aFC.node)==true) {
                     if(aFC.node.hasAttribute('aria-labelledby')) {
                         aIDs=aFC.node.getAttribute('aria-labelledby').split(' ');
@@ -354,7 +354,7 @@ blr.W15yQC.FormControlsDialog = {
                     } else {
                         el=aFC.node.parentNode;
                         while(el!=null && el.tagName.toLowerCase() != 'label' && el.tagName.toLowerCase() != 'body') {el=el.parentNode;}
-                        if(el!=null && el.tagName.toLowerCase()=='label') {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, 'blue', idCounter);}
+                        if(el!=null && el.tagName.toLowerCase()=='label') {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, '#FFAAAA', idCounter);}
                         el=aFC.node.parentNode;
                         while(el!=null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {el=el.parentNode;}
                         if(el!=null && el.tagName.toLowerCase()=='fieldset') {
@@ -366,7 +366,7 @@ blr.W15yQC.FormControlsDialog = {
                             aLabels=aFC.node.ownerDocument.getElementsByTagName('label');
                             if(aLabels!=null && aLabels.length>0) {
                                 for(i=0;i<aLabels.length;i++) {
-                                    if(aLabels[i].getAttribute('for')==nodeID) {idCounter=blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, 'blue', idCounter);}
+                                    if(aLabels[i].getAttribute('for')==nodeID) {idCounter=blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, '#FFAAAA', idCounter);}
                                 }
                             }
                         }
@@ -375,7 +375,7 @@ blr.W15yQC.FormControlsDialog = {
                         aIDs=aFC.node.getAttribute('aria-describedby').split(' ');
                         for(i=0;i<aIDs.length;i++) {
                             el=aFC.node.ownerDocument.getElementById(aIDs[i]);
-                            if(el!=null) {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, 'green', idCounter);}
+                            if(el!=null) {idCounter=blr.W15yQC.highlightElement(el, el.ownerDocument, '#AAFFAA', idCounter);}
                         }
                     }                    
                 }

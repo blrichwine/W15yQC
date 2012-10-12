@@ -66,12 +66,43 @@
             Using contrast tools
             Using an inspector dialog
             
+      ** New spider checks:
+        - table summaries
+        - table captions
+        - Link texts
+        - button texts
+        - axis values
+      ** Problem ID dialog
+        - List valid ID rules
+        - list why an ID is invalid (what characters make it invalid and what position it is in)
       *** Feature Expansion ***
         ** Page Summary
         ** Page Review History
         ** Manual Page Review Checks
         ** Storage of Page Results
         ** Data table inspector
+           - Scroll to and Highlight table
+           - List table results
+           - List Summary, Caption
+           - List table features
+              - dimensions, complex?, rowspans, colspans?, row/col collisions?
+              - use of theader, tfooter, th's w or wo scope, axis, headers attributes
+           - Table cell navigator (scroll to cell, highlight cell [use color for errors] and related cells (headers), list cell features in dialog box, show cell coding w/xpath, show in firebug)
+           - table cell validity checks
+           - if on a cell that is being used as a header (even if a td that is targeted with a headers attribute) highlight all of the cells it applies to.
+        ** Table highlight feature
+           - extend table highlight feature to have two modes (basic, extended)
+           - extended mode reveals headings for cell, summary, caption, thead rows, tfoot rows, th cells vs td cells, if cell has scope, highlight the border of the scope direction
+           - basic mode -- distinguish between datatables and layout tables
+        ** New Data table checks
+           - handle scope=colgroup, provide warning if not provided
+           - data table if contains axis, abbr
+           - make sure axis value is valid
+           - make sure scope values are valid
+           - recommended manual page checks
+              - axis values are valid
+              - summary is accurate
+              - caption value is accurate
         ** Site indexer
              Pages listed in a file
              URL [depth 0=infinite, 1-...N] M:regex I:regex
