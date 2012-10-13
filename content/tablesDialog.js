@@ -233,7 +233,7 @@ blr.W15yQC.TablesDialog = {
                 doc = blr.W15yQC.TablesDialog.aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'table {outline: 1px solid red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
+                    styleElement.innerHTML = 'table {border: 1px solid red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
                     styleElement.setAttribute('id', 'W15yQCTableHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -249,7 +249,7 @@ blr.W15yQC.TablesDialog = {
                 doc = blr.W15yQC.TablesDialog.aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'div.w15yqcTHSummary, div.w15yqcTHInsert{border: 2px solid green; background-color:#AAFFAA;margin:3px 0px 3px 0px;padding:3px}div.w15yqcTHSummary span{font-weight:bold} table {outline: 1px solid red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
+                    styleElement.innerHTML = 'div.w15yqcTHSummary, div.w15yqcTHInsert{border: 2px solid green; background-color:#AAFFAA;margin:3px 0px 3px 0px;padding:3px}div.w15yqcTHSummary span{font-weight:bold} table.w15yqcIsDataTable {border: 2px solid red !important; } table {border: 2px dotted red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
                     styleElement.setAttribute('id', 'W15yQCTableHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                     tables = doc.getElementsByTagName('table');
@@ -266,24 +266,11 @@ blr.W15yQC.TablesDialog = {
         }
     },
     
-    addExtendedTableHighlights: function(doc, table) {
-        blr.W15yQC.fnLog('addExtendedTableHighlights');
-        if(table != null) {
-            if (!table.className.match(new RegExp('(\\s|^)w15yqcIsDataTable(\\s|$)'))) {
-                if(blr.W15yQC.TablesDialog.fnIsDataTable(doc, table)) {
-                    table.className += " w15yqcIsDataTable";
-                }
-            } else {
-                
-            }
-        }
-    },
-    
-    fnIsDataTable: function (doc, table) {
+    addExtendedTableHighlights: function (doc, table) {
         var i,insert, sMsg, scope, summary, maxCols=0, maxRows=0, nodeStack=[], node, tagName, isDataTable=false, insertParents=[], insertEls=[],
         headers, headerText='', header, rowCount, colCount, span, firstRowFound=false, pastFirstRow=false, firstCol=true, nextSibling, nextRowCellIsAHeading=false,hasMoreRows=false;
         blr.W15yQC.fnLog('fnIsDataTable starting');
-        if(table != null) {
+        if(table != null && !table.className.match(new RegExp('(\\s|^)w15yqcIsDataTable(\\s|$)'))) {
             if(blr.W15yQC.fnStringHasContent(table.getAttribute('summary'))) {
                 blr.W15yQC.fnLog('fnIsData: has summary');
                 isDataTable = true;
@@ -397,6 +384,11 @@ blr.W15yQC.TablesDialog = {
             }
         }
         blr.W15yQC.fnLog('fnIsDataTable ending');
+        if(isDataTable) {
+            table.className += " w15yqcIsDataTable";
+        } else {
+            table.className += " w15yqcIsNotDataTable";
+        }
         return isDataTable;
     },
     
