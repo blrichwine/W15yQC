@@ -393,14 +393,26 @@ blr.W15yQC.TablesDialog = {
     },
     
     removeTableHighlights: function() {
-        var styleElement=null;
+        var doc, i, styleElement=null, infoElements=null, tables=null;
         if(blr.W15yQC.TablesDialog.aDocumentsList != null && blr.W15yQC.TablesDialog.aDocumentsList.length>0) {
             for(var i=0; i<blr.W15yQC.TablesDialog.aDocumentsList.length; i++) {
-                if(blr.W15yQC.TablesDialog.aDocumentsList[i].doc != null) {
-                    styleElement = blr.W15yQC.TablesDialog.aDocumentsList[i].doc.getElementById('W15yQCTableHighlightStyle');
-                    if (styleElement)
-                    {
+                doc = blr.W15yQC.TablesDialog.aDocumentsList[i].doc;
+                if(doc != null) {
+                    styleElement = doc.getElementById('W15yQCTableHighlightStyle');
+                    if (styleElement) {
                       styleElement.parentNode.removeChild(styleElement);
+                    }
+                    infoElements = doc.getElementsByClassName('w15yqcTHInsert');
+                    while(infoElements != null && infoElements.length>0) {
+                        infoElements[0].parentNode.removeChild(infoElements[0]);
+                    }
+                    tables = doc.getElementsByClassName('w15yqcIsDataTable');
+                    while(tables != null && tables.length>0) {
+                        tables[0].className=tables[0].className.replace(/\s?w15yqcIsDataTable\b/,'');
+                    }
+                    tables = doc.getElementsByClassName('w15yqcIsNotDataTable');
+                    while(tables != null && tables.length>0) {
+                        tables[0].className=tables[0].className.replace(/\s?w15yqcIsNotDataTable\b/,'');
                     }
                 }
             }
