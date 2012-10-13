@@ -85,8 +85,8 @@ to make each row have effectively the same column coverage.</p>
 <table title="Table 8 Title">
 	<caption>Table 8 Caption</caption>
 	 <tr><td>Cell 1</td><td colspan="2">Cell 2</td></tr>
-	 <tr><td>Cell 1</td><td colspan="2">Cell 2</td></tr>
-	 <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+	 <tr><td>Cell 1</td><td axis="history, indiana" colspan="2">Cell 2</td></tr>
+	 <tr><td>Cell 1</td><td>Cell 2</td><td axis="history">Cell 3</td></tr>
 	 <tr><td>Cell 1</td><td colspan="2">Cell 2</td></tr>
 </table>
 
@@ -349,7 +349,7 @@ Should Pass.</p>
 <p>Data table with combination of table headers and headers attributes.</p>
 <table border="1" cellpadding="4" summary="This table has column headers and header attributes. All cells have either a header or headers attribute.">
   <tr>
-    <th id="t20ha" scope="col">Col 1</td>
+    <th id="t20ha" scope="col" abbr="C1">Col 1</td>
     <td id="t20h1" headers="t20ha">Col 2</td>
     <th scope="col">Col 3</td>
 	</tr>

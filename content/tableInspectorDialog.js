@@ -34,13 +34,6 @@
 if (!blr) { var blr = {}; }
 
 
-[table features]
-
-
-
-
-
-
 /*
  * Object:  QuickW15yTableInspectorDialog
  * Returns:

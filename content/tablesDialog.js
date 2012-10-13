@@ -249,7 +249,7 @@ blr.W15yQC.TablesDialog = {
                 doc = blr.W15yQC.TablesDialog.aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'div.w15yqcTHSummary, div.w15yqcTHInsert{border: 2px solid green; background-color:#AAFFAA;margin:3px 0px 3px 0px;padding:3px}div.w15yqcTHSummary span{font-weight:bold} table.w15yqcIsDataTable {border: 2px solid red !important; } table {border: 2px dotted red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
+                    styleElement.innerHTML = 'div.w15yqcTHSummary, div.w15yqcTHInsert{border: 2px solid green; background-color:#AAFFAA;margin:3px 0px 3px 0px;padding:3px}div.w15yqcTHSummary span{font-weight:bold}div.w15yqcTHInsert ul{margin:0;padding-left:18px} table.w15yqcIsDataTable {border: 2px solid red !important; } table {border: 2px dotted red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
                     styleElement.setAttribute('id', 'W15yQCTableHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                     tables = doc.getElementsByTagName('table');
@@ -267,7 +267,7 @@ blr.W15yQC.TablesDialog = {
     },
     
     addExtendedTableHighlights: function (doc, table) {
-        var i,insert, sMsg, scope, summary, maxCols=0, maxRows=0, nodeStack=[], node, tagName, isDataTable=false, insertParents=[], insertEls=[],
+        var i,insert, sMsg, scope, summary, maxCols=0, maxRows=0, nodeStack=[], node, tagName, isDataTable=false, insertParents=[], insertEls=[], sAxis, aAxisList, ul, li, sAbbr,
         headers, headerText='', header, rowCount, colCount, span, firstRowFound=false, pastFirstRow=false, firstCol=true, nextSibling, nextRowCellIsAHeading=false,hasMoreRows=false;
         blr.W15yQC.fnLog('fnIsDataTable starting');
         if(table != null && !table.className.match(new RegExp('(\\s|^)w15yqcIsDataTable(\\s|$)'))) {
@@ -340,10 +340,15 @@ blr.W15yQC.TablesDialog = {
                                 sMsg='Header';
                                 if(node.hasAttribute('scope')) {
                                     scope=node.getAttribute('scope').toLowerCase();
-                                    if(scope=='row'||scope=='rowgroup') {
+                                    if(scope=='row') {
                                         sMsg='Row '+sMsg;
-                                    } else if(scope=='col'||scope=='colgroup') {
+                                    } else if(scope=='col') {
                                         sMsg='Column '+sMsg;
+                                    }
+                                    if(scope=='rowgroup') {
+                                        sMsg='Row Group '+sMsg;
+                                    } else if(scope=='colgroup') {
+                                        sMsg='Column Group '+sMsg;
                                     }
                                 } else if(firstCol && (hasMoreRows==false||nextRowCellIsAHeading==false)) {
                                     sMsg='Row '+sMsg;
@@ -354,6 +359,35 @@ blr.W15yQC.TablesDialog = {
                                 insertParents.push(node);
                                 insertEls.push(insert);
                                 firstCol=false;
+                            }
+                            if(tagName=='td'||tagName=='th') {
+                                sAxis = node.getAttribute('axis');
+                                if(blr.W15yQC.fnStringHasContent(sAxis)) {
+                                    insert = doc.createElement('div');
+                                    insert.className = 'w15yqcTHInsert';
+                                    aAxisList = sAxis.split(',');
+                                    if(aAxisList != null && aAxisList.length>1) {
+                                        insert.appendChild(doc.createTextNode('Axis Values: '));
+                                        ul = doc.createElement('ul');
+                                        for(i=0;i<aAxisList.length;i++) {
+                                            li=doc.createElement('li');
+                                            li.appendChild(doc.createTextNode(aAxisList[i]));
+                                            ul.appendChild(li);
+                                        }
+                                        insert.appendChild(ul);
+                                    } else {
+                                        insert.appendChild(doc.createTextNode('Axis: '+sAxis));
+                                    }
+                                    node.appendChild(insert);
+                                }
+
+                                sAbbr = node.getAttribute('abbr');
+                                if(blr.W15yQC.fnStringHasContent(sAbbr)) {
+                                    insert = doc.createElement('div');
+                                    insert.className = 'w15yqcTHInsert';
+                                    insert.appendChild(doc.createTextNode('Abbr: '+sAbbr));
+                                    node.appendChild(insert);
+                                }
                             }
                         }
                         if(node.firstChild != null && tagName=='tr' || tagName=='thead' || tagName=='tbody' || tagName=='tfoot') {
