@@ -2,10 +2,10 @@
 <head>
 	<title>Table tests 01</title>
   <style>
-	table {border: thin solid blue;}
+/*	table {border: thin solid blue;}
 	th {border: thin solid black;}
 	td {border: thin dotted black;}
-	</style>
+*/	</style>
 </head>
 <body>
 <h1>Table Tests 01</h1> 
@@ -40,7 +40,23 @@
 <p>This table should fail because it has a th making it a data table, but
 it fails because it doesn't have a caption or a summary.</p>
 <table title="Table 5 Title">
-	 <tr><th>Cell 1</td><td>Cell 2</td></tr>
+	 <tr><th>Cell 1</th><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 5b</h2>
+<p>This table should fail because it has ths making it a data table, but
+it fails because it doesn't have a caption or a summary.</p>
+<table title="Table 5b Title">
+	 <tr><th>Cell 1,1</th><th>Cell 2,1</th></tr>
+	 <tr><td>Cell 1,2</td><td>Cell 2,2</td></tr>
+</table>
+
+<h2>Table 5c</h2>
+<p>This table should fail because it has ths making it a data table, but
+it fails because it doesn't have a caption or a summary.</p>
+<table title="Table 5c Title">
+	 <tr><th>Cell 1,1</td><td>Cell 2,1</td></tr>
+	 <tr><th>Cell 1,2</td><td>Cell 2,2</td></tr>
 </table>
 
 <h2>Table 6</h2>
