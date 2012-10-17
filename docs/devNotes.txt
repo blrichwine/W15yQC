@@ -150,6 +150,7 @@
         - Detect code <font,i,b,em,etc tags> and add a manual check to make sure the information if important, is somehow described accessibly
         - Detect skip to main content links, make sure they are close to the top. Analyze coding used on edu sites and how deep they are in the code after the body element.
         - Add warning for radio buttons that don't have fieldsets
+        - validate role values - warn if multiple values, check validity.
         - DETERMINE WHICH ELEMENTS FIELDSET LEGENDS APPLY TO, RADIOGROUPs
         - Do <label>, <fieldset> work on ARIA form control roles (button, radio, etc.) IF NOT, fix effectiveLabel function
         - URL normalization does not work with https:// (not sure this is true, appears to be working fine)

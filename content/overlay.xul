@@ -3,7 +3,8 @@
 <!DOCTYPE overlay SYSTEM "chrome://W15yQC/locale/overlay.dtd">
 <overlay id="W15yQC-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="overlay.js"/>
+  <script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+  <script type="application/x-javascript" src="chrome://W15yQC/content/highlighters.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="overlay-string-bundle" src="chrome://W15yQC/locale/overlay.properties"/>
   </stringbundleset>

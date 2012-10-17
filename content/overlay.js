@@ -4547,7 +4547,6 @@ ys: 'whys'
       var c, level, i, frameDocument, sTagName, sRole, xPath, nodeDescription, sARIALabel, sState;
       if (aARIALandmarksList == null) { aARIALandmarksList = []; } 
       if (baseLevel == null) { baseLevel = 0; }
-      return aARIALandmarksList;
 
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
