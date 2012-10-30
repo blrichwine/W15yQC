@@ -274,7 +274,7 @@ blr.W15yQC.FormControlsDialog = {
             textbox = document.getElementById('note-text');
 
         blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=treebox;
-            blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormsList;
+        blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormsList;
         if(blr.W15yQC.FormControlsDialog.aFormsList!=null && blr.W15yQC.FormControlsDialog.aFormsList.length>0) {
             if(bHighlightElement === null) bHighlightElement = true;
     
@@ -298,6 +298,11 @@ blr.W15yQC.FormControlsDialog = {
             textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].nodeDescription, "\n\n");
             textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].xpath, "\n\n");
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+                try {
+                    blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node);
+                } catch(err) {}
+            }
             if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
         }
     },
@@ -341,6 +346,11 @@ blr.W15yQC.FormControlsDialog = {
             textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.xpath, "\n");
     
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+                try {
+                    blr.W15yQC.fnMoveToElement(aFC.node);
+                } catch(err) {}
+            }
             
             if(bHighlightElement != false) {
                 idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow');
@@ -402,8 +412,8 @@ blr.W15yQC.FormControlsDialog = {
                     if(blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
                         blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
                     }
-                    blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+                    aList[selectedRow].node.ownerDocument.defaultView.focus();
+                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(aList[selectedRow].node);
                 }
             } catch(ex) {}
         }
@@ -420,7 +430,7 @@ blr.W15yQC.FormControlsDialog = {
         }
         var selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
-            blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+            blr.W15yQC.fnMoveToElement(aList[selectedRow].node);
         }        
     },
     
@@ -436,7 +446,7 @@ blr.W15yQC.FormControlsDialog = {
         var selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
-            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+            blr.W15yQC.fnMoveFocusToElement(aList[selectedRow].node);
         }        
     },
     

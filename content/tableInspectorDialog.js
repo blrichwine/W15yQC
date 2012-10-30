@@ -299,6 +299,11 @@ blr.W15yQC.TableInspectorDialog = {
             textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].nodeDescription, "\n\n");
             textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].xpath, "\n\n");
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
+            if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+                try {
+                    blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+                } catch(err) {}
+            }
             if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
         }
     },

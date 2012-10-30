@@ -43,8 +43,13 @@
  *   - Review text in HTML report for consistency
  *      - Column headers in tables
  *   - Review text in Dialog Box tables for consistency
- *
- * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average Nesting Level is 3. Warn if greater than 5
+ *   - Review overlay.properties file and verify:
+        - check spelling
+        - each note entry is also in the overlay.js object of note entries and the [] values are correct
+        - review each note for consistency.
+        - separate statements from explanations
+        
+ * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
       Documentation:
           Screenshots
@@ -68,11 +73,12 @@
             Using an inspector dialog
             
       ** New spider checks:
-        - table summaries
-        - table captions
-        - Link texts
+        - symbols [done]
+        - table summaries [done]
+        - table captions [done]
+        - Link texts [done]
         - button texts
-        - axis values
+        - axis values [done]
       ** Problem ID dialog
         - List valid ID rules
         - list why an ID is invalid (what characters make it invalid and what position it is in)
@@ -123,98 +129,76 @@
              Drop out certain checks for speed when spidering
             
             
-      Accessibility Quick Checks:
-         Page title
-         Page language
-         Skip Navigation
-         Page Headings
-         Links
-         Form Labels
-         
-      According to Penn State:
-        Image ALT Tag Tips
-        Page or Document Title
-        Headings and Subheadings
-        Link Text
-        Table Headers and Captions
-        Form Design Considerations
-        Contrast or Luminosity/Brightness
-        Color Issues
-        Fonts and Text Layout
-        Text Reading Order
-        Charts & Accessibility
-
             
             
       *** FIX ASAP***
+        - validate the extension in mozilla extension validator, run security checks, perform jslint
+        - clean up the try/catch blocks
+        - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
+        - ****What about HTML5 Hidden attribute?
+           - What values for the hidden attribute work in FF, IE, and Safari? Which don't (if any)
+        - links on w3schools website don't highlight correctly... why?
+        - Update options dialog with new features
+        - **** form control labels (checked with any legend text applied)
+               - yes/no what?
+               - y/n what?
+               - true/false what?
+               - t/f what?
+               - next/previous what?
+               - all what?
+               - zoom (zoom in? zoom out?)
+        - ****Detect spans,divs, etc. with onclick attributes that can't be tabbed to
+               - If they have no role, fail them, list as form controls
+               - If they have valid roles (button, link, ???) and are not disabled, provide a different fail message.
+               - If they don't have a onkeypress or other appropriate handler, fail them.
+               - If they do have an apparent keypress handler, note that it needs to be tested.
+        - ****Detect form controls that aren't hidden but can't be tabbed to.
+               - ARIA roles without tabindex (fail)
+               - standard form controls with tabindex=-1 (warn)
+        - **** Table caption or table summary the same as an immediately preceeding heading [not sure about this one]
+        - **** Look for places that can use blr.W15yQC.fnStringHasContent(
+        - **** Detect ARIA overrides of native tag semantics -- what is acceptable? what is not? (This should be in the aria roles checks)
+        - **** test role="group" effects
+        - **** In each selection list (select tag), does each list item grouping (optgroup tag) have a label attribute?
+        - **** How does JAWS announce the various form controls? Make a function to return string announced by JAWS.
+        - **** QA state listing on ARIA landmarks -- doesn't appear to be working
+        - **** Form controls HTML list should show 'alt' column when a valid instance of alt is present and the effective label comes from one
+        - **** Fix form control label detection (fieldsets, legend, label, aria role="group")
+        - **** select elements with onchange
+        - **** each fieldset should contain a legend (Radio buttons require this already)
+        - **** Input elements where type=[button|submit|reset] must have a value or title attribute.
+        - Table sort in HTML results is not ignoring case: Link Text on links table
+        - Do <label>, <fieldset> work on ARIA form control roles (button, radio, etc.) IF NOT, fix effectiveLabel function
+        - Font size too small (links, buttons, form controls' labels)
         - Detect code <font,i,b,em,etc tags> and add a manual check to make sure the information if important, is somehow described accessibly
         - Detect skip to main content links, make sure they are close to the top. Analyze coding used on edu sites and how deep they are in the code after the body element.
-        - Add warning for radio buttons that don't have fieldsets
-        - validate role values - warn if multiple values, check validity.
         - DETERMINE WHICH ELEMENTS FIELDSET LEGENDS APPLY TO, RADIOGROUPs
-        - Do <label>, <fieldset> work on ARIA form control roles (button, radio, etc.) IF NOT, fix effectiveLabel function
-        - URL normalization does not work with https:// (not sure this is true, appears to be working fine)
-        - URL normalization does not work with // links (this needs fixed!!!)
         - QUESTION: Do div's that have a title attribute and can get focus get announced by screen-readers when they get focus?
         - Which elements have child text that works as a label for ARIA form control roles (radio?)
-        - QA support for ARIA headings
         - Check for elements that activate TOC heading level mode and warn at the doc level
-        - QA Add tool to detect non-unique, invalid IDs
-        - Table sort in HTML results is not ignoring case: Link Text on links table
-        - Frames analysis does not list frame with duplicate titles
+        - Add why invalid ID routine
         - QA Form Control Test [].
         - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
-        - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
-        - compare results on running against FAE on several pages (link text, form control text, headings)
         - check label is labeling appropriate form control, guess by location of label vs. location of other control's label
-        - test role="group" effects
-        - FEATURE ADD: Compute largest square that fits in an area's target. Check if it is too small to hit reliably. 
+        - FEATURE ADD: Compute largest square that fits in an area's target. Check if it is too small to hit reliably. (have on links, need on buttons and other targets)
         - image maps
            - Does each area tag of an image map have an alt attribute [done]
            - Does each area tag of an image map with an empty href have an empty alt attribute?
            - Does the equivalent link text for an area tag meet link text requirements (include in links list? Test with JAWS obviously)
            - add areas to links [done]
-        - Can we detect server side image maps? server-side image map (img tag with the ismap attribute) [done]
-        - Check for focusable elements that have the focus outline reset
-        - Check for full justification of text SC 1.4.8, F88, G172
-        - Verify that theys are required to have labels: input tag of type text, password, checkbox, radio, file, or textarea and select tags
-        - In each selection list (select tag), does each list item grouping (optgroup tag) have a label attribute?
+        - Check for focusable elements that have the focus outline reset [needs further development -- too many false positives]
+        - Verify that these are required to have labels: input tag of type text, password, checkbox, radio, file, or textarea and select tags
         - Does each applet tag, applet image have an alt attribute?
         - What about object or embed tags with type="image/..."
-        - Data table should not have caption content that is exactly the same as summary content
-        - thead and tfoot tags trigger datatable and are included in why datatable list
-        - td cells with scope, headers, colgroup, axis attributes trigger datatable and are included in why datatable list
-        - [Resoved - QA THIS] Distinguish (Failure: Label text sounds the same as another form control's text label.) by form control type
-          How does JAWS announce the various form controls? Make a function to return string announced by JAWS.
-        - [Resolved - QA THIS] Detect language, and disable english only checks if default language is not set to english
-        - [Resolved - QA This] Make "Link text contains only ASCII symbols" fall back to known symbols list if not lang="en".
-        - [Resolved - QA This] Img Alt Attribute checks do not seem to detect only ASCII symbols
-        - [Resolved - tableTests01.html] Table 7x11 shows up as a layout table, probably should guess it could be a data table and warn to check (looks larger than a normal layout table, etc.)
- *      - [Resolved - QA This] Page content hosted inside an object element is not appearing in the results: ereserves.indiana.edu/eres/default.aspx page send email message popup
-        - Empty links show up as Masked when highlighting them from the links dialog - try to detect real Masked elements and don't do this. Describe as too small and position where it was located.
- *      - suppress Link target too small warning when content is being clipped / masked (detect this)
- *      - QA state listing on ARIA landmarks -- doesn't appear to be working
+        - QA Dialog to detect non-unique, invalid IDs
+        - QA support for ARIA headings
  *      - Fix landmark list, create real qa file for aria landmarks with nested landmarks
- *      - Detect input[type=image] where no alt attribute or title is supplied, or effective label is an image filename
- *      - Fix form control label detection (fieldsets, legend, label, aria role="group")
  *      - Detect label elements that don't label anything
  *        - no for attribute, doesn't wrap control
  *        - for attribute doesn't have a valid id
  *        - id in for attribute doesn't exist
  *        - id points to control that isn't a form control (shouldn't be labeled)
- *      - Form controls HTML list should show 'alt' column when a valid instance of alt is present and the effective label comes from one
- *      - links, buttons must not have both an onclick and an onkeypress handler
- *      - ARIA, images with alt or longdesc or title attribute should not have a role of presentation
- *      - Title attributes for frames must be unique
- *      - [Resolved - QA this] Images must have valid alt text. OA
- *      - [Resolved - QA this] Image file name is not valid alt text. OA
- *      - [Resolved - QA this] Certain words cannot be used as a part of valid alt text OA
  *      - Length of alt text OA
- *      - [Resolved - imageTests01.html] If an image should not have a presentation role if:
- *          - it has alt text
- *          - it has a title
- *          - it has an aria-label
- *          - it has an aria-labelledby that contains text
  *      - Data tables must:
  *         - use the summary attribute OA7 *
  *         - use th cells OA8 
@@ -228,9 +212,6 @@
  *             - look for "layout table", "layout", "for layout", "summary", "table summary", "table", "header table", "Content table", "footer", "footer table",
  *               "Navigation", "Navigation table", "Nav table", "content", ARIA Landmark role values, "(Top|left|right|bottom|side)* (hand)* nav(igation)* (table)*"
 
-
-
- 
  *      - fix aria code list
  *        - show closing tags
  *        - indicate skipped content
@@ -245,6 +226,38 @@
 FIXED:
 
         - [FIXED]The view->Toolbars->Customize... doesn't show the icon for W15yQC
+        - **** Invalid captions[done]:
+        - **** Invalid table summaries [done]:
+        - ****validate role values - warn if multiple values, check validity. [done]
+        - ****Add warning for radio buttons that don't have fieldsets [DONE -- Needs QA]
+        - **** Frames analysis does not list frame with duplicate titles [DONE -- Needs QA] 
+        - **** Check for full justification of text SC 1.4.8, F88, G172 [Done -- needs QA]
+        - **** Add ARIA State attributes to state description [done]
+        - **** Data table should not have caption content that is exactly the same as summary content [done]
+ *      - ARIA, images with alt or title attribute should not have a role of presentation [done]
+        - **** td cells with abbr, scope, headers, axis attributes trigger datatable and are included in why datatable list [done]
+        - [Resoved - QA THIS] Distinguish (Failure: Label text sounds the same as another form control's text label.) by form control type
+        - [Resolved - QA THIS] Detect language, and disable english only checks if default language is not set to english
+        - [Resolved - QA This] Make "Link text contains only ASCII symbols" fall back to known symbols list if not lang="en".
+        - [Resolved - QA This] Img Alt Attribute checks do not seem to detect only ASCII symbols
+        - Can we detect server side image maps? server-side image map (img tag with the ismap attribute) [done -- qa this]
+        - URL normalization does not work with // links (DONE - Needs QA)
+        - **** thead and tfoot tags trigger datatable and are included in why datatable list [done]
+        - [Resolved - tableTests01.html] Table 7x11 shows up as a layout table, probably should guess it could be a data table and warn to check (looks larger than a normal layout table, etc.)
+ *      - [Resolved - QA This] Page content hosted inside an object element is not appearing in the results: ereserves.indiana.edu/eres/default.aspx page send email message popup
+ *      - links, buttons must not have both an onclick and an onkeypress handler [done - QA This]
+ *      - [Resolved - QA this] Images must have valid alt text. OA
+ *      - [Resolved - QA this] Image file name is not valid alt text. OA
+        - **** Spider link and button text and list non-[a-z] chars to build known symbol list [done]
+ *      - [Resolved - QA this] Certain words cannot be used as a part of valid alt text OA
+        - **** language element must be valid [Maybe a full test in phase 2, but unlikely]
+        - **** Empty links show up as Masked when highlighting them from the links dialog - try to detect real Masked elements and don't do this. Describe as too small and position where it was located.
+        - **** Detect input[type=image] where no alt attribute or title is supplied, or effective label is an image filename [done - qa this]
+ *      - [Resolved - imageTests01.html] If an image should not have a presentation role if:
+ *          - it has alt text
+ *          - it has a title
+ *          - it has an aria-label
+ *          - it has an aria-labelledby that contains text
 
  DoD
  
@@ -271,9 +284,6 @@ FIXED:
  *    - Once QA'd for Phase I, host the project
  *
  *    - TODO Before publishing to gitHub:
- *        - Preferences Dialog / menu items
- *        - Semantic viewer
- *        - Disabled Rules List
  *        - User docs / for wiki
  *           - Tool mission statement
  *              - explain tool's goals
@@ -323,12 +333,7 @@ FIXED:
  *         - exist in the document
  *         - contain text
  *      - focusable elements should have visible focus (outline)
- *      - language element must be valid
- *      - select elements with onchange
- *      - each fieldset should contain a legend
  *      - Each input element with type=text | password | checkbox | radio | file and each select and textarea element should either be referenced by the for attribute of a label element via its id attribute, or have a title attribute.
- *      - Input element of type=[image] must have an alt or a title attribute.
- *      - Input elements where type=[button|submit|reset] must have a value or title attribute.
  *      - Each button element must contain content.
  *      - Effective labels should be unique.
  *      - Do not use font element
@@ -399,8 +404,6 @@ FIXED:
  *    - RESEARCH
  *       Do HTML Entities work in alt text?
  *    - Document Checks
- *      - Check that all ID fields are unique and that the id is a valid ID (Valid HTML ID's and Names:http://www.w3.org/TR/html401/types.html#type-name , http://www.w3.org/TR/html401/struct/links.html#anchors-with-id)
- *      - Make a list of non-unique ID namespace values (IDs, names on certain elements). Safer, easier to maintain.
  *    - Code Fixes:
  *      - Recursive functions should call arguments.callee(...) instead of the named function
  *    - Form Controls:
@@ -425,10 +428,8 @@ FIXED:
  *       - Create assumed doctype from document values and paste that in when using DOM for source
  *    - Invoke WAVE from DOM? <Why? The WAVE tool bar can do this.>
  *    - Find non-link, button elements that have onclicks without appropriate role values
- *    - Color contrast tool
  *    - HTML5 Outliner view
  *    - Long description attribute on images, frames, others (look it up)?
- *    - Add ARIA State attributes to state description
  *    - Effective Label for images
  *    - Test alt attribute for image filename formats and flag them as possibly meaningless.
  *    - Test longdesc attribute: link works, has text content, etc.
@@ -439,20 +440,67 @@ FIXED:
  *    - Put in a page footer with optional config settings, date/time, version of tool, author of tool, etc.
  *    - failed to find explict label for textarea for short-description field in form on defining new site.
  *    - legend + ascii symbols are not caught. joe brought it up. <check if fixed or not>
- *    - check that radio buttons have legend text.
- *    - Check that radio buttons have other radio buttons with the same name attribute value
- *    - Get data tables
- *    - Accesskey checks
+ *    - Check that radio buttons have other radio buttons with the same name attribute value in the same form
  *    - Get ARIA attribute checks routine fleshed out
  *       + If same role and label, give warning
- *    - Format table column widths intelligently; set max widths in css?
- *    - Understand if the hidden element routine is working
+ *    - Understand if the hidden element routine is working [Create QA files to test this]
  *    - Make table headings unique so the sort links are unique and indicate current sort status in text
- *    - Create QA Suit of test html files with prescribed outcomes
- *      Form control labeling
  *      If a input element has an implicit label, how does the child text work for the label if the input element has a title attribute or other text on it?
  *      Child text for various tags, child images, child input elements (including type=image, buttons, etc.), child text with hidden elements
- *      hidden elements
  *      
  *    - Internationalize?
- */   
+ */
+ 
+ 
+ QA Steps to perform before releases
+   1) Check version info is correct
+       - Examine 'version' variable in blr.W15yQC
+       - Run HTML Report and examine report footer
+       - Examine version info in About dialog
+   2) Run through QA Test pages and check for expected results
+   3) Run HTML report on major websites to verify no unexpected results or behavior
+       - cnn.com
+       - iub.edu
+       - indiana.edu
+       - nightly2.sakaiproject.org servers
+       - iupui.edu
+       - iuadapts.indiana.edu
+       - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
+       - compare results on running against FAE on several pages (link text, form control text, headings)
+    4) Run through the Mozilla extension validator
+       
+ Steps to perform to issue release
+    1) Upload to download section on github
+    2) Update download links on the website
+    2) Upload to Mozilla
+ 
+ Steps to perform after a release
+    1) Search google for new release by file name, by description text, on multiple computers
+    2) Download new release from web site and install in multiple firefox versions
+        - Verify basic functionality (sanity checks)
+        - Verify version number is correct
+        
+        
+        
+Simple protocol development:
+      Accessibility Quick Checks:
+         Page title
+         Page language
+         Skip Navigation
+         Page Headings
+         Links
+         Form Labels
+         
+      According to Penn State:
+        Image ALT Tag Tips
+        Page or Document Title
+        Headings and Subheadings
+        Link Text
+        Table Headers and Captions
+        Form Design Considerations
+        Contrast or Luminosity/Brightness
+        Color Issues
+        Fonts and Text Layout
+        Text Reading Order
+        Charts & Accessibility
+
