@@ -14,16 +14,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
- * File:        formControlsDialog.js
+ * File:        tableInspectorDialog.js
  * Description: Handles displaying the ARIA Landmarks quick check dialog
  * Author:	Brian Richwine
- * Created:	2011.12.10
+ * Created:	2012.10.12
  * Modified:
  * Language:	JavaScript
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2011.12.10 - Created! 
+ * 2012.10.12 - Created! 
  *
  * TODO:
  *      
@@ -33,11 +33,12 @@
  */
 if (!blr) { var blr = {}; }
 
+
 /*
- * Object:  QuickW15yFormControlsDialog
+ * Object:  QuickW15yTableInspectorDialog
  * Returns:
  */
-blr.W15yQC.FormControlsDialog = {
+blr.W15yQC.TableInspectorDialog = {
     FirebugO: null,
     aDocumentsList: null,
     aFormsList: null,
@@ -274,7 +275,7 @@ blr.W15yQC.FormControlsDialog = {
             textbox = document.getElementById('note-text');
 
         blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus=treebox;
-        blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormsList;
+            blr.W15yQC.FormControlsDialog.aLastList=blr.W15yQC.FormControlsDialog.aFormsList;
         if(blr.W15yQC.FormControlsDialog.aFormsList!=null && blr.W15yQC.FormControlsDialog.aFormsList.length>0) {
             if(bHighlightElement === null) bHighlightElement = true;
     
@@ -300,7 +301,7 @@ blr.W15yQC.FormControlsDialog = {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
             if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
                 try {
-                    blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node);
+                    blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
                 } catch(err) {}
             }
             if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
@@ -346,11 +347,6 @@ blr.W15yQC.FormControlsDialog = {
             textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.xpath, "\n");
     
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
-            if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
-                try {
-                    blr.W15yQC.fnMoveToElement(aFC.node);
-                } catch(err) {}
-            }
             
             if(bHighlightElement != false) {
                 idCounter=blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow');
@@ -412,8 +408,8 @@ blr.W15yQC.FormControlsDialog = {
                     if(blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
                         blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
                     }
-                    aList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(aList[selectedRow].node);
+                    blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node.ownerDocument.defaultView.focus();
+                    void function(arg){blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
                 }
             } catch(ex) {}
         }
@@ -430,7 +426,7 @@ blr.W15yQC.FormControlsDialog = {
         }
         var selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
-            blr.W15yQC.fnMoveToElement(aList[selectedRow].node);
+            blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
         }        
     },
     
@@ -446,7 +442,7 @@ blr.W15yQC.FormControlsDialog = {
         var selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
-            blr.W15yQC.fnMoveFocusToElement(aList[selectedRow].node);
+            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
         }        
     },
     

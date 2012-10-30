@@ -34,17 +34,20 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B04',
+    version: '1.0-B07',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
     userExpertLevel: null,
     userLocale: null,
     bEnglishLocale: true,
-    bIncludeHidden: false,
     highlightTimeoutID: null,
     sb: null,
-
+    
+    // User prefs
+    bIncludeHidden: false,
+    bAutoScrollToSelectedElementInInspectorDialogs: true,
+    
     // Homophones object for sounds like routine
     // TODO: add 20 most mispelled words
     // http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/Homophones
@@ -657,7 +660,7 @@ ys: 'whys'
     },
 
     fnIsValidLocale: function(sLocale) {
-      return (/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?$/).test(sLocale); // QA iframeTests01.html
+      return /^([xi]-[a-z0-9]+|[a-z]{2,3}(-[a-z0-9]+)?)$/i.test(sLocale); // QA iframeTests01.html
     },
     
     fnSetIsEnglishLocale: function(sLocale) {
@@ -833,8 +836,10 @@ ys: 'whys'
       docLangNotGiven: [2,0,true,null],
       docLangNotSpecified: [2,0,true,null],
       docInvalidLang: [2,0,false,null],
+      docLangAttrInvalidUseUnderscore: [2,0,false,null],
       docTitleNotUnique: [1,0,false,null],
       docCSSSuppressingOutline: [1,0,true,null],
+      docUsesFullJustifiedText: [2,0,true,null],
       docNonUniqueIDs: [1,1,false,null],
       docInvalidIDs: [1,1,false,null],
       
@@ -865,6 +870,13 @@ ys: 'whys'
       ariaLevelAttributeValueInvalid: [2,0,false,null],
       ariaHeadingMissingAriaLevel: [1,0,true,null],
       ariaHasBothLabelAndLabelledBy: [2,0,true,null],
+      ariaMultipleRoleValues: [1,0,false,null],
+      ariaInvalidAttrWUndefValue: [1,1,true,null],
+      ariaAttributeMustBeValidNumber: [2,0,false,null],
+      ariaAttrMustBePosIntOneOrGreater: [2,0,false,null],
+      ariaPosInSetWOAriaSetSize: [2,0,false,null],
+      ariaEmptyValueTextWValueNowWarning: [1,1,true,null],
+      ariaInvalidAriaLabeledBy: [2,0,false,null],
       ariaIDNotValid: [1,0,false,null],
       ariaIDNotUnique: [2,0,false,null],
 
@@ -923,6 +935,8 @@ ys: 'whys'
       fmrCtrlLabelNotUnique: [2,0,false,null],
       frmCtrlLabelDoesntSoundUnique: [2,0,false,null],
       frmCtrlLabelEmpty: [2,0,false,null],
+      frmCtrlInputTypeImageWOAltText: [2,0,false,null],
+      frmCtrlInputTypeImageWOAltAttr: [2,0,false,null],
       frmCtrlRedundantOCandOK: [2,0,false,null],
       frmCtrlHasBothOCandOK: [1,0,false,null],
       frmCtrlForValInvalid: [1,0,false,null],
@@ -934,6 +948,7 @@ ys: 'whys'
       frmCtrlImplicitLabel: [2,0,false,null],
       frmCtrlLegendWOFieldset: [2,0,false,null],
       frmCtrlFieldsetWOLegend: [2,0,false,null],
+      frmCtrlRadioButtonWOLegendText: [1,0,false,null],
       frmCtrlIDNotValid: [2,0,false,null],
       frmCtrlIDNotUnique: [2,0,false,null],
 
@@ -972,6 +987,12 @@ ys: 'whys'
       tblIsDataTable: [0,0,false,null],
       tblCheckCaptionSummary: [1,0,false,null],
       tblCaptionSameAsSummary: [1,0,false,null],
+      tblSummaryLooksLikeLayout: [2,0,false,null],
+      tblSummaryLooksLikeADefault: [2,0,false,null],
+      tblSummaryNotMeaningful: [2,0,false,null],
+      tblCaptionLooksLikeLayout: [2,0,false,null],
+      tblCaptionLooksLikeADefault: [2,0,false,null],
+      tblCaptionNotMeaningful: [2,0,false,null],
       tblDTMissingTHs: [2,0,false,null],
       tblDTisComplex: [1,0,false,null],
       tblDTwTDwoHeadersAttrib: [2,0,false,null],
@@ -1180,6 +1201,22 @@ ys: 'whys'
       return false;
     },
 
+    fnIsValidNumber: function (sNumber) {
+      sNumber = blr.W15yQC.fnTrim(sNumber);
+      if(sNumber != null && sNumber.length>0 && /^[0-9e\.\,\+\-]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
+        return true;
+      }
+      return false;
+    },
+
+    fnStringIsTrueFalse: function(s) {
+      if(s!=null) {
+        s=blr.W15yQC.fnTrim(s.toLowerCase());
+        if(s=='true'||s=='false') { return true; }
+      }
+      return false;
+    },
+    
     fnMakeWebSafe: function (sString) {
       if (sString != null && sString.replace && sString.length > 0) {
         sString = sString.replace(/</g, '&lt;');
@@ -1297,13 +1334,13 @@ ys: 'whys'
 
         if (w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
           w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("outline");
-          w15yqcPrevElWithFocus.style.outline = "solid 2px red";
+          //w15yqcPrevElWithFocus.style.outline = "solid 2px red";
           w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("position");
           w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
           if(w15yqcOriginalItemPosition=="static") {
-            w15yqcPrevElWithFocus.style.position = "relative";
+            //w15yqcPrevElWithFocus.style.position = "relative";
           }
-          w15yqcPrevElWithFocus.style.zIndex = "199999";
+          //w15yqcPrevElWithFocus.style.zIndex = "199999";
           blr.W15yQC.highlightElement(e.target, e.target.ownerDocument);
         }
       }
@@ -1314,10 +1351,10 @@ ys: 'whys'
         }
         try {
           if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
-            w15yqcPrevElWithFocus.style.position = w15yqcOriginalItemPosition;
-            w15yqcPrevElWithFocus.style.zIndex = w15yqcOriginalItemZIndex;
-            w15yqcPrevElWithFocus = null;
+            //w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+            //w15yqcPrevElWithFocus.style.position = w15yqcOriginalItemPosition;
+            //w15yqcPrevElWithFocus.style.zIndex = w15yqcOriginalItemZIndex;
+            //w15yqcPrevElWithFocus = null;
           }
         }catch(ex)
         {
@@ -1493,19 +1530,16 @@ ys: 'whys'
     },
 
     fnMoveToElement: function(node) {
+      var err;
       if(node != null && node.hasAttribute && node.nodeType==1) {
-        if(node.hasAttribute('tabindex')) {
-          //var oldTIValue=node.getAttribute('tabindex');
-          //node.setAttribute('tabindex',-1);
-          //node.focus();
-          node.scrollIntoView(true);
-          //node.setAttribute('tabindex',oldTIValue);
-        } else {
-          //node.setAttribute('tabindex',-1);
-          //node.focus();
-          node.scrollIntoView(true);
-          //node.removeAttribute('tabindex');
-        }
+        try {
+          if(blr.W15yQC.fnNodeIsHidden(node) || blr.W15yQC.fnNodeIsMasked(node)) {
+            node.ownerDocument.defaultView.scrollTo(0,0);
+          } else {
+            node.scrollIntoView(true);
+          }
+          blr.W15yQC.fnDoEvents();
+        } catch(err) {}
       }
     },
 
@@ -1534,7 +1568,7 @@ ys: 'whys'
     
     highlightElement: function (node, doc, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false;
+      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false, tagName=null, bEmptyElement=false;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
       if (doc != null && node != null) {
         if(idCounter==null && Array.isArray( blr.W15yQC.highlightTimeoutID )) {
@@ -1553,6 +1587,17 @@ ys: 'whys'
           blr.W15yQC.resetHighlightElement(doc);
         }
         
+        if(node.tagName) {
+          tagName=node.tagName;
+          if(tagName!=null) {
+            tagName=tagName.toLowerCase();
+            if(/^a$/.test(tagName)) {
+              if(blr.W15yQC.fnStringHasContent(blr.W15yQC.fnGetDisplayableTextRecursively(node))==false) {
+                bEmptyElement=true;
+              }
+            }
+          }
+        }
         origNode = node;
         div = null;
         box = node.getBoundingClientRect();
@@ -1595,11 +1640,11 @@ ys: 'whys'
           idCounter=idCounter+1;
           div.setAttribute('id', 'W15yQCElementHighlight'+idCounter.toString());
           doc.body.appendChild(div);
-          if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
-        } else if (w < 2 && h < 2 && w > 0 && h > 0) {
+          //if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
+        } else if (w < 2 && h < 2 && w > 0 && h > 0 && bEmptyElement==false) {
           o = 0.9;
-          l = 4;
-          t = 4;
+          //l = 4;
+          //t = 4;
           w = 'auto';
           h = 'auto';
           div = doc.createElement('div');
@@ -1608,7 +1653,7 @@ ys: 'whys'
           idCounter=idCounter+1;
           div.setAttribute('id', 'W15yQCElementHighlight'+idCounter.toString());
           doc.body.appendChild(div);
-          if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
+          //if(bSetTimeouts) { blr.W15yQC.fnSetHighlightTimeout(doc,idCounter); }
         } else {
           rects = node.getClientRects();
           if(rects != null && rects.length>1) {
@@ -1632,9 +1677,15 @@ ys: 'whys'
               }
             }
           } else {
-            w = w + 'px';
-            h = h + 'px';
             div = doc.createElement('div');
+            if(w<2 && h<2 && bEmptyElement==true) {
+              div.appendChild(doc.createTextNode(blr.W15yQC.fnGetString('heEmpty')));
+              w = 'auto';
+              h = 'auto';
+            } else {
+              w = Math.max(w,6) + 'px';
+              h = Math.max(h,6) + 'px';
+            }
             div.setAttribute('style', "position:absolute;top:" + t + "px;left:" + l + "px;width:" + w + ";height:" + h + ";background-color:"+highlightBGColor+";outline:3px dashed red;color:black;opacity:" + o + ";padding:0;margin:0;z-index:200000");
             div.setAttribute('onmouseover','this.style.zIndex="-50000";');
             //div.setAttribute('onmouseout','this.style.zIndex="200000";');
@@ -1658,18 +1709,24 @@ ys: 'whys'
     },
 
     resetHighlightElement: function (doc) {
-      var he, idCounter, failureCount;
-      if (doc != null) {
-        he = doc.getElementById('W15yQCElementHighlight');
-        if (he != null && he.parentNode != null && he.parentNode.removeChild) { he.parentNode.removeChild(he); }
+      var he=null, idCounter, failureCount;
+      if (doc != null && doc.getElementById) {
+        try {
+          he = doc.getElementById('W15yQCElementHighlight');
+          if (he != null && he.parentNode != null && he.parentNode.removeChild) { he.parentNode.removeChild(he); }
+        } catch(err) {}
         idCounter = 0;
         failureCount = 0;
         do {
           idCounter++;
-          he = doc.getElementById('W15yQCElementHighlight'+idCounter.toString());
-          if (he != null && he.parentNode != null) {
-            he.parentNode.removeChild(he);
-          } else {
+          try{
+            he = doc.getElementById('W15yQCElementHighlight'+idCounter.toString());
+            if (he != null && he.parentNode != null) {
+              he.parentNode.removeChild(he);
+            } else {
+              failureCount++;
+            }
+          } catch(err) {
             failureCount++;
           }
         } while(failureCount<5);
@@ -1687,6 +1744,12 @@ ys: 'whys'
       if(docURL != null && sUrl != null && sUrl.length>0) {
         docURL = blr.W15yQC.fnTrim(docURL);
         sUrl = blr.W15yQC.fnTrim(sUrl);
+        if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
+          firstPart = docURL.match(/^([a-z-]+:)\/\//);
+            if(firstPart != null) {
+              sUrl=firstPart[1]+sUrl;
+            }
+        }
         if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
           firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
           if(firstPart != null) {
@@ -2082,13 +2145,13 @@ ys: 'whys'
     fnOnlyASCIISymbolsWithNoLettersOrDigits: function (sText) {
       if (sText && sText.length && sText.length > 0) {
         if(blr.W15yQC.bEnglishLocale==true) {
-          sText = sText.replace(/[^a-zA-Z0-9]+/g, '');
+          sText = sText.replace(/[^a-zA-Z0-9€™“Øœæ–ƒÎÙå—ç¾˜„‚‡®Œˆèé•ŠŸŽ’…‹š‘ž†‰ì›ïËÌñßó]+/g, '');
           if (sText.length > 0) {
             return false;
           } 
           return true;
         } else { // TODO: Improve this by checking for unicode characters in common languages
-          sText = sText.replace(/[~`!@#$%^&*\(\)-_+=\[{\]}\\\|;:'",<\.>\/\?\s]+/g, '');
+          sText = sText.replace(/[~`!@#$%^&*\(\)-_+=\[{\]}\\\|;:'",<\.>\/\?\sÃà ÑÂª¬¸·×©¤§±¹½¨¡¥²³¦ÅÖÈ]+/g, '');
           if (sText.length > 0) {
             return false;
           }
@@ -2114,6 +2177,29 @@ ys: 'whys'
       }
       return false;
     },
+    
+    fnIsValidHtmlIDList: function (sIDs) {
+      if(sIDs != null && sIDs.length) {
+        sIDs = blr.W15yQC.fnCleanSpaces(sIDs);
+        if(/^[a-z][a-z0-9:\._-]*( [a-z][a-z0-9:\._-]*)*$/i.test(sIDs)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
+    fnListMissingIDs: function (doc, sIDs) {
+      var sMissingIDs = null;
+      if(doc!=null && sIDs != null && sIDs.length) {
+        aIDs = sIDs.split(' ');
+        if (aIDs != null) {
+          for (i = 0; i < aIDs.length; i++) {
+            if (doc.getElementById(aIDs[i]) == null) { sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, aIDs[i], ', '); }
+          }
+        }
+      }
+      return sMissingIDs;
+    },
 
     fnIsMeaningfulLinkText: function(sText, minLength) {
       if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
@@ -2121,7 +2207,7 @@ ys: 'whys'
         if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map' | sText=='iu') { return true; }
+        if(sText == 'go' || sText == 'ok' || sText == 'faq' || sText == 'map' | sText=='iu') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
@@ -2147,8 +2233,10 @@ ys: 'whys'
           case 'touch':
           case 'touch here':
           case 'press here':
+          case 'tap':
           case 'tap here':
           case 'this':
+          case 'x':
             return false;
           }
           if(!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
@@ -2198,7 +2286,7 @@ ys: 'whys'
         if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
         // Meaningful but short word exceptions:
-        if(sText == 'go') { return true; }
+        if(sText == 'go' || sText == 'ok') { return true; }
 
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
@@ -2217,10 +2305,50 @@ ys: 'whys'
           case 'see here':
           case 'seehere':
           case 'touch':
+          case 'tap':
           case 'press':
           case 'touch here':
           case 'press here':
           case 'tap here':
+          case 'x':
+          case 'no':
+          case 'yes':
+            return false;
+          }
+          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
+        }
+      }
+      return false;
+    },
+
+    fnAppearsToBeDefaultTableSummaryOrCaption: function (sText) { // TODO: QA This
+      sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' ')); // Strip punctuation
+      if (sText != null && sText.match(/^\s*((tabe?le?)? ?(captions?)? ?(sum?ma?re?y)?|{{{.*}}}|alt(ernat[ei](ve)?)? ?te?xt|photo(graph)?|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon)\s*$/i)) {
+        return true;
+      }
+      return false;
+    },
+
+    fnAppearsToBeSummaryOrCaptionOnLayoutTable: function (sText) { // TODO: QA This
+      sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' ')); // Strip punctuation
+      if (sText != null && sText.match(/^\s*(layout\b.*|[a-z]+\s+contents?|search|navigation|.*\btoolbar|content(\s+area(\scontrols?)?)?|(tabe?le?)?\s*(for)?\s*[a-z]*\s*layout\b.*|([a-z]+\s+)?ban+[eao]r|home|ad|ad row|ad table)\s*$/i)) {
+        return true;
+      }
+      return false;
+    },
+
+    fnIsMeaningfulTableSummaryOrCaption: function (sText, minLength) { // TODO: Where is this used? Should it be a specific instance?
+      if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
+      if(sText != null && sText.toLowerCase) {
+        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); } // TODO: Handle accented characters
+        sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
+
+        if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
+          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
+          if (blr.W15yQC.fnAppearsToBeJunkText(sText)) { return false; }
+          if (blr.W15yQC.fnAppearsToBeDefaultTableSummaryOrCaption(sText)) { return false; }
+          switch (sText.toLowerCase()) {
+          case 'table':
             return false;
           }
           if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
@@ -2255,9 +2383,11 @@ ys: 'whys'
           case 'seehere':
           case 'touch':
           case 'press':
+          case 'tap':
           case 'touch here':
           case 'press here':
           case 'tap here':
+          case 'x':
             return false;
           }
           if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
@@ -2320,7 +2450,7 @@ ys: 'whys'
     fnAppearsToBeDefaultAltText: function (sText) {
       // Strip punctuation
       sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' '));
-      if (sText != null && sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
+      if (sText != null && sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|{{{[a-z_ ]+}}}|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
         return true;
       }
       return false;
@@ -2395,11 +2525,14 @@ ys: 'whys'
       return false;
     },
 
-    fnNodeIsHidden: function (node) { // TODO: Improve and QA This!
+    fnNodeIsHidden: function (node) { // TODO: Improve and QA This!, USE THE NODE's WINDOW
       //returns true if element should be invisible to screen-readers.
       if(blr.W15yQC.bIncludeHidden) { return false; }
       if (node != null) {
         if (node.tagName.toLowerCase() == 'input' && node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'hidden') {
+          return true;
+        }
+        if(node.hasAttribute('hidden') && (node.getAttribute('hidden')=='hidden' || node.getAttribute('hidden')=='')) { // For now, strict interpretation
           return true;
         }
         while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset' &&
@@ -3193,12 +3326,33 @@ ys: 'whys'
         }
         if (node.readOnly == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsReadOnly'), ', ');
-        } // TODO: What other global ARIA attributes should we include here:
-        if (node.hasAttribute('aria-required') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-required="' + node.getAttribute('aria-required') + '"', ', ');
+        } 
+        if (node.hasAttribute('hidden') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'hidden="' + node.getAttribute('hidden') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-autocomplete') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-autocomplete="' + node.getAttribute('aria-autocomplete') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-busy') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-busy="' + node.getAttribute('aria-busy') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-disabled') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-disabled="' + node.getAttribute('aria-disabled') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-grabbed') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-grabbed="' + node.getAttribute('aria-grabbed') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-haspopup') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-haspopup="' + node.getAttribute('aria-haspopup') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-hidden') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-hidden="' + node.getAttribute('aria-hidden') + '"', ', ');
         }
         if (node.hasAttribute('aria-invalid') == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-invalid="' + node.getAttribute('aria-invalid') + '"', ', ');
+        }
+        if (node.hasAttribute('aria-required') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-required="' + node.getAttribute('aria-required') + '"', ', ');
         }
       }
       return blr.W15yQC.fnCleanSpaces(sStateDescription);
@@ -3754,25 +3908,364 @@ ys: 'whys'
             }
         },
 
-    fnGetAttributeValueWarnings: function(name, value) { // TODO: Is this called anywhere? Finish this!!
-      if(name != null && value != null && name.toLowerCase) {
-        name=name.toLowerCase();
-        switch(name) {
-          case 'id':
-          case 'for':
-              break;
-          case 'href':
-          case 'src':
-              break;
-          case 'role':
-              break;
-          default:
-              return null;
+    fnGetARIAAttributeValueWarnings: function(no, node) { // Based on: http://www.w3.org/TR/wai-aria/states_and_properties
+      var doc, sRole='',i, attrName, attrValue, tagName, sMsg;
+      if(node != null && node.hasAttribute) {
+        if(node.hasAttribute('role')) { sRole = node.getAttribute('role'); }
+        doc=node.ownerDocument;
+        tagName = node.tagName.toLowerCase();
+        for (i = 0; i < node.attributes.length; i++) {
+          attrName = node.attributes[i].name.toLowerCase();
+          if(/^aria-/.test(attrName)) {
+            attrValue = node.attributes[i].value.toLowerCase();
+            switch(attrName) {
+              case 'aria-activedescendant': // a single ID that is a descendant or logical descendant
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidHtmlID(attrValue)) {
+                    sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
+                    if(sMsg != null) {
+                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                    } else {
+                      if(blr.W15yQC.fnIsDescendant(node,doc.getElementById(attrValue))==false) {
+                        blr.W15yQC.fnAddNote(no, 'ariaTargetElementIsNotADescendant', [attrValue]); // TODO: QA This
+                      }
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidID', [attrName]); // TODO: QA This
+                  }
+                }
+                break;
+              case 'aria-atomic':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-autocomplete':
+                if(/^(combobox|textbox)$/.test(sRole)==false && /^(select|textbox)$/.test(tagName)==false) {
+                  if(blr.W15yQC.fnStringHasContent(role)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(inline|list|both|none)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue,attrName,'inline, list, both, none']); // TODO: QA This
+                }
+                break;
+              case 'aria-busy': // (state)
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-checked': // (state)
+                // TODO: What contexts is this valid in?
+                if(/^(checkbox|menuitemcheckbox|menuitemradio|option|radio|treeitem)$/.test(sRole)==false) {
+                  if(blr.W15yQC.fnStringHasContent(role)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|mixed|undefined)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'true, false, mixed, undefined']); // TODO: QA This
+                }
+                break;
+              case 'aria-controls':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
+                    sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
+                    if(sMsg != null) {
+                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA this
+                  }
+                }
+                break;
+              case 'aria-describedby':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
+                    sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
+                    if(sMsg != null) {
+                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
+                  }
+                }
+                break;
+              case 'aria-disabled': // (state)
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue,attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-dropeffect':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(copy|move|link|execute|popup|none)(\s+(copy|move|link|execute|popup|none))*$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeWithInvalidValue', [attrValue,attrName,'copy, move, link, execute, popup, none']); // TODO: QA This
+                }
+                if(/none/.test(attrValue) && attrValue != 'none') {
+                  sMsg=blr.W15yQC.fnCleanSpaces(attrValue.replace('none',''));
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueDoesntMakeSenseWith', [sMsg, attrName, 'none']); // TODO: QA This
+                }
+                break;
+              case 'aria-expanded': // (state)
+                // TODO: Figure out how to determine if this is on the right element, or controlling the right element
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|undefined)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'true, false, undefined']); // TODO: QA This
+                }
+                break;
+              case 'aria-flowto':
+                // TODO: determine if we need to detect the path's name (name of target element)
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
+                    sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
+                    if(sMsg != null) {
+                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
+                  }
+                }
+                break;
+              case 'aria-grabbed': // (state)
+                // TODO: Figure out how to determine if this is on the right element, or controlling the right element
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|undefined)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'true, false, undefined']); // TODO: QA This
+                }
+                break;
+              case 'aria-haspopup':
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [,attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-hidden': // (state)
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-invalid': // (state)
+                // TODO: Figure out how to determine if this is on the right element, or controlling the right element
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|spelling|grammar)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaInvalidAttrWUndefValue', [attrValue]); // TODO: QA This
+                }
+                break;
+              case 'aria-label':
+                // TODO: Which cases require a value?
+                if (blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringHasContent(node.getAttribute('aria-labelledby'))) {
+                  blr.W15yQC.fnAddNote(no, 'ariaHasBothLabelAndLabelledBy'); // TODO: QA This, Make this a real check for content getting replaced.
+                }
+                break;
+              case 'aria-labeledby': 
+                blr.W15yQC.fnAddNote(no, 'ariaInvalidAriaLabeledBy');
+                break;
+              case 'aria-labelledby':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
+                    sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
+                    if(sMsg != null) {
+                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA this
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
+                  }
+                }
+                break;                
+              case 'aria-level':
+                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(sInt,10)<1) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttrMustBePosIntOneOrGreater',[attrValue,attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-live':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(assertive|polite|off)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'assertive, polite, off']); // TODO: QA This
+                }
+                break;
+              case 'aria-multiline':
+                if(/^(textbox)$/.test(sRole)==false && /^(input|textarea)$/.test(tagName)==false) {
+                  if(blr.W15yQC.fnStringHasContent(role)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-multiselectable':
+                // TODO: Detect appropriate use
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-orientation':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(horizontal|vertical)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'horizontal, vertical']); // TODO: QA This
+                }
+                break;
+              case 'aria-owns':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
+                    sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
+                    if(sMsg != null) {
+                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
+                  }
+                }
+                break;                
+              case 'aria-posinset':
+                if(node.hasAttribute('aria-setsize')==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaPosInSetWOAriaSetSize'); // TODO: QA This
+                }
+                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(sInt,10)<1) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttrMustBePosIntOneOrGreater',[attrValue,attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-pressed': // (state)
+                if(/^(button)$/.test(sRole)==false && /^(button)$/.test(tagName)==false) {
+                  if(blr.W15yQC.fnStringHasContent(role)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|mixed|undefined)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'true, false, mixed, undefined']); // TODO: QA This
+                }
+                break;
+              case 'aria-readonly':
+                // TODO: Where should this be used?
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-relevant':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(additions|removals|text|all)(\s+(additions|removals|text|all))*$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeWithInvalidValue', [attrValue,attrName,'copy, move, link, execute, popup, none']); // TODO: QA This
+                }
+                if(/all/.test(attrValue) && attrValue != 'all') {
+                  sMsg = blr.W15yQC.fnCleanSpaces(attrValue.replace('all',''));
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueDoesntMakeSenseWith', [sMsg, attrName, 'all']); // TODO: QA This
+                }
+                break;
+              case 'aria-required':
+                if(/^(combobox|gridcell|listbox|radiogroup|spinbutton|textbox|tree)$/.test(sRole)==false && /^(input|textarea)$/.test(tagName)==false) {
+                  if(blr.W15yQC.fnStringHasContent(role)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
+                if(blr.W15yQC.fnStringHasContent(attrValue) && blr.W15yQC.fnStringIsTrueFalse(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeTF', [attrValue, attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-selected': // (state)
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|undefined)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'true, false, undefined']); // TODO QA This
+                }
+                break;
+              case 'aria-setsize':
+                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(sInt,10)<1) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttrMustBePosIntOneOrGreater',[attrValue,attrName]); // TODO: QA This
+                }
+                break;
+              case 'aria-sort':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(ascending|descending|none|other)$/.test(attrValue)==false) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAttributeValueInvalid', [attrValue, attrName,'ascending, descending, none, other']); // TODO: QA This
+                }
+                break;
+              case 'aria-valuemax':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidNumber(attrValue)) {
+                    if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuemin'))) {
+                      if(parseFloat(attrValue)<parseFloat(node.getAttribute('aria-valuemin'))) {
+                        blr.W15yQC.fnAddNote(no, 'ariaMaxNotGreaterThanAriaMin'); // TODO: QA This
+                      }
+                    } else {
+                      blr.W15yQC.fnAddNote(no, 'ariaMaxWOAriaMin'); // TODO: QA This
+                    }
+                    if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuenow'))) {
+                      if(parseFloat(attrValue)<parseFloat(node.getAttribute('aria-valuenow'))) {
+                        blr.W15yQC.fnAddNote(no, 'ariaMaxNotGreaterThanEqualAriaNow'); // TODO: QA This
+                      }
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidNumber', [attrValue, attrName]); // TODO: QA This
+                  }
+                }
+                break;                
+              case 'aria-valuemin':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidNumber(attrValue)) {
+                    if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuemin'))==false) {
+                      blr.W15yQC.fnAddNote(no, 'ariaMinWOAriaMax'); // TODO: QA This
+                    }
+                    if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuenow'))) {
+                      if(parseFloat(attrValue)>parseFloat(node.getAttribute('aria-valuenow'))) {
+                        blr.W15yQC.fnAddNote(no, 'ariaMinNotLessThanEqualAriaNow'); // TODO: QA This
+                      }
+                    }
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidNumber', [attrValue, attrName]); // TODO: QA This
+                  }
+                }
+                break;                
+              case 'aria-valuenow':
+                if(blr.W15yQC.fnStringHasContent(attrValue)) {
+                  if(blr.W15yQC.fnIsValidNumber(attrValue)==false) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidNumber', [attrValue, attrName]); // TODO: QA This
+                  }
+                }
+                break;                
+              case 'aria-valuetext':
+                if(blr.W15yQC.fnStringHasContent(attrValue)==false) {
+                  if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuenow'))) {
+                    blr.W15yQC.fnAddNote(no, 'ariaEmptyValueTextWValueNowWarning');  // TODO: QA This
+                  }
+                }
+              default:
+                blr.W15yQC.fnAddNote(no, 'ariaUnrecognizedARIAAttribute', [attrName]); // TODO: QA This
+                break;
+            }
+          }
         }
+      }
+    },
+
+    fnInvalidARIAPresentationRoleUse: function(node) { // based on: https://dvcs.w3.org/hg/aria-unofficial/raw-file/tip/index.html#do
+      var tagName,type;
+      if(node != null && node.tagName) {
+        tagName=node.tagName.toLowerCase();
+        switch(tagName) {
+          case 'a':
+          case 'area':
+            if(blr.W15yQC.fnStringHasContent(node.getAttribute('href'))) { return true; }
+            break;
+          case 'dialog':
+            if(blr.W15yQC.fnStringHasContent(node.getAttribute('open'))==false) { return true; }
+            break;
+          case 'input': 
+            if(node.hasAttribute('type')==false || node.getAttribute('type').toLowerCase()!='hidden') { return true; }
+            break;
+          case 'button':
+          case 'keygen':
+          case 'menu':
+          case 'option':
+          case 'select':
+          case 'textarea':
+            return true;
+            break;
+        }
+      }
+      if(node.hasAttribute('tabindex') && node.hasAttribute('disabled')==false && node.getAttribute('tabindex')!="-1" && blr.W15yQC.fnNodeIsHidden(node)==false) {
+        return true;
       }
       return false;
     },
-
+    
     fnCheckARIARole: function(no, node, sRole) {
       var sMsg, i, c, bFoundRequiredChild, bFoundRequiredContainer, cRole;
       if(blr.W15yQC.ARIAChecks.hasOwnProperty(sRole) == true) {
@@ -3825,9 +4318,13 @@ ys: 'whys'
       blr.W15yQC.fnLog('analyze aria markup-starts:no:'+no+'--'+no.toString());
       if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('role')) {
-          // TODO: check role values
+          // TODO: check role values, check for multiple role values
           sRole = blr.W15yQC.fnTrim(node.getAttribute('role'));
           if (sRole != null && sRole.length > 0) {
+            if(/[a-z][,\s]+[a-z]/i.test(sRole)) {
+              blr.W15yQC.fnAddNote(no, 'ariaMultipleRoleValues'); // TODO: QA This
+              sRole=sRole.replace(/^[a-z]+/,'$&');
+            }
             switch (sRole.toLowerCase()) {
               // landmarks
             case 'application':
@@ -3914,35 +4411,11 @@ ys: 'whys'
             }
           }
         }
-        if(node.hasAttribute('aria-level')==true && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==false) {
-          blr.W15yQC.fnAddNote(no, 'ariaLevelAttributeValueInvalid', [node.getAttribute('aria-level')]);
-        }
-        if (node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='heading' && node.hasAttribute('aria-level')==false) {
+
+        if (node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='heading' && node.hasAttribute('aria-level')==false) { // TODO: Create a check aria role routine
           blr.W15yQC.fnAddNote(no, 'ariaHeadingMissingAriaLevel');
         }
-        if (node.hasAttribute('aria-label')==true && node.hasAttribute('aria-labelledby')==true && node.getAttribute('aria-label')>' ' && node.getAttribute('aria-labelledby')>' ') {
-          blr.W15yQC.fnAddNote(no, 'ariaHasBothLabelAndLabelledBy'); // TODO: Make this a real check for content getting replaced.
-        }
-        if (node.hasAttribute('aria-labelledby') == true) {
-          sMissingIDs = null;
-          sIDs = node.getAttribute('aria-labelledby').split(' ');
-          if (sIDs != null) {
-            for (i = 0; i < sIDs.length; i++) {
-              if (doc.getElementById(sIDs[i]) == null) { sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, "'" + sIDs[i] + "'", ', '); }
-            }
-            if (sMissingIDs != null) { blr.W15yQC.fnAddNote(no, 'ariaLabelledbyIDsMissing',[sMissingIDs]); }
-          }
-        }
-        if (node.hasAttribute('aria-describedby') == true) {
-          sMissingIDs = null;
-          sIDs = node.getAttribute('aria-describedby').split(' ');
-          if (sIDs != null) {
-            for (i = 0; i < sIDs.length; i++) {
-              if (doc.getElementById(sIDs[i]) == null) { sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, sIDs[i], ' '); }
-            }
-            if (sMissingIDs != null) { blr.W15yQC.fnAddNote(no, 'ariaDescribedbyIDsMissing',[sMissingIDs]); }
-          }
-        }
+        blr.W15yQC.fnGetARIAAttributeValueWarnings(no,node);
       }
       blr.W15yQC.fnLog('analyze aria markup:no:'+no+'--'+no.toString());
       return no;
@@ -4355,7 +4828,7 @@ ys: 'whys'
     },
 
     fnGetDocuments: function (doc, rootNode, aDocumentsList) {
-      var docNumber, c, sID, idCount, frameDocument;
+      var docNumber, c, sID, idCount, frameDocument,style,bUsesFullJustifiedText=false;
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
       // TODO: Store framing node (frameset, iframe, object, etc.)
@@ -4371,6 +4844,12 @@ ys: 'whys'
         if (rootNode != null && rootNode.firstChild != null) {
           for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
             if (c.nodeType == 1) { // Only pay attention to element nodes
+              style = window.getComputedStyle(c, null);
+              if(style!=null) {
+                if(/justify/i.test(style.getPropertyValue('text-align'))) {
+                  bUsesFullJustifiedText=true;
+                }
+              }
               if (c.tagName && c.hasAttribute('id') == true) {
                 sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
                 idCount = 1;
@@ -4410,6 +4889,9 @@ ys: 'whys'
           }
         }
       }
+      if(bUsesFullJustifiedText) {
+        blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docUsesFullJustifiedText');
+      }
       return aDocumentsList;
     },
 
@@ -4430,7 +4912,11 @@ ys: 'whys'
             if (!aDocumentsList[i].language.length || aDocumentsList[i].language.length < 1) {
               blr.W15yQC.fnAddNote(aDocumentsList[i], 'docLangNotSpecified'); // QA firstNested.html
             } else if (blr.W15yQC.fnIsValidLocale(aDocumentsList[i].language) == false) {
-              blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLang'); // QA iframeTests01.html
+              if(/_/.test(aDocumentsList[i].language)) {
+                blr.W15yQC.fnAddNote(aDocumentsList[i], 'docLangAttrInvalidUseUnderscore',[aDocumentsList[i].language]); // QA iframeTests01.html
+              } else {
+                blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLang', [aDocumentsList[i].language]); // QA iframeTests01.html
+              }
             }
           }
           aSameTitles = [];
@@ -4547,7 +5033,6 @@ ys: 'whys'
       var c, level, i, frameDocument, sTagName, sRole, xPath, nodeDescription, sARIALabel, sState;
       if (aARIALandmarksList == null) { aARIALandmarksList = []; } 
       if (baseLevel == null) { baseLevel = 0; }
-      return aARIALandmarksList;
 
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
@@ -5856,6 +6341,17 @@ ys: 'whys'
             }
           }
           
+          // frmCtrlRadioButtonWOLegendText
+          if(nodeTagName == 'input' && nodeTypeValue == 'radio' && blr.W15yQC.fnStringHasContent(aFormControlsList[i].legendText)==false) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRadioButtonWOLegendText'); // formcontrols01.html
+          }
+          // frmCtrlInputTypeImageWOAltAttr frmCtrlInputTypeImageWOAltText
+          if(nodeTagName == 'input' && nodeTypeValue == 'image' && aFormControlsList[i].node.hasAttribute('alt')==false) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlInputTypeImageWOAltAttr'); //
+          } else if(nodeTagName == 'input' && nodeTypeValue == 'image' && blr.W15yQC.fnStringHasContent(aFormControlsList[i].node.getAttribute('alt'))==false) {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlInputTypeImageWOAltText'); //
+          }
+          
           // Check form control's dist from label
           if(aFormControlsList[i].node.hasAttribute('id') == true && (nodeTagName == 'button' || nodeTagName == 'textarea' || nodeTagName == 'select' || nodeTagName == 'input')) {
             explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(aFormControlsList[i].node.getAttribute('id'), aFormControlsList[i].doc);
@@ -6503,11 +6999,11 @@ ys: 'whys'
     },
 
     fnAnalyzeTables: function (aTablesList, aDocumentsList) {
-      var i, node, j, maxColumns, rowCount, bHasThead, bHasMultipleTheads, bHasTbody, bHasMultipleTbodys, bHasRowsOutsideOfTheadAndTbody,
+      var i, node, j, maxColumns, rowCount, bHasThead, bHasMultipleTheads, bHasTfoot, bHasMultipleTfoots, bHasTbody, bHasMultipleTbodys, bHasRowsOutsideOfTheadAndTbody,
       theaderRows, bMarkedAsPresentation, bRowsUnbalanced, bRowspanColspanConflict, firstRowWithContent, firstColumnWithContent,
-      columnHasHeader, columnRowSpans, columnsInRow, bRowHasHeader, bTableUsesThElements, bTableUsesHeadersAttribute, bEveryTdInContentAreaHasHeadersAttribute,
+      columnHasHeader, columnRowSpans, columnsInRow, bRowHasHeader, bTableUsesThElements, bTableUsesHeadersAttribute, bTableUsesAxisAttribute, bEveryTdInContentAreaHasHeadersAttribute,
       bEveryTdCellWithContentHasAHeadersAttribute, bEveryCellWithContentHasARowOrColumnHeader, bEveryTdCellWithContentHasHeaderOfSomeType, nodeStack,
-      bInTableRow, columnsInThisRow, bInThead, bInTbody, maxRowSpanRows, tableNode, tagName, bIsColumnHeader,
+      bInTableRow, columnsInThisRow, bInThead, bInTbody, bInTfoot, maxRowSpanRows, tableNode, tagName, bIsColumnHeader,
       cellContent, rowSpanValue, colSpanValue, newNode, stackedTagName, crsIndex, sWhyDataTable, colOffset, sColsList, warningCount=0, failedCount=0;
       
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
@@ -6547,7 +7043,9 @@ ys: 'whys'
         rowCount = 0;
         bHasThead = false;
         bHasMultipleTheads = false;
+        bHasMultipleTfoots = false;
         bHasTbody = false;
+        bHasTfoot = false;
         bHasMultipleTbodys = false;
         bHasRowsOutsideOfTheadAndTbody = false;
         theaderRows = 0;
@@ -6562,6 +7060,7 @@ ys: 'whys'
         bRowHasHeader = false;
         bTableUsesThElements = false;
         bTableUsesHeadersAttribute = false;
+        bTableUsesAxisAttribute = false;
         bEveryTdInContentAreaHasHeadersAttribute = true;
         bEveryTdCellWithContentHasAHeadersAttribute = true;
         bEveryCellWithContentHasARowOrColumnHeader = true;
@@ -6570,6 +7069,7 @@ ys: 'whys'
         bInTableRow = false;
         columnsInThisRow = 0;
         bInThead = false;
+        bInTfoot = false;
         bInTbody = false;
         maxRowSpanRows = 0;
 
@@ -6594,6 +7094,11 @@ ys: 'whys'
                       if(bHasThead) { bHasMultipleTheads = true; }
                       bHasThead = true;
                       bInThead = true;
+                      break;
+                    case 'tfoot':
+                      if(bHasTfoot) { bHasMultipleTfoots = true; }
+                      bHasTfoot = true;
+                      bInTfoot = true;
                       break;
                     case 'tbody':
                       if(bHasTbody) { bHasMultipleTbodys = true; }
@@ -6655,9 +7160,9 @@ ys: 'whys'
                         
                     case 'td':
                       if(!bInTableRow) {
-                        blr.W15yQC.fnAddNote(aTablesList[i], 'tblOutsideRow', [tagName]); //
+                        blr.W15yQC.fnAddNote(aTablesList[i], 'tblOutsideRow', [tagName]); // QA This
                       } else {
-                        if(node.hasAttribute('scope')==true) {
+                        if(node.hasAttribute('scope')==true) { // TODO: How to handle rowgroup, colgroup values?
                           aTablesList[i].isDataTable = true;
                           aTablesList[i].bHasScopeAttr = true;
                           if(node.getAttribute('scope').toLowerCase()=='row') {
@@ -6671,6 +7176,15 @@ ys: 'whys'
                           bTableUsesHeadersAttribute = true;
                           aTablesList[i].isDataTable = true;
                           aTablesList[i].bHasHeadersAttr = true;
+                        }
+                        if(node.hasAttribute('axis') ==true) {
+                          bTableUsesAxisAttribute = true;
+                          aTablesList[i].isDataTable = true;
+                          aTablesList[i].bHasAxisAttr = true;
+                        }
+                        if(node.hasAttribute('abbr') ==true) {
+                          aTablesList[i].isDataTable = true;
+                          aTablesList[i].bHasAbbrAttr = true;
                         }
                         // Find out if a rowspan in this column in a previous row is pushing this cell over
                         if(columnRowSpans.length>=columnsInThisRow+1) {
@@ -6805,6 +7319,10 @@ ys: 'whys'
                         bInThead = false;
                         break;
 
+                      case 'tfoot':
+                        bInTfoot = false;
+                        break;
+
                       case 'tbody':
                         bInTbody = false;
                         break;
@@ -6846,17 +7364,41 @@ ys: 'whys'
           if(aTablesList[i].bHasTHCells == true) { sWhyDataTable = 'Has TH Cells'; }
           if(aTablesList[i].bHasHeadersAttr == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has headers attributes',', '); }
           if(aTablesList[i].bHasScopeAttr == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has scope attributes',', '); }
+          if(aTablesList[i].bHasAxisAttr == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has axis attributes',', '); }
+          if(aTablesList[i].bHasAbbrAttr == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has abbr attributes',', '); }
+          if(bHasTfoot == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has tfoot tags',', '); }
+          if(bHasThead == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has thead tags',', '); }
           if(aTablesList[i].bHasCaption == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a caption',', '); }
           if(aTablesList[i].node.hasAttribute('summary') == true) { sWhyDataTable = blr.W15yQC.fnJoin(sWhyDataTable, 'Has a summary',', '); }
           
-          blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsDataTable', [sWhyDataTable+'.']); //
+          blr.W15yQC.fnAddNote(aTablesList[i], 'tblIsDataTable', [sWhyDataTable+'.']); // TODO: QA This
           // Warn that they should check if the table needs either a caption or a summary
-          if((aTablesList[i].summary == null || aTablesList[i].summary.length<1) && (aTablesList[i].caption == null || aTablesList[i].caption.length<1)) {
+          if(blr.W15yQC.fnStringHasContent(aTablesList[i].summary) == false && blr.W15yQC.fnStringHasContent(aTablesList[i].caption) == false) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblCheckCaptionSummary'); //
           } else if(blr.W15yQC.fnStringsEffectivelyEqual(aTablesList[i].summary,aTablesList[i].caption)==true) {
-            blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionSameAsSummary'); //
+            blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionSameAsSummary'); // TODO: QA This!
           }
 
+          if(blr.W15yQC.fnStringHasContent(aTablesList[i].summary)) {
+            if(blr.W15yQC.fnAppearsToBeDefaultTableSummaryOrCaption(aTablesList[i].summary)) {              
+              blr.W15yQC.fnAddNote(aTablesList[i], 'tblSummaryLooksLikeADefault'); //
+            } else if(blr.W15yQC.fnAppearsToBeSummaryOrCaptionOnLayoutTable(aTablesList[i].summary) && aTablesList[i].bHasTHCells==false && aTablesList[i].bHasHeadersAttr==false) {
+              blr.W15yQC.fnAddNote(aTablesList[i], 'tblSummaryLooksLikeLayout'); //
+            } else if(blr.W15yQC.fnIsMeaningfulTableSummaryOrCaption(aTablesList[i].summary)) {              
+              blr.W15yQC.fnAddNote(aTablesList[i], 'tblSummaryNotMeaningful'); //
+            }
+          }
+
+          if(blr.W15yQC.fnStringHasContent(aTablesList[i].caption)) {
+            if(blr.W15yQC.fnAppearsToBeDefaultTableSummaryOrCaption(aTablesList[i].caption)) {              
+              blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionLooksLikeADefault'); //
+            } else if(blr.W15yQC.fnAppearsToBeSummaryOrCaptionOnLayoutTable(aTablesList[i].caption) && aTablesList[i].bHasTHCells==false && aTablesList[i].bHasHeadersAttr==false) {
+              blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionLooksLikeLayout'); //
+            } else if(blr.W15yQC.fnIsMeaningfulTableSummaryOrCaption(aTablesList[i].caption)==false) {              
+              blr.W15yQC.fnAddNote(aTablesList[i], 'tblCaptionNotMeaningful'); //
+            }
+          }
+          
           // Warn that data tables should use table headers (th elements).
           if(bTableUsesThElements == false) {
             blr.W15yQC.fnAddNote(aTablesList[i], 'tblDTMissingTHs'); //
@@ -7196,6 +7738,8 @@ ys: 'whys'
       }
 
       blr.W15yQC.bIncludeHidden = Application.prefs.getValue("extensions.W15yQC.getElements.includeHiddenElements",false);
+      blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs = Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements",true);
+
     },
 
     fnRemoveStyles: function () {
@@ -7890,6 +8434,8 @@ ys: 'whys'
     isDataTable: false,
     bHasTHCells: false,
     bHasHeadersAttr: false,
+    bHasAxisAttr: false,
+    bHasAbbrAttr: false,
     bHasScopeAttr: false,
     bHasCaption: false,
     bHasSummary: false,

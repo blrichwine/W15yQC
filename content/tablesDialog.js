@@ -203,20 +203,20 @@ blr.W15yQC.TablesDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.TablesDialog.aTablesList[selectedRow].xpath, "\n");
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.TablesDialog.aDocumentsList);
+        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+            try {
+                blr.W15yQC.fnMoveToElement(blr.W15yQC.TablesDialog.aTablesList[selectedRow].node);
+            } catch(err) {}
+        }
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.TablesDialog.aTablesList[selectedRow].node, blr.W15yQC.TablesDialog.aTablesList[selectedRow].doc);
     },
     
     highlightTables: function() {
-        if(blr.W15yQC.TablesDialog.aDocumentsList != null && blr.W15yQC.TablesDialog.aDocumentsList.length>0) {
-            for(var i=0; i<blr.W15yQC.TablesDialog.aDocumentsList.length; i++) {
-                if(blr.W15yQC.TablesDialog.aDocumentsList[i].doc != null) {
-                    var element = blr.W15yQC.TablesDialog.aDocumentsList[i].doc.createElement('style');
-                    element.innerHTML = 'table {outline: 1px solid red !important; } th {outline: 1px solid blue !important; } td {outline: 1px dotted  blue !important; } ';
-                    element.setAttribute('id', 'W15yQCTableHighlightStyle');
-                    blr.W15yQC.TablesDialog.aDocumentsList[i].doc.head.appendChild(element);
-                }
+        //try {
+            if(blr.W15yQC.TablesDialog.aDocumentsList != null && blr.W15yQC.TablesDialog.aDocumentsList.length>0) {
+                blr.W15yQC.Highlighters.highlightTables(blr.W15yQC.TablesDialog.aDocumentsList);
             }
-        }
+        //} catch (err) { }
     },
     
     moveToSelectedElement: function() {

@@ -206,6 +206,11 @@ blr.W15yQC.ImagesDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.ImagesDialog.aImagesList[selectedRow].xpath, "\n");
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
+        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+            try {
+                blr.W15yQC.fnMoveToElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node);
+            } catch(err) {}
+        }
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node, blr.W15yQC.ImagesDialog.aImagesList[selectedRow].doc);
     },
     

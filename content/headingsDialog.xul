@@ -81,6 +81,10 @@
 					 label="View Report"
 					 oncommand="blr.W15yQC.HeadingsDialog.generateReportHTML();"
 					 accesskey=""/>
+				 <xul:button id="button-highlightHeadings"
+					 label="Highlight Headings"
+					 oncommand="blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.HeadingsDialog.aDocumentsList,blr.W15yQC.HeadingsDialog.aHeadingsList);"
+					 accesskey=""/>
 				 <xul:button id="button-showInFirebug"
 					 label="Show in Firebug"
 					 oncommand="blr.W15yQC.HeadingsDialog.showInFirebug();"

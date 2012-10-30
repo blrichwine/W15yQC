@@ -143,6 +143,11 @@ blr.W15yQC.badIDsDialog = {
         }
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.badIDsDialog.aDocumentsList);
+        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+            try {
+                blr.W15yQC.fnMoveToElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node);
+            } catch(err) {}
+        }
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node, blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].doc);
     },
     
