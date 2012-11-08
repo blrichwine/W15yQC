@@ -128,10 +128,37 @@
              Spider delay
              Drop out certain checks for speed when spidering
             
-            
-            
-            
       *** FIX ASAP***
+        - Page level errors don't show up in summary counts (headings) in HTML report
+        - Change headings so they are more usable with (move counts) first letter navigation 
+        - Canvas tags -- detect alt text, list in with images
+        - Create misc section?
+        - List detected languages in documents (list in document)
+        - Latch focus inspector tool on/off - Focus HIGHLIGHTER - https://developer.mozilla.org/en-US/docs/XUL_School/Intercepting_Page_Loads
+        - Add Highlighters menu
+        - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
+        - Make HTML table report save report button
+        - Make HTML table report print button
+        - Make HTML table report enhanced line item view dialog.
+        - Make HTML table report each section have a page level note regardless of any issues. (to allow editing)
+        - Make HTML table line item editor
+           - Delete individual note
+           - Report that a note is not an issue
+           - Report that a note is fixed
+           - Manually add a note
+           - Add comments on over all line item
+           - Add comments on a note.
+        - Remove styles
+           - Add tool bar? w/save, print buttons?
+           - Options?
+              -Remove silent punctuation / symbols?
+              -Linearize tables? [layout, data tables, both, none]
+           - Show ARIA info (labels, descriptions, landmarks, etc.)
+        - cancel button on theCN.com create assignment page shows up as unlabeled when the type is reset and the value is cancel. What does it show up as to JAWS?
+        - Look at iuhealth.org/bloomington/ to see how the headings work.
+        - Make focus inspector tool have the option to stay on.
+        - Note how a form control is labeled (label element, fieldset+legend, group, aria-, etc. and include in notes.)
+        - Indicate which notes a label applies to.
         - validate the extension in mozilla extension validator, run security checks, perform jslint
         - clean up the try/catch blocks
         - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
@@ -139,7 +166,7 @@
            - What values for the hidden attribute work in FF, IE, and Safari? Which don't (if any)
         - links on w3schools website don't highlight correctly... why?
         - Update options dialog with new features
-        - **** form control labels (checked with any legend text applied)
+        - ** form control labels (checked with any legend text applied)
                - yes/no what?
                - y/n what?
                - true/false what?
