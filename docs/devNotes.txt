@@ -285,6 +285,7 @@ FIXED:
  *          - it has a title
  *          - it has an aria-label
  *          - it has an aria-labelledby that contains text
+        - Links that have link text, no name give warning that the link won't show up as a link in AT because it doesn't have a HREF value. [done, needs QA]
 
  DoD
  

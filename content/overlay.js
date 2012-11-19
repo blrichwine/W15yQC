@@ -958,6 +958,7 @@ ys: 'whys'
       lnkTxtNextPrev: [2,0,false,null],
       lnkTxtBeginWithLink: [1,0,false,null],
       lnkInvalid: [1,0,false,null],
+      lnkLinkMissingHrefValue: [1,0,false,null],
       lnkTooSmallToHit: [2,0,false,null],
       lnkTxtNotUnique: [2,0,false,null],
       lnkTxtDoesntSoundUnique: [1,0,false,null],
@@ -970,6 +971,7 @@ ys: 'whys'
       lnkTargetDoesNotExist: [2,0,false,null],
       lnkTargetDoesNotAppearValid: [1,0,false,null],
       lnkHasBothOCandOK: [2,0,false,null],
+      lnkHasInvalidAltAttribute: [1,0,false,null],
       lnkTargetIDisNotUnique: [2,0,false,null],
       lnkTargetIDNotValid: [1,0,false,null],
       lnkServerSideImageMap: [2,0,false,null],
@@ -3114,6 +3116,22 @@ ys: 'whys'
             }
             break;
 
+          case 'reset':
+            // Vet this
+            if (node.hasAttribute('aria-label')) {
+              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
+            }
+            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
+              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
+            }
+            if (sLabelText.length < 1 && node.hasAttribute('value')) {
+              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('value'));
+            }
+            if (sLabelText.length < 1) {
+              sLabelText = 'Reset Query';
+            }
+            break;
+
           case 'image':
             // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
             if (node.hasAttribute('aria-label')) {
@@ -4718,8 +4736,30 @@ ys: 'whys'
           s=s+failures.toString()+' with failures)';
         }
       }
-      catch(ex){ s='FAILED';}
+      catch(ex){ s='FAILED'+ex.toString();}
       return s;
+    },
+    
+    fnUpdateWarningAndFailureCounts: function(listObject) {
+      var i;
+      if(listObject!=null && listObject.length) {
+        listObject.warningCount=0;
+        listObject.failedCount=0;
+        for(i=0;i<listObject.length;i++) {
+          if(listObject[i].failed) {
+            listObject.failedCount++;
+          } else if(listObject[i].warning) {
+            listObject.warningCount++;
+          }
+        }
+        if(listObject.pageLevel) {
+          if(listObject.pageLevel.failed) {
+            listObject.failedCount++;
+          } else if(listObject.pageLevel.warning) {
+            listObject.warningCount++;
+          }
+        }
+      }
     },
     
     fnGetFrameTitles: function (doc, rootNode, aFramesList) {
@@ -4753,7 +4793,7 @@ ys: 'whys'
     },
 
     fnAnalyzeFrameTitles: function (aFramesList, aDocumentsList) {
-      var i, framedDocumentBody, j, failedCount=0, warningCount=0;
+      var i, framedDocumentBody, j;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
       for (i = 0; i < aFramesList.length; i++) {
@@ -4808,14 +4848,8 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aFramesList[i], 'frameIDNotUnique'); // QA iframeTests01.html
           }
         }
-        if(aFramesList[i].failed==true){
-          failedCount++;
-        } else if(aFramesList[i].warning==true) {
-          warningCount++;
-        }
       }
-      aFramesList.failedCount=failedCount;
-      aFramesList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aFramesList);
     },
 
     fnDisplayWindowDetails: function (rd) {
@@ -4999,7 +5033,7 @@ ys: 'whys'
     },
 
     fnAnalyzeDocuments: function (aDocumentsList) {
-      var i, aSameTitles, j, k, sIDList, selectorTest, doc, suspectCSS='', failedCount=0, warningCount=0;
+      var i, aSameTitles, j, k, sIDList, selectorTest, doc, suspectCSS='';
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aDocumentsList !== null && aDocumentsList.length) {
         for (i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
@@ -5062,15 +5096,9 @@ ys: 'whys'
           if(suspectCSS!='') {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docCSSSuppressingOutline',[blr.W15yQC.fnCutoffString(suspectCSS,500)]); // 
           }
-          if(aDocumentsList[i].failed==true){
-            failedCount++;
-          } else if(aDocumentsList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aDocumentsList.failedCount=failedCount;
-      aDocumentsList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aDocumentsList);
     },
 
     fnDisplayDocumentsResults: function (rd, aDocumentsList) {
@@ -5195,7 +5223,7 @@ ys: 'whys'
     },
 
     fnAnalyzeARIALandmarks: function (aARIALandmarksList, aDocumentsList) {
-      var iMainLandmarkCount, iBannerLandmarkCount, iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2, warningCount=0, failedCount=0;
+      var iMainLandmarkCount, iBannerLandmarkCount, iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
       
@@ -5241,12 +5269,6 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkIDNotUnique');
             }
           }
-          if(aARIALandmarksList[i].failed==true){
-            failedCount++;
-          } else if(aARIALandmarksList[i].warning==true) {
-            warningCount++;
-          }
-          
         }
         if(iMainLandmarkCount < 1) {
           blr.W15yQC.fnAddPageLevelNote(aARIALandmarksList, 'ldmkMainLandmarkMissing'); // TODO: QA This
@@ -5260,8 +5282,7 @@ ys: 'whys'
           blr.W15yQC.fnAddPageLevelNote(aARIALandmarksList, 'ldmkMultipleContentInfoLandmarks', [iContentInfoLandmarkCount]); // TODO: QA This
         }
       }
-      aARIALandmarksList.failedCount=failedCount;
-      aARIALandmarksList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aARIALandmarksList);
     },
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList) {
@@ -5281,7 +5302,7 @@ ys: 'whys'
       }
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sARIALandmarksSectionHeading);
 
-      if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevelNotes && aARIALandmarksList.pageLevelNotes.length>0))) {
+      if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes && aARIALandmarksList.pageLevel.notes.length>0))) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
         table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
@@ -5372,8 +5393,7 @@ ys: 'whys'
     },
 
     fnAnalyzeARIAElements: function (aARIAElementsList, aDocumentsList) { // TODO: Finish this
-      var i, sRoleAndLabel, sRoleAndLabel2, j, warningCount=0, failedCount=0;
-      blr.W15yQC.fnLog("+++++WHAT?:fnAnalyzeARIA");
+      var i, sRoleAndLabel, sRoleAndLabel2, j;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA
       if (aARIAElementsList != null && aARIAElementsList.length) {
@@ -5391,15 +5411,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aARIAElementsList[i], 'ariaIDNotUnique');
             }
           }
-          if(aARIAElementsList[i].failed==true){
-            failedCount++;
-          } else if(aARIAElementsList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aARIAElementsList.failedCount=failedCount;
-      aARIAElementsList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aARIAElementsList);
       return aARIAElementsList;
     },
 
@@ -5657,6 +5671,7 @@ ys: 'whys'
           }
         }
       }
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aLumCheckList);
     },
     
     fnGetImages: function (doc, rootNode, aImagesList) {
@@ -5762,7 +5777,7 @@ ys: 'whys'
     },
 
     fnAnalyzeImages: function (aImagesList, aDocumentsList) {
-      var i, sCombinedLabel, warningCount=0, failedCount=0;
+      var i, sCombinedLabel;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aImagesList != null && aImagesList.length) {
 
@@ -5809,15 +5824,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgIDNotUnique'); // QA imageTests01.html
             }
           }
-          if(aImagesList[i].failed==true){
-            failedCount++;
-          } else if(aImagesList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aImagesList.failedCount=failedCount;
-      aImagesList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aImagesList);
     },
 
     fnDisplayImagesResults: function (rd, aImagesList) {
@@ -5901,7 +5910,7 @@ ys: 'whys'
     },
 
     fnAnalyzeAccessKeys: function (aAccessKeysList, aDocumentsList) {
-      var htMajorConflicts, i, ak, aValuesDuplicated, aLabelsDuplicated, j, ak2, warningCount=0, failedCount=0;
+      var htMajorConflicts, i, ak, aValuesDuplicated, aLabelsDuplicated, j, ak2;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       htMajorConflicts = { // What version of IE? What about the menus in IE 7, IE 8, IE 9? Specify it is the english version...
         'c': "Alt+C is used to open the Favorites Center in IE.",
@@ -5971,15 +5980,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(ak, 'akIDNotUnique'); // QA accesskeyTests01.html
             }
           }
-          if(aAccessKeysList[i].failed==true){
-            failedCount++;
-          } else if(aAccessKeysList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aAccessKeysList.failedCount=failedCount;
-      aAccessKeysList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aAccessKeysList);
     },
 
     fnDisplayAccessKeysResults: function (rd, aAccessKeysList) {
@@ -6085,7 +6088,7 @@ ys: 'whys'
     },
 
     fnAnalyzeHeadings: function (aHeadingsList, aDocumentsList, progressWindow) {
-      var i, previousHeadingLevel, warningCount=0, failedCount=0;
+      var i, previousHeadingLevel;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         for (i = 0; i < aHeadingsList.length; i++) {
@@ -6131,15 +6134,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); // QA: headings01.html
             }
           }
-          if(aHeadingsList[i].failed==true) {
-            failedCount++;
-          } else if(aHeadingsList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aHeadingsList.failedCount=failedCount;
-      aHeadingsList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aHeadingsList);
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList) {
@@ -6313,7 +6310,7 @@ ys: 'whys'
 
     fnAnalyzeFormControls: function (aFormsList, aFormControlsList, aDocumentsList) {
       var i, j, aSameNames, subForms, aSameLabelText, aSoundsTheSame, bShouldntHaveBoth, nodeTagName, nodeTypeValue,
-          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist, warningCount=0, failedCount=0;
+          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist;
 
       // TODO: Add check that name value is unique to a given form unless it is a radio button
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
@@ -6349,19 +6346,10 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormsList[i], 'frmIDNotUnique'); //
             }
           }
-          if(aFormsList[i].failed==true) {
-            failedCount++;
-          } else if(aFormsList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aFormsList.failedCount=failedCount;
-      aFormsList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aFormsList);
 
-      failedCount=0;
-      warningCount=0;
-      
       if (aFormControlsList != null && aFormControlsList.length > 0) {
         for (i = 0; i < aFormControlsList.length; i++) {
           aFormControlsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormControlsList[i].node, aDocumentsList);
@@ -6514,15 +6502,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlIDNotUnique'); //
             }
           }
-          if(aFormControlsList[i].failed==true) {
-            failedCount++;
-          } else if(aFormControlsList[i].warning==true) {
-            warningCount++;
-          }
         }
       }
-      aFormControlsList.failedCount=failedCount;
-      aFormControlsList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aFormControlsList);
     },
 
     fnDisplayFormResults: function (rd, aFormsList) {
@@ -6708,7 +6690,7 @@ ys: 'whys'
 
     fnAnalyzeLinks: function (aLinksList, aDocumentsList, progressWindow) {
       var i, aChildImages, j, linkText, maxRect, aSameHrefAndOnclick, aSameLinkText, aSoundsTheSame, aDiffTextSameHref, hrefsAreEqual,
-          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, warningCount=0, failedCount=0;
+          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
       blr.W15yQC.fnLog('fnAnalyzeLinks-starts');
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
@@ -6748,6 +6730,16 @@ ys: 'whys'
         
         if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
+        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('href'))==false &&
+                   (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('title')) == true ||
+                    blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('alt')) == true ||
+                    blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('target')) == true ||
+                    blr.W15yQC.fnStringHasContent(aLinksList[i].text) == true)) {
+                      blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); //
+                }
+
+        if(aLinksList[i].node.hasAttribute('alt')) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasInvalidAltAttribute'); //
         }
 
         if (aLinksList[i].text == null) {
@@ -6961,14 +6953,8 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIDNotUnique'); //
           }
         }
-        if(aLinksList[i].failed==true) {
-          failedCount++;
-        } else if(aLinksList[i].warning==true) {
-          warningCount++;
-        }
       }
-      aLinksList.failedCount=failedCount;
-      aLinksList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aLinksList);
     },
 
     fnDisplayLinkResults: function (rd, aLinksList) {
@@ -7101,7 +7087,7 @@ ys: 'whys'
       columnHasHeader, columnRowSpans, columnsInRow, bRowHasHeader, bTableUsesThElements, bTableUsesHeadersAttribute, bTableUsesAxisAttribute, bEveryTdInContentAreaHasHeadersAttribute,
       bEveryTdCellWithContentHasAHeadersAttribute, bEveryCellWithContentHasARowOrColumnHeader, bEveryTdCellWithContentHasHeaderOfSomeType, nodeStack,
       bInTableRow, columnsInThisRow, bInThead, bInTbody, bInTfoot, maxRowSpanRows, tableNode, tagName, bIsColumnHeader,
-      cellContent, rowSpanValue, colSpanValue, newNode, stackedTagName, crsIndex, sWhyDataTable, colOffset, sColsList, warningCount=0, failedCount=0;
+      cellContent, rowSpanValue, colSpanValue, newNode, stackedTagName, crsIndex, sWhyDataTable, colOffset, sColsList;
       
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // This does not pretend to fully validate a table
@@ -7545,16 +7531,9 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aTablesList[i], 'tblLayoutTblIsComplexWOpresRole'); //
             }
           }
-
-        }
-        if(aTablesList[i].failed==true) {
-          failedCount++;
-        } else if(aTablesList[i].warning==true) {
-          warningCount++;
         }
       }
-      aTablesList.failedCount=failedCount;
-      aTablesList.warningCount=warningCount;
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aTablesList);
     },
 
     fnDisplayTableResults: function (rd, aTablesList) {
@@ -7648,6 +7627,7 @@ ys: 'whys'
           }
         }
       }
+      blr.W15yQC.fnUpdateWarningAndFailureCounts(aBadIDsList);
       return aBadIDsList;
     },
 
