@@ -6093,7 +6093,7 @@ ys: 'whys'
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList) {
-      var div, innerDiv, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
+      var div, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
       div = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIHeadingsList');
@@ -6102,7 +6102,7 @@ ys: 'whys'
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings'));
 
       if (aHeadingsList && aHeadingsList.length > 0) {
-
+        for(i=0;i<aHeadingsList.length;i++) if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; }
         list = [];
         list.push(rd.createElement('ul'));
         previousHeadingLevel = 0;
@@ -6111,8 +6111,8 @@ ys: 'whys'
         if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) { previousDocument = aHeadingsList[0].doc; }
         for (i = 0; i < aHeadingsList.length; i++) {
           sDoc = '';
-          if (i == 0) {
-            sDoc = 'Contained in doc #' + aHeadingsList[i].ownerDocumentNumber;
+          if (i == 0 && multipleDocs==true) {
+            sDoc = 'Contained in doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO i18n this!
           }
           nextLogicalLevel = parseInt(previousHeadingLevel,10) + 1;
           for (j = nextLogicalLevel; j < aHeadingsList[i].level; j++) {
@@ -6135,7 +6135,7 @@ ys: 'whys'
           li = rd.createElement('li');
           if (previousDocument != aHeadingsList[i].doc) {
             blr.W15yQC.fnAddClass(li, 'newDocument');
-            sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
+            sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO: i18n this
             previousDocument = aHeadingsList[i].doc;
           }
           li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
