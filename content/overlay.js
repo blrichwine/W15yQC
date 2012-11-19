@@ -837,6 +837,9 @@ ys: 'whys'
       docLangNotSpecified: [2,0,true,null],
       docInvalidLang: [2,0,false,null],
       docLangAttrInvalidUseUnderscore: [2,0,false,null],
+      docLangConflictFound: [2,0,false,null],
+      docInvalidLangList: [1,0,false,null],
+      docValidLangList: [0,0,false,null],
       docTitleNotUnique: [1,0,false,null],
       docCSSSuppressingOutline: [1,0,true,null],
       docUsesFullJustifiedText: [2,0,true,null],
@@ -4966,8 +4969,47 @@ ys: 'whys'
       return null;
     },
 
+    fnAddLangValue: function(docListObj, node) {
+      var i,found=false, conflict=false, langValue, hadAttribute=false;
+      
+      if(node && node.hasAttribute) {
+        if(node.hasAttribute('lang')) {
+          hadAttribute=true;
+          langValue=node.getAttribute('lang');
+          if(node.hasAttribute('xml:lang') && langValue != node.getAttribute('xml:lang')) conflict=true;
+        }
+        if(!blr.W15yQC.fnStringHasContent(langValue) && node.hasAttribute('xml:lang')) {
+          hadAttribute=true;
+          langValue=node.getAttribute('xml:lang');
+        }
+      }
+      if(hadAttribute) {
+        for(i=0;i<docListObj.validLangValues.length;i++) {
+          if(docListObj.validLangValues[i]==langValue) {
+            found=true;
+            break;
+          }
+        }
+        for(i=0;i<docListObj.invalidLangValues.length;i++) {
+          if(docListObj.invalidLangValues[i]==langValue) {
+            found=true;
+            break;
+          }
+        }
+        if(!found) {
+          if(blr.W15yQC.fnIsValidLocale(langValue)) {
+            docListObj.validLangValues.push(langValue);
+          } else {
+            docListObj.invalidLangValues.push(langValue);
+          }
+        }
+      }
+      
+      return conflict;
+    },
+    
     fnGetDocuments: function (doc, rootNode, aDocumentsList) {
-      var docNumber, c, sID, idCount, frameDocument,style,bUsesFullJustifiedText=false;
+      var docNumber, c, sID, idCount, frameDocument,style,bUsesFullJustifiedText=false,langConflict=false;
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
       // TODO: Store framing node (frameset, iframe, object, etc.)
@@ -4976,6 +5018,8 @@ ys: 'whys'
           aDocumentsList = [];
           // Put the top window's document in the list
           aDocumentsList.push(new blr.W15yQC.documentDescription(doc, doc.URL, aDocumentsList.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
+          if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],doc.body)) { langConflict=true; }
+          if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],doc.body.nodeParent)) { langConflict=true; }
         }
         docNumber = aDocumentsList.length - 1;
 
@@ -4989,28 +5033,31 @@ ys: 'whys'
                   bUsesFullJustifiedText=true;
                 }
               }
-              if (c.tagName && c.hasAttribute('id') == true) {
-                sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
-                idCount = 1;
-                if(aDocumentsList[docNumber].idHashTable.hasItem(sID)) {
-                  idCount = aDocumentsList[docNumber].idHashTable.getItem(sID)+1;
-                  aDocumentsList[docNumber].IDsUnique = false;
-                  if(idCount == 2) {
-                    if(aDocumentsList[docNumber].nonUniqueIDs.length<5) {
-                      aDocumentsList[docNumber].nonUniqueIDs.push(sID);
+              if(c.tagName) {
+                if (c.hasAttribute('id') == true) {
+                  sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
+                  idCount = 1;
+                  if(aDocumentsList[docNumber].idHashTable.hasItem(sID)) {
+                    idCount = aDocumentsList[docNumber].idHashTable.getItem(sID)+1;
+                    aDocumentsList[docNumber].IDsUnique = false;
+                    if(idCount == 2) {
+                      if(aDocumentsList[docNumber].nonUniqueIDs.length<5) {
+                        aDocumentsList[docNumber].nonUniqueIDs.push(sID);
+                      }
+                      aDocumentsList[docNumber].nonUniqueIDsCount++;
+                      blr.W15yQC.fnLog('non unique id found');
                     }
-                    aDocumentsList[docNumber].nonUniqueIDsCount++;
-                    blr.W15yQC.fnLog('non unique id found');
+                  }
+                  aDocumentsList[docNumber].idHashTable.setItem(sID, idCount);
+                  if(blr.W15yQC.fnIsValidHtmlID(sID) == false) {
+                    aDocumentsList[docNumber].IDsValid = false;
+                    if(idCount < 2 && aDocumentsList[docNumber].invalidIDs.length<5) {
+                      aDocumentsList[docNumber].invalidIDs.push(sID);
+                      aDocumentsList[docNumber].invalidIDsCount++;
+                    }
                   }
                 }
-                aDocumentsList[docNumber].idHashTable.setItem(sID, idCount);
-                if(blr.W15yQC.fnIsValidHtmlID(sID) == false) {
-                  aDocumentsList[docNumber].IDsValid = false;
-                  if(idCount < 2 && aDocumentsList[docNumber].invalidIDs.length<5) {
-                    aDocumentsList[docNumber].invalidIDs.push(sID);
-                    aDocumentsList[docNumber].invalidIDsCount++;
-                  }
-                }
+                if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],c)) { langConflict=true; }
               }
   
               if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
@@ -5018,7 +5065,9 @@ ys: 'whys'
                 frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
                 // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
                 aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
-  
+                if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],frameDocument.body)) { langConflict=true; }
+                if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],frameDocument.body.nodeParent)) { langConflict=true; }
+
                 // get frame contents
                 blr.W15yQC.fnGetDocuments(frameDocument, frameDocument.body, aDocumentsList);
               } else { // keep looking through current document
@@ -5029,13 +5078,16 @@ ys: 'whys'
         }
       }
       if(bUsesFullJustifiedText) {
-        blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docUsesFullJustifiedText');
+        blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docUsesFullJustifiedText'); // TODO: QA This
+      }
+      if(langConflict) {
+        blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docLangConflictFound'); // TODO: QA This
       }
       return aDocumentsList;
     },
 
     fnAnalyzeDocuments: function (aDocumentsList) {
-      var i, aSameTitles, j, k, sIDList, selectorTest, doc, suspectCSS='';
+      var i, aSameTitles, j, k, sIDList, sLangList, selectorTest, doc, suspectCSS='';
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aDocumentsList !== null && aDocumentsList.length) {
         for (i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
@@ -5098,6 +5150,16 @@ ys: 'whys'
           if(suspectCSS!='') {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docCSSSuppressingOutline',[blr.W15yQC.fnCutoffString(suspectCSS,500)]); // 
           }
+          if(aDocumentsList[i].validLangValues.length>0) {
+            sLangList = aDocumentsList[i].validLangValues.toString().replace(/,/g,', ');
+            sLangList = blr.W15yQC.fnCutoffString(sLangList, 150);
+            blr.W15yQC.fnAddNote(aDocumentsList[i], 'docValidLangList',[sLangList]); // TODO: QA This
+          }
+          if(aDocumentsList[i].invalidLangValues.length>0) {
+            sLangList = aDocumentsList[i].invalidLangValues.toString().replace(/,/g,', ');
+            sLangList = blr.W15yQC.fnCutoffString(sLangList, 150);
+            blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLangList',[sLangList]); // TODO: QA This
+          }
         }
       }
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aDocumentsList);
@@ -5107,7 +5169,6 @@ ys: 'whys'
       var div, table, msgHash, tbody, i, dd, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
-// (listObj, keyPlural, keyNone)
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
 
@@ -8009,6 +8070,8 @@ ys: 'whys'
     this.IDsUnique = true;
     this.nonUniqueIDs = [];
     this.invalidIDs = [];
+    this.invalidLangValues = [];
+    this.validLangValues = [];
     this.nonUniqueIDsCount=0;
     this.invalidIDsCount=0;
   };
@@ -8026,6 +8089,8 @@ ys: 'whys'
     IDsValid: true,
     nonUniqueIDs: [],
     invalidIDs: [],
+    invalidLangValues: [],
+    validLangValues: [],
     nonUniqueIDsCount: 0,
     invalidIDsCount: 0,
     notes: null,

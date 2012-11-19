@@ -130,8 +130,14 @@
             
       *** FIX ASAP***
         - Canvas tags -- detect alt text, list in with images
+           -- Make sure content contained in a canvas tag shows up in the w15yqc results -- it is fallback content -- how to list?
+           -- Test how the focus highlighter works with the fallback content
+           -- Spider for examples of useless fallback canvas content
+           -- Test for useless fallback content
+        - Semantic view should include any fallback content from applicable tags (canvas)
         - Create misc section?
         - List detected languages in documents (list in document)
+        - If an element contains both lang and xml:lang attributes, make sure their values are the same
         - Latch focus inspector tool on/off - Focus HIGHLIGHTER - https://developer.mozilla.org/en-US/docs/XUL_School/Intercepting_Page_Loads
         - Add Highlighters menu
         - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
