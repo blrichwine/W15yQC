@@ -4722,22 +4722,34 @@ ys: 'whys'
       
     },
 
-    fnMakeHeadingCountsString: function (warnings, failures) {
-      var s;
-      try{
-        if(warnings==1) {
-          s='(1 warning, ';
-        } else {
-          s='('+warnings.toString()+' with warnings, ';
+    
+    /*
+   */
+    fnMakeHeadingCountsString: function (listObj, keyPlural, keyNone) {
+      var sDocumentsSectionHeading='', s='';
+      
+      if(listObj && (listObj.warningCount && listObj.warningCount>0) ||(listObj.failedCount && listObj.failedCount>0)) {
+        try{
+          if(listObj.warningCount && listObj.warningCount==1) {
+            s=' (1 warning, ';
+          } else {
+            s=' ('+listObj.warningCount.toString()+' with warnings, '; // TODO: i18n this!
+          }
+          if(listObj.failedCount && listObj.failedCount==1) {
+            s=s+'1 failure)';
+          } else {
+            s=s+listObj.failedCount.toString()+' with failures)';
+          }
         }
-        if(failures==1) {
-          s=s+'1 failure)';
-        } else {
-          s=s+failures.toString()+' with failures)';
-        }
+        catch(ex){ s='FAILED'+ex.toString();}
       }
-      catch(ex){ s='FAILED'+ex.toString();}
-      return s;
+      if (listObj && listObj.length && listObj.length > 0) {
+        sDocumentsSectionHeading = blr.W15yQC.fnGetString(keyPlural) + ': ' + listObj.length.toString();
+      } else {
+        sDocumentsSectionHeading = blr.W15yQC.fnGetString(keyNone);
+      }
+
+      return sDocumentsSectionHeading+s;
     },
     
     fnUpdateWarningAndFailureCounts: function(listObject) {
@@ -4879,21 +4891,11 @@ ys: 'whys'
     },
 
     fnDisplayFrameTitleResults: function (rd, aFramesList) {
-      var div, sFrameSectionHeading, table, msgHash, tbody, i, sNotes, sClass;
+      var div, table, msgHash, tbody, i, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
 
-      if (aFramesList && aFramesList.length && aFramesList.length > 0) {
-        if (aFramesList.length > 1) {
-          sFrameSectionHeading = aFramesList.length + " " + blr.W15yQC.fnGetString('hrsFrames');
-        } else {
-          sFrameSectionHeading = blr.W15yQC.fnGetString('hrs1Frame');
-        }
-        sFrameSectionHeading = sFrameSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aFramesList.warningCount,aFramesList.failedCount);
-      } else {
-        sFrameSectionHeading = blr.W15yQC.fnGetString('hrsNoFrames');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sFrameSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFramesList, 'hrsFrames', 'hrsNoFrames'));
 
       if (aFramesList && aFramesList.length > 0) {
         table = rd.createElement('table');
@@ -5102,21 +5104,12 @@ ys: 'whys'
     },
 
     fnDisplayDocumentsResults: function (rd, aDocumentsList) {
-      var div, sDocumentsSectionHeading, table, msgHash, tbody, i, dd, sNotes, sClass;
+      var div, table, msgHash, tbody, i, dd, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
+// (listObj, keyPlural, keyNone)
 
-      if (aDocumentsList && aDocumentsList.length && aDocumentsList.length > 0) {
-        if (aDocumentsList.length > 1) {
-          sDocumentsSectionHeading = aDocumentsList.length + ' ' + blr.W15yQC.fnGetString('hrsDocuments');
-        } else {
-          sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrs1Document');
-        }
-        sDocumentsSectionHeading = sDocumentsSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList.warningCount, aDocumentsList.failedCount);
-      } else {
-        sDocumentsSectionHeading = blr.W15yQC.fnGetString('hrsNoDocuments');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sDocumentsSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
 
       if (aDocumentsList && aDocumentsList.length > 0) {
         table = rd.createElement('table');
@@ -5286,21 +5279,11 @@ ys: 'whys'
     },
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList) {
-      var div, sARIALandmarksSectionHeading, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass;
+      var div, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
 
-      if (aARIALandmarksList && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
-        if (aARIALandmarksList.length > 1) {
-          sARIALandmarksSectionHeading = aARIALandmarksList.length + ' ' + blr.W15yQC.fnGetString('hrsARIALandmarks');
-        } else {
-          sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrs1ARIALandmark');
-        }
-        sARIALandmarksSectionHeading = sARIALandmarksSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList.warningCount, aARIALandmarksList.failedCount);
-      } else {
-        sARIALandmarksSectionHeading = blr.W15yQC.fnGetString('hrsNoARIALandmarks');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sARIALandmarksSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList,'hrsARIALandmarks','hrsNoARIALandmarks'));
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes && aARIALandmarksList.pageLevel.notes.length>0))) {
         table = rd.createElement('table');
@@ -5418,23 +5401,13 @@ ys: 'whys'
     },
 
     fnDisplayARIAElementsResults: function (rd, aARIAElementsList) {
-      var div, innerDiv, sARIAElementsHeading, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, divARIAEl, divWidth, sNotesTxt, sMessage, span;
+      var div, innerDiv, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, divARIAEl, divWidth, sNotesTxt, sMessage, span;
       div = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIARIAElementsList');
       div.setAttribute('class', 'AIList');
 
-      if (aARIAElementsList && aARIAElementsList.length && aARIAElementsList.length > 0) {
-        if (aARIAElementsList.length > 1) {
-          sARIAElementsHeading = aARIAElementsList.length + ' ' + blr.W15yQC.fnGetString('hrsARIAEls');
-        } else {
-          sARIAElementsHeading = blr.W15yQC.fnGetString('hrs1ARIAEl');
-        }
-        sARIAElementsHeading = sARIAElementsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList.warningCount, aARIAElementsList.failedCount);
-      } else {
-        sARIAElementsHeading = blr.W15yQC.fnGetString('hrsNoARIAEls');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sARIAElementsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList,'hrsARIAEls','hrsNoARIAEls'));
 
       if (aARIAElementsList && aARIAElementsList.length > 0) {
 
@@ -5830,20 +5803,10 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList) {
-      var div = rd.createElement('div'), sImagesSectionHeading, table, msgHash, tbody, i, io, sNotes, sClass;
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass;
       div.setAttribute('id', 'AIImagesList');
 
-      if (aImagesList && aImagesList.length && aImagesList.length > 0) {
-        if (aImagesList.length > 1) {
-          sImagesSectionHeading = aImagesList.length + ' ' + blr.W15yQC.fnGetString('hrsImages');
-        } else {
-          sImagesSectionHeading = blr.W15yQC.fnGetString('hrs1Image');
-        }
-        sImagesSectionHeading = sImagesSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aImagesList.warningCount, aImagesList.failedCount);
-      } else {
-        sImagesSectionHeading = blr.W15yQC.fnGetString('hrsNoImages');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sImagesSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
 
       if (aImagesList && aImagesList.length > 0) {
         table = rd.createElement('table');
@@ -5986,21 +5949,11 @@ ys: 'whys'
     },
 
     fnDisplayAccessKeysResults: function (rd, aAccessKeysList) {
-      var div, sSectionHeading, table, msgHash, tbody, i, ak, sNotes, sClass;
+      var div, table, msgHash, tbody, i, ak, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
 
-      if (aAccessKeysList && aAccessKeysList.length && aAccessKeysList.length > 0) {
-        if (aAccessKeysList.length > 1) {
-          sSectionHeading = aAccessKeysList.length + ' ' +blr.W15yQC.fnGetString('hrsAccessKeys');
-        } else {
-          sSectionHeading = blr.W15yQC.fnGetString('hrs1AccessKey');
-        }
-        sSectionHeading = sSectionHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList.warningCount, aAccessKeysList.failedCount);
-      } else {
-        sSectionHeading = blr.W15yQC.fnGetString('hrsNoAccessKeys');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sSectionHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList,'hrsAccessKeys','hrsNoAccessKeys'));
 
       if (aAccessKeysList != null && aAccessKeysList.length > 0) {
         table = rd.createElement('table');
@@ -6140,23 +6093,13 @@ ys: 'whys'
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList) {
-      var div, innerDiv, sHeadingsHeading, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
+      var div, innerDiv, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
       div = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIHeadingsList');
       div.setAttribute('class', 'AIList');
 
-      if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) {
-        if (aHeadingsList.length > 1) {
-          sHeadingsHeading = aHeadingsList.length + ' ' + blr.W15yQC.fnGetString('hrsHeadings');
-        } else {
-          sHeadingsHeading = blr.W15yQC.fnGetString('hrs1Heading');
-        }
-        sHeadingsHeading = sHeadingsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList.warningCount, aHeadingsList.failedCount);
-      } else {
-        sHeadingsHeading = blr.W15yQC.fnGetString('hrsNoHeadings');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sHeadingsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings'));
 
       if (aHeadingsList && aHeadingsList.length > 0) {
 
@@ -6508,21 +6451,12 @@ ys: 'whys'
     },
 
     fnDisplayFormResults: function (rd, aFormsList) {
-      var div, sFormsHeading, table, msgHash, tbody, i, fce, sNotes, sClass;
+      var div, table, msgHash, tbody, i, fce, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormsList');
 
-      if (aFormsList && aFormsList.length && aFormsList.length > 0) {
-        if (aFormsList.length > 1) {
-          sFormsHeading = aFormsList.length + ' ' + blr.W15yQC.fnGetString('hrsForms');
-        } else {
-          sFormsHeading = blr.W15yQC.fnGetString('hrs1Form');
-        }
-        sFormsHeading = sFormsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aFormsList.warningCount, aFormsList.failedCount);
-      } else {
-        sFormsHeading = blr.W15yQC.fnGetString('hrsNoForms');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sFormsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFormsList,'hrsForms','hrsNoForms'));
+
       if (aFormsList && aFormsList.length > 0) {
         table = rd.createElement('table');
         msgHash = new blr.W15yQC.HashTable();
@@ -6554,23 +6488,13 @@ ys: 'whys'
     },
 
     fnDisplayFormControlResults: function (rd, aFormControlsList) {
-      var div, i, ak, sFormControlsHeading, bHasARIALabel, bHasLegend, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
+      var div, i, ak, bHasARIALabel, bHasLegend, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
           aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells; 
 
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormControlsList');
 
-      if (aFormControlsList && aFormControlsList.length && aFormControlsList.length > 0) {
-        if (aFormControlsList.length > 1) {
-          sFormControlsHeading = aFormControlsList.length + ' ' + blr.W15yQC.fnGetString('hrsFormsCtrls');
-        } else {
-          sFormControlsHeading = blr.W15yQC.fnGetString('hrs1FormCtrl');
-        }
-        sFormControlsHeading = sFormControlsHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList.warningCount, aFormControlsList.failedCount);
-      } else {
-        sFormControlsHeading = blr.W15yQC.fnGetString('hrsNoFormCtrls');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sFormControlsHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList,'hrsFormsCtrls','hrsNoFormCtrls'));
 
       if (aFormControlsList && aFormControlsList.length > 0) {
         bHasARIALabel = false;
@@ -6958,21 +6882,12 @@ ys: 'whys'
     },
 
     fnDisplayLinkResults: function (rd, aLinksList) {
-      var div, sLinksHeading, table, msgHash, tbody, i, sNotes, sClass;
+      var div, table, msgHash, tbody, i, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
 
-      if (aLinksList && aLinksList.length && aLinksList.length > 0) {
-        if (aLinksList.length > 1) {
-          sLinksHeading = aLinksList.length + ' '+blr.W15yQC.fnGetString('hrsLinks');
-        } else {
-          sLinksHeading = blr.W15yQC.fnGetString('hrs1Link');
-        }
-        sLinksHeading = sLinksHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aLinksList.warningCount, aLinksList.failedCount);
-      } else {
-        sLinksHeading = blr.W15yQC.fnGetString('hrsNoLinks');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sLinksHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aLinksList,'hrsLinks','hrsNoLinks'));
+
       if (aLinksList && aLinksList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
@@ -7537,22 +7452,13 @@ ys: 'whys'
     },
 
     fnDisplayTableResults: function (rd, aTablesList) {
-      var div, sTablesHeading, table, msgHash, tbody, i, sNotes, sClass, sSize;
+      var div, table, msgHash, tbody, i, sNotes, sClass, sSize;
       
       div = rd.createElement('div');
       div.setAttribute('id', 'AITablesList');
 
-      if (aTablesList && aTablesList.length && aTablesList.length > 0) {
-        if (aTablesList.length > 1) {
-          sTablesHeading = aTablesList.length + ' ' + blr.W15yQC.fnGetString('hrsTables');
-        } else {
-          sTablesHeading = blr.W15yQC.fnGetString('hrs1Table');
-        }
-        sTablesHeading = sTablesHeading + ' ' + blr.W15yQC.fnMakeHeadingCountsString(aTablesList.warningCount, aTablesList.failedCount);
-      } else {
-        sTablesHeading = blr.W15yQC.fnGetString('hrsNoTables');
-      }
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, sTablesHeading);
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aTablesList,'hrsTables','hrsNoTables'));
+
       if (aTablesList && aTablesList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AITablesTable');

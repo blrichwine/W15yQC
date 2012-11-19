@@ -129,7 +129,7 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
-        - Page level errors don't show up in summary counts (headings) in HTML report
+        - when listing headings, suppress contained in document message if only one document exists
         - Change headings so they are more usable with (move counts) first letter navigation 
         - Canvas tags -- detect alt text, list in with images
         - Create misc section?
@@ -252,6 +252,7 @@
       
 FIXED:
 
+        - Page level errors don't show up in summary counts (headings) in HTML report [done -- Needs QA]
         - [FIXED]The view->Toolbars->Customize... doesn't show the icon for W15yQC
         - **** Invalid captions[done]:
         - **** Invalid table summaries [done]:
