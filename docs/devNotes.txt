@@ -136,9 +136,6 @@
            -- Test for useless fallback content
         - Semantic view should include any fallback content from applicable tags (canvas)
         - Create misc section?
-        - List detected languages in documents (list in document)
-        - If an element contains both lang and xml:lang attributes, make sure their values are the same
-        - Latch focus inspector tool on/off - Focus HIGHLIGHTER - https://developer.mozilla.org/en-US/docs/XUL_School/Intercepting_Page_Loads
         - Add Highlighters menu
         - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
         - Make HTML table report save report button
@@ -159,8 +156,6 @@
               -Linearize tables? [layout, data tables, both, none]
            - Show ARIA info (labels, descriptions, landmarks, etc.)
         - cancel button on theCN.com create assignment page shows up as unlabeled when the type is reset and the value is cancel. What does it show up as to JAWS?
-        - Look at iuhealth.org/bloomington/ to see how the headings work.
-        - Make focus inspector tool have the option to stay on.
         - Note how a form control is labeled (label element, fieldset+legend, group, aria-, etc. and include in notes.)
         - Indicate which notes a label applies to.
         - validate the extension in mozilla extension validator, run security checks, perform jslint
@@ -256,6 +251,9 @@
       
 FIXED:
 
+        - If an element contains both lang and xml:lang attributes, make sure their values are the same [set flag in doc, move to analysis] [done - QA This]
+        - Latch focus inspector tool on/off - Focus HIGHLIGHTER - https://developer.mozilla.org/en-US/docs/XUL_School/Intercepting_Page_Loads [done]
+        - List detected languages in documents (list in document) [done - QA This]
         - when listing headings, suppress contained in document message if only one document exists [done --  needs QA]
         - Change headings so they are more usable with (move counts) first letter navigation [done -- needs QA]
         - Page level errors don't show up in summary counts (headings) in HTML report [done -- Needs QA]

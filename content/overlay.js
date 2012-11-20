@@ -2699,7 +2699,7 @@ ys: 'whys'
               }
             }
           }
-          node = node.nodeParent;
+          node = node.parentNode;
         } while (node != null && node.tagName != null && node.tagName.toLowerCase() != 'body');
       }
       return false;
@@ -4692,7 +4692,7 @@ ys: 'whys'
       sScript += "sortData.prototype = {originalRowNumber: null,columnData: null};";
       sScript += "function fnMakeTableSortable(sTableID) {if(sTableID != null){var table = document.getElementById(sTableID);if(table != null && table.getElementsByTagName){var tableHead = table.getElementsByTagName('thead')[0];if(tableHead != null && tableHead.getElementsByTagName) {var tableHeaderCells = tableHead.getElementsByTagName('th'); if(tableHeaderCells != null) { for(var i=0; i<tableHeaderCells.length; i++) { var newTh = tableHeaderCells[i].cloneNode(false); newTh.innerHTML = '<a href=\"javascript:sortTable=\\''+sTableID+'\\';sortCol=\\''+i+'\\';\" onclick=\"fnPerformStableTableSort(\\''+sTableID+'\\','+i+');return false;\">'+tableHeaderCells[i].innerHTML+'</a>'; tableHeaderCells[i].parentNode.replaceChild(newTh, tableHeaderCells[i]); }}}}}}";
       sScript += "function fnPerformStableTableSort(tableID,sortOnColumnNumber){try{if(tableID!=null&&sortOnColumnNumber!=null){var table=document.getElementById(tableID);if(table!=null&&table.getElementsByTagName){var tableHead=table.getElementsByTagName('thead')[0];var tableBody=table.getElementsByTagName('tbody')[0];if(tableBody!=null&&tableBody.getElementsByTagName){var tableBodyRows=tableBody.getElementsByTagName('tr');if(tableBodyRows!=null&&tableBodyRows.length>1&&tableBodyRows[0].getElementsByTagName){var sortOrder='a';var columnHeaders=tableHead.getElementsByTagName('th');var sortColumnHeader=columnHeaders[sortOnColumnNumber];var currentSortIndicatorMatch=/\\bSorted...(\\d+)\\b/.exec(sortColumnHeader.className);var currentSortDepth=999;if(currentSortIndicatorMatch!=null&&currentSortIndicatorMatch.length>1){currentSortDepth=parseInt(currentSortIndicatorMatch[1],10);}if(/\\bSortedAsc/.test(sortColumnHeader.className)== true){sortOrder='d';sortColumnHeader.className=sortColumnHeader.className.replace(/\\bSortedAsc\\d+\\b/,'SortedDes1');}else if(/\\bSortedDes/.test(sortColumnHeader.className)== true){sortOrder='a';sortColumnHeader.className=sortColumnHeader.className.replace(/\\bSortedDes\\d+\\b/,'SortedAsc1');}else{sortOrder='a';sortColumnHeader.className += ' SortedAsc1';}for(var i=0;i<columnHeaders.length;i++){if(i==sortOnColumnNumber)continue;var sortIndicatorMatch=/\\bSorted(...)(\\d+)/.exec(columnHeaders[i].className);if(sortIndicatorMatch!=null){var sortDepth=999;if(sortIndicatorMatch!=null&&sortIndicatorMatch.length>1){sortDepth=parseInt(sortIndicatorMatch[2],10);}if(sortDepth<=currentSortDepth){columnHeaders[i].className=columnHeaders[i].className.replace(/\\bSorted...\\d+\\b/,'Sorted'+sortIndicatorMatch[1]+(sortDepth+1));}}}var tableRowsSortDataCache=[];var numberOfColumns=0;for(var i=0;i<tableBodyRows.length;i++){var rowDataCells=tableBodyRows[i].getElementsByTagName('td');tableRowsSortDataCache.push(new sortData(i,(/^\\s*\\d+\\s*$/.test(rowDataCells[sortOnColumnNumber].innerHTML)==true?parseInt(rowDataCells[sortOnColumnNumber].innerHTML,10):rowDataCells[sortOnColumnNumber].innerHTML)));}if(sortOrder=='a'){for(var i=0;i<tableRowsSortDataCache.length;i++){for(var j=i+1;j<tableRowsSortDataCache.length;j++){if(tableRowsSortDataCache[i].columnData>tableRowsSortDataCache[j].columnData ||(tableRowsSortDataCache[i].columnData==tableRowsSortDataCache[i].columnData&&tableRowsSortDataCache[i].originalRowNumber>tableRowsSortDataCache[j].originalRowNumber)){var tmpRow=tableRowsSortDataCache[i];tableRowsSortDataCache[i]=tableRowsSortDataCache[j];tableRowsSortDataCache[j]=tmpRow;}}}}else{for(var i=0;i<tableRowsSortDataCache.length;i++){for(var j=i+1;j<tableRowsSortDataCache.length;j++){if(tableRowsSortDataCache[i].columnData<tableRowsSortDataCache[j].columnData ||(tableRowsSortDataCache[i].columnData==tableRowsSortDataCache[i].columnData&&tableRowsSortDataCache[i].originalRowNumber>tableRowsSortDataCache[j].originalRowNumber)){var tmpRow=tableRowsSortDataCache[i];tableRowsSortDataCache[i]=tableRowsSortDataCache[j];tableRowsSortDataCache[j]=tmpRow;}}}}var sortedTBody=document.createElement('tbody');for(var i=0;i<tableRowsSortDataCache.length;i++){sortedTBody.appendChild(tableBodyRows[tableRowsSortDataCache[i].originalRowNumber].cloneNode(true));}table.replaceChild(sortedTBody,tableBody);}}}}}catch(ex){}}";
-      sScript += "document.addEventListener('keypress',function(e){if(e.which==104){e.stopPropagation();e.preventDefault();scrollToNextHeading()}else if(e.which==72){e.stopPropagation();e.preventDefault();scrollToPreviousHeading()}},false);function scrollToNextHeading(){var aH2s=document.getElementsByTagName('h2');var bMadeJump=false;for(var i=0;i<aH2s.length-1;i++){if(aH2s[i]===document.activeElement){aH2s[i+1].scrollIntoView(true);aH2s[i+1].focus();var a=aH2s[i-1].getElementsByTagName('a');if(a!=null)a[0].focus();bMadeJump=true;break}}if(bMadeJump==false){for(var i=0;i<aH2s.length;i++){if(nodeY(aH2s[i])>window.scrollY){aH2s[i].scrollIntoView(true);aH2s[i].focus();var a=aH2s[i].getElementsByTagName('a');if(a!=null)a[0].focus();break}}}}function scrollToPreviousHeading(){var aH2s=document.getElementsByTagName('h2');var bMadeJump=false;for(var i=1;i<aH2s.length;i++){if(aH2s[i]===document.activeElement){aH2s[i-1].scrollIntoView(true);aH2s[i-1].focus();var a=aH2s[i-1].getElementsByTagName('a');if(a!=null)a[0].focus();bMadeJump=true;break}}if(bMadeJump==false){var previousElement=document.body;for(var i=0;i<aH2s.length;i++){if(nodeY(aH2s[i])>=window.scrollY){previousElement.scrollIntoView(true);previousElement.focus();var a=previousElement.getElementsByTagName('a');if(a!=null)a[0].focus();break}previousElement=aH2s[i]}}}function nodeY(node){var y=node.offsetTop;while(node.offsetParent!=null&&node.offsetParent!=node.ownerDocument){node=node.offsetParent;y+=node.offsetTop}return y}";
+      sScript += "document.addEventListener('keypress',function(e){if(e.which==104){e.stopPropagation();e.preventDefault();scrollToNextHeading()}else if(e.which==72){e.stopPropagation();e.preventDefault();scrollToPreviousHeading()}},false);function scrollToNextHeading(){var ae=document.activeElement,aH2s=document.getElementsByTagName('h2');var bMadeJump=false;if(ae != null && ae.parentNode && ae.parentNode.tagName && ae.parentNode.tagName.toLowerCase()=='h2'){ae=ae.parentNode;}if(aH2s[aH2s.length-1]===ae){bMadeJump=true;}for(var i=0;i<aH2s.length-1;i++){if(aH2s[i]===ae){aH2s[i+1].scrollIntoView(true);aH2s[i+1].focus();var a=aH2s[i+1].getElementsByTagName('a');if(a!=null)a[0].focus();bMadeJump=true;break}}if(bMadeJump==false){for(var i=0;i<aH2s.length;i++){if(nodeY(aH2s[i])>window.scrollY){aH2s[i].scrollIntoView(true);aH2s[i].focus();var a=aH2s[i].getElementsByTagName('a');if(a!=null)a[0].focus();break}}}}function scrollToPreviousHeading(){var ae=document.activeElement,aH2s=document.getElementsByTagName('h2');var bMadeJump=false;if(ae != null && ae.parentNode && ae.parentNode.tagName && ae.parentNode.tagName.toLowerCase()=='h2'){ae=ae.parentNode;}if(aH2s[0]===ae){bMadeJump=true;}for(var i=1;i<aH2s.length;i++){if(aH2s[i]===ae){aH2s[i-1].scrollIntoView(true);aH2s[i-1].focus();var a=aH2s[i-1].getElementsByTagName('a');if(a!=null)a[0].focus();bMadeJump=true;break}}if(bMadeJump==false){var previousElement=document.body;for(var i=0;i<aH2s.length;i++){if(nodeY(aH2s[i])>=window.scrollY){previousElement.scrollIntoView(true);previousElement.focus();var a=previousElement.getElementsByTagName('a');if(a!=null)a[0].focus();break}previousElement=aH2s[i]}}}function nodeY(node){var y=node.offsetTop;while(node.offsetParent!=null&&node.offsetParent!=node.ownerDocument){node=node.offsetParent;y+=node.offsetTop}return y}";
       scriptElement.appendChild(reportDoc.createTextNode("/*<![CDATA[*/ " + sScript + " /*]]>*/"));
       reportDoc.head.appendChild(scriptElement);
 
@@ -4970,13 +4970,13 @@ ys: 'whys'
     },
 
     fnAddLangValue: function(docListObj, node) {
-      var i,found=false, conflict=false, langValue, hadAttribute=false;
+      var i,found=false, langValue, hadAttribute=false;
       
       if(node && node.hasAttribute) {
         if(node.hasAttribute('lang')) {
           hadAttribute=true;
           langValue=node.getAttribute('lang');
-          if(node.hasAttribute('xml:lang') && langValue != node.getAttribute('xml:lang')) conflict=true;
+          if(node.hasAttribute('xml:lang') && langValue != node.getAttribute('xml:lang')) docListObj.hasLangConflict=true;
         }
         if(!blr.W15yQC.fnStringHasContent(langValue) && node.hasAttribute('xml:lang')) {
           hadAttribute=true;
@@ -5004,12 +5004,10 @@ ys: 'whys'
           }
         }
       }
-      
-      return conflict;
     },
     
     fnGetDocuments: function (doc, rootNode, aDocumentsList) {
-      var docNumber, c, sID, idCount, frameDocument,style,bUsesFullJustifiedText=false,langConflict=false;
+      var docNumber, c, sID, idCount, frameDocument,style;
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
       // TODO: Store framing node (frameset, iframe, object, etc.)
@@ -5018,8 +5016,8 @@ ys: 'whys'
           aDocumentsList = [];
           // Put the top window's document in the list
           aDocumentsList.push(new blr.W15yQC.documentDescription(doc, doc.URL, aDocumentsList.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
-          if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],doc.body)) { langConflict=true; }
-          if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],doc.body.nodeParent)) { langConflict=true; }
+          blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],doc.body);
+          blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],doc.body.parentNode);
         }
         docNumber = aDocumentsList.length - 1;
 
@@ -5030,7 +5028,7 @@ ys: 'whys'
               style = window.getComputedStyle(c, null);
               if(style!=null) {
                 if(/justify/i.test(style.getPropertyValue('text-align'))) {
-                  bUsesFullJustifiedText=true;
+                  aDocumentsList[aDocumentsList.length-1].hasFullJustifiedText=true;
                 }
               }
               if(c.tagName) {
@@ -5057,7 +5055,7 @@ ys: 'whys'
                     }
                   }
                 }
-                if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],c)) { langConflict=true; }
+                blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],c);
               }
   
               if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
@@ -5065,8 +5063,8 @@ ys: 'whys'
                 frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
                 // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
                 aDocumentsList.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, aDocumentsList.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
-                if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],frameDocument.body)) { langConflict=true; }
-                if(blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],frameDocument.body.nodeParent)) { langConflict=true; }
+                blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],frameDocument.body);
+                blr.W15yQC.fnAddLangValue(aDocumentsList[aDocumentsList.length-1],frameDocument.body.parentNode);
 
                 // get frame contents
                 blr.W15yQC.fnGetDocuments(frameDocument, frameDocument.body, aDocumentsList);
@@ -5076,12 +5074,6 @@ ys: 'whys'
             }
           }
         }
-      }
-      if(bUsesFullJustifiedText) {
-        blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docUsesFullJustifiedText'); // TODO: QA This
-      }
-      if(langConflict) {
-        blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docLangConflictFound'); // TODO: QA This
       }
       return aDocumentsList;
     },
@@ -5159,6 +5151,12 @@ ys: 'whys'
             sLangList = aDocumentsList[i].invalidLangValues.toString().replace(/,/g,', ');
             sLangList = blr.W15yQC.fnCutoffString(sLangList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLangList',[sLangList]); // TODO: QA This
+          }
+          if(aDocumentsList[i].hasLangConflict==true) {
+            blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docLangConflictFound'); // TODO: QA This
+          }
+          if(aDocumentsList[i].hasFullJustifiedText==true) {
+            blr.W15yQC.fnAddNote(aDocumentsList[aDocumentsList.length-1], 'docUsesFullJustifiedText'); // TODO: QA This
           }
         }
       }
@@ -8071,6 +8069,8 @@ ys: 'whys'
     this.nonUniqueIDs = [];
     this.invalidIDs = [];
     this.invalidLangValues = [];
+    this.hasLangConflict = false;
+    this.hasFullJustifiedText = false;
     this.validLangValues = [];
     this.nonUniqueIDsCount=0;
     this.invalidIDsCount=0;
@@ -8091,6 +8091,8 @@ ys: 'whys'
     invalidIDs: [],
     invalidLangValues: [],
     validLangValues: [],
+    hasLangConflict: false,
+    hasFullJustifiedText: false,
     nonUniqueIDsCount: 0,
     invalidIDsCount: 0,
     notes: null,
