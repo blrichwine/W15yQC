@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B07',
+    version: '1.0-B11',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -4070,8 +4070,8 @@ ys: 'whys'
                 break;
               case 'aria-autocomplete':
                 if(/^(combobox|textbox)$/.test(sRole)==false && /^(select|textbox)$/.test(tagName)==false) {
-                  if(blr.W15yQC.fnStringHasContent(role)) {
-                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
                   }
@@ -4088,8 +4088,8 @@ ys: 'whys'
               case 'aria-checked': // (state)
                 // TODO: What contexts is this valid in?
                 if(/^(checkbox|menuitemcheckbox|menuitemradio|option|radio|treeitem)$/.test(sRole)==false) {
-                  if(blr.W15yQC.fnStringHasContent(role)) {
-                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
                   }
@@ -4210,8 +4210,8 @@ ys: 'whys'
                 break;
               case 'aria-multiline':
                 if(/^(textbox)$/.test(sRole)==false && /^(input|textarea)$/.test(tagName)==false) {
-                  if(blr.W15yQC.fnStringHasContent(role)) {
-                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
                   }
@@ -4253,8 +4253,8 @@ ys: 'whys'
                 break;
               case 'aria-pressed': // (state)
                 if(/^(button)$/.test(sRole)==false && /^(button)$/.test(tagName)==false) {
-                  if(blr.W15yQC.fnStringHasContent(role)) {
-                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
                   }
@@ -4280,8 +4280,8 @@ ys: 'whys'
                 break;
               case 'aria-required':
                 if(/^(combobox|gridcell|listbox|radiogroup|spinbutton|textbox|tree)$/.test(sRole)==false && /^(input|textarea)$/.test(tagName)==false) {
-                  if(blr.W15yQC.fnStringHasContent(role)) {
-                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,role]); // TODO: QA This
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
                   }
@@ -5749,6 +5749,9 @@ ys: 'whys'
                       sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
                     }
                     aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                    break;
+                case 'canvas':
+                  
                     break;
                 case 'img':
                   // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel

@@ -129,12 +129,13 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
-        - Canvas tags -- detect alt text, list in with images
+        - Canvas tags -- detect alt text, list in with images (truncate if necessary)
            -- Make sure content contained in a canvas tag shows up in the w15yqc results -- it is fallback content -- how to list?
            -- Test how the focus highlighter works with the fallback content
            -- Spider for examples of useless fallback canvas content
            -- Test for useless fallback content
         - Semantic view should include any fallback content from applicable tags (canvas)
+        - Semantic view 
         - Create misc section?
         - Add Highlighters menu
         - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
@@ -181,7 +182,6 @@
         - ****Detect form controls that aren't hidden but can't be tabbed to.
                - ARIA roles without tabindex (fail)
                - standard form controls with tabindex=-1 (warn)
-        - **** Table caption or table summary the same as an immediately preceeding heading [not sure about this one]
         - **** Look for places that can use blr.W15yQC.fnStringHasContent(
         - **** Detect ARIA overrides of native tag semantics -- what is acceptable? what is not? (This should be in the aria roles checks)
         - **** test role="group" effects
@@ -190,10 +190,9 @@
         - **** QA state listing on ARIA landmarks -- doesn't appear to be working
         - **** Form controls HTML list should show 'alt' column when a valid instance of alt is present and the effective label comes from one
         - **** Fix form control label detection (fieldsets, legend, label, aria role="group")
-        - **** select elements with onchange
+        - **** select elements with onchange -- make sure a warning is given in the form control's listing
         - **** each fieldset should contain a legend (Radio buttons require this already)
         - **** Input elements where type=[button|submit|reset] must have a value or title attribute.
-        - Table sort in HTML results is not ignoring case: Link Text on links table
         - Do <label>, <fieldset> work on ARIA form control roles (button, radio, etc.) IF NOT, fix effectiveLabel function
         - Font size too small (links, buttons, form controls' labels)
         - Detect code <font,i,b,em,etc tags> and add a manual check to make sure the information if important, is somehow described accessibly
@@ -251,6 +250,7 @@
       
 FIXED:
 
+        - Table sort in HTML results is not ignoring case: Link Text on links table. [FIXED]
         - If an element contains both lang and xml:lang attributes, make sure their values are the same [set flag in doc, move to analysis] [done - QA This]
         - Latch focus inspector tool on/off - Focus HIGHLIGHTER - https://developer.mozilla.org/en-US/docs/XUL_School/Intercepting_Page_Loads [done]
         - List detected languages in documents (list in document) [done - QA This]
