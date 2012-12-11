@@ -1574,8 +1574,8 @@ ys: 'whys'
       }
     },
 
-    openHTMLReportDialog: function (firebugObj, aReports) {
-      var dialogPath = 'chrome://W15yQC/content/HTMLReportDialog.xul', dialogID = 'HTMLReportDialog';
+    openHTMLReportWindow: function (firebugObj, aReports) {
+      var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow';
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
