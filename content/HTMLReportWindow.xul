@@ -9,6 +9,7 @@
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 			width="1200"
 			height="600"
+			onresize="blr.W15yQC.HTMLReportWindow.forceMinSize(this)"
       onload="blr.W15yQC.HTMLReportWindow.init(this)">
    <xul:script>
 			var blr=this.arguments[0];

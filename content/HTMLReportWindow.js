@@ -126,6 +126,12 @@ blr.W15yQC.HTMLReportWindow = {
         }        
     },
         
+    forceMinSize: function(dialog) {
+        if(dialog.outerWidth>10 && dialog.outerHeight>10 && (dialog.outerWidth<940 || dialog.outerHeight<610)) {
+            dialog.resizeTo(Math.max(940,dialog.outerWidth),Math.max(610,dialog.outerHeight));
+        }
+    },
+    
     saveHTMLReport: function () {
         var converter,
           file,
