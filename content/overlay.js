@@ -1503,8 +1503,7 @@ ys: 'whys'
     },
     
     openDialog: function (sDialogName,firebugObj) {
-      var dialogPath = null;
-      var dialogID = null;
+      var dialogPath = null, dialogID = null;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -1572,6 +1571,20 @@ ys: 'whys'
           break;
         }
         if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
+      }
+    },
+
+    openHTMLReportDialog: function (firebugObj, aReports) {
+      var dialogPath = 'chrome://W15yQC/content/HTMLReportDialog.xul', dialogID = 'HTMLReportDialog';
+      
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
+        dialogID = 'licenseDialog';
+        dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+      }
+
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj, aReports);
       }
     },
 

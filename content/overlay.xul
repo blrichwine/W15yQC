@@ -74,7 +74,7 @@
   </toolbarpalette>
   
   <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="W15yTPB-HTMLReport" label="&W15yQCLabel;" class="toolbarbutton" oncommand="blr.W15yQC.fnInspect();" />
+    <toolbarbutton id="W15yTPB-HTMLReport" label="&W15yQCLabel;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportDialog();" />
     <toolbarbutton id="W15yTPB-InspectorDialogs" label="Inspectors" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
           <menuitem id="W15yTPBMI-AccessKeysDialog" accesskey="" label="Access Keys" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>
