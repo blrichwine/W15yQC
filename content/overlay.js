@@ -7774,47 +7774,20 @@ ys: 'whys'
       
     },
 
-    fnRemoveStyles: function () {
-      var i, rd, nsIFilePicker, fp, rv, foStream, file, converter, outputWindow, reportDoc, srcDoc, metaElements;
-      outputWindow = window.open('');
-      reportDoc = outputWindow.document;
-      srcDoc = window.top.content.document;
-      metaElements = srcDoc.head.getElementsByTagName('meta');
-      if(metaElements != null && metaElements.length>0) {
-        for(i=0;i<metaElements.length;i++) {
-          reportDoc.head.appendChild(reportDoc.importNode(metaElements[i], false));
-        }
+    fnRemoveStyles: function (firebugObj) {
+      var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements;
+      
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
+        dialogID = 'licenseDialog';
+        dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
       }
-      reportDoc.title = 'Removed Style View - '+srcDoc.title+' - W15yQC';
-      blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, srcDoc);
-      rd=reportDoc;
-              if(rd != null) {
-          nsIFilePicker = Components.interfaces.nsIFilePicker;
-  
-          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
-          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
-          rv = fp.show();
-          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
-            
-            file = fp.file;
-            // work with returned nsILocalFile...
-            if(/\.html?$/.test(file.path)==false) {
-              file.initWithPath(file.path+'.html');
-            }
-  
-            foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
-                           createInstance(Components.interfaces.nsIFileOutputStream);  
-              
-            // use 0x02 | 0x10 to open file for appending.  
-            foStream.init(file, 0x2A, 438, 0);
-            converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
-            converter.init(foStream, "UTF-8", 0, 0);  
-            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
-            converter.close(); // this closes foStream            
-          }
-        }
 
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        srcDoc = window.top.content.document;
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+      }
+      
     },
     
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
