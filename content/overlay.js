@@ -1584,7 +1584,7 @@ ys: 'whys'
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj, aReports);
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj, aReports);
       }
     },
 
@@ -4568,13 +4568,15 @@ ys: 'whys'
       node.appendChild(script);
     },
 
-    fnInitDisplayWindow: function (doc) {
-      var topURL, topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, reportDoc, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
+    fnInitDisplayWindow: function (doc, reportDoc) {
+      var topURL, topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
       
       topURL = doc.URL;
       titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
-      outputWindow = window.open('');
-      reportDoc = outputWindow.document;
+      if(reportDoc == null) {
+        outputWindow = window.open('');
+        if(outputWindow && outputWindow.document) reportDoc = outputWindow.document;
+      }
       
       contentMeta = reportDoc.createElement('meta');
       contentMeta.setAttribute('name','generator');
@@ -4702,8 +4704,8 @@ ys: 'whys'
 
       scriptElement = reportDoc.createElement('script');
       sScript = "function ec(node, sLinkText) { if(node.parentNode.getAttribute('class')=='hideSibling'){node.parentNode.setAttribute('class','');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsHide')+" </span>'+sLinkText}else{node.parentNode.setAttribute('class','hideSibling');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsReveal')+" </span>'+sLinkText}}";
-      sScript += "function collapseAll() {var nodesList=window.top.content.document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','hideSibling')}}";
-      sScript += "function expandAll() {var nodesList=window.top.content.document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','')}}";
+      sScript += "function collapseAll() {var nodesList=document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','hideSibling')}}";
+      sScript += "function expandAll() {var nodesList=document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','')}}";
       sScript += "function fnToggleDisplayOfNonIssues(){var a=document.getElementById('displayToggle');var b=document.getElementsByTagName('tr');if(/"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"/.test(a.innerHTML)==true){a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowAll')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(/warning|failed/.test(b[c].className)!=true){var d=b[c].getElementsByTagName('th');if(d==null||d.length<1){b[c].setAttribute('style','display:none')}}}}}else{a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(b[c].getAttribute('style')=='display:none'){b[c].setAttribute('style','')}}}}}";
       sScript += "var sortData = function(originalRowNumber, columnData) {this.originalRowNumber = originalRowNumber;this.columnData = columnData;};";
       sScript += "sortData.prototype = {originalRowNumber: null,columnData: null};";
@@ -7737,8 +7739,8 @@ ys: 'whys'
       blr.W15yQC.fnDoEvents();
     },
         
-    fnInspect: function () {
-      var reportDoc, aDocumentsList, dialogID, dialogPath, progressWindow;
+    fnInspect: function (reportDoc) {
+      var aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Sanity checks against the code:
       blr.W15yQC.fnNonDOMIntegrityTests();
@@ -7751,7 +7753,7 @@ ys: 'whys'
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
-        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc);
         blr.W15yQC.fnInspectWindowTitle(reportDoc);
         blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
  
