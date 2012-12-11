@@ -13,9 +13,7 @@
     <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
       <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">
         <menuitem id="W15yQC_menuEntry_fullReport" label="Full Report" 
-                  oncommand="blr.W15yQC.onMenuItemCommand(false);"/>
-        <menuitem id="W15yQC_menuEntry_fullReport" label="Save Full Report" 
-                  oncommand="blr.W15yQC.onMenuItemCommand(true);"/>
+                  oncommand="blr.W15yQC.openHTMLReportWindow();"/>
         <menuseparator/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>
@@ -70,7 +68,7 @@
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="W15yNavBarPaletteButton" 
       label="&W15yQCLabel;" tooltiptext="&W15yQCLabel;" class="toolbarbutton-1 chromeclass-toolbar-additional"
-      oncommand="blr.W15yQC.fnInspect();" />
+      oncommand="blr.W15yQC.openHTMLReportWindow();" />
   </toolbarpalette>
   
   <toolbarpalette id="BrowserToolbarPalette">
@@ -119,7 +117,7 @@
                  id="W15yToolbarButton"
                  tooltiptext="&W15yQCLabel;"
                  label="&W15yQCLabel;"
-                 oncommand="blr.W15yQC.fnInspect();">
+                 oncommand="blr.W15yQC.openHTMLReportWindow();">
     </toolbarbutton>
   </toolbar>
 </overlay>

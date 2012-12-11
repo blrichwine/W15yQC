@@ -679,43 +679,6 @@ ys: 'whys'
       return blr.W15yQC.userLocale;
     },
     
-    onMenuItemCommand: function (bSaveToFile) {
-      var converter,
-          file,
-          foStream,
-          fp,
-          nsIFilePicker,
-          rd=blr.W15yQC.fnInspect(),
-          rv;
-      if(bSaveToFile==true) {
-        if(rd != null) {
-          nsIFilePicker = Components.interfaces.nsIFilePicker;
-  
-          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
-          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
-          rv = fp.show();
-          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
-            
-            file = fp.file;
-            // work with returned nsILocalFile...
-            if(/\.html?$/.test(file.path)==false) {
-              file.initWithPath(file.path+'.html');
-            }
-  
-            foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
-                           createInstance(Components.interfaces.nsIFileOutputStream);  
-
-            foStream.init(file, 0x2A, 438, 0);
-            converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
-            converter.init(foStream, "UTF-8", 0, 0);  
-            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
-            converter.close(); // this closes foStream            
-          }
-        }
-      }
-    },
-
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
