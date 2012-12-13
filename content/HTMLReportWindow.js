@@ -58,13 +58,10 @@ blr.W15yQC.HTMLReportWindow = {
     
     cleanup: function() {
         if(blr.W15yQC.HTMLReportWindow.aDocumentsList != null) {
-            //blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
-            //blr.W15yQC.HTMLReportWindow.aDocumentsList=null;
-            //blr.W15yQC.HTMLReportWindow.aFormControlsList=null;
-            //blr.W15yQC.HTMLReportWindow.aFormsList=null;
-            //blr.W15yQC.HTMLReportWindow.FirebugO=null;
-            //blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus=null;
-            //blr.W15yQC.HTMLReportWindow.aLastList=null;
+            blr.W15yQC.HTMLReportWindow.rd=null;
+            blr.W15yQC.HTMLReportWindow.sReports=null;
+            blr.W15yQC.HTMLReportWindow.prompts=null;
+            blr.W15yQC.HTMLReportWindow.FirebugO=null;
         }
     },
     

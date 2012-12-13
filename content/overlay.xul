@@ -86,6 +86,14 @@
           <menuitem id="W15yTPBMI-TablesDialog" accesskey="" label="Tables" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('tables',Firebug);});}else{blr.W15yQC.openDialog('tables',null);}}catch(ex){blr.W15yQC.openDialog('tables',null);}"/>
       </menupopup>
     </toolbarbutton>
+    <toolbarbutton id="W15yTPB-Highlighters" label="Highlighters" type="menu" onmouseover="" class="toolbarbutton">
+      <menupopup onpopupshowing="">
+          <menuitem id="W15yTPBMI-ARIALandmarksHighlighter" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
+          <menuitem id="W15yTPBMI-HeadingsHighlighter" accesskey="" label="Headings" oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
+          <menuitem id="W15yTPBMI-ListsHighlighter" accesskey="" label="Lists" oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
+          <menuitem id="W15yTPBMI-TablesHighlighter" accesskey="" label="Tables" oncommand="blr.W15yQC.Highlighters.highlightTables();"/>
+      </menupopup>
+    </toolbarbutton>
     <toolbarbutton id="W15yTPB-Tools" label="Tools" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="blr.W15yQC.fnInitToolsToolbarMenuPopup(document)">
           <menuitem id="W15yTPBMI-ContrastChecker" accesskey="" label="Contrast Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
@@ -108,7 +116,7 @@
     <toolbar id="w15yqc-toolbar" toolbarname="W15y Quick Check"
       accesskey="W"
       customizable="true" mode="full" context="toolbar-context-menu" 
-      defaultset="W15yTPB-HTMLReport,W15yTPB-InspectorDialogs,W15yTPB-Tools,W15yTPB-Options"
+      defaultset="W15yTPB-HTMLReport,W15yTPB-InspectorDialogs,W15yTPB-Highlighters,W15yTPB-Tools,W15yTPB-Options"
       insertafter="PersonalToolbar" />
   </toolbox>
   

@@ -39,6 +39,9 @@ blr.W15yQC.Highlighters = {
     highlightLists: function(aDocumentsList) {
         var err, styleElement = null, setHighlights=false;
         //try {
+            if(aDocumentsList==null) {
+              aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+            }
             if(aDocumentsList != null && aDocumentsList.length>0) {
                 styleElement = aDocumentsList[0].doc.getElementById('W15yQCListsHighlightStyle');
                 if (styleElement!=null)
@@ -46,7 +49,7 @@ blr.W15yQC.Highlighters = {
                     blr.W15yQC.Highlighters.removeListHighlights(aDocumentsList);
                     setHighlights = false;
                 } else {
-                    blr.W15yQC.Highlighters.extendedHighlightLists(aDocumentsList, aHeadingsList);
+                    blr.W15yQC.Highlighters.extendedHighlightLists(aDocumentsList);
                     setHighlights = true;
                 }
             }
@@ -61,7 +64,7 @@ blr.W15yQC.Highlighters = {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'ul{border: 2px solid red !important}li{border: 2px dashed red !important}';
+                    styleElement.innerHTML = 'ul{border: 2px solid red !important;margin:2px !important}li{border: 2px dashed red !important;margin:2px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -87,6 +90,12 @@ blr.W15yQC.Highlighters = {
     highlightHeadings: function(aDocumentsList, aHeadingsList) {
         var err, styleElement = null, setHighlights=false;
         //try {
+            if(aDocumentsList==null) {
+              aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+              if(aDocumentsList != null && aDocumentsList.length>0) {
+                aHeadingsList = blr.W15yQC.fnGetHeadings(window.top.content.document);
+              }
+            }
             if(aDocumentsList != null && aDocumentsList.length>0) {
                 styleElement = aDocumentsList[0].doc.getElementById('W15yQCHeadingsHighlightStyle');
                 if (styleElement)
@@ -109,7 +118,7 @@ blr.W15yQC.Highlighters = {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = '.w15yqcHeadingInsert{float:left}.w15yqcH1{border: 2px solid red !important}.w15yqcH2{border: 2px solid red !important}.w15yqcH3{border: 2px solid red !important}.w15yqcH4{border: 2px solid red !important}.w15yqcH5{border: 2px solid red !important}.w15yqcH6{border: 2px solid red !important}span.w15yqcHxInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif}.w15yqcH1 span.w15yqcHxInsert{font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{font-size:13px;line-height:15px}';
+                    styleElement.innerHTML = '.w15yqcHeadingInsert{float:left !important}.w15yqcH1{border: 2px solid red !important}.w15yqcH2{border: 2px solid red !important}.w15yqcH3{border: 2px solid red !important}.w15yqcH4{border: 2px solid red !important}.w15yqcH5{border: 2px solid red !important}.w15yqcH6{border: 2px solid red !important}span.w15yqcHxInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif}.w15yqcH1 span.w15yqcHxInsert{font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{font-size:13px;line-height:15px}';
                     styleElement.setAttribute('id', 'W15yQCHeadingsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -123,7 +132,7 @@ blr.W15yQC.Highlighters = {
                 insert=doc.createElement('span');
                 insert.className='w15yqcHxInsert';
                 insert.setAttribute('title',aHeadingsList[j].text);
-                insert.doc.createTextNode('H'+aHeadingsList[j].level.toString());
+                insert.appendChild(doc.createTextNode('H'+aHeadingsList[j].level.toString()));
                 span1.appendChild(insert);
                 aHeadingsList[j].node.insertBefore(span1,aHeadingsList[j].node.firstChild);
             }
@@ -152,6 +161,12 @@ blr.W15yQC.Highlighters = {
     highlightARIALandmarks: function(aDocumentsList, aARIALandmarksList) {
         var err, styleElement = null, setHighlights=false;
         //try {
+            if(aDocumentsList==null) {
+              aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+              if(aDocumentsList != null && aDocumentsList.length>0) {
+                aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(window.top.content.document);
+              }
+            }
             if(aDocumentsList != null && aDocumentsList.length>0) {
                 styleElement = aDocumentsList[0].doc.getElementById('W15yQCARIALandmarksHighlightStyle');
                 if (styleElement)
@@ -221,6 +236,9 @@ blr.W15yQC.Highlighters = {
     highlightTables: function(aDocumentsList) {
         var err, styleElement = null, setHighlights=false;
         //try {
+            if(aDocumentsList==null) {
+              aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+            }
             if(aDocumentsList != null && aDocumentsList.length>0) {
                 styleElement = aDocumentsList[0].doc.getElementById('W15yQCTableHighlightStyle');
                 if (styleElement)
