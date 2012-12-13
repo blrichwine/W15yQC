@@ -207,9 +207,7 @@ blr.W15yQC.LandmarksDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayARIALandmarksResults(reportDoc, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LandmarksDialog.FirebugO, 'landmarks');
     }
     
 }

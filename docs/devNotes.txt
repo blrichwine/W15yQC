@@ -129,6 +129,8 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+        - overlay.xul: wrap the opendialog call in an extra (empty catch) try catch block so the second call to open.dialog doesn't take place on error in the dialog itself.
+        - Need a print CSS file for the HTML Report - background images are not printing!
         - Canvas tags -- detect alt text, list in with images (truncate if necessary)
            -- Make sure content contained in a canvas tag shows up in the w15yqc results -- it is fallback content -- how to list?
            -- Test how the focus highlighter works with the fallback content
@@ -137,10 +139,7 @@
         - Semantic view should include any fallback content from applicable tags (canvas)
         - Semantic view 
         - Create misc section?
-        - Add Highlighters menu
         - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
-        - Make HTML table report save report button
-        - Make HTML table report print button
         - Make HTML table report enhanced line item view dialog.
         - Make HTML table report each section have a page level note regardless of any issues. (to allow editing)
         - Make HTML table line item editor
@@ -151,7 +150,6 @@
            - Add comments on over all line item
            - Add comments on a note.
         - Remove styles
-           - Add tool bar? w/save, print buttons?
            - Options?
               -Remove silent punctuation / symbols?
               -Linearize tables? [layout, data tables, both, none]
@@ -250,6 +248,9 @@
       
 FIXED:
 
+        - Make HTML table report save report button [done]
+        - Make HTML table report print button [done]
+        - Add Highlighters menu [done!]
         - Table sort in HTML results is not ignoring case: Link Text on links table. [FIXED]
         - If an element contains both lang and xml:lang attributes, make sure their values are the same [set flag in doc, move to analysis] [done - QA This]
         - Latch focus inspector tool on/off - Focus HIGHLIGHTER - https://developer.mozilla.org/en-US/docs/XUL_School/Intercepting_Page_Loads [done]

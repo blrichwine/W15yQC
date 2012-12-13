@@ -261,9 +261,7 @@ blr.W15yQC.TablesDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayTablesResults(reportDoc, blr.W15yQC.TablesDialog.aTablesList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.TablesDialog.FirebugO, 'tables');
     }
     
 }

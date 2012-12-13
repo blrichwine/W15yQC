@@ -256,9 +256,7 @@ blr.W15yQC.ImagesDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayImagesResults(reportDoc, blr.W15yQC.ImagesDialog.aImagesList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.ImagesDialog.FirebugO, 'images');
     }
     
 }

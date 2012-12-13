@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B11',
+    version: '1.0-B12',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -679,43 +679,6 @@ ys: 'whys'
       return blr.W15yQC.userLocale;
     },
     
-    onMenuItemCommand: function (bSaveToFile) {
-      var converter,
-          file,
-          foStream,
-          fp,
-          nsIFilePicker,
-          rd=blr.W15yQC.fnInspect(),
-          rv;
-      if(bSaveToFile==true) {
-        if(rd != null) {
-          nsIFilePicker = Components.interfaces.nsIFilePicker;
-  
-          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
-          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
-          rv = fp.show();
-          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
-            
-            file = fp.file;
-            // work with returned nsILocalFile...
-            if(/\.html?$/.test(file.path)==false) {
-              file.initWithPath(file.path+'.html');
-            }
-  
-            foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
-                           createInstance(Components.interfaces.nsIFileOutputStream);  
-
-            foStream.init(file, 0x2A, 438, 0);
-            converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
-            converter.init(foStream, "UTF-8", 0, 0);  
-            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
-            converter.close(); // this closes foStream            
-          }
-        }
-      }
-    },
-
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
@@ -1503,8 +1466,7 @@ ys: 'whys'
     },
     
     openDialog: function (sDialogName,firebugObj) {
-      var dialogPath = null;
-      var dialogID = null;
+      var dialogPath = null, dialogID = null;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -1572,6 +1534,20 @@ ys: 'whys'
           break;
         }
         if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
+      }
+    },
+
+    openHTMLReportWindow: function (firebugObj, sReports) {
+      var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow';
+      
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
+        dialogID = 'licenseDialog';
+        dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+      }
+
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj, sReports);
       }
     },
 
@@ -4555,13 +4531,15 @@ ys: 'whys'
       node.appendChild(script);
     },
 
-    fnInitDisplayWindow: function (doc) {
-      var topURL, topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, reportDoc, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
+    fnInitDisplayWindow: function (doc, reportDoc) {
+      var topURL, topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
       
       topURL = doc.URL;
       titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
-      outputWindow = window.open('');
-      reportDoc = outputWindow.document;
+      if(reportDoc == null) {
+        outputWindow = window.open('');
+        if(outputWindow && outputWindow.document) reportDoc = outputWindow.document;
+      }
       
       contentMeta = reportDoc.createElement('meta');
       contentMeta.setAttribute('name','generator');
@@ -4689,8 +4667,8 @@ ys: 'whys'
 
       scriptElement = reportDoc.createElement('script');
       sScript = "function ec(node, sLinkText) { if(node.parentNode.getAttribute('class')=='hideSibling'){node.parentNode.setAttribute('class','');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsHide')+" </span>'+sLinkText}else{node.parentNode.setAttribute('class','hideSibling');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsReveal')+" </span>'+sLinkText}}";
-      sScript += "function collapseAll() {var nodesList=window.top.content.document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','hideSibling')}}";
-      sScript += "function expandAll() {var nodesList=window.top.content.document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','')}}";
+      sScript += "function collapseAll() {var nodesList=document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','hideSibling')}}";
+      sScript += "function expandAll() {var nodesList=document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','')}}";
       sScript += "function fnToggleDisplayOfNonIssues(){var a=document.getElementById('displayToggle');var b=document.getElementsByTagName('tr');if(/"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"/.test(a.innerHTML)==true){a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowAll')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(/warning|failed/.test(b[c].className)!=true){var d=b[c].getElementsByTagName('th');if(d==null||d.length<1){b[c].setAttribute('style','display:none')}}}}}else{a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(b[c].getAttribute('style')=='display:none'){b[c].setAttribute('style','')}}}}}";
       sScript += "var sortData = function(originalRowNumber, columnData) {this.originalRowNumber = originalRowNumber;this.columnData = columnData;};";
       sScript += "sortData.prototype = {originalRowNumber: null,columnData: null};";
@@ -7724,8 +7702,8 @@ ys: 'whys'
       blr.W15yQC.fnDoEvents();
     },
         
-    fnInspect: function () {
-      var reportDoc, aDocumentsList, dialogID, dialogPath, progressWindow;
+    fnInspect: function (reportDoc,sReports) {
+      var aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Sanity checks against the code:
       blr.W15yQC.fnNonDOMIntegrityTests();
@@ -7736,41 +7714,47 @@ ys: 'whys'
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
       }
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        if(sReports==null) { sReports=''; }
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
-        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document);
-        blr.W15yQC.fnInspectWindowTitle(reportDoc);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc);
+        if(sReports=='' || sReports.indexOf('title')>=0) { blr.W15yQC.fnInspectWindowTitle(reportDoc); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
  
-        aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
+        if(sReports=='' || sReports.indexOf('documents')>=0) {
+          aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
+        } else {
+          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+        }
         blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
 
-        blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
+        if(sReports=='' || sReports.indexOf('frames')>=0) { blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 10, 'Getting Headings');
 
-        blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('headings')>=0) { blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 15, 'Getting ARIA Landmarks');
 
-        blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
-        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+        if(sReports=='' || sReports.indexOf('landmarks')>=0) { blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList); }
+        
+        if(sReports=='' || sReports.indexOf('aria')>=0 && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
           blr.W15yQC.fnUpdateProgress(progressWindow, 18, 'Getting ARIA');
           blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
           }
         blr.W15yQC.fnUpdateProgress(progressWindow, 24, 'Getting Links');
 
-        blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('links')>=0) { blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 75, 'Getting Forms');
 
-        blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('forms')>=0) { blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Geting Images');
 
-        blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('images')>=0) { blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 90, 'Getting Access Keys');
 
-        blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('accesskeys')>=0) { blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 95, 'Getting Tables');
 
-        blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('tables')>=0) { blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
         blr.W15yQC.fnDisplayFooter(reportDoc);
         progressWindow.close();
@@ -7796,47 +7780,20 @@ ys: 'whys'
       
     },
 
-    fnRemoveStyles: function () {
-      var i, rd, nsIFilePicker, fp, rv, foStream, file, converter, outputWindow, reportDoc, srcDoc, metaElements;
-      outputWindow = window.open('');
-      reportDoc = outputWindow.document;
-      srcDoc = window.top.content.document;
-      metaElements = srcDoc.head.getElementsByTagName('meta');
-      if(metaElements != null && metaElements.length>0) {
-        for(i=0;i<metaElements.length;i++) {
-          reportDoc.head.appendChild(reportDoc.importNode(metaElements[i], false));
-        }
+    fnRemoveStyles: function (firebugObj) {
+      var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements;
+      
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
+        dialogID = 'licenseDialog';
+        dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
       }
-      reportDoc.title = 'Removed Style View - '+srcDoc.title+' - W15yQC';
-      blr.W15yQC.fnBuildRemoveStylesView(reportDoc, reportDoc.body, srcDoc);
-      rd=reportDoc;
-              if(rd != null) {
-          nsIFilePicker = Components.interfaces.nsIFilePicker;
-  
-          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
-          fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
-          rv = fp.show();
-          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
-            
-            file = fp.file;
-            // work with returned nsILocalFile...
-            if(/\.html?$/.test(file.path)==false) {
-              file.initWithPath(file.path+'.html');
-            }
-  
-            foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].  
-                           createInstance(Components.interfaces.nsIFileOutputStream);  
-              
-            // use 0x02 | 0x10 to open file for appending.  
-            foStream.init(file, 0x2A, 438, 0);
-            converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
-            converter.init(foStream, "UTF-8", 0, 0);  
-            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
-            converter.close(); // this closes foStream            
-          }
-        }
 
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        srcDoc = window.top.content.document;
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+      }
+      
     },
     
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:window
+      id="HTMLReportWindow"
+      title="HTML Report - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+			width="1200"
+			height="600"
+			onresize="blr.W15yQC.HTMLReportWindow.forceMinSize(this)"
+      onload="blr.W15yQC.HTMLReportWindow.init(this)">
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/HTMLReportWindow.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
+			<xul:hbox id="top-toolbar" align="left">
+				 <xul:button id="button-printReport"
+					 label="Print"
+					 oncommand="blr.W15yQC.HTMLReportWindow.printReport()"/>
+				 <xul:button id="button-editReport"
+					 label="Edit"
+					 oncommand=""/>
+				 <xul:button id="button-saveReport"
+					 label="Save"
+					 oncommand="blr.W15yQC.HTMLReportWindow.saveHTMLReport()"/>
+				 <xul:spacer flex="1"/>
+				 <xul:button id="button-close"
+					 label="Close"
+					 oncommand="window.close();"/>
+      </xul:hbox>
+			<xul:iframe id="HTMLReportIFrame" src="about:blank" type="content" flex="1" style="overflow:auto"/>
+   </xul:vbox>
+</xul:window>
