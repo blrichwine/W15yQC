@@ -17,6 +17,9 @@
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/HTMLReportWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
 			<xul:hbox id="top-toolbar" align="left">
+				 <xul:button id="button-printReport"
+					 label="Print"
+					 oncommand="blr.W15yQC.HTMLReportWindow.printReport()"/>
 				 <xul:button id="button-editReport"
 					 label="Edit"
 					 oncommand=""/>

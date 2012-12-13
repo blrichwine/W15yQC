@@ -17,9 +17,9 @@
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/RemoveStylesWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
 			<xul:hbox id="top-toolbar" align="left">
-				 <xul:button id="button-editReport"
-					 label="Edit"
-					 oncommand=""/>
+				 <xul:button id="button-printReport"
+					 label="Print"
+					 oncommand="blr.W15yQC.RemoveStylesWindow.printReport()"/>
 				 <xul:button id="button-saveReport"
 					 label="Save"
 					 oncommand="blr.W15yQC.RemoveStylesWindow.saveHTMLReport()"/>

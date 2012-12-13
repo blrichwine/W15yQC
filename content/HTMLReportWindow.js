@@ -132,6 +132,15 @@ blr.W15yQC.HTMLReportWindow = {
         }
     },
     
+    printReport: function () {
+        if(rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body && rd.body.children && rd.body.children.length &&
+           rd.defaultView && rd.defaultView.print) {
+            rd.defaultView.print();
+        } else { 
+            if(prompts.alert) prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to print!");
+        }
+    },
+    
     saveHTMLReport: function () {
         var converter,
           file,
