@@ -1537,7 +1537,7 @@ ys: 'whys'
       }
     },
 
-    openHTMLReportWindow: function (firebugObj, aReports) {
+    openHTMLReportWindow: function (firebugObj, sReports) {
       var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow';
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -1547,7 +1547,7 @@ ys: 'whys'
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj, aReports);
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj, sReports);
       }
     },
 
@@ -7702,7 +7702,7 @@ ys: 'whys'
       blr.W15yQC.fnDoEvents();
     },
         
-    fnInspect: function (reportDoc) {
+    fnInspect: function (reportDoc,sReports) {
       var aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Sanity checks against the code:
@@ -7714,41 +7714,47 @@ ys: 'whys'
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
       }
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        if(sReports==null) { sReports=''; }
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
         reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc);
-        blr.W15yQC.fnInspectWindowTitle(reportDoc);
+        if(sReports=='' || sReports.indexOf('title')>=0) { blr.W15yQC.fnInspectWindowTitle(reportDoc); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
  
-        aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
+        if(sReports=='' || sReports.indexOf('documents')>=0) {
+          aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
+        } else {
+          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+        }
         blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
 
-        blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList);
+        if(sReports=='' || sReports.indexOf('frames')>=0) { blr.W15yQC.fnInspectFrameTitles(reportDoc, aDocumentsList); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 10, 'Getting Headings');
 
-        blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('headings')>=0) { blr.W15yQC.fnInspectHeadings(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 15, 'Getting ARIA Landmarks');
 
-        blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList);
-        if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+        if(sReports=='' || sReports.indexOf('landmarks')>=0) { blr.W15yQC.fnInspectARIALandmarks(reportDoc, aDocumentsList); }
+        
+        if(sReports=='' || sReports.indexOf('aria')>=0 && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
           blr.W15yQC.fnUpdateProgress(progressWindow, 18, 'Getting ARIA');
           blr.W15yQC.fnInspectARIAElements(reportDoc, aDocumentsList);
           }
         blr.W15yQC.fnUpdateProgress(progressWindow, 24, 'Getting Links');
 
-        blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('links')>=0) { blr.W15yQC.fnInspectLinks(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 75, 'Getting Forms');
 
-        blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('forms')>=0) { blr.W15yQC.fnInspectForms(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Geting Images');
 
-        blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('images')>=0) { blr.W15yQC.fnInspectImages(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 90, 'Getting Access Keys');
 
-        blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('accesskeys')>=0) { blr.W15yQC.fnInspectAccessKeys(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 95, 'Getting Tables');
 
-        blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList, progressWindow);
+        if(sReports=='' || sReports.indexOf('tables')>=0) { blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList, progressWindow); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
         blr.W15yQC.fnDisplayFooter(reportDoc);
         progressWindow.close();

@@ -215,9 +215,7 @@ blr.W15yQC.AccessKeyDialog = {
     },
 
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, blr.W15yQC.AccessKeyDialog.aAccessKeysList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.AccessKeyDialog.FirebugO, 'accesskeys');
     }
     
 }

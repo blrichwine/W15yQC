@@ -451,9 +451,7 @@ blr.W15yQC.FormControlsDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayFormControlResults(reportDoc, blr.W15yQC.FormControlsDialog.aFormControlsList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.FormControlsDialog.FirebugO, 'forms');
     }
     
 }

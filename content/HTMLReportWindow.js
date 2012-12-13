@@ -39,22 +39,21 @@ if (!blr) { var blr = {}; }
  */
 blr.W15yQC.HTMLReportWindow = {
     FirebugO: null,
-    aDocumentsList: null,
-    aFormsList: null,
-    aFormControlsList: null,
-    oLastTreeviewToHaveFocus: null,
-    aLastList: null,
+    sReports: null,
     prompts: null,
     rd: null,
 
     init: function(dialog) {
         blr.W15yQC.fnReadUserPrefs();
-        blr.W15yQC.HTMLReportWindow.FirebugO=dialog.arguments[1];
+        if(dialog && dialog.arguments && dialog.arguments.length) {
+            if(dialog.arguments.length>1) blr.W15yQC.HTMLReportWindow.FirebugO=dialog.arguments[1];
+            if(dialog.arguments.length>2) blr.W15yQC.HTMLReportWindow.sReports=dialog.arguments[2];
+        }
         var if1 = document.getElementById("HTMLReportIFrame");
         rd=if1.contentDocument;
 
         prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-        blr.W15yQC.fnInspect(rd);
+        blr.W15yQC.fnInspect(rd,blr.W15yQC.HTMLReportWindow.sReports);
     },
     
     cleanup: function() {

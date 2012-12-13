@@ -145,9 +145,7 @@ blr.W15yQC.DocumentsDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayDocumentsResults(reportDoc, blr.W15yQC.DocumentsDialog.aDocumentsList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.DocumentsDialog.FirebugO, 'documents');
     },
     
     validateDocumentContents: function() {
