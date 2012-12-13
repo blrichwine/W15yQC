@@ -206,6 +206,11 @@ blr.W15yQC.ImagesDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.ImagesDialog.aImagesList[selectedRow].xpath, "\n");
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
+        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+            try {
+                blr.W15yQC.fnMoveToElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node);
+            } catch(err) {}
+        }
         if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedRow].node, blr.W15yQC.ImagesDialog.aImagesList[selectedRow].doc);
     },
     
@@ -251,9 +256,7 @@ blr.W15yQC.ImagesDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayImagesResults(reportDoc, blr.W15yQC.ImagesDialog.aImagesList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.ImagesDialog.FirebugO, 'images');
     }
     
 }

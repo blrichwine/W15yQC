@@ -269,6 +269,11 @@ blr.W15yQC.LuminosityCheckDialog = {
         if1.contentDocument.body.innerHTML='Example text at '+textSize+' points. <i>Example text in italic.</i> <b>Example text in bold.</b>';
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+            try {
+                blr.W15yQC.fnMoveToElement(ak.node);
+            } catch(err) {}
+        }
         var highlightElementsCB = document.getElementById('chkbox-highlighton');
         if(highlightElementsCB.checked && bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
     },
@@ -330,9 +335,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        //blr.W15yQC.fnDisplayImagesResults(reportDoc, blr.W15yQC.LuminosityCheckDialog.aLumCheckList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        // blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LuminosityCheckDialog.FirebugO, 'luminosity');
     }
     
 }

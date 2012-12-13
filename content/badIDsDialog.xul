@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+      id="badIDResultsDialog"
+      title="Problem IDs List - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      ondialogaccept="blr.W15yQC.badIDsDialog.cleanup()"
+      ondialogcancel="blr.W15yQC.badIDsDialog.cleanup()"
+      buttons="" 
+      onload="blr.W15yQC.badIDsDialog.init(this)">
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/badIDsDialog.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
+      onselect="blr.W15yQC.badIDsDialog.updateNotesField()">
+         <xul:treecols>
+						<xul:treecol ordinal="1" id="col-header-sourceOrder"
+							 label=" # "
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-documentNumber"
+							 label="Doc. #"
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter  ordinal="4" class="tree-splitter" />
+						<xul:treecol ordinal="5" id="col-header-baseURI"
+							 label="Base URI"
+							 hidden="true"
+							 onclick=""/>
+						<xul:splitter ordinal="6" class="tree-splitter" />
+						<xul:treecol ordinal="7" id="col-header-elementDescription"
+							 label="Element Description"
+							 hidden="false"
+							 sortDirection="" 
+							 flex="1"
+							 onclick=""/>
+            <xul:splitter ordinal="8" class="tree-splitter" /> 
+            <xul:treecol ordinal="9" id="col-header-accessKey"
+               label="ID"
+				       style="text-align:left"
+               sortDirection=""
+				       flex="3"
+               onclick=""/>
+         </xul:treecols>
+				 <xul:treechildren id="treeboxChildren"/>
+      </xul:tree>
+      <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
+				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
+				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="7" flex="1" />
+      </xul:vbox>
+      <xul:hbox id="box-button" align="right">
+				 <xul:button id="button-showInFirebug"
+					 label="Show in Firebug"
+					 oncommand="blr.W15yQC.badIDsDialog.showInFirebug();"
+					 accesskey=""/>
+				 <xul:button id="button-moveToSelectedElement"
+					 label="Scroll To"
+					 oncommand="blr.W15yQC.badIDsDialog.moveToSelectedElement()"
+					 accesskey=""/>
+				 <xul:button id="button-moveFocusToSelectedElement"
+					 label="Move Focus To"
+					 oncommand="blr.W15yQC.badIDsDialog.moveFocusToSelectedElement()"
+					 accesskey=""/>
+				 <xul:spacer flex="1"/>
+				 <xul:button id="button-activate"
+						dlgtype="accept"
+						label="OK"
+						oncommand=""
+						accesskey=""/>
+				 <xul:button id="button-close"
+						dlgtype="cancel"
+						label="Close"
+						accesskey=""
+						oncommand=""/>
+      </xul:hbox>
+   </xul:vbox>
+</xul:dialog>

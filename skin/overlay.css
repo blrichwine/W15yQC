@@ -14,6 +14,10 @@
    list-style-image: url("chrome://w15yqc/skin/inspectorIcon16x16.png") !important;
    cursor: pointer;
 }
+#W15yTPB-Highlighters {
+   list-style-image: url("chrome://w15yqc/skin/highlightersIcon16x16.png") !important;
+   cursor: pointer;
+}
 #W15yTPB-Tools {
    list-style-image: url("chrome://w15yqc/skin/toolsIcon16x16.png") !important;
    cursor: pointer;

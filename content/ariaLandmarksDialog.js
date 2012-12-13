@@ -135,6 +135,7 @@ blr.W15yQC.LandmarksDialog = {
     updateNotesField: function(bHighlightElement) {
         var treebox = document.getElementById('treebox');
         var textbox = document.getElementById('note-text');
+        var err;
         
         if(bHighlightElement === null) bHighlightElement = true;
 
@@ -161,7 +162,14 @@ blr.W15yQC.LandmarksDialog = {
         }
 
         blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-        if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].doc);
+        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+            try {
+                blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+            } catch(err) {}
+        }
+        if(bHighlightElement != false) {
+            blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].doc);
+        }
     },
 
     moveToSelectedElement: function() {
@@ -199,9 +207,7 @@ blr.W15yQC.LandmarksDialog = {
     },
     
     generateReportHTML: function() {
-        var reportDoc = blr.W15yQC.fnInitDisplayWindow(window.opener.parent._content.document);
-        blr.W15yQC.fnDisplayARIALandmarksResults(reportDoc, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
-        blr.W15yQC.fnDisplayFooter(reportDoc);        
+        blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LandmarksDialog.FirebugO, 'landmarks');
     }
     
 }

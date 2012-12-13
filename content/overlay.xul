@@ -3,7 +3,8 @@
 <!DOCTYPE overlay SYSTEM "chrome://W15yQC/locale/overlay.dtd">
 <overlay id="W15yQC-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="overlay.js"/>
+  <script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+  <script type="application/x-javascript" src="chrome://W15yQC/content/highlighters.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="overlay-string-bundle" src="chrome://W15yQC/locale/overlay.properties"/>
   </stringbundleset>
@@ -12,9 +13,7 @@
     <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
       <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">
         <menuitem id="W15yQC_menuEntry_fullReport" label="Full Report" 
-                  oncommand="blr.W15yQC.onMenuItemCommand(false);"/>
-        <menuitem id="W15yQC_menuEntry_fullReport" label="Save Full Report" 
-                  oncommand="blr.W15yQC.onMenuItemCommand(true);"/>
+                  oncommand="blr.W15yQC.openHTMLReportWindow();"/>
         <menuseparator/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>
@@ -34,14 +33,30 @@
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}else{blr.W15yQC.openDialog('links',null);}}catch(ex){blr.W15yQC.openDialog('links',null);}"/>
         <menuitem id="W15yQC_menuEntry_tablesDialog" accesskey="T" label="Tables" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('tables',Firebug);});}else{blr.W15yQC.openDialog('tables',null);}}catch(ex){blr.W15yQC.openDialog('tables',null);}"/>
+        <menu id="W15yQC_menuEntry_highlightersMenu" accesskey="g" label="Highlighters">
+          <menupopup onpopupshowing="">
+            <menuitem id="W15yQC_menuEntry_highlightLandmarks" accesskey="a" label="ARIA Landmarks" 
+                      oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
+            <menuitem id="W15yQC_menuEntry_hightlightHeadings" accesskey="h" label="Headings" 
+                      oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
+            <menuitem id="W15yQC_menuEntry_highlightLists" accesskey="l" label="Lists" 
+                      oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
+            <menuitem id="W15yQC_menuEntry_highlightTables" accesskey="t" label="Tables" 
+                      oncommand="blr.W15yQC.Highlighters.highlightTables();"/>
+          </menupopup>
+        </menu>
         <menu id="W15yQC_menuEntry_toolsMenu" accesskey="o" label="Tools">
-          <menupopup>
+          <menupopup onpopupshowing="blr.W15yQC.fnInitToolsMenuPopup(document)">
             <menuitem id="W15yQC_menuEntry_contrastToolDialog" accesskey="c" label="Contrast Tool" 
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
             <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="s" label="Remove Styles" 
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
-            <menuitem id="W15yQC_menuEntry_contrastCheckerDialog" accesskey="s" label="Contrast Checker" 
+            <menuitem id="W15yQC_menuEntry_focusHighlighter" accesskey="f" label="Focus Tracker" 
+                      oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
+            <menuitem id="W15yQC_menuEntry_contrastCheckerDialog" accesskey="o" label="Contrast Checker" 
                       oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
+            <menuitem id="W15yQC_menuEntry_idsChecker" accesskey="p" label="Problem IDs Checker"
+                      oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
           </menupopup>
         </menu>
         <menuseparator/>
@@ -65,11 +80,11 @@
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="W15yNavBarPaletteButton" 
       label="&W15yQCLabel;" tooltiptext="&W15yQCLabel;" class="toolbarbutton-1 chromeclass-toolbar-additional"
-      oncommand="blr.W15yQC.fnInspect();" />
+      oncommand="blr.W15yQC.openHTMLReportWindow();" />
   </toolbarpalette>
   
   <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="W15yTPB-HTMLReport" label="&W15yQCLabel;" class="toolbarbutton" oncommand="blr.W15yQC.fnInspect();" />
+    <toolbarbutton id="W15yTPB-HTMLReport" label="&W15yQCLabel;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportWindow();" />
     <toolbarbutton id="W15yTPB-InspectorDialogs" label="Inspectors" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
           <menuitem id="W15yTPBMI-AccessKeysDialog" accesskey="" label="Access Keys" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>
@@ -83,11 +98,21 @@
           <menuitem id="W15yTPBMI-TablesDialog" accesskey="" label="Tables" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('tables',Firebug);});}else{blr.W15yQC.openDialog('tables',null);}}catch(ex){blr.W15yQC.openDialog('tables',null);}"/>
       </menupopup>
     </toolbarbutton>
-    <toolbarbutton id="W15yTPB-Tools" label="Tools" type="menu" onmouseover="" class="toolbarbutton">
+    <toolbarbutton id="W15yTPB-Highlighters" label="Highlighters" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
+          <menuitem id="W15yTPBMI-ARIALandmarksHighlighter" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
+          <menuitem id="W15yTPBMI-HeadingsHighlighter" accesskey="" label="Headings" oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
+          <menuitem id="W15yTPBMI-ListsHighlighter" accesskey="" label="Lists" oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
+          <menuitem id="W15yTPBMI-TablesHighlighter" accesskey="" label="Tables" oncommand="blr.W15yQC.Highlighters.highlightTables();"/>
+      </menupopup>
+    </toolbarbutton>
+    <toolbarbutton id="W15yTPB-Tools" label="Tools" type="menu" onmouseover="" class="toolbarbutton">
+      <menupopup onpopupshowing="blr.W15yQC.fnInitToolsToolbarMenuPopup(document)">
           <menuitem id="W15yTPBMI-ContrastChecker" accesskey="" label="Contrast Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
           <menuitem id="W15yTPBMI-ContrastTool" accesskey="" label="Contrast Tool" oncommand="blr.W15yQC.openDialog('contrast');"/>
           <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Remove Styles" oncommand="blr.W15yQC.fnRemoveStyles();"/>
+          <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
+          <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Options" label="Options" type="menu" onmouseover="" class="toolbarbutton">
@@ -103,7 +128,7 @@
     <toolbar id="w15yqc-toolbar" toolbarname="W15y Quick Check"
       accesskey="W"
       customizable="true" mode="full" context="toolbar-context-menu" 
-      defaultset="W15yTPB-HTMLReport,W15yTPB-InspectorDialogs,W15yTPB-Tools,W15yTPB-Options"
+      defaultset="W15yTPB-HTMLReport,W15yTPB-InspectorDialogs,W15yTPB-Highlighters,W15yTPB-Tools,W15yTPB-Options"
       insertafter="PersonalToolbar" />
   </toolbox>
   
@@ -112,7 +137,7 @@
                  id="W15yToolbarButton"
                  tooltiptext="&W15yQCLabel;"
                  label="&W15yQCLabel;"
-                 oncommand="blr.W15yQC.fnInspect();">
+                 oncommand="blr.W15yQC.openHTMLReportWindow();">
     </toolbarbutton>
   </toolbar>
 </overlay>

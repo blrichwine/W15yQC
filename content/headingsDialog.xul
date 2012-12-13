@@ -49,7 +49,6 @@
 	    <xul:treecol ordinal="9" id="col-header-role"
 	       label="Role"
 	       sortDirection=""
-	       flex="1"
 	       onclick=""/>
             <xul:splitter ordinal="10" class="tree-splitter" />
 	    <xul:treecol ordinal="11" id="col-header-level"
@@ -81,6 +80,10 @@
 				 <xul:button id="button-generateHTMLReport"
 					 label="View Report"
 					 oncommand="blr.W15yQC.HeadingsDialog.generateReportHTML();"
+					 accesskey=""/>
+				 <xul:button id="button-highlightHeadings"
+					 label="Highlight Headings"
+					 oncommand="blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.HeadingsDialog.aDocumentsList,blr.W15yQC.HeadingsDialog.aHeadingsList);"
 					 accesskey=""/>
 				 <xul:button id="button-showInFirebug"
 					 label="Show in Firebug"
