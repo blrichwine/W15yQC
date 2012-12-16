@@ -75,8 +75,6 @@ blr.W15yQC.HTMLReportWindow = {
                 break;
             case 87: if(blr.W15yQC.HTMLReportWindow.bCmdIsPressed==true) win.close();
                 break;
-            default:
-                alert(evt.keyCode);
         }
     },
     

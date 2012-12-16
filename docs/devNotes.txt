@@ -129,6 +129,9 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+        - Load configuration from a file (rules to include, exclude, expert level, ignores, etc.)
+        - Add support for closing window with appropriate key in windows.
+        - Add lang attribute highlighter that highlights language changes
         - overlay.xul: wrap the opendialog call in an extra (empty catch) try catch block so the second call to open.dialog doesn't take place on error in the dialog itself.
         - Need a print CSS file for the HTML Report - background images are not printing!
         - Canvas tags -- detect alt text, list in with images (truncate if necessary)
