@@ -7869,6 +7869,8 @@ ys: 'whys'
                   node = rd.importNode(c, false);
                   if(/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
                     node.setAttribute('src','dont-load-'+node.getAttribute('src'));
+                  } else if(/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
+                    node.setAttribute('href','#dont-load-'+node.getAttribute('src'));
                   }
                 }
                 for(i=0;i<node.attributes.length;i++) {
