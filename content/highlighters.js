@@ -64,7 +64,7 @@ blr.W15yQC.Highlighters = {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'ul{border: 2px solid red !important;margin:2px !important}li{border: 2px dashed red !important;margin:2px !important}';
+                    styleElement.innerHTML = 'ul{border: 2px solid red !important;margin:3px !important}li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }

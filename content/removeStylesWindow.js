@@ -104,14 +104,15 @@ blr.W15yQC.RemoveStylesWindow = {
         // Landmarks
         // ARIA Labels
         // Language markup
-
-        aDocumentsList = blr.W15yQC.fnGetDocuments(rd);
-        aHeadingsList = blr.W15yQC.fnGetHeadings(rd);
-        aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(rd);
-        blr.W15yQC.Highlighters.highlightHeadings(aDocumentsList, aHeadingsList);
-        blr.W15yQC.Highlighters.highlightARIALandmarks(aDocumentsList, aARIALandmarksList);
-        blr.W15yQC.Highlighters.highlightLists(aDocumentsList);
-        blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
+        if(blr.W15yQC.RemoveStylesWindow.aDocumentsList==null) {
+            blr.W15yQC.RemoveStylesWindow.aDocumentsList = blr.W15yQC.fnGetDocuments(rd);
+            blr.W15yQC.RemoveStylesWindow.aHeadingsList = blr.W15yQC.fnGetHeadings(rd);
+            blr.W15yQC.RemoveStylesWindow.aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(rd);
+        }
+        blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aHeadingsList);
+        blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aARIALandmarksList);
+        blr.W15yQC.Highlighters.highlightLists(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
+        blr.W15yQC.Highlighters.highlightTables(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
     },
     
     showInFirebug: function() {
