@@ -39,11 +39,12 @@ if (!blr) { var blr = {}; }
  */
 blr.W15yQC.RemoveStylesWindow = {
     FirebugO: null,
+    bCmdIsPressed: false,
     aDocumentsList: null,
+    aHeadingsList: null,
+    aARIALandmarksList: null,
     aFormsList: null,
     aFormControlsList: null,
-    oLastTreeviewToHaveFocus: null,
-    aLastList: null,
     prompts: null,
     rd: null,
     srcDoc: null,
@@ -77,6 +78,41 @@ blr.W15yQC.RemoveStylesWindow = {
             //blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus=null;
             //blr.W15yQC.HTMLReportWindow.aLastList=null;
         }
+    },
+    
+    windowOnKeyDown: function(win,evt) {
+        switch(evt.keyCode) {
+            case 224: blr.W15yQC.RemoveStylesWindow.bCmdIsPressed = true;
+                break;
+            case 27: win.close();
+                break;
+            case 87: if(blr.W15yQC.RemoveStylesWindow.bCmdIsPressed==true) win.close();
+                break;
+        }
+    },
+    
+    windowOnKeyUp: function(evt) {
+        switch(evt.keyCode) {
+            case 224: blr.W15yQC.RemoveStylesWindow.bCmdIsPressed = false;
+                break;
+        }
+    },
+    
+    toggleShowSemantics: function() {
+        // Headings
+        // Tables
+        // Landmarks
+        // ARIA Labels
+        // Language markup
+        if(blr.W15yQC.RemoveStylesWindow.aDocumentsList==null) {
+            blr.W15yQC.RemoveStylesWindow.aDocumentsList = blr.W15yQC.fnGetDocuments(rd);
+            blr.W15yQC.RemoveStylesWindow.aHeadingsList = blr.W15yQC.fnGetHeadings(rd);
+            blr.W15yQC.RemoveStylesWindow.aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(rd);
+        }
+        blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aHeadingsList);
+        blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aARIALandmarksList);
+        blr.W15yQC.Highlighters.highlightLists(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
+        blr.W15yQC.Highlighters.highlightTables(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
     },
     
     showInFirebug: function() {

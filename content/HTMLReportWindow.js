@@ -41,6 +41,8 @@ blr.W15yQC.HTMLReportWindow = {
     FirebugO: null,
     sReports: null,
     prompts: null,
+    bCmdIsPressed: false,
+    bQuick: false,
     rd: null,
 
     init: function(dialog) {
@@ -48,12 +50,39 @@ blr.W15yQC.HTMLReportWindow = {
         if(dialog && dialog.arguments && dialog.arguments.length) {
             if(dialog.arguments.length>1) blr.W15yQC.HTMLReportWindow.FirebugO=dialog.arguments[1];
             if(dialog.arguments.length>2) blr.W15yQC.HTMLReportWindow.sReports=dialog.arguments[2];
+            if(dialog.arguments.length>3) blr.W15yQC.HTMLReportWindow.bQuick=dialog.arguments[3];
+         } 
+        var rw = document.getElementById("HTMLReportWindow");
+        if(rw != null) {
+            if(blr.W15yQC.HTMLReportWindow.bQuick) {
+                rw.setAttribute('title','Quick Report - W15y Quick Check');
+            } else {
+                rw.setAttribute('title','Full Report - W15y Quick Check');
+            }
         }
         var if1 = document.getElementById("HTMLReportIFrame");
-        rd=if1.contentDocument;
+        if(if1!=null && if1.contentDocument) { rd=if1.contentDocument; }
 
         prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-        blr.W15yQC.fnInspect(rd,blr.W15yQC.HTMLReportWindow.sReports);
+        blr.W15yQC.fnInspect(rd,blr.W15yQC.HTMLReportWindow.sReports, blr.W15yQC.HTMLReportWindow.bQuick);
+    },
+    
+    windowOnKeyDown: function(win,evt) {
+        switch(evt.keyCode) {
+            case 224: blr.W15yQC.HTMLReportWindow.bCmdIsPressed = true;
+                break;
+            case 27: win.close();
+                break;
+            case 87: if(blr.W15yQC.HTMLReportWindow.bCmdIsPressed==true) win.close();
+                break;
+        }
+    },
+    
+    windowOnKeyUp: function(evt) {
+        switch(evt.keyCode) {
+            case 224: blr.W15yQC.HTMLReportWindow.bCmdIsPressed = false;
+                break;
+        }
     },
     
     cleanup: function() {

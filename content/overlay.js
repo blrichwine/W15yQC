@@ -38,6 +38,7 @@ if (!blr.W15yQC) {
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
+    bQuick: false,
     userExpertLevel: null,
     userLocale: null,
     bEnglishLocale: true,
@@ -792,191 +793,191 @@ ys: 'whys'
 
     // Severity Levels: 0=notice, 1=warning, 2=failure
     // Expert Levels: 0=Basic, 1=Advanced, 2=Expert
-    noteDetails: { // [Severity, Expert level, hasExplanation, URL]
-      missingSBProperty: [2,0,false,null],
-      docTitleMissing: [2,0,false,null],
-      docTitleEmpty: [2,0,false,null],
-      docLangNotGiven: [2,0,true,null],
-      docLangNotSpecified: [2,0,true,null],
-      docInvalidLang: [2,0,false,null],
-      docLangAttrInvalidUseUnderscore: [2,0,false,null],
-      docLangConflictFound: [2,0,false,null],
-      docInvalidLangList: [1,0,false,null],
-      docValidLangList: [0,0,false,null],
-      docTitleNotUnique: [1,0,false,null],
-      docCSSSuppressingOutline: [1,0,true,null],
-      docUsesFullJustifiedText: [2,0,true,null],
-      docNonUniqueIDs: [1,1,false,null],
-      docInvalidIDs: [1,1,false,null],
+    noteDetails: { // [Quick, Severity, Expert level, hasExplanation, URL]
+      missingSBProperty: [false,2,0,false,null],
+      docTitleMissing: [true,2,0,false,null],
+      docTitleEmpty: [true,2,0,false,null],
+      docLangNotGiven: [true,2,0,true,null],
+      docLangNotSpecified: [true,2,0,true,null],
+      docInvalidLang: [true,2,0,false,null],
+      docLangAttrInvalidUseUnderscore: [true,2,0,false,null],
+      docLangConflictFound: [false,2,0,false,null],
+      docInvalidLangList: [false,1,0,false,null],
+      docValidLangList: [false,0,0,false,null],
+      docTitleNotUnique: [false,1,0,false,null],
+      docCSSSuppressingOutline: [false,1,0,true,null],
+      docUsesFullJustifiedText: [false,2,0,true,null],
+      docNonUniqueIDs: [false,1,1,false,null],
+      docInvalidIDs: [false,1,1,false,null],
       
-      idIsNotUnique: [2,1,false,null],
-      idIsNotValid: [1,1,false,null],
+      idIsNotUnique: [false,2,1,false,null],
+      idIsNotValid: [false,1,1,false,null],
 
-      frameContentScriptGenerated: [0,0,false,null],
-      frameTitleMissing: [2,0,false,null],
-      frameTitleOnlyASCII: [2,0,false,null],
-      frameTitleNotMeaningful: [1,0,false,null],
-      frameTitleNotUnique: [2,0,false,null],
-      frameTitleSoundsSame: [1,0,false,null],
-      frameTitleEmpty: [2,0,false,null],
-      frameIDNotValid: [1,1,false,null],
-      frameIDNotUnique: [1,1,false,null],
+      frameContentScriptGenerated: [false,0,0,false,null],
+      frameTitleMissing: [true,2,0,false,null],
+      frameTitleOnlyASCII: [true,2,0,false,null],
+      frameTitleNotMeaningful: [true,1,0,false,null],
+      frameTitleNotUnique: [true,2,0,false,null],
+      frameTitleSoundsSame: [true,1,0,false,null],
+      frameTitleEmpty: [true,2,0,false,null],
+      frameIDNotValid: [false,1,1,false,null],
+      frameIDNotUnique: [false,1,1,false,null],
 
-      ldmkAndLabelNotUnique: [2,0,false,null],
-      ldmkNotUnique: [2,0,false,null],
-      ldmkIDNotValid: [1,0,false,null],
-      ldmkIDNotUnique: [2,0,false,null],
-      ldmkMainLandmarkMissing: [2,0,true,null],
-      ldmkMultipleMainLandmarks: [2,0,true,null],
-      ldmkMultipleBannerLandmarks: [1,0,true,null],
-      ldmkMultipleContentInfoLandmarks: [1,0,true,null],
+      ldmkAndLabelNotUnique: [true,2,0,false,null],
+      ldmkNotUnique: [true,2,0,false,null],
+      ldmkIDNotValid: [false,1,0,false,null],
+      ldmkIDNotUnique: [false,2,0,false,null],
+      ldmkMainLandmarkMissing: [true,2,0,true,null],
+      ldmkMultipleMainLandmarks: [true,2,0,true,null],
+      ldmkMultipleBannerLandmarks: [false,1,0,true,null],
+      ldmkMultipleContentInfoLandmarks: [false,1,0,true,null],
       
-      ariaLmkAndLabelNotUnique: [2,0,false,null],
-      ariaLmkNotUnique: [2,0,false,null],
-      ariaLevelAttributeValueInvalid: [2,0,false,null],
-      ariaHeadingMissingAriaLevel: [1,0,true,null],
-      ariaHasBothLabelAndLabelledBy: [2,0,true,null],
-      ariaMultipleRoleValues: [1,0,false,null],
-      ariaInvalidAttrWUndefValue: [1,1,true,null],
-      ariaAttributeMustBeValidNumber: [2,0,false,null],
-      ariaAttrMustBePosIntOneOrGreater: [2,0,false,null],
-      ariaPosInSetWOAriaSetSize: [2,0,false,null],
-      ariaEmptyValueTextWValueNowWarning: [1,1,true,null],
-      ariaInvalidAriaLabeledBy: [2,0,false,null],
-      ariaIDNotValid: [1,0,false,null],
-      ariaIDNotUnique: [2,0,false,null],
+      ariaLmkAndLabelNotUnique: [true,2,0,false,null],
+      ariaLmkNotUnique: [true,2,0,false,null],
+      ariaLevelAttributeValueInvalid: [false,2,0,false,null],
+      ariaHeadingMissingAriaLevel: [false,1,0,true,null],
+      ariaHasBothLabelAndLabelledBy: [false,2,0,true,null],
+      ariaMultipleRoleValues: [false,1,0,false,null],
+      ariaInvalidAttrWUndefValue: [false,1,1,true,null],
+      ariaAttributeMustBeValidNumber: [false,2,0,false,null],
+      ariaAttrMustBePosIntOneOrGreater: [false,2,0,false,null],
+      ariaPosInSetWOAriaSetSize: [false,2,0,false,null],
+      ariaEmptyValueTextWValueNowWarning: [false,1,1,true,null],
+      ariaInvalidAriaLabeledBy: [false,2,0,false,null],
+      ariaIDNotValid: [false,1,0,false,null],
+      ariaIDNotUnique: [false,2,0,false,null],
 
-      ariaAbstractRole: [2,1,false,null],
-      ariaUnknownRole: [2,1,false,null],
-      ariaLabelledbyIDsMissing: [2,1,false,null],
-      ariaDescribedbyIDsMissing: [2,1,false,null],
-      ariaMissingProperties: [2,1,true,null],
-      ariaMissingContainer: [2,1,true,null],
+      ariaAbstractRole: [false,2,1,false,null],
+      ariaUnknownRole: [false,2,1,false,null],
+      ariaLabelledbyIDsMissing: [false,2,1,false,null],
+      ariaDescribedbyIDsMissing: [false,2,1,false,null],
+      ariaMissingProperties: [false,2,1,true,null],
+      ariaMissingContainer: [false,2,1,true,null],
       
-      imgLongdescImageFileName: [2,0,false,null],
-      imgLongdescShouldBeURL: [2,0,false,null],
-      imgMissingAltAttribute: [2,0,false,null],
-      imgNoAltText: [1,0,false,null],
-      imgHasAltTextAndPresRole: [2,0,false,null],
-      imgSpacerWithAltTxt: [1,0,false,null],
-      imgSpacerShouldHaveEmptyAltTxt: [1,0,false,null],
-      imgAltTxtIsFileName: [1,0,false,null],
-      imgAltTxtIsURL: [1,0,false,null],
-      imgAltTxtIsJunk: [1,0,false,null],
-      imgAltTxtIsDefault: [1,0,false,null],
-      imgAltTxtIsDecorative: [1,0,false,null],
-      imgAltTxtIncludesImageTxt: [1,0,false,null],
-      imgIDNotValid: [1,0,false,null],
-      imgIDNotUnique: [2,0,false,null],
-      imgAltTxtOnlyASCII: [2,0,false,null],
+      imgLongdescImageFileName: [true,2,0,false,null],
+      imgLongdescShouldBeURL: [true,2,0,false,null],
+      imgMissingAltAttribute: [true,2,0,false,null],
+      imgNoAltText: [true,1,0,false,null],
+      imgHasAltTextAndPresRole: [false,2,0,false,null],
+      imgSpacerWithAltTxt: [true,1,0,false,null],
+      imgSpacerShouldHaveEmptyAltTxt: [true,1,0,false,null],
+      imgAltTxtIsFileName: [true,1,0,false,null],
+      imgAltTxtIsURL: [true,1,0,false,null],
+      imgAltTxtIsJunk: [true,1,0,false,null],
+      imgAltTxtIsDefault: [true,1,0,false,null],
+      imgAltTxtIsDecorative: [true,1,0,false,null],
+      imgAltTxtIncludesImageTxt: [true,1,0,false,null],
+      imgIDNotValid: [false,1,0,false,null],
+      imgIDNotUnique: [false,2,0,false,null],
+      imgAltTxtOnlyASCII: [true,2,0,false,null],
       
-      akConflict: [1,0,false,null],
-      akNoLabel: [2,0,false,null],
-      akLabelOnlyASCII: [2,0,false,null],
-      akLabelNotMeaningful: [1,0,false,null],
-      akValueNotUnique: [2,0,false,null],
-      akLabelNotUnique: [2,0,false,null],
-      akLabelEmpty: [2,0,false,null],
-      akIDNotValid: [1,0,false,null],
-      akIDNotUnique: [1,0,false,null],
+      akConflict: [false,1,0,false,null],
+      akNoLabel: [true,2,0,false,null],
+      akLabelOnlyASCII: [false,2,0,false,null],
+      akLabelNotMeaningful: [true,1,0,false,null],
+      akValueNotUnique: [true,2,0,false,null],
+      akLabelNotUnique: [true,2,0,false,null],
+      akLabelEmpty: [true,2,0,false,null],
+      akIDNotValid: [false,1,0,false,null],
+      akIDNotUnique: [false,1,0,false,null],
 
-      hSkippedLevel: [2,1,false,null],
-      hTxtMissing: [2,1,false,null],
-      hTxtOnlyASCII: [2,1,false,null],
-      hTxtNotMeaninfgul: [1,1,false,null],
-      hTxtEmpty: [2,1,false,null],
-      hIDNotValid: [1,1,false,null],
-      hIDNotUnique: [1,1,false,null],
+      hSkippedLevel: [true,2,1,false,null],
+      hTxtMissing: [true,2,1,false,null],
+      hTxtOnlyASCII: [true,2,1,false,null],
+      hTxtNotMeaninfgul: [true,1,1,false,null],
+      hTxtEmpty: [true,2,1,false,null],
+      hIDNotValid: [false,1,1,false,null],
+      hIDNotUnique: [false,1,1,false,null],
 
-      frmNameNotUnique: [1,1,false,null],
-      frmFormIsNested: [2,1,false,null],
-      frmFormContainsForms: [2,1,false,null],
-      frmIDNotValid: [1,1,false,null],
-      frmIDNotUnique: [1,1,false,null],
+      frmNameNotUnique: [false,1,1,false,null],
+      frmFormIsNested: [false,2,1,false,null],
+      frmFormContainsForms: [false,2,1,false,null],
+      frmIDNotValid: [false,1,1,false,null],
+      frmIDNotUnique: [false,1,1,false,null],
 
-      frmCtrlNotLabeled: [2,0,false,null],
-      frmCtrlLabelOnlyASCII: [2,0,false,null],
-      frmCtrlLabelNotMeaningful: [1,0,false,null],
-      frmCtrlLabelNextPrev: [1,0,false,null],
-      fmrCtrlLabelNotUnique: [2,0,false,null],
-      frmCtrlLabelDoesntSoundUnique: [2,0,false,null],
-      frmCtrlLabelEmpty: [2,0,false,null],
-      frmCtrlInputTypeImageWOAltText: [2,0,false,null],
-      frmCtrlInputTypeImageWOAltAttr: [2,0,false,null],
-      frmCtrlRedundantOCandOK: [2,0,false,null],
-      frmCtrlHasBothOCandOK: [1,0,false,null],
-      frmCtrlForValInvalid: [1,0,false,null],
-      frmCtrlNoFrmCtrlForForValue: [2,0,false,null],
-      frmCtrlNoElForForValue: [2,0,false,null],
-      frmCtrlForValIDNotUnique: [2,0,false,null],
-      frmCtrlForForValueIsHidden: [1,1,false,null],
-      frmCtrlForValueEmpty: [2,0,false,null],
-      frmCtrlImplicitLabel: [2,0,false,null],
-      frmCtrlLegendWOFieldset: [2,0,false,null],
-      frmCtrlFieldsetWOLegend: [2,0,false,null],
-      frmCtrlRadioButtonWOLegendText: [1,0,false,null],
-      frmCtrlIDNotValid: [2,0,false,null],
-      frmCtrlIDNotUnique: [2,0,false,null],
+      frmCtrlNotLabeled: [true,2,0,false,null],
+      frmCtrlLabelOnlyASCII: [true,2,0,false,null],
+      frmCtrlLabelNotMeaningful: [true,1,0,false,null],
+      frmCtrlLabelNextPrev: [true,1,0,false,null],
+      fmrCtrlLabelNotUnique: [true,2,0,false,null],
+      frmCtrlLabelDoesntSoundUnique: [true,2,0,false,null],
+      frmCtrlLabelEmpty: [true,2,0,false,null],
+      frmCtrlInputTypeImageWOAltText: [true,2,0,false,null],
+      frmCtrlInputTypeImageWOAltAttr: [true,2,0,false,null],
+      frmCtrlRedundantOCandOK: [false,2,0,false,null],
+      frmCtrlHasBothOCandOK: [false,1,0,false,null],
+      frmCtrlForValInvalid: [false,1,0,false,null],
+      frmCtrlNoFrmCtrlForForValue: [false,2,0,false,null],
+      frmCtrlNoElForForValue: [false,2,0,false,null],
+      frmCtrlForValIDNotUnique: [false,2,0,false,null],
+      frmCtrlForForValueIsHidden: [false,1,1,false,null],
+      frmCtrlForValueEmpty: [false,2,0,false,null],
+      frmCtrlImplicitLabel: [false,2,0,false,null],
+      frmCtrlLegendWOFieldset: [false,2,0,false,null],
+      frmCtrlFieldsetWOLegend: [false,2,0,false,null],
+      frmCtrlRadioButtonWOLegendText: [false,1,0,false,null],
+      frmCtrlIDNotValid: [false,2,0,false,null],
+      frmCtrlIDNotUnique: [false,2,0,false,null],
 
-      lnkTxtMissing: [2,0,false,null],
-      lnkTxtOnlyASCII: [2,0,false,null],
-      lnkTxtNotMeaningful: [2,0,false,null],
-      lnkTxtNextPrev: [2,0,false,null],
-      lnkTxtBeginWithLink: [1,0,false,null],
-      lnkInvalid: [1,0,false,null],
-      lnkLinkMissingHrefValue: [1,0,false,null],
-      lnkTooSmallToHit: [2,0,false,null],
-      lnkTxtNotUnique: [2,0,false,null],
-      lnkTxtDoesntSoundUnique: [1,0,false,null],
-      lnkTxtDiffSameHrefOnclick: [1,0,false,null],
-      lnkTxtDiffSameHref: [1,0,false,null],
-      lnkTxtEmpty: [2,0,false,null],
-      lnkIsNamedAnchor: [0,0,false,null],
-      lnkTargetsLink: [0,0,false,null],
-      lnkTargets: [0,0,false,null],
-      lnkTargetDoesNotExist: [2,0,false,null],
-      lnkTargetDoesNotAppearValid: [1,0,false,null],
-      lnkHasBothOCandOK: [2,0,false,null],
-      lnkHasInvalidAltAttribute: [1,0,false,null],
-      lnkTargetIDisNotUnique: [2,0,false,null],
-      lnkTargetIDNotValid: [1,0,false,null],
-      lnkServerSideImageMap: [2,0,false,null],
-      lnkIDNotValid: [2,0,false,null],
-      lnkIDNotUnique: [2,0,false,null],
+      lnkTxtMissing: [true,2,0,false,null],
+      lnkTxtOnlyASCII: [true,2,0,false,null],
+      lnkTxtNotMeaningful: [true,2,0,false,null],
+      lnkTxtNextPrev: [true,2,0,false,null],
+      lnkTxtBeginWithLink: [true,1,0,false,null],
+      lnkInvalid: [false,1,0,false,null],
+      lnkLinkMissingHrefValue: [false,1,0,false,null],
+      lnkTooSmallToHit: [false,2,0,false,null],
+      lnkTxtNotUnique: [true,2,0,false,null],
+      lnkTxtDoesntSoundUnique: [true,1,0,false,null],
+      lnkTxtDiffSameHrefOnclick: [true,1,0,false,null],
+      lnkTxtDiffSameHref: [true,1,0,false,null],
+      lnkTxtEmpty: [true,2,0,false,null],
+      lnkIsNamedAnchor: [true,0,0,false,null],
+      lnkTargetsLink: [true,0,0,false,null],
+      lnkTargets: [true,0,0,false,null],
+      lnkTargetDoesNotExist: [true,2,0,false,null],
+      lnkTargetDoesNotAppearValid: [true,1,0,false,null],
+      lnkHasBothOCandOK: [false,2,0,false,null],
+      lnkHasInvalidAltAttribute: [false,1,0,false,null],
+      lnkTargetIDisNotUnique: [false,2,0,false,null],
+      lnkTargetIDNotValid: [false,1,0,false,null],
+      lnkServerSideImageMap: [false,2,0,false,null],
+      lnkIDNotValid: [false,2,0,false,null],
+      lnkIDNotUnique: [false,2,0,false,null],
 
-      tblMultipleCaptions: [2,0,false,null],
-      tblNestedTR: [1,1,false,null],
-      tblEmptyTR: [1,1,false,null],
-      tblOutsideRow: [1,1,false,null],
-      tblColspanRowspanColision: [1,1,false,null],
-      tblRowspanRowspanColision: [1,1,false,null],
-      tblRowWOCols: [1,1,false,null],
-      tblEmptyTable: [1,1,false,null],
-      tblRowpanExceedsTableRows: [1,1,false,null],
-      tblIsDataTable: [0,0,false,null],
-      tblCheckCaptionSummary: [1,0,false,null],
-      tblCaptionSameAsSummary: [1,0,false,null],
-      tblSummaryLooksLikeLayout: [2,0,false,null],
-      tblSummaryLooksLikeADefault: [2,0,false,null],
-      tblSummaryNotMeaningful: [2,0,false,null],
-      tblCaptionLooksLikeLayout: [2,0,false,null],
-      tblCaptionLooksLikeADefault: [2,0,false,null],
-      tblCaptionNotMeaningful: [2,0,false,null],
-      tblDTMissingTHs: [2,0,false,null],
-      tblDTisComplex: [1,0,false,null],
-      tblDTwTDwoHeadersAttrib: [2,0,false,null],
-      tblNotEveryCellWithContentInDTHasHeaders: [2,0,false,null],
-      tblIsLayoutTable: [0,0,false,null],
-      tblUnequalColCount: [1,0,false,null],
-      tblLayoutTblIsComplex: [1,0,false,null],
-      tblLayoutTblIsComplexWOpresRole: [1,0,false,null],
-      tblTooLargeForLayoutTable: [1,0,false,null]
+      tblMultipleCaptions: [false,2,0,false,null],
+      tblNestedTR: [false,1,1,false,null],
+      tblEmptyTR: [false,1,1,false,null],
+      tblOutsideRow: [false,1,1,false,null],
+      tblColspanRowspanColision: [false,1,1,false,null],
+      tblRowspanRowspanColision: [false,1,1,false,null],
+      tblRowWOCols: [false,1,1,false,null],
+      tblEmptyTable: [false,1,1,false,null],
+      tblRowpanExceedsTableRows: [false,1,1,false,null],
+      tblIsDataTable: [true,0,0,false,null],
+      tblCheckCaptionSummary: [true,1,0,false,null],
+      tblCaptionSameAsSummary: [false,1,0,false,null],
+      tblSummaryLooksLikeLayout: [true,2,0,false,null],
+      tblSummaryLooksLikeADefault: [true,2,0,false,null],
+      tblSummaryNotMeaningful: [true,2,0,false,null],
+      tblCaptionLooksLikeLayout: [true,2,0,false,null],
+      tblCaptionLooksLikeADefault: [true,2,0,false,null],
+      tblCaptionNotMeaningful: [true,2,0,false,null],
+      tblDTMissingTHs: [false,2,0,false,null],
+      tblDTisComplex: [true,1,0,false,null],
+      tblDTwTDwoHeadersAttrib: [false,2,0,false,null],
+      tblNotEveryCellWithContentInDTHasHeaders: [true,2,0,false,null],
+      tblIsLayoutTable: [true,0,0,false,null],
+      tblUnequalColCount: [true,1,0,false,null],
+      tblLayoutTblIsComplex: [true,1,0,false,null],
+      tblLayoutTblIsComplexWOpresRole: [false,1,0,false,null],
+      tblTooLargeForLayoutTable: [false,1,0,false,null]
     },
 
     fnGetNoteSeverityLevel: function(msgKey) {
       var severityLevel = 0;
       if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
-        severityLevel = blr.W15yQC.noteDetails[msgKey][0];
+        severityLevel = blr.W15yQC.noteDetails[msgKey][1];
       }
       return severityLevel;
     },
@@ -986,14 +987,29 @@ ys: 'whys'
       blr.W15yQC.fnLog("fnAddNote-begin:"+sMsgKey+' '+aParameters);
       blr.W15yQC.fnLog(no.toString());
       if(no.notes == null) { no.notes = []; }
-      if(sl==1) {
-        no.warning = true;
-      } else if(sl==2) {
-        no.failed = true;
+      if(blr.W15yQC.fnOkToIncludeNote(sMsgKey)==true) {
+        if(sl==1) {
+          no.warning = true;
+        } else if(sl==2) {
+          no.failed = true;
+        }
+        no.notes.push(new blr.W15yQC.note(sMsgKey, aParameters));
       }
-      no.notes.push(new blr.W15yQC.note(sMsgKey, aParameters));
     },
 
+    fnOkToIncludeNote: function(msgKey) {
+      var expertLevel=0, severityLevel=0, bQuick=false;
+      if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
+        bQuick = blr.W15yQC.noteDetails[msgKey][0];
+        severityLevel = blr.W15yQC.noteDetails[msgKey][1];
+        expertLevel = blr.W15yQC.noteDetails[msgKey][2];
+        if((expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (bQuick==true && blr.W15yQC.bQuick==true)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
     fnResolveNote: function(note, msgHash) {
       if(note != null && note.msgKey && note.msgKey.length) {
         var msgKey = note.msgKey,
@@ -1001,6 +1017,7 @@ ys: 'whys'
             sMsgTxt = null,
             bHasExplanation = false,
             sExplanation = null,
+            bQuick = false,
             severityLevel = 0,
             expertLevel = 0,
             nd,
@@ -1008,10 +1025,11 @@ ys: 'whys'
 
         if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
           nd = blr.W15yQC.noteDetails[msgKey];
-          severityLevel = nd[0];
-          expertLevel = nd[1];
-          bHasExplanation = nd[2];
-          URL = nd[3];
+          bQuick = nd[0];
+          severityLevel = nd[1];
+          expertLevel = nd[2];
+          bHasExplanation = nd[3];
+          URL = nd[4];
         }
 
         if(bHasExplanation == true && (msgHash == null || msgHash.hasItem(msgKey) == false)) {
@@ -1029,7 +1047,7 @@ ys: 'whys'
           sMsgTxt = blr.W15yQC.fnGetString('missingSBProperty', [msgKey]);
           if(sMsgTxt == null) { sMsgTxt = 'Missing String Bundle Property for:'+msgKey; }
         }
-        return new blr.W15yQC.resolvedNote(msgKey, severityLevel, expertLevel, sMsgTxt, sExplanation, URL);
+        return new blr.W15yQC.resolvedNote(msgKey, bQuick, severityLevel, expertLevel, sMsgTxt, sExplanation, URL);
       }
       return null;
     },
@@ -1047,6 +1065,8 @@ ys: 'whys'
           rn,
           noteText;
       if(no != null && no.notes != null && no.notes.length > 0) {
+        no.warning=false;
+        no.failed=false;
         sHTML = '<ul class="results">';
         for(noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
           noteLevel = noteLevelDisplayOrder[noteLevelIndex];
@@ -1055,7 +1075,7 @@ ys: 'whys'
           for(i=0; i<no.notes.length; i++) {
             if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel) {
               rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
-              if(rn != null && rn.expertLevel<= blr.W15yQC.userExpertLevel) {
+              if(rn != null && (rn.expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (rn.bQuick==true && blr.W15yQC.bQuick==true)) {
                 if(noteLevel==1) {
                   no.warning = true;
                 } else if(noteLevel==2) {
@@ -1085,6 +1105,8 @@ ys: 'whys'
       rn;
 
       if(no != null && no.notes != null && no.notes.length > 0) {
+        no.warning=false;
+        no.failed=false;
         for(noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
           bLevelTextDisplayed = false;
           noteLevel = noteLevelDisplayOrder[noteLevelIndex];
@@ -1092,7 +1114,7 @@ ys: 'whys'
           for(i=0; i<no.notes.length; i++) {
             if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel) {
               rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
-              if(rn != null && rn.expertLevel<= blr.W15yQC.userExpertLevel) {
+              if(rn != null && (rn.expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (rn.bQuick==true && blr.W15yQC.bQuick==true)) {
                 if(noteLevel==1) {
                   no.warning = true;
                 } else if(noteLevel==2) {
@@ -1466,7 +1488,7 @@ ys: 'whys'
     },
     
     openDialog: function (sDialogName,firebugObj) {
-      var dialogPath = null, dialogID = null;
+      var dialogPath = null, dialogID = null, win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -1533,12 +1555,15 @@ ys: 'whys'
           dialogPath = 'chrome://W15yQC/content/aboutDialog.xul';
           break;
         }
-        if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
+        if (dialogID != null) {
+          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj);
+          if(win!=null && win.focus) win.focus();
+        }
       }
     },
 
-    openHTMLReportWindow: function (firebugObj, sReports) {
-      var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow';
+    openHTMLReportWindow: function (bQuick, firebugObj, sReports) {
+      var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow', win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -1547,7 +1572,8 @@ ys: 'whys'
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj, sReports);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, firebugObj, sReports, bQuick);
+        if(win!=null && win.focus) win.focus();
       }
     },
 
@@ -4543,7 +4569,11 @@ ys: 'whys'
       
       contentMeta = reportDoc.createElement('meta');
       contentMeta.setAttribute('name','generator');
-      contentMeta.setAttribute('content','W15yQC Web Accessibility Quick Check');
+      if(blr.W15yQC.bQuick==true) {
+          contentMeta.setAttribute('content','W15yQC Web Accessibility Quick Check');
+        } else {
+          contentMeta.setAttribute('content','W15yQC Web Accessibility Full Check');
+        }
 
       genMeta = reportDoc.createElement('meta');
       genMeta.setAttribute('http-equiv','Content-Type');
@@ -4704,7 +4734,6 @@ ys: 'whys'
         scriptElement.appendChild(rd.createTextNode("/*<![CDATA[*/ " + sScript + " /*]]>*/"));
         rd.body.appendChild(scriptElement);
       }
-      
     },
 
     
@@ -7633,11 +7662,13 @@ ys: 'whys'
     },
 
     fnInspectARIAElements: function (rd, aDocumentsList, progressWindow) {
-      blr.W15yQC.fnReadUserPrefs();
-      var aARIAElementsList = blr.W15yQC.fnGetARIAElements(window.top.content.document);
-      blr.W15yQC.fnUpdateProgress(progressWindow, 22, 'Analyzing ARIA');
-      blr.W15yQC.fnAnalyzeARIAElements(aARIAElementsList, aDocumentsList);
-      blr.W15yQC.fnDisplayARIAElementsResults(rd, aARIAElementsList);
+      if(blr.W15yQC.bQuick!=true) {
+        blr.W15yQC.fnReadUserPrefs();
+        var aARIAElementsList = blr.W15yQC.fnGetARIAElements(window.top.content.document);
+        blr.W15yQC.fnUpdateProgress(progressWindow, 22, 'Analyzing ARIA');
+        blr.W15yQC.fnAnalyzeARIAElements(aARIAElementsList, aDocumentsList);
+        blr.W15yQC.fnDisplayARIAElementsResults(rd, aARIAElementsList);
+      }
     },
 
     fnInspectForms: function (rd, aDocumentsList, progressWindow) {
@@ -7647,7 +7678,7 @@ ys: 'whys'
           aFormsList = aFormControlsLists[0];
       blr.W15yQC.fnUpdateProgress(progressWindow, 80, 'Analyzing Forms');
       blr.W15yQC.fnAnalyzeFormControls(aFormsList, aFormControlsList, aDocumentsList);
-      blr.W15yQC.fnDisplayFormResults(rd, aFormsList);
+      if(blr.W15yQC.bQuick==false) { blr.W15yQC.fnDisplayFormResults(rd, aFormsList); }
       blr.W15yQC.fnDisplayFormControlResults(rd, aFormControlsList);
     },
 
@@ -7701,10 +7732,12 @@ ys: 'whys'
       }
       blr.W15yQC.fnDoEvents();
     },
-        
-    fnInspect: function (reportDoc,sReports) {
+
+    fnInspect: function (reportDoc,sReports, bQuick) {
       var aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+      if(bQuick == null) { bQuick = false; }
+      blr.W15yQC.bQuick = bQuick;
       // Sanity checks against the code:
       blr.W15yQC.fnNonDOMIntegrityTests();
       blr.W15yQC.fnReadUserPrefs();
@@ -7717,14 +7750,14 @@ ys: 'whys'
         if(sReports==null) { sReports=''; }
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
-        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc, bQuick);
         if(sReports=='' || sReports.indexOf('title')>=0) { blr.W15yQC.fnInspectWindowTitle(reportDoc); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
  
         if(sReports=='' || sReports.indexOf('documents')>=0) {
           aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
         } else {
-          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document, bQuick);
         }
         blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
 
@@ -7781,7 +7814,7 @@ ys: 'whys'
     },
 
     fnRemoveStyles: function (firebugObj) {
-      var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements;
+      var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements, win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -7791,7 +7824,8 @@ ys: 'whys'
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
         srcDoc = window.top.content.document;
-        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+        if(win!=null && win.focus) win.focus();
       }
       
     },
@@ -8000,8 +8034,9 @@ ys: 'whys'
     aParameters: null
   };
 
-  blr.W15yQC.resolvedNote = function (msgKey, severityLevel, expertLevel, msgText, msgExplanation, sURL) {
+  blr.W15yQC.resolvedNote = function (msgKey, bQuick, severityLevel, expertLevel, msgText, msgExplanation, sURL) {
     this.msgKey = msgKey;
+    this.bQuick = bQuick;
     this.severityLevel = severityLevel;
     this.expertLevel = expertLevel;
     this.msgText = msgText;
@@ -8011,6 +8046,7 @@ ys: 'whys'
 
   blr.W15yQC.resolvedNote.prototype = {
     msgKey: null,
+    bQuick: true,
     severityLevel: null,
     expertLevel: null,
     msgText: null,
