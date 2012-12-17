@@ -1488,7 +1488,7 @@ ys: 'whys'
     },
     
     openDialog: function (sDialogName,firebugObj) {
-      var dialogPath = null, dialogID = null;
+      var dialogPath = null, dialogID = null, win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -1555,12 +1555,15 @@ ys: 'whys'
           dialogPath = 'chrome://W15yQC/content/aboutDialog.xul';
           break;
         }
-        if (dialogID != null) { window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj); }
+        if (dialogID != null) {
+          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj);
+          if(win!=null && win.focus) win.focus();
+        }
       }
     },
 
     openHTMLReportWindow: function (bQuick, firebugObj, sReports) {
-      var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow';
+      var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow', win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -1569,7 +1572,8 @@ ys: 'whys'
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, firebugObj, sReports, bQuick);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, firebugObj, sReports, bQuick);
+        if(win!=null && win.focus) win.focus();
       }
     },
 
@@ -7810,7 +7814,7 @@ ys: 'whys'
     },
 
     fnRemoveStyles: function (firebugObj) {
-      var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements;
+      var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements, win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
         dialogID = 'licenseDialog';
@@ -7820,7 +7824,8 @@ ys: 'whys'
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
         srcDoc = window.top.content.document;
-        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+        if(win!=null && win.focus) win.focus();
       }
       
     },

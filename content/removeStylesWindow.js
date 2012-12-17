@@ -39,11 +39,12 @@ if (!blr) { var blr = {}; }
  */
 blr.W15yQC.RemoveStylesWindow = {
     FirebugO: null,
+    bCmdIsPressed: false,
     aDocumentsList: null,
+    aHeadingsList: null,
+    aARIALandmarksList: null,
     aFormsList: null,
     aFormControlsList: null,
-    oLastTreeviewToHaveFocus: null,
-    aLastList: null,
     prompts: null,
     rd: null,
     srcDoc: null,
@@ -77,6 +78,40 @@ blr.W15yQC.RemoveStylesWindow = {
             //blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus=null;
             //blr.W15yQC.HTMLReportWindow.aLastList=null;
         }
+    },
+    
+    windowOnKeyDown: function(win,evt) {
+        switch(evt.keyCode) {
+            case 224: blr.W15yQC.RemoveStylesWindow.bCmdIsPressed = true;
+                break;
+            case 27: win.close();
+                break;
+            case 87: if(blr.W15yQC.RemoveStylesWindow.bCmdIsPressed==true) win.close();
+                break;
+        }
+    },
+    
+    windowOnKeyUp: function(evt) {
+        switch(evt.keyCode) {
+            case 224: blr.W15yQC.RemoveStylesWindow.bCmdIsPressed = false;
+                break;
+        }
+    },
+    
+    toggleShowSemantics: function() {
+        // Headings
+        // Tables
+        // Landmarks
+        // ARIA Labels
+        // Language markup
+
+        aDocumentsList = blr.W15yQC.fnGetDocuments(rd);
+        aHeadingsList = blr.W15yQC.fnGetHeadings(rd);
+        aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(rd);
+        blr.W15yQC.Highlighters.highlightHeadings(aDocumentsList, aHeadingsList);
+        blr.W15yQC.Highlighters.highlightARIALandmarks(aDocumentsList, aARIALandmarksList);
+        blr.W15yQC.Highlighters.highlightLists(aDocumentsList);
+        blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
     },
     
     showInFirebug: function() {
