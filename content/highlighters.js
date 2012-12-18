@@ -57,14 +57,14 @@ blr.W15yQC.Highlighters = {
         return setHighlights; // return status of highlights
     },
     
-    extendedHighlightLists: function(aDocumentsList) {
+    extendedHighlightLists: function(aDocumentsList) { // TODO: What about definition lists?
         var doc, styleElement, i, j, tables, tableIndex, insert, span1;
         if(aDocumentsList != null && aDocumentsList.length>0) {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'ul{border: 2px solid red !important;margin:3px !important}li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}';
+                    styleElement.innerHTML = 'ol,ul{border: 2px solid red !important;margin:3px !important}ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -118,7 +118,7 @@ blr.W15yQC.Highlighters = {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = '.w15yqcHeadingInsert{float:left !important}.w15yqcH1{border: 2px solid red !important}.w15yqcH2{border: 2px solid red !important}.w15yqcH3{border: 2px solid red !important}.w15yqcH4{border: 2px solid red !important}.w15yqcH5{border: 2px solid red !important}.w15yqcH6{border: 2px solid red !important}span.w15yqcHxInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif}.w15yqcH1 span.w15yqcHxInsert{font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{font-size:13px;line-height:15px}';
+                    styleElement.innerHTML = '.w15yqcHeadingInsert{float:none !important}.w15yqcH1{border: 2px solid red !important;margin:2px !important}.w15yqcH2{border: 2px solid red !important;margin:2px !important}.w15yqcH3{border: 2px solid red !important;margin:2px !important}.w15yqcH4{border: 2px solid red !important;margin:2px !important}.w15yqcH5{border: 2px solid red !important;margin:2px !important}.w15yqcH6{border: 2px solid red !important;margin:2px !important}span.w15yqcHxInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:all !important}.w15yqcH1 span.w15yqcHxInsert{font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{font-size:13px;line-height:15px}';
                     styleElement.setAttribute('id', 'W15yQCHeadingsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -189,7 +189,7 @@ blr.W15yQC.Highlighters = {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = '.w15yqcARIALandmarkInsert{float:left !important}.w15yqcARIALandmark{border:2px solid red !important}.w15yqcALInsert{float:left !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif}';
+                    styleElement.innerHTML = '.w15yqcARIALandmarkInsert{float:none !important}.w15yqcARIALandmark{border:2px solid red !important}.w15yqcALInsert{float:none !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:all !important}';
                     styleElement.setAttribute('id', 'W15yQCARIALandmarksHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }

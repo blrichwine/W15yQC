@@ -42,7 +42,6 @@ blr.W15yQC.RemoveStylesWindow = {
     bCmdIsPressed: false,
     aDocumentsList: null,
     aHeadingsList: null,
-    aARIALandmarksList: null,
     aFormsList: null,
     aFormControlsList: null,
     prompts: null,
@@ -55,29 +54,28 @@ blr.W15yQC.RemoveStylesWindow = {
         blr.W15yQC.RemoveStylesWindow.FirebugO=dialog.arguments[1];
         blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[2];
         var if1 = document.getElementById("HTMLReportIFrame");
-        rd=if1.contentDocument;
+        blr.W15yQC.RemoveStylesWindow.rd=if1.contentDocument;
 
-        prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+        blr.W15yQC.RemoveStylesWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
         metaElements = blr.W15yQC.RemoveStylesWindow.srcDoc.head.getElementsByTagName('meta');
         if(metaElements != null && metaElements.length>0) {
           for(i=0;i<metaElements.length;i++) {
-            rd.head.appendChild(rd.importNode(metaElements[i], false));
+            blr.W15yQC.RemoveStylesWindow.rd.head.appendChild(blr.W15yQC.RemoveStylesWindow.rd.importNode(metaElements[i], false));
           }
         }
-        rd.title = 'Removed Style View - '+blr.W15yQC.RemoveStylesWindow.srcDoc.title+' - W15yQC';
-        blr.W15yQC.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
+        blr.W15yQC.RemoveStylesWindow.rd.title = 'Removed Style View - '+blr.W15yQC.RemoveStylesWindow.srcDoc.title+' - W15yQC';
+        blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(blr.W15yQC.RemoveStylesWindow.rd, blr.W15yQC.RemoveStylesWindow.rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
+        blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(blr.W15yQC.RemoveStylesWindow.rd);
     },
     
     cleanup: function() {
-        if(blr.W15yQC.RemoveStylesWindow.aDocumentsList != null) {
-            //blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
-            //blr.W15yQC.HTMLReportWindow.aDocumentsList=null;
-            //blr.W15yQC.HTMLReportWindow.aFormControlsList=null;
-            //blr.W15yQC.HTMLReportWindow.aFormsList=null;
-            //blr.W15yQC.HTMLReportWindow.FirebugO=null;
-            //blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus=null;
-            //blr.W15yQC.HTMLReportWindow.aLastList=null;
-        }
+        blr.W15yQC.RemoveStylesWindow.aDocumentsList=null;
+        blr.W15yQC.RemoveStylesWindow.aHeadingsList=null;
+        blr.W15yQC.RemoveStylesWindow.aFormsList=null;
+        blr.W15yQC.RemoveStylesWindow.aFormControlsList=null;
+        blr.W15yQC.RemoveStylesWindow.prompts=null;
+        blr.W15yQC.RemoveStylesWindow.rd=null;
+        blr.W15yQC.RemoveStylesWindow.srcDoc=null;
     },
     
     windowOnKeyDown: function(win,evt) {
@@ -97,6 +95,158 @@ blr.W15yQC.RemoveStylesWindow = {
                 break;
         }
     },
+
+    fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
+      var node, c, frameDocument, div, p, thisFrameNumber, i, bInAriaBlock=false, sEnteringLabel, sExitingLabel, sRole;
+      if(oValues == null) {
+        oValues = {
+          iNumberOfLinks: 0,
+          iNumberOfFrames: 0,
+          iNumberOfARIALandmarks: 0
+        };
+      }
+      if (doc != null) {
+        if (rootNode == null) { rootNode = doc.body; }
+        if (appendNode == null) { appendNode = rd.body; }
+        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
+          if(c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
+            if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
+                              (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              div = rd.createElement('div');
+              div.setAttribute('style','border:thin solid black;margin: 2px');
+              appendNode.appendChild(div);
+              p=rd.createElement('p');
+              p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
+              oValues.iNumberOfFrames++;
+              // TODO: Can frame titles come from aria-labels?
+              p.appendChild(rd.createTextNode('Frame('+oValues.iNumberOfFrames+'): '+(c.hasAttribute('title') ? 'Title: '+c.getAttribute('title') : 'Missing Title')));
+              thisFrameNumber = oValues.iNumberOfFrames;
+              div.appendChild(p);
+              blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
+              p=rd.createElement('p');
+              p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
+              p.appendChild(rd.createTextNode('Frame('+thisFrameNumber+') Ends'));
+              div.appendChild(p);
+            } else { // keep looking through current document
+              if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && c.tagName.toLowerCase() !== 'script' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                if(c.hasAttribute('role')) {
+                    sRole=c.getAttribute('role').toLowerCase()
+                } else {
+                    sRole='';
+                }
+                if(blr.W15yQC.fnIsARIALandmark(c) || sRole=="menubar" || sRole=="menu") {
+                    bInAriaBlock=true;
+                    if(sRole=="menubar") {
+                        sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu bar.',' ')+' To navigate use the left and right arrow keys.';
+                        sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu bar.',' ');
+                    } else if(sRole=="menu") {
+                        sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu.',' ')+' To navigate use the up and down arrow keys.';
+                        sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu.',' ');
+                    } else {
+                        sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+' landmark.';
+                        sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+' landmark.';
+                    }
+                    
+                    div = rd.createElement('div');
+                    div.setAttribute('style','border:thin solid black;margin: 2px');
+                    appendNode.appendChild(div);
+                    p=rd.createElement('p');
+                    p.setAttribute('style','background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
+                    oValues.iNumberOfFrames++;
+                    // TODO: Can frame titles come from aria-labels?
+                    p.appendChild(rd.createTextNode('Entering '+sEnteringLabel));
+                    div.appendChild(p);
+                    appendNode=div;
+                } // TODO: Should the landmark role prevent the natural element role?
+                if(c.hasAttribute('role') && c.getAttribute('role').toLowerCase()=='button') {
+                    node=rd.createElement('button');
+                    node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c,doc)));
+                } else if(/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
+                  node = rd.createElement('span');
+                } else {
+                  node = rd.importNode(c, false);
+                  if(/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
+                    node.setAttribute('src','dont-load-'+node.getAttribute('src'));
+                  } else if(/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
+                    node.setAttribute('href','#dont-load-'+node.getAttribute('src'));
+                  }
+                }
+                for(i=0;i<node.attributes.length;i++) {
+                  if(/^(on[a-z]+|style|class|align|border)$/i.test(node.attributes[i].name)==true) {
+                    node.removeAttribute(node.attributes[i].name);
+                  } else if(/^javascript:/i.test(node.attributes[i].value)) {
+                    node.setAttribute(node.attributes[i].name, 'javascript:return false;');
+                  }
+                }
+                node.removeAttribute('style');
+                appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
+                //alert('digging into:'+node.tagName);
+                blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
+                if(bInAriaBlock==true) {
+                    p=rd.createElement('p');
+                    p.setAttribute('style','background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-top:thin solid #999');
+                    p.appendChild(rd.createTextNode('Leaving '+sExitingLabel));
+                    div.appendChild(p);
+                    appendNode=div.parentNode;
+                    bInAriaBlock=false;
+                }
+              }
+            }
+          } else {
+            node = rd.importNode(c, true);
+            if(node.removeAttribute) { node.removeAttribute('style'); }
+            appendNode.appendChild(node); //alert('appending:'+c.nodeName+' to:'+appendNode.tagName);
+            blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
+          }
+        }
+      }
+      return appendNode.parentNode || appendNode;
+    },
+    
+    fnLinearizeTables: function(doc, rootNode) {
+      var c, i, j, firstMoved,div;
+      if (doc != null && doc.body) {
+        if (rootNode == null) { rootNode = doc.body; }
+        for (c = rootNode.firstChild; c != null; c = c==null ? rootNode.firstChild : c.nextSibling) {
+          if(c.nodeType == 1) {
+            if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
+                              (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+              blr.W15yQC.fnBuildRemoveStylesView(frameDocument,frameDocument.body);
+            } else { // keep looking through current document
+              if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                if(blr.W15yQC.fnAppearsToBeALayoutTable(c)==true) {
+                    firstMoved=null;
+                    if(c.rows && c.rows.length) {
+                        for(i=0;i<c.rows.length;i++) {
+                            if(c.rows[i].cells && c.rows[i].cells.length) {
+                                for(j=0;j<c.rows[i].cells.length;j++) {
+                                    while (c.rows[i].cells[j].firstChild) {
+                                        div=doc.createElement('div');
+                                        if(firstMoved==null) {firstMoved=div;}
+                                        div.appendChild(c.rows[i].cells[j].firstChild);
+                                        c.parentNode.insertBefore(div, c);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    c.parentNode.removeChild(c);
+                    if(firstMoved!=null && firstMoved.previousSibling !=null) {
+                        c=firstMoved.previousSibling;
+                    } else {
+                        c=null;
+                    }
+                }
+              }
+              blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(doc,c);
+            }
+          }
+          previous=c;
+        }
+      }        
+    },
     
     toggleShowSemantics: function() {
         // Headings
@@ -105,73 +255,14 @@ blr.W15yQC.RemoveStylesWindow = {
         // ARIA Labels
         // Language markup
         if(blr.W15yQC.RemoveStylesWindow.aDocumentsList==null) {
-            blr.W15yQC.RemoveStylesWindow.aDocumentsList = blr.W15yQC.fnGetDocuments(rd);
-            blr.W15yQC.RemoveStylesWindow.aHeadingsList = blr.W15yQC.fnGetHeadings(rd);
-            blr.W15yQC.RemoveStylesWindow.aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(rd);
+            blr.W15yQC.RemoveStylesWindow.aDocumentsList = blr.W15yQC.fnGetDocuments(blr.W15yQC.RemoveStylesWindow.rd);
+            blr.W15yQC.RemoveStylesWindow.aHeadingsList = blr.W15yQC.fnGetHeadings(blr.W15yQC.RemoveStylesWindow.rd);
         }
         blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aHeadingsList);
-        blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aARIALandmarksList);
         blr.W15yQC.Highlighters.highlightLists(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
         blr.W15yQC.Highlighters.highlightTables(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
     },
-    
-    showInFirebug: function() {
-        var treebox,aList;
-        if(blr.W15yQC.RemoveStylesWindow.FirebugO!=null) {
-            try{
-                if(blr.W15yQC.RemoveStylesWindow.aFormControlsList != null && blr.W15yQC.RemoveStylesWindow.aFormControlsList.length && blr.W15yQC.HTMLReportWindow.aFormControlsList.length>0) {
-                    if(blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus != null) {
-                        treebox=blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus;
-                        aList=blr.W15yQC.HTMLReportWindow.aLastList;
-                    } else {
-                        treebox = document.getElementById('treebox2');
-                        aList=blr.W15yQC.HTMLReportWindow.aFormControlsList;
-                    }
-                    var selectedRow = treebox.currentIndex;
-                    if(selectedRow == null || treebox.currentIndex < 0) {
-                        selectedRow = 0;
-                    }
-                    if(blr.W15yQC.HTMLReportWindow.aDocumentsList != null) {
-                        blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
-                    }
-                    aList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.HTMLReportWindow.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.HTMLReportWindow.FirebugO.Inspector.inspectFromContextMenu(arg);})}(aList[selectedRow].node);
-                }
-            } catch(ex) {}
-        }
-    },
-    
-     moveToSelectedElement: function() {
-        var treebox, aList;
-        if(blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus != null) {
-            treebox=blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus;
-            aList=blr.W15yQC.HTMLReportWindow.aLastList;
-        } else {
-            treebox = document.getElementById('treebox2');
-            aList=blr.W15yQC.HTMLReportWindow.aFormControlsList;
-        }
-        var selectedRow = treebox.currentIndex;
-        if(selectedRow != null && treebox.currentIndex >= 0) {
-            blr.W15yQC.fnMoveToElement(aList[selectedRow].node);
-        }        
-    },
-    
-    moveFocusToSelectedElement: function() {
-        var treebox, aList;
-        if(blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus != null) {
-            treebox=blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus;
-            aList=blr.W15yQC.HTMLReportWindow.aLastList;
-        } else {
-            treebox = document.getElementById('treebox2');
-            aList=blr.W15yQC.HTMLReportWindow.aFormControlsList;
-        }
-        var selectedRow = treebox.currentIndex;
-        if(selectedRow != null && treebox.currentIndex >= 0) {
-            blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
-            blr.W15yQC.fnMoveFocusToElement(aList[selectedRow].node);
-        }        
-    },
-        
+            
     forceMinSize: function(dialog) {
         if(dialog.outerWidth>10 && dialog.outerHeight>10 && (dialog.outerWidth<940 || dialog.outerHeight<610)) {
             dialog.resizeTo(Math.max(940,dialog.outerWidth),Math.max(610,dialog.outerHeight));
@@ -193,8 +284,9 @@ blr.W15yQC.RemoveStylesWindow = {
           foStream,
           fp,
           nsIFilePicker,
+          rd,
           rv;
-          
+        rd=blr.W15yQC.RemoveStylesWindow.rd;
         if(rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body && rd.body.children && rd.body.children.length) {
           nsIFilePicker = Components.interfaces.nsIFilePicker;
     

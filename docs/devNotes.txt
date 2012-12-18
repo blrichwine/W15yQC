@@ -129,6 +129,11 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+        - What about definition lists / highlighting?
+        - Handle ARIA in remove styles view
+           - What happens to headings (view in headings list dialog) when heading has a landmark role on it?
+        - DETERMINE HOW JAWS LINEARIZES A TABLE WITH ROW SPAN VALUES then linearize layout tables in semantic view
+            - https://developer.mozilla.org/en-US/docs/DOM/table.rows
         - Load configuration from a file (rules to include, exclude, expert level, ignores, etc.)
         - Add support for closing window with appropriate key in windows.
         - Add lang attribute highlighter that highlights language changes

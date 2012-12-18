@@ -2435,6 +2435,32 @@ ys: 'whys'
       return false;
     },
 
+    
+    fnAppearsToBeALayoutTable: function(t) {
+      var i,j, cell;
+      if(t != null && t.tagName && t.tagName.toLowerCase()=='table') {
+        if(t.hasAttribute('role')==true && t.getAttribute('role').toLowerCase()=='presentation') {
+           return true;
+        }
+        if(blr.W15yQC.fnStringHasContent(t.caption)==false && blr.W15yQC.fnStringHasContent(t.summary)==false) {
+          if(t.rows && t.rows.length) {
+            for(i=0;i<t.rows.length;i++) {
+              if(t.rows[i] != null && t.rows[i].cells && t.rows[i].cells.length) {
+                for(j=0;j<t.rows[i].cells.length;j++) {
+                  cell=t.rows[i].cells[j];
+                  if(cell.tagName.toLowerCase()=='th' || cell.hasAttribute('axis') || cell.hasAttribute('headers')) {
+                    return false;
+                  }
+                }
+              }
+            }
+          }
+          return true;
+        } // has caption or summary
+      } // is not a table
+      return false;
+    },
+
     fnAppearsToBeDefaultTableSummaryOrCaption: function (sText) { // TODO: QA This
       sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' ')); // Strip punctuation
       if (sText != null && sText.match(/^\s*((tabe?le?)? ?(captions?)? ?(sum?ma?re?y)?|{{{.*}}}|alt(ernat[ei](ve)?)? ?te?xt|photo(graph)?|pic|picture|video title|image|img|img te?xt|article ima?ge?|title|icon)\s*$/i)) {
@@ -5223,6 +5249,26 @@ ys: 'whys'
       return false;
     },
 
+    fnIsARIALandmark: function(node) {
+      var sRole;
+      if(node != null && node.hasAttribute && node.hasAttribute('role')) {
+        sRole = node.getAttribute('role').toLowerCase();
+        switch (sRole) {
+          case 'application':
+          case 'banner':
+          case 'complementary':
+          case 'contentinfo':
+          case 'form':
+          case 'main':
+          case 'navigation':
+          case 'search':
+            return true;
+            break;
+        }
+      }
+      return false;
+    },
+    
     fnGetARIALandmarks: function (doc, rootNode, aARIALandmarksList, baseLevel) {
       var c, level, i, frameDocument, sTagName, sRole, xPath, nodeDescription, sARIALabel, sState;
       if (aARIALandmarksList == null) { aARIALandmarksList = []; } 
@@ -5246,7 +5292,7 @@ ys: 'whys'
             } else { // keep looking through current document
               if (c.hasAttribute && c.hasAttribute('role') == true && blr.W15yQC.fnNodeIsHidden(c) == false) {
                 sTagName = c.tagName.toLowerCase();
-                sRole = c.getAttribute('role');
+                sRole = c.getAttribute('role').toLowerCase();
                 switch (sRole) {
                   case 'application':
                   case 'banner':
@@ -7830,73 +7876,6 @@ ys: 'whys'
       
     },
     
-    fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
-      var node, c, frameDocument, div, p, thisFrameNumber, i;
-      if(oValues == null) {
-        oValues = {
-          iNumberOfLinks: 0,
-          iNumberOfFrames: 0,
-          iNumberOfARIALandmarks: 0
-        };
-      }
-      if (doc != null) {
-        if (rootNode == null) { rootNode = doc.body; }
-        if (appendNode == null) { appendNode = rd.body; }
-        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if(c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
-            if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
-                              (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-              div = rd.createElement('div');
-              div.setAttribute('style','border:thin solid black');
-              appendNode.appendChild(div);
-              p=rd.createElement('p');
-              p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
-              oValues.iNumberOfFrames++;
-              p.appendChild(rd.createTextNode('Frame('+oValues.iNumberOfFrames+'): '+(c.hasAttribute('title') ? 'Title: '+c.getAttribute('title') : 'Missing Title')));
-              thisFrameNumber = oValues.iNumberOfFrames;
-              div.appendChild(p);
-              blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
-              p=rd.createElement('p');
-              p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
-              p.appendChild(rd.createTextNode('Frame('+thisFrameNumber+') Ends'));
-              div.appendChild(p);
-            } else { // keep looking through current document
-              if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-                if(/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
-                  node = rd.createElement('span');
-                } else {
-                  node = rd.importNode(c, false);
-                  if(/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
-                    node.setAttribute('src','dont-load-'+node.getAttribute('src'));
-                  } else if(/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
-                    node.setAttribute('href','#dont-load-'+node.getAttribute('src'));
-                  }
-                }
-                for(i=0;i<node.attributes.length;i++) {
-                  if(/^(on[a-z]+|style|class|align|border)$/i.test(node.attributes[i].name)==true) {
-                    node.removeAttribute(node.attributes[i].name);
-                  } else if(/^javascript:/i.test(node.attributes[i].value)) {
-                    node.setAttribute(node.attributes[i].name, 'javascript:return false;');
-                  }
-                }
-                node.removeAttribute('style');
-                appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
-                //alert('digging into:'+node.tagName);
-                blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
-              }
-            }
-          } else {
-            node = rd.importNode(c, true);
-            if(node.removeAttribute) { node.removeAttribute('style'); }
-            appendNode.appendChild(node); //alert('appending:'+c.nodeName+' to:'+appendNode.tagName);
-            blr.W15yQC.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
-          }
-        }
-      }
-      return appendNode.parent || appendNode;
-    },
-
     //fnBuildSemanticView: function (rd, doc, rootNode, baseLevel, list, oValues) {
     //  /* What does JAWS Read at startup?
     //   *
