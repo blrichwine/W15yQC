@@ -97,7 +97,7 @@ blr.W15yQC.RemoveStylesWindow = {
     },
 
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
-      var node, c, frameDocument, div, p, thisFrameNumber, i, bInAriaBlock=false, sEnteringLabel, sExitingLabel, sRole;
+      var node, c, frameDocument, div, p, thisFrameNumber, i, bInAriaBlock=false, sEnteringLabel, sExitingLabel, sRole, level;
       if(oValues == null) {
         oValues = {
           iNumberOfLinks: 0,
@@ -135,7 +135,10 @@ blr.W15yQC.RemoveStylesWindow = {
                 } else {
                     sRole='';
                 }
-                if(blr.W15yQC.fnIsARIALandmark(c) || sRole=="menubar" || sRole=="menu") {
+                if(blr.W15yQC.fnIsARIALandmark(c) || sRole=="menubar" || sRole=="menu" || sRole=="tablist" || sRole=="tabpanel" ||
+                   sRole=="toolbar" || sRole=="tree" || sRole=="treegrid" || sRole=="status" || sRole=="note" || sRole=="list"  ||
+                   sRole=="img" || sRole=="grid" || sRole=="document" || sRole=="directory" || sRole=="dialog" || sRole=="alert" ||
+                   sRole=="alertdialog") {
                     bInAriaBlock=true;
                     if(sRole=="menubar") {
                         sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu bar.',' ')+' To navigate use the left and right arrow keys.';
@@ -143,11 +146,13 @@ blr.W15yQC.RemoveStylesWindow = {
                     } else if(sRole=="menu") {
                         sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu.',' ')+' To navigate use the up and down arrow keys.';
                         sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),'menu.',' ');
-                    } else {
+                    } else if(blr.W15yQC.fnIsARIALandmark(c)){
                         sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+' landmark.';
                         sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+' landmark.';
+                    } else {
+                        sEnteringLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+'.';
+                        sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+'.';
                     }
-                    
                     div = rd.createElement('div');
                     div.setAttribute('style','border:thin solid black;margin: 2px');
                     appendNode.appendChild(div);
@@ -155,13 +160,26 @@ blr.W15yQC.RemoveStylesWindow = {
                     p.setAttribute('style','background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
                     oValues.iNumberOfFrames++;
                     // TODO: Can frame titles come from aria-labels?
-                    p.appendChild(rd.createTextNode('Entering '+sEnteringLabel));
+                    p.appendChild(rd.createTextNode('Entering ARIA '+sEnteringLabel));
                     div.appendChild(p);
                     appendNode=div;
                 } // TODO: Should the landmark role prevent the natural element role?
-                if(c.hasAttribute('role') && c.getAttribute('role').toLowerCase()=='button') {
-                    node=rd.createElement('button');
+                if(sRole=='heading') {
+                    if(blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
+                        level=parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level'))).toString();
+                    } else { // TODO: How is this calculated when it is left out?
+                        level='2'; // TODO: What should this be when it was left out?
+                    }
+                    if(parseInt(level)>6) {
+                        level='6';
+                    } else if(parseInt(level)<1) {
+                        level='1';
+                    }
+                    node=rd.createElement('h'+level);
                     node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c,doc)));
+                } else if(sRole=='button') {
+                  node=rd.createElement('button');
+                  node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c,doc)));
                 } else if(/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
                   node = rd.createElement('span');
                 } else {
