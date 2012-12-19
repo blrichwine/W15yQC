@@ -107,7 +107,7 @@ blr.W15yQC.RemoveStylesWindow = {
 
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
       var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock=false, sLabel, sEnteringLabel,
-      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height, borderStyle;
+      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height, borderStyle, bSkipElement=false;
       if(oValues == null) {
         oValues = {
           iNumberOfLinks: 0,
@@ -119,6 +119,8 @@ blr.W15yQC.RemoveStylesWindow = {
         if (rootNode == null) { rootNode = doc.body; }
         if (appendNode == null) { appendNode = rd.body; }
         for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
+          bKeepStyle=false;
+          bSkipElement=false;
           if(c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
             if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) ||
                               (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
@@ -143,9 +145,8 @@ blr.W15yQC.RemoveStylesWindow = {
               div.appendChild(p);
             } else { // keep looking through current document
               if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && c.tagName.toLowerCase() !== 'script' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-                bKeepStyle=false;
                 if(c.hasAttribute('role')) {
-                    sRole=c.getAttribute('role').toLowerCase()
+                    sRole=c.getAttribute('role').toLowerCase();
                 } else {
                     sRole='';
                 }
@@ -172,8 +173,6 @@ blr.W15yQC.RemoveStylesWindow = {
                     appendNode.appendChild(div);
                     p=rd.createElement('p');
                     p.setAttribute('style','background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
-                    oValues.iNumberOfFrames++;
-                    // TODO: Can frame titles come from aria-labels?
                     p.appendChild(rd.createTextNode('Entering ARIA '+sEnteringLabel));
                     div.appendChild(p);
                     div2 = rd.createElement('div');
@@ -181,7 +180,6 @@ blr.W15yQC.RemoveStylesWindow = {
                     div.appendChild(div2);
                     appendNode=div2;
                 } // TODO: Should the landmark role prevent the natural element role?
-                // TODO: handle input[type=image]
                 if(c.tagName.toLowerCase()=='object' || c.tagName.toLowerCase()=='embed') {
                     if((c.hasAttribute('type') && c.getAttribute('type').toLowerCase()=="application/x-shockwave-flash") ||
                        (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase()=="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
@@ -217,44 +215,49 @@ blr.W15yQC.RemoveStylesWindow = {
                     node.setAttribute('style','display:table-cell;border:thin solid black;color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
                     if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
                     node.appendChild(rd.createTextNode(sLabel));
-                } else if(sRole=='img' || c.tagName.toLowerCase()=='img') { // TODO: Get the img height and width
-                    box = c.getBoundingClientRect();
-                    if(box != null && box.width && box.height) {
-                        width=box.width;
-                        height=box.height;
-                    }
-                    if(width>800) {
-                        width=800;
-                    }
-                    if(height>300) { height=300; }
-                    if(width>100) {
-                        if(height>100) {
+                } else if(sRole=='img' || c.tagName.toLowerCase()=='img') {
+                    if(blr.W15yQC.fnStringsEffectivelyEqual(c.getAttribute('role'),'presentation')==true ||
+                       (c.hasAttribute('alt')==true && c.getAttribute('alt')=="")) { // Ignore if presentation role or alt=""
+                        bSkipElement=true;
+                        node=null;
+                    } else {
+                        bSkipElement=false;
+                        box = c.getBoundingClientRect();
+                        if(box != null && box.width && box.height) {
+                            width=box.width;
+                            height=box.height;
+                        }
+                        if(width>700) {
+                            width=700;
+                        } else if(width<30) {
+                            width=30;
+                        }
+                        if(height>300) { height=300; }
+                        if(width>5) {
                             width='width:'+width.toString()+'px;';
                         } else {
-                            width='min-width:'+width.toString()+'px;';
+                            width='';
                         }
-                    } else {
-                        width='';
+                        if(height>5) {
+                            height='height:'+height.toString()+'px;';
+                        } else {
+                            height='';
+                        }
+                        
+                        node = rd.createElement('span');
+                        bKeepStyle=true;
+                        if(blr.W15yQC.fnElementIsChildOf(c,'a')) {
+                            borderStyle='border:2px solid blue;';
+                            sLabel=blr.W15yQC.fnJoin('Image-Link',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
+                        } else {
+                            borderStyle='border:1px solid black;';
+                            sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
+                        }
+                        node.setAttribute('style','display:table-cell;'+borderStyle+'color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
+                        node.setAttribute('role','img');
+                        if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
+                        node.appendChild(rd.createTextNode(sLabel));
                     }
-                    if(height>50) {
-                        height='height:'+height.toString()+'px;';
-                    } else {
-                        height='';
-                    }
-                    
-                    node = rd.createElement('span');
-                    bKeepStyle=true;
-                    if(blr.W15yQC.fnElementIsChildOf(c,'a')) {
-                        borderStyle='border:2px solid blue;';
-                        sLabel=blr.W15yQC.fnJoin('Image Link',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
-                    } else {
-                        borderStyle='border:1px solid black;';
-                        sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
-                    }
-                    node.setAttribute('style','display:table-cell;'+borderStyle+'color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
-                    node.setAttribute('role','img');
-                    if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
-                    node.appendChild(rd.createTextNode(sLabel));
                 } else if(sRole=='heading') {
                     if(blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
                         level=parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level'))).toString();
@@ -281,22 +284,25 @@ blr.W15yQC.RemoveStylesWindow = {
                   if(/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
                     node.setAttribute('src','dont-load-'+node.getAttribute('src'));
                   } else if(/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
-                    node.setAttribute('href','#dont-load-'+node.getAttribute('src'));
+                    node.setAttribute('href','#dont-load-'+node.getAttribute('href'));
+                    node.insertBefore(rd.createTextNode('Link: '), node.firstChild);
                   }
                 }
-                for(i=0;i<node.attributes.length;i++) {
-                  if(/^(on[a-z]+|class|align|border)$/i.test(node.attributes[i].name)==true) {
-                    node.removeAttribute(node.attributes[i].name);
-                  } else if(/^javascript:/i.test(node.attributes[i].value)) {
-                    node.setAttribute(node.attributes[i].name, 'javascript:return false;');
-                  }
+                if(node!=null && bSkipElement==false) {
+                    for(i=0;i<node.attributes.length;i++) {
+                      if(/^(on[a-z]+|class|align|border)$/i.test(node.attributes[i].name)==true) {
+                        node.removeAttribute(node.attributes[i].name);
+                      } else if(/^javascript:/i.test(node.attributes[i].value)) {
+                        node.setAttribute(node.attributes[i].name, 'javascript:return false;');
+                      }
+                    }
+                    if(!bKeepStyle) {
+                        node.removeAttribute('style');
+                    } else {
+                        bKeepStyle=false;
+                    }
+                    appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
                 }
-                if(!bKeepStyle) {
-                    node.removeAttribute('style');
-                } else {
-                    bKeepStyle=false;
-                }
-                appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
                 //alert('digging into:'+node.tagName);
                 if(c.tagName.toLowerCase()!='object' && c.tagName.toLowerCase()!='embed') {
                     blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);

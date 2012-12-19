@@ -32,10 +32,60 @@
  * 
  */
 if (!blr) { var blr = {}; }
-
     
 blr.W15yQC.Highlighters = {
 
+    //highlightLinks: function(aDocumentsList) {
+    //    var err, styleElement = null, setHighlights=false;
+    //    //try {
+    //        if(aDocumentsList==null) {
+    //          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+    //        }
+    //        if(aDocumentsList != null && aDocumentsList.length>0) {
+    //            styleElement = aDocumentsList[0].doc.getElementById('W15yQCLinksHighlightStyle');
+    //            if (styleElement!=null)
+    //            {
+    //                blr.W15yQC.Highlighters.removeLinkHighlights(aDocumentsList);
+    //                setHighlights = false;
+    //            } else {
+    //                blr.W15yQC.Highlighters.extendedHighlightLinks(aDocumentsList);
+    //                setHighlights = true;
+    //            }
+    //        }
+    //    //} catch (err) { }
+    //    return setHighlights; // return status of highlights
+    //},
+    //
+    //extendedHighlightLinks: function(aDocumentsList) { // TODO: What about definition lists?
+    //    var doc, styleElement, i;
+    //    if(aDocumentsList != null && aDocumentsList.length>0) {
+    //        for(i=0; i<aDocumentsList.length; i++) {
+    //            doc = aDocumentsList[i].doc;
+    //            if(doc != null) {
+    //                var styleElement = doc.createElement('style');
+    //                styleElement.innerHTML = 'dl,ol,ul{border: 2px solid red !important;margin:3px !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
+    //                styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
+    //                doc.head.insertBefore(styleElement,doc.head.firstChild);
+    //            }
+    //        }
+    //    }
+    //},
+    //
+    //removeLinkHighlights: function(aDocumentsList) {
+    //    var doc, i, styleElement=null, infoElements=null;
+    //    if(aDocumentsList != null && aDocumentsList.length>0) {
+    //        for(var i=0; i<aDocumentsList.length; i++) {
+    //            doc = aDocumentsList[i].doc;
+    //            if(doc != null) {
+    //                styleElement = doc.getElementById('W15yQCListsHighlightStyle');
+    //                if (styleElement) {
+    //                  styleElement.parentNode.removeChild(styleElement);
+    //                }
+    //            }
+    //        }
+    //    }
+    //},
+    //
     highlightLists: function(aDocumentsList) {
         var err, styleElement = null, setHighlights=false;
         //try {
