@@ -49,23 +49,32 @@ blr.W15yQC.RemoveStylesWindow = {
     srcDoc: null,
 
     init: function(dialog) {
-        var metaElements, i;
+        var metaElements, i, styleElement, rd;
+        
         blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.RemoveStylesWindow.FirebugO=dialog.arguments[1];
         blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[2];
         var if1 = document.getElementById("HTMLReportIFrame");
         blr.W15yQC.RemoveStylesWindow.rd=if1.contentDocument;
-
+        rd=blr.W15yQC.RemoveStylesWindow.rd;
+        
         blr.W15yQC.RemoveStylesWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
         metaElements = blr.W15yQC.RemoveStylesWindow.srcDoc.head.getElementsByTagName('meta');
         if(metaElements != null && metaElements.length>0) {
           for(i=0;i<metaElements.length;i++) {
-            blr.W15yQC.RemoveStylesWindow.rd.head.appendChild(blr.W15yQC.RemoveStylesWindow.rd.importNode(metaElements[i], false));
+            rd.head.appendChild(rd.importNode(metaElements[i], false));
           }
         }
-        blr.W15yQC.RemoveStylesWindow.rd.title = 'Removed Style View - '+blr.W15yQC.RemoveStylesWindow.srcDoc.title+' - W15yQC';
-        blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(blr.W15yQC.RemoveStylesWindow.rd, blr.W15yQC.RemoveStylesWindow.rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
-        blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(blr.W15yQC.RemoveStylesWindow.rd);
+        rd.title = 'Removed Style View - '+blr.W15yQC.RemoveStylesWindow.srcDoc.title+' - W15yQC';
+
+        styleElement = rd.createElement('style');
+        styleElement.innerHTML = "*{font-family:'Open Sans Light',Arial,Helvetica,sans-serif;}button{min-height:20px;min-width:64.72px;cursor:pointer;box-shadow:inset 0 1px 0 0 #bee2f9;background:-moz-linear-gradient(center top,#e8f7ff 5%,#9ec8f2 100%);background-color:#e8f7ff;border-radius:11px;border:2px solid #2f5d99;display:inline-block;color:#14396a;font-size:15px;font-weight:700;padding:1px 8px;text-decoration:none;text-shadow:1px 1px 3px #e9edf2}button:hover{background:-moz-linear-gradient(center top,#9ec8f2 5%,#e8f7ff 100%);background-color:#9ec8f2}button:active{position:relative;top:1px}textarea:focus,input:focus,button:focus{box-shadow: 0 0 2px 4px rgba(73, 173, 227, 0.4) !important}textarea, input[type='email'], input[type='password'], input[type='text'] {background: none repeat scroll 0 0 #FFFFFF;border-color: #B2B2B2;border-radius: 3px 3px 3px 3px;border-style: solid;border-width: 1px;box-shadow: 0 1px rgba(255, 255, 255, 0.5)}";
+
+        styleElement.setAttribute('id', 'W15yQCRemoveStylesWindowStyles');
+        rd.head.insertBefore(styleElement,rd.head.firstChild);
+
+        blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
+        blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(rd);
     },
     
     cleanup: function() {
@@ -97,7 +106,8 @@ blr.W15yQC.RemoveStylesWindow = {
     },
 
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
-      var node, c, frameDocument, div, p, thisFrameNumber, i, bInAriaBlock=false, sEnteringLabel, sExitingLabel, sRole, level;
+      var node, c, frameDocument, div, p, thisFrameNumber, i, bInAriaBlock=false, sLabel, sEnteringLabel,
+      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height;
       if(oValues == null) {
         oValues = {
           iNumberOfLinks: 0,
@@ -130,6 +140,7 @@ blr.W15yQC.RemoveStylesWindow = {
               div.appendChild(p);
             } else { // keep looking through current document
               if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && c.tagName.toLowerCase() !== 'script' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+                bKeepStyle=false;
                 if(c.hasAttribute('role')) {
                     sRole=c.getAttribute('role').toLowerCase()
                 } else {
@@ -164,7 +175,40 @@ blr.W15yQC.RemoveStylesWindow = {
                     div.appendChild(p);
                     appendNode=div;
                 } // TODO: Should the landmark role prevent the natural element role?
-                if(sRole=='heading') {
+                // TODO: handle input[type=image]
+                if(sRole=='img' || c.tagName.toLowerCase()=='img') { // TODO: Get the img height and width
+                    sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
+                    box = c.getBoundingClientRect();
+                    if(box != null && box.width && box.height) {
+                        width=box.width;
+                        height=box.height;
+                    }
+                    if(width>800) {
+                        width=800;
+                    }
+                    if(height>300) { height=300; }
+                    if(width>100) {
+                        if(height>100) {
+                            width='width:'+width.toString()+'px;';
+                        } else {
+                            width='min-width:'+width.toString()+'px;';
+                        }
+                    } else {
+                        width='';
+                    }
+                    if(height>50) {
+                        height='height:'+height.toString()+'px;';
+                    } else {
+                        height='';
+                    }
+                    
+                    node = rd.createElement('span');
+                    bKeepStyle=true;
+                    node.setAttribute('style','display:table-cell;border:thin solid black;color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
+                    node.setAttribute('role','img');
+                    if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
+                    node.appendChild(rd.createTextNode(sLabel));
+                } else if(sRole=='heading') {
                     if(blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
                         level=parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level'))).toString();
                     } else { // TODO: How is this calculated when it is left out?
@@ -191,13 +235,17 @@ blr.W15yQC.RemoveStylesWindow = {
                   }
                 }
                 for(i=0;i<node.attributes.length;i++) {
-                  if(/^(on[a-z]+|style|class|align|border)$/i.test(node.attributes[i].name)==true) {
+                  if(/^(on[a-z]+|class|align|border)$/i.test(node.attributes[i].name)==true) {
                     node.removeAttribute(node.attributes[i].name);
                   } else if(/^javascript:/i.test(node.attributes[i].value)) {
                     node.setAttribute(node.attributes[i].name, 'javascript:return false;');
                   }
                 }
-                node.removeAttribute('style');
+                if(!bKeepStyle) {
+                    node.removeAttribute('style');
+                } else {
+                    bKeepStyle=false;
+                }
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
                 //alert('digging into:'+node.tagName);
                 blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
@@ -261,7 +309,6 @@ blr.W15yQC.RemoveStylesWindow = {
               blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(doc,c);
             }
           }
-          previous=c;
         }
       }        
     },
@@ -288,11 +335,12 @@ blr.W15yQC.RemoveStylesWindow = {
     },
     
     printReport: function () {
+        var rd=blr.W15yQC.RemoveStylesWindow.rd;
         if(rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body && rd.body.children && rd.body.children.length &&
            rd.defaultView && rd.defaultView.print) {
             rd.defaultView.print();
         } else { 
-            if(prompts.alert) prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to print!");
+            if(blr.W15yQC.RemoveStylesWindow.prompts.alert) blr.W15yQC.RemoveStylesWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to print!");
         }
     },
     
@@ -330,7 +378,7 @@ blr.W15yQC.RemoveStylesWindow = {
             converter.close(); // this closes foStream            
           }
         } else { 
-            if(prompts.alert) prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
+            if(blr.W15yQC.RemoveStylesWindow.prompts.alert) blr.W15yQC.RemoveStylesWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
         }
     },
 
