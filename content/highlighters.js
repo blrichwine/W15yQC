@@ -64,7 +64,7 @@ blr.W15yQC.Highlighters = {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'ol,ul{border: 2px solid red !important;margin:3px !important}ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}';
+                    styleElement.innerHTML = 'dl,ol,ul{border: 2px solid red !important;margin:3px !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }

@@ -133,7 +133,7 @@ blr.W15yQC.RemoveStylesWindow = {
               p.appendChild(rd.createTextNode('Frame('+oValues.iNumberOfFrames+'): '+(c.hasAttribute('title') ? 'Title: '+c.getAttribute('title') : 'Missing Title')));
               thisFrameNumber = oValues.iNumberOfFrames;
               div.appendChild(p);
-              blr.W15yQC.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
+              blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
               p=rd.createElement('p');
               p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
               p.appendChild(rd.createTextNode('Frame('+thisFrameNumber+') Ends'));
@@ -176,7 +176,42 @@ blr.W15yQC.RemoveStylesWindow = {
                     appendNode=div;
                 } // TODO: Should the landmark role prevent the natural element role?
                 // TODO: handle input[type=image]
-                if(sRole=='img' || c.tagName.toLowerCase()=='img') { // TODO: Get the img height and width
+                if(c.tagName.toLowerCase()=='object' || c.tagName.toLowerCase()=='embed') {
+                    if((c.hasAttribute('type') && c.getAttribute('type').toLowerCase()=="application/x-shockwave-flash") ||
+                       (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase()=="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
+                        sLabel='Flash Object';
+                    } else {
+                        sLabel=c.tagName.toLowerCase();
+                    }
+                    box = c.getBoundingClientRect();
+                    if(box != null && box.width && box.height) {
+                        width=box.width;
+                        height=box.height;
+                    }
+                    if(width>800) {
+                        width=800;
+                    }
+                    if(height>300) { height=300; }
+                    if(width>100) {
+                        if(height>100) {
+                            width='width:'+width.toString()+'px;';
+                        } else {
+                            width='min-width:'+width.toString()+'px;';
+                        }
+                    } else {
+                        width='';
+                    }
+                    if(height>50) {
+                        height='height:'+height.toString()+'px;';
+                    } else {
+                        height='';
+                    }
+                    node = rd.createElement('span');
+                    bKeepStyle=true;
+                    node.setAttribute('style','display:table-cell;border:thin solid black;color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
+                    if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
+                    node.appendChild(rd.createTextNode(sLabel));
+                } else if(sRole=='img' || c.tagName.toLowerCase()=='img') { // TODO: Get the img height and width
                     sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
                     box = c.getBoundingClientRect();
                     if(box != null && box.width && box.height) {
@@ -221,9 +256,9 @@ blr.W15yQC.RemoveStylesWindow = {
                     }
                     node=rd.createElement('h'+level);
                     node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c,doc)));
-                } else if(sRole=='button') {
+                } else if(sRole=='button' || (c.tagName.toLowerCase()=='input' && c.hasAttribute('type') && c.getAttribute('type').toLowerCase()=='image')) {
                   node=rd.createElement('button');
-                  node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c,doc)));
+                  node.appendChild(rd.createTextNode(blr.W15yQC.fnGetEffectiveLabelText(c,doc)));
                 } else if(/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
                   node = rd.createElement('span');
                 } else {
@@ -248,7 +283,9 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
                 //alert('digging into:'+node.tagName);
-                blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
+                if(c.tagName.toLowerCase()!='object' && c.tagName.toLowerCase()!='embed') {
+                    blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
+                }
                 if(bInAriaBlock==true) {
                     p=rd.createElement('p');
                     p.setAttribute('style','background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-top:thin solid #999');

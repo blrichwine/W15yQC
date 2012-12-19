@@ -129,6 +129,7 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+        - How does JAWS read input[type=image]?
         - What about definition lists / highlighting?
         - Handle ARIA in remove styles view
            - What happens to headings (view in headings list dialog) when heading has a landmark role on it?
