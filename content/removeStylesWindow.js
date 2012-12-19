@@ -106,8 +106,8 @@ blr.W15yQC.RemoveStylesWindow = {
     },
 
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
-      var node, c, frameDocument, div, p, thisFrameNumber, i, bInAriaBlock=false, sLabel, sEnteringLabel,
-      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height;
+      var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock=false, sLabel, sEnteringLabel,
+      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height, borderStyle;
       if(oValues == null) {
         oValues = {
           iNumberOfLinks: 0,
@@ -124,7 +124,7 @@ blr.W15yQC.RemoveStylesWindow = {
                               (c.contentDocument && c.contentDocument.body !== null))  && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
               frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               div = rd.createElement('div');
-              div.setAttribute('style','border:thin solid black;margin: 2px');
+              div.setAttribute('style','border:thin solid black;margin: 3px 2px 3px 0px');
               appendNode.appendChild(div);
               p=rd.createElement('p');
               p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
@@ -133,7 +133,10 @@ blr.W15yQC.RemoveStylesWindow = {
               p.appendChild(rd.createTextNode('Frame('+oValues.iNumberOfFrames+'): '+(c.hasAttribute('title') ? 'Title: '+c.getAttribute('title') : 'Missing Title')));
               thisFrameNumber = oValues.iNumberOfFrames;
               div.appendChild(p);
-              blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, div, frameDocument, frameDocument.body, oValues);
+              div2 = rd.createElement('div');
+              div2.setAttribute('style','padding:5px');
+              div.appendChild(div2);
+              blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, div2, frameDocument, frameDocument.body, oValues);
               p=rd.createElement('p');
               p.setAttribute('style','background-color:#eee;margin:0px;padding:0px');
               p.appendChild(rd.createTextNode('Frame('+thisFrameNumber+') Ends'));
@@ -165,7 +168,7 @@ blr.W15yQC.RemoveStylesWindow = {
                         sExitingLabel=blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c),c.getAttribute('role'),' ')+'.';
                     }
                     div = rd.createElement('div');
-                    div.setAttribute('style','border:thin solid black;margin: 2px');
+                    div.setAttribute('style','border:thin solid black;margin: 3px 2px 3px 0px');
                     appendNode.appendChild(div);
                     p=rd.createElement('p');
                     p.setAttribute('style','background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
@@ -173,7 +176,10 @@ blr.W15yQC.RemoveStylesWindow = {
                     // TODO: Can frame titles come from aria-labels?
                     p.appendChild(rd.createTextNode('Entering ARIA '+sEnteringLabel));
                     div.appendChild(p);
-                    appendNode=div;
+                    div2 = rd.createElement('div');
+                    div2.setAttribute('style','padding:5px');
+                    div.appendChild(div2);
+                    appendNode=div2;
                 } // TODO: Should the landmark role prevent the natural element role?
                 // TODO: handle input[type=image]
                 if(c.tagName.toLowerCase()=='object' || c.tagName.toLowerCase()=='embed') {
@@ -212,7 +218,6 @@ blr.W15yQC.RemoveStylesWindow = {
                     if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
                     node.appendChild(rd.createTextNode(sLabel));
                 } else if(sRole=='img' || c.tagName.toLowerCase()=='img') { // TODO: Get the img height and width
-                    sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
                     box = c.getBoundingClientRect();
                     if(box != null && box.width && box.height) {
                         width=box.width;
@@ -239,7 +244,14 @@ blr.W15yQC.RemoveStylesWindow = {
                     
                     node = rd.createElement('span');
                     bKeepStyle=true;
-                    node.setAttribute('style','display:table-cell;border:thin solid black;color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
+                    if(blr.W15yQC.fnElementIsChildOf(c,'a')) {
+                        borderStyle='border:2px solid blue;';
+                        sLabel=blr.W15yQC.fnJoin('Image Link',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
+                    } else {
+                        borderStyle='border:1px solid black;';
+                        sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
+                    }
+                    node.setAttribute('style','display:table-cell;'+borderStyle+'color:black;'+width+height+'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
                     node.setAttribute('role','img');
                     if(blr.W15yQC.fnStringHasContent(sLabel)) { node.setAttribute('aria-label',sLabel); }
                     node.appendChild(rd.createTextNode(sLabel));
@@ -256,7 +268,10 @@ blr.W15yQC.RemoveStylesWindow = {
                     }
                     node=rd.createElement('h'+level);
                     node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c,doc)));
-                } else if(sRole=='button' || (c.tagName.toLowerCase()=='input' && c.hasAttribute('type') && c.getAttribute('type').toLowerCase()=='image')) {
+                } else if(sRole=='button' || (c.tagName.toLowerCase()=='input' && c.hasAttribute('type') &&
+                          (c.getAttribute('type').toLowerCase()=='image' ||
+                          c.getAttribute('type').toLowerCase()=='submit' ||
+                          c.getAttribute('type').toLowerCase()=='button'))) {
                   node=rd.createElement('button');
                   node.appendChild(rd.createTextNode(blr.W15yQC.fnGetEffectiveLabelText(c,doc)));
                 } else if(/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {

@@ -16,7 +16,7 @@
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/RemoveStylesWindow.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/removeStylesWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
 			<xul:hbox id="top-toolbar" align="left">
 				 <xul:checkbox id="chkbox-showSemantics" label="Show Semantics" checked="false" oncommand="blr.W15yQC.RemoveStylesWindow.toggleShowSemantics()"/>
