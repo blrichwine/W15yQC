@@ -285,7 +285,9 @@ blr.W15yQC.RemoveStylesWindow = {
                     node.setAttribute('src','dont-load-'+node.getAttribute('src'));
                   } else if(/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
                     node.setAttribute('href','#dont-load-'+node.getAttribute('href'));
-                    node.insertBefore(rd.createTextNode('Link: '), node.firstChild);
+                    if(blr.W15yQC.fnFirstChildElementIs(c,'img')==false) {
+                        node.insertBefore(rd.createTextNode('Link: '), node.firstChild);
+                    }
                   }
                 }
                 if(node!=null && bSkipElement==false) {

@@ -1176,6 +1176,32 @@ ys: 'whys'
       return false;
     },
     
+    fnFirstChildElementIs: function(node, sElementTagName) {
+      var nodeStack=[], n;
+      if(node != null && node.firstChild && node.firstChild != null) {
+        n=node.firstChild;
+        while(n != null && n.nodeType != null) {
+          if(n.nodeType==1 && n.tagName && n.tagName != null && n.tagName.toLowerCase()=='img') {
+              return true;
+          } else if(n.nodeType==3 && blr.W15yQC.fnStringHasContent(n.textContent)) {
+              return false;
+          }
+          if(n.firstChild !=null) {
+            nodeStack.push(n);
+            n=n.firstChild;
+          } else if(n.nextSibling!=null) {
+            n=n.nextSibling;
+          } else if(nodeStack.length>0) {
+            n=nodeStack.pop();
+            n=n.nextSibling;
+          } else {
+            n=null;
+          }
+        }
+      }
+      return false;
+    },
+    
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
       if (s1 == s2) { return true; }
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
