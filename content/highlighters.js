@@ -107,7 +107,7 @@ blr.W15yQC.Highlighters = {
         return setHighlights; // return status of highlights
     },
     
-    extendedHighlightLists: function(aDocumentsList) { // TODO: What about definition lists?
+    basicHighlightLists: function(aDocumentsList) {
         var doc, styleElement, i, j, tables, tableIndex, insert, span1;
         if(aDocumentsList != null && aDocumentsList.length>0) {
             for(i=0; i<aDocumentsList.length; i++) {
@@ -117,6 +117,62 @@ blr.W15yQC.Highlighters = {
                     styleElement.innerHTML = 'dl,ol,ul{border: 2px solid red !important;margin:3px !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
+                }
+            }
+        }
+    },
+    
+    extendedHighlightLists: function(aDocumentsList) { // TODO: What about definition lists?
+        blr.W15yQC.Highlighters.removeListHighlights(aDocumentsList);
+        var doc, styleElement, i, j, lists, listIndex, div, span;
+        if(aDocumentsList != null && aDocumentsList.length>0) {
+            for(i=0; i<aDocumentsList.length; i++) {
+                doc = aDocumentsList[i].doc;
+                if(doc != null && doc.body && doc.head && doc.head.firstChild) {
+                    var styleElement = doc.createElement('style');
+                    styleElement.innerHTML = 'div.w15yqcListBorder {border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:all !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
+                    styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
+                    doc.head.insertBefore(styleElement,doc.head.firstChild);
+                    lists = doc.getElementsByTagName('ul');
+                    if(lists != null) {
+                        for(listIndex=0; listIndex<lists.length; listIndex++) {
+                            div=doc.createElement('div');
+                            div.setAttribute('class','w15yqcListBorder');
+                            span=doc.createElement('span');
+                            span.appendChild(doc.createTextNode('UL'));
+                            span.setAttribute('class','w15yqcListInsert');
+                            div.appendChild(span);
+                            lists[listIndex].parentNode.insertBefore(div,lists[listIndex]);
+                            div.appendChild(lists[listIndex]);
+                        }
+                    }
+                    lists = doc.getElementsByTagName('ol');
+                    if(lists != null) {
+                        for(listIndex=0; listIndex<lists.length; listIndex++) {
+                            div=doc.createElement('div');
+                            div.setAttribute('class','w15yqcListBorder');
+                            span=doc.createElement('span');
+                            span.appendChild(doc.createTextNode('OL'));
+                            span.setAttribute('class','w15yqcListInsert');
+                            div.appendChild(span);
+                            lists[listIndex].parentNode.insertBefore(div,lists[listIndex]);
+                            div.appendChild(lists[listIndex]);
+                        }
+                    }
+                    lists = doc.getElementsByTagName('dl');
+                    if(lists != null) {
+                        for(listIndex=0; listIndex<lists.length; listIndex++) {
+                            div=doc.createElement('div');
+                            div.setAttribute('class','w15yqcListBorder');
+                            span=doc.createElement('span');
+                            span.appendChild(doc.createTextNode('DL'));
+                            span.setAttribute('class','w15yqcListInsert');
+                            div.appendChild(span);
+                            lists[listIndex].parentNode.insertBefore(div,lists[listIndex]);
+                            div.appendChild(lists[listIndex]);
+                        }
+                    }
+                    
                 }
             }
         }

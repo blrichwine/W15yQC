@@ -107,7 +107,7 @@ blr.W15yQC.RemoveStylesWindow = {
 
     fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
       var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock=false, sLabel, sEnteringLabel,
-      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height, borderStyle, bSkipElement=false;
+      sExitingLabel, sRole, level, bKeepStyle=false, box, width, height, borderStyle, bSkipElement=false, c2;
       if(oValues == null) {
         oValues = {
           iNumberOfLinks: 0,
@@ -247,8 +247,16 @@ blr.W15yQC.RemoveStylesWindow = {
                         node = rd.createElement('span');
                         bKeepStyle=true;
                         if(blr.W15yQC.fnElementIsChildOf(c,'a')) {
-                            borderStyle='border:2px solid blue;';
+                            borderStyle='border:1px solid blue;';
                             sLabel=blr.W15yQC.fnJoin('Image-Link',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
+                            c2=appendNode;
+                            while(c2!=null && c2.tagName.toLowerCase()!='a') c2=c2.parentNode;
+                            if(c2!=null) {
+                                div=rd.createElement('div');
+                                div.setAttribute('style','border:solid 1px blue;display:table-cell;margin:2px'); 
+                                c2.parentNode.insertBefore(div,c2);
+                                div.appendChild(c2);
+                            }
                         } else {
                             borderStyle='border:1px solid black;';
                             sLabel=blr.W15yQC.fnJoin('Image',blr.W15yQC.fnGetEffectiveLabelText(c,doc),': ');
