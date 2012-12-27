@@ -261,6 +261,10 @@ blr.W15yQC.LuminosityCheckDialog = {
         var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));
         var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
         var el;
+        
+        while (if1.contentDocument.body.firstChild) {
+            if1.contentDocument.body.removeChild(if1.contentDocument.body.firstChild);
+        }
         if1.contentDocument.body.style.color=fgC;
         if1.contentDocument.body.style.backgroundColor=bgC;
         if1.contentDocument.body.style.fontFamily=window.getComputedStyle(ak.node, null).getPropertyValue("font-family");
@@ -268,7 +272,7 @@ blr.W15yQC.LuminosityCheckDialog = {
         if1.contentDocument.body.style.margin='0';
         if1.contentDocument.body.style.padding='4px';
         
-        if1.contentDocument.body.appendChild(createTextNode('Example text at '+textSize+' points. '));
+        if1.contentDocument.body.appendChild(if1.contentDocument.createTextNode('Example text at '+textSize+' points. '));
         el=if1.contentDocument.createElement('i');
         el.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
         if1.contentDocument.body.appendChild(el);

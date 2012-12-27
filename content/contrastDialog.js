@@ -389,6 +389,7 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnUpdateContrastValuesDisplay: function() {
+        var el1, el2, el3;
         var r1 = parseInt(document.getElementById('sRed1').value);
         var g1 = parseInt(document.getElementById('sGreen1').value);
         var b1 = parseInt(document.getElementById('sBlue1').value);
@@ -421,22 +422,68 @@ blr.W15yQC.ContrastDialog = {
         if1.contentDocument.body.style.backgroundColor=bg;
         if1.contentDocument.body.style.margin='0';
         if1.contentDocument.body.style.padding='0';
-        if1.contentDocument.body.innerHTML='<p style="margin:0;padding:4px;font-size:12pt">Example text at 12 points. <i>Example text in italic.</i> <b>Example text in bold.</b></p>';
+
+        while (if1.contentDocument.body.firstChild) {
+            if1.contentDocument.body.removeChild(if1.contentDocument.body.firstChild);
+        }
+        el1=if1.contentDocument.createElement('p');
+        el1.setAttribute('style','margin:0;padding:4px;font-size:12pt');
+        el1.appendChild(if1.contentDocument.createTextNode('Example text at 12 points. ')); // TODO: i18n this!
+        el2=if1.contentDocument.createElement('i');
+        el1.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
+        el1.appendChild(el2);
+        el2=if1.contentDocument.createElement('b');
+        el2.appendChild(if1.contentDocument.createTextNode('Example text in bold.'));
+        el1.appendChild(el2);
+        if1.contentDocument.body.appendChild(el1);
         
         var if2 = document.getElementById("iframeC2BG");
         if2.contentDocument.body.style.color=c2
         if2.contentDocument.body.style.backgroundColor=bg;
         if2.contentDocument.body.style.margin='0';
         if2.contentDocument.body.style.padding='0';
-        if2.contentDocument.body.innerHTML='<p style="margin:0;padding:4px;font-size:12pt">Example text at 12 points. <i>Example text in italic.</i> <b>Example text in bold.</b></p>';
+
+        while (if2.contentDocument.body.firstChild) {
+            if2.contentDocument.body.removeChild(if2.contentDocument.body.firstChild);
+        }
+        el1=if2.contentDocument.createElement('p');
+        el1.setAttribute('style','margin:0;padding:4px;font-size:12pt');
+        el1.appendChild(if2.contentDocument.createTextNode('Example text at 12 points. ')); // TODO: i18n this!
+        el2=if2.contentDocument.createElement('i');
+        el1.appendChild(if2.contentDocument.createTextNode('Example text in italic. '));
+        el1.appendChild(el2);
+        el2=if2.contentDocument.createElement('b');
+        el2.appendChild(if2.contentDocument.createTextNode('Example text in bold.'));
+        el1.appendChild(el2);
+        if2.contentDocument.body.appendChild(el1);
         
         var if3 = document.getElementById("iframeC1C2");
         if3.contentDocument.body.style.color=c1;
         if3.contentDocument.body.style.backgroundColor=bg;
         if3.contentDocument.body.style.margin='0';
         if3.contentDocument.body.style.padding='7px';
-        if3.contentDocument.body.innerHTML='<div style="width:16px;height:16px;background-color:'+c1+';margin:3px;float:left"></div><div style="width:16px;height:16px;background-color:'+c2+';margin:3px;float:left"></div><div style="color:'+c1+';float:right;width:210px">This has <span style="color:'+c2+'">two different</span> colors in it.</div>';
         
+        while (if3.contentDocument.body.firstChild) {
+            if3.contentDocument.body.removeChild(if3.contentDocument.body.firstChild);
+        }
+
+        el1=if3.contentDocument.createElement('div');
+        el1.setAttribute('style','width:16px;height:16px;background-color:'+c1+';margin:3px;float:left');
+        if3.contentDocument.body.appendChild(el1);
+
+        el1=if3.contentDocument.createElement('div');
+        el1.setAttribute('style','width:16px;height:16px;background-color:'+c2+';margin:3px;float:left');
+        if3.contentDocument.body.appendChild(el1);
+
+        el1=if3.contentDocument.createElement('div');
+        el1.setAttribute('style','color:'+c1+';float:right;width:210px');
+        el1.appendChild(if3.contentDocument.createTextNode('This has '));
+        el2=if3.contentDocument.createElement('span');
+        el2.setAttribute('style','color:'+c2);
+        el2.appendChild(if3.contentDocument.createTextNode('two different'));
+        el1.appendChild(el2);
+        el1.appendChild(if3.contentDocument.createTextNode(' colors in it.'));
+        if3.contentDocument.body.appendChild(el1);
     },
     
     setResults: function(lRatio,id1,id2,id3,id4) {
