@@ -129,10 +129,23 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+        - Validate: https://addons.mozilla.org/en-US/developers/
+        - Should all images have alt attribute? Decide if images with ARIA labels and no alt attribute should be flagged for not having alternative text.
+          Currently they are called out for not having an alt attribute.
         - JAWS TESTS
            - How does JAWS read input[type=image]?
            - What happens to headings (view in headings list dialog) when heading has a landmark role on it?
-        - What about definition lists / highlighting?
+           - Caption and figcaption
+           - multiple accesskey values
+           - table headers and colgroup
+           - table headers without scope attributes in the 1,1 position. What happens. What do they label?
+           - table headers with scope=rowgroup
+           - table headers with scope=colgroup
+           - aria-describedby or other aria labels on tables. Consider adding it to the table tools.
+           - disabled attribute on the fieldset element
+           - canvas tag child content / alt content
+        - Disabled attribute on the fieldset element
+        - Remove styles view, show semantics: details+summary, HTML5 aside, etc., figure+figcaption
         - Handle ARIA in remove styles view
         - Load configuration from a file (rules to include, exclude, expert level, ignores, etc.)
         - Add support for closing window with appropriate key in windows.
@@ -170,7 +183,6 @@
         - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
         - ****What about HTML5 Hidden attribute?
            - What values for the hidden attribute work in FF, IE, and Safari? Which don't (if any)
-        - links on w3schools website don't highlight correctly... why?
         - Update options dialog with new features
         - ** form control labels (checked with any legend text applied)
                - yes/no what?
@@ -256,6 +268,8 @@
       
 FIXED:
 
+        - What about definition lists / highlighting? [done]
+        - Add support for closing window with appropriate key in windows. [Mozilla seems to be taking care of this automatically.]
         - DETERMINE HOW JAWS LINEARIZES A TABLE WITH ROW SPAN VALUES then linearize layout tables in semantic view [done]
             - https://developer.mozilla.org/en-US/docs/DOM/table.rows
         - Make HTML table report save report button [done]

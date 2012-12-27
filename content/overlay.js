@@ -867,6 +867,7 @@ ys: 'whys'
       imgAltTxtIsDefault: [true,1,0,false,null],
       imgAltTxtIsDecorative: [true,1,0,false,null],
       imgAltTxtIncludesImageTxt: [true,1,0,false,null],
+      imgAltLengthTooLong: [true,1,0,true,null],
       imgIDNotValid: [false,1,0,false,null],
       imgIDNotUnique: [false,2,0,false,null],
       imgAltTxtOnlyASCII: [true,2,0,false,null],
@@ -1313,7 +1314,7 @@ ys: 'whys'
           td = doc.createElement('td');
           if (aTableCells[i] != null) {
             sText = aTableCells[i].toString();
-            sText = sText.replace(/([^<&;\s|\/-]{45,50})/g, "$1<br />"); // Chars known to cause FF to break long strings of text to wrap a td cell ('<' to avoid breaking into tags)
+            sText = sText.replace(/([^<&;\s|\/-]{45,50})/g, "$1<br />"); // Break long strings. Chars known to cause FF to break long strings of text to wrap a td cell ('<' to avoid breaking into tags)
             td.innerHTML = sText; // Consider appending pre-created elements?
           }
           tr.appendChild(td);
@@ -5930,6 +5931,9 @@ ys: 'whys'
             if(blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(aImagesList[i].src) == true) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgSpacerWithAltTxt'); // QA imageTests01.html
             }
+          }
+          if(aImagesList[i].effectiveLabel && aImagesList[i].effectiveLabel.length && aImagesList[i].effectiveLabel.length>100) {
+            blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltLengthTooLong'); // QA imageTests01.html
           }
 
           aImagesList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aImagesList[i].node, aImagesList[i].doc, aImagesList[i]);

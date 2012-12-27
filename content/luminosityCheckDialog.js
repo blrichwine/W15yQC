@@ -43,37 +43,41 @@ blr.W15yQC.LuminosityCheckDialog = {
     aLumCheckList: null,
     iLastSelectedRow: 0,
     fnPopulateTree: function(aDocumentsList, aLumCheckList) {
+        var tbc = document.getElementById('treeboxChildren'),
+            bHasID = false,
+            bHasClass = false,
+            treeitem, treerow, treecell, textbox,
+            ak,ch,i,
+            fgC, bgC, lRatio;
+
         if(aDocumentsList != null && aLumCheckList != null && aLumCheckList.length && aLumCheckList.length > 0) {
-            var tbc = document.getElementById('treeboxChildren');
-            var bHasID = false;
-            var bHasClass = false;
             if(tbc != null) {
-                for(var i=0; i<aLumCheckList.length; i++) {
-                    var ak = aLumCheckList[i];
-                    if(ak.node.hasAttribute('id')) bHasID = true;
-                    if(ak.node.hasAttribute('class')) bHasClass = true;
+                for(i=0; i<aLumCheckList.length; i++) {
+                    ak = aLumCheckList[i];
+                    if(ak.node.hasAttribute('id')) { bHasID = true; }
+                    if(ak.node.hasAttribute('class')) { bHasClass = true; }
                 }
                  if(!bHasID) {
-                    var ch = document.getElementById('col-header-id');
+                    ch = document.getElementById('col-header-id');
                     ch.setAttribute('hidden','true');
                 }
                 if(!bHasClass) {
-                    var ch = document.getElementById('col-header-class');
+                    ch = document.getElementById('col-header-class');
                     ch.setAttribute('hidden','true');
                 }
                if(aDocumentsList.length<=1) {
-                    var ch = document.getElementById('col-header-documentNumber');
+                    ch = document.getElementById('col-header-documentNumber');
                     ch.setAttribute('hidden','true');
                 }
-                for(var i=0; i<aLumCheckList.length; i++) {
-                    var treeitem = document.createElement('treeitem');
-                    var treerow = document.createElement('treerow');
+                for(i=0; i<aLumCheckList.length; i++) {
+                    treeitem = document.createElement('treeitem');
+                    treerow = document.createElement('treerow');
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',i+1);
                     treerow.appendChild(treecell);
                     
-                    var ak = aLumCheckList[i];
+                    ak = aLumCheckList[i];
                     
                     treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -103,17 +107,17 @@ blr.W15yQC.LuminosityCheckDialog = {
                     treecell.setAttribute('label', ' '+ak.textWeight+' ');
                     treerow.appendChild(treecell);
                     
-                    var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));
+                    fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0],10)*65536+parseInt(ak.fgColor[1],10)*256+parseInt(ak.fgColor[2],10));
                     treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ' '+fgC+' ');
                     treerow.appendChild(treecell);
                                         
-                    var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
+                    bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0],10)*65536+parseInt(ak.bgColor[1],10)*256+parseInt(ak.bgColor[2],10));
                     treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ' '+bgC+' ');
                     treerow.appendChild(treecell);
                     
-                    var lRatio = parseFloat(ak.luminosityRatio).toFixed(2);
+                    lRatio = parseFloat(ak.luminosityRatio).toFixed(2);
                     treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ' '+lRatio+(ak.hasBackgroundImage?'?':' ')+' ');
                     treerow.appendChild(treecell);
@@ -137,7 +141,7 @@ blr.W15yQC.LuminosityCheckDialog = {
                 blr.W15yQC.LuminosityCheckDialog.updateNotesField([aDocumentsList,aLumCheckList], false);
             }
         } else {
-            var textbox = document.getElementById('note-text');
+            textbox = document.getElementById('note-text');
             textbox.value = "No Image elements were detected.";
         }
     },
@@ -154,7 +158,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
     
     forceMinSize: function(dialog) {
-        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<800 || dialog.outerHeight<470)) dialog.resizeTo(Math.max(800,dialog.outerWidth),Math.max(470,dialog.outerHeight));
+        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<800 || dialog.outerHeight<470)) { dialog.resizeTo(Math.max(800,dialog.outerWidth),Math.max(470,dialog.outerHeight)); }
     },
     
     cleanup: function() {
@@ -166,29 +170,32 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
     
     updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox');
-        var textbox = document.getElementById('note-text');
-        if(bHighlightElement === null) bHighlightElement = true;
+        var treebox = document.getElementById('treebox'),
+            textbox = document.getElementById('note-text'),
+            selectedRow = treebox.currentIndex,
+            ak,
+            box, textSize, textWeight, lRatio,
+            AALimit, AAALimit, sTextDescription,
+            sMeetsLimitText, sLimitMsg, sSpec,
+            if1,fgC,bgC,el,highlightElementsCB;
+            
+        if(bHighlightElement == null) { bHighlightElement = true; }
         
-        var selectedRow = treebox.currentIndex;
         if(selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
             bHighlightElement = false;
         }
-        var ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
+        ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
         if(ak.notes != null) {
             textbox.value = blr.W15yQC.fnMakeTextNotesList(ak);
         } else {
             textbox.value = '';
         }
 
-        var textSize = parseFloat(ak.textSize);
-        var textWeight = parseInt(ak.textWeight);
-        var lRatio = parseFloat(ak.luminosityRatio);
+        textSize = parseFloat(ak.textSize);
+        textWeight = parseInt(ak.textWeight,10);
+        lRatio = parseFloat(ak.luminosityRatio);
 
-        var AALimit;
-        var AAALimit;
-        var sTextDescription;
         if(textSize>=18) {
             AALimit = 3.0;
             AAALimit = 4.5;
@@ -206,36 +213,34 @@ blr.W15yQC.LuminosityCheckDialog = {
             AAALimit = 7.0;
             sTextDescription = 'bold and smaller than 14pt';
         }
-        var sMeetsLimitText;
         if(lRatio-AAALimit>4) {
             sMeetsLimitText='handily meets AAA compliance.';
-        } else if(lRatio-AAALimit>.2) {
+        } else if(lRatio-AAALimit>0.2) {
             sMeetsLimitText='meets AAA compliance.';
         } else if(lRatio>=AAALimit) {
             sMeetsLimitText='just meets AAA compliance.';
-        } else if(AAALimit-lRatio<.2) {
+        } else if(AAALimit-lRatio<0.2) {
             sMeetsLimitText='meets AA compliance while just missing AAA compliance.';
         } else if(lRatio<AALimit) {
             sMeetsLimitText='fails to meet AA compliance.';
-        } else if(lRatio-AALimit>.2) {
+        } else if(lRatio-AALimit>0.2) {
             sMeetsLimitText='meets AA compliance.';
         } else {
             sMeetsLimitText='just meets AA compliance.';
         }
         
-        var sLimitMsg;
-        var sSpec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2 AA');
+        sSpec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2 AA');
         if(sSpec=='WCAG2 AA') {
             if(lRatio<AALimit) {
                 sLimitMsg='Failed to meet';
             } else {
-                sLimitMsg='Meets'
+                sLimitMsg='Meets';
             }
         } else {
             if(lRatio<AAALimit) {
                 sLimitMsg='Failed to meet';
             } else {
-                sLimitMsg='Meets'
+                sLimitMsg='Meets';
             }
         }
         
@@ -249,7 +254,7 @@ blr.W15yQC.LuminosityCheckDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, sLimitMsg+"\n\n"+ak.nodeDescription, "\n\n");
         
         if(ak.node != null) {
-            var box = ak.node.getBoundingClientRect();
+            box = ak.node.getBoundingClientRect();
             if(box != null) {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n");                
             }
@@ -257,10 +262,9 @@ blr.W15yQC.LuminosityCheckDialog = {
         
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+ak.xpath, "\n");
 
-        var if1 = document.getElementById("iframeCSample");
-        var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));
-        var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
-        var el;
+        if1 = document.getElementById("iframeCSample");
+        fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0],10)*65536+parseInt(ak.fgColor[1],10)*256+parseInt(ak.fgColor[2],10));
+        bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0],10)*65536+parseInt(ak.bgColor[1],10)*256+parseInt(ak.bgColor[2],10));
         
         while (if1.contentDocument.body.firstChild) {
             if1.contentDocument.body.removeChild(if1.contentDocument.body.firstChild);
@@ -268,7 +272,7 @@ blr.W15yQC.LuminosityCheckDialog = {
         if1.contentDocument.body.style.color=fgC;
         if1.contentDocument.body.style.backgroundColor=bgC;
         if1.contentDocument.body.style.fontFamily=window.getComputedStyle(ak.node, null).getPropertyValue("font-family");
-        if1.contentDocument.body.style.fontSize=(textSize*.80).toString()+'pt';
+        if1.contentDocument.body.style.fontSize=(textSize*0.80).toString()+'pt';
         if1.contentDocument.body.style.margin='0';
         if1.contentDocument.body.style.padding='4px';
         
@@ -286,15 +290,15 @@ blr.W15yQC.LuminosityCheckDialog = {
                 blr.W15yQC.fnMoveToElement(ak.node);
             } catch(err) {}
         }
-        var highlightElementsCB = document.getElementById('chkbox-highlighton');
-        if(highlightElementsCB.checked && bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
+        highlightElementsCB = document.getElementById('chkbox-highlighton');
+        if(highlightElementsCB.checked && bHighlightElement != false) { blr.W15yQC.highlightElement(ak.node, ak.doc); }
     },
     
     toggleHighlighting: function() {
-        var highlightElementsCB = document.getElementById('chkbox-highlighton');
+        var treebox, selectedRow, highlightElementsCB = document.getElementById('chkbox-highlighton');
         if(highlightElementsCB.checked) {
-            var treebox = document.getElementById('treebox');
-            var selectedRow = treebox.currentIndex;
+            treebox = document.getElementById('treebox');
+            selectedRow = treebox.currentIndex;
             if(selectedRow != null && treebox.currentIndex >= 0) {
                 blr.W15yQC.highlightElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node, blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].doc);
             }        
@@ -304,16 +308,18 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
     
     moveToSelectedElement: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox, selectedRow;
+        treebox = document.getElementById('treebox');
+        selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnMoveToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
         }        
     },
     
     moveFocusToSelectedElement: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox, selectedRow;
+        treebox = document.getElementById('treebox');
+        selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
             blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
@@ -321,26 +327,28 @@ blr.W15yQC.LuminosityCheckDialog = {
     },
     
     openColorsInContrastTool: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox, selectedRow, ak,fgC,bgC,newWin;
+        treebox = document.getElementById('treebox');
+        selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
-            var ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
-            var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));
-            var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
-            var newWin=window.openDialog('chrome://W15yQC/content/contrastDialog.xul', 'contrastToolDialog', 'chrome,resizable=yes,centerscreen', blr, fgC, bgC);
+            ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
+            fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0],10)*65536+parseInt(ak.fgColor[1],10)*256+parseInt(ak.fgColor[2],10));
+            bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0],10)*65536+parseInt(ak.bgColor[1],10)*256+parseInt(ak.bgColor[2],10));
+            newWin=window.openDialog('chrome://W15yQC/content/contrastDialog.xul', 'contrastToolDialog', 'chrome,resizable=yes,centerscreen', blr, fgC, bgC);
         }        
     },
     
     showInFirebug: function() {
+        var treebox, selectedRow;
         if(blr.W15yQC.LuminosityCheckDialog.FirebugO!=null) {
             try{
                 if(blr.W15yQC.LuminosityCheckDialog.aLumCheckList != null && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length>0) {
-                    var treebox = document.getElementById('treebox');
-                    var selectedRow = treebox.currentIndex;
+                    treebox = document.getElementById('treebox');
+                    selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) { selectedRow = 0; }
                     blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
                     blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
+                    void function(arg){blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector.inspectFromContextMenu(arg);});}(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
                 }
             } catch(ex) {}
         }
@@ -350,4 +358,4 @@ blr.W15yQC.LuminosityCheckDialog = {
         // blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LuminosityCheckDialog.FirebugO, 'luminosity');
     }
     
-}
+};
