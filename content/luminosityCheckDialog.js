@@ -260,14 +260,22 @@ blr.W15yQC.LuminosityCheckDialog = {
         var if1 = document.getElementById("iframeCSample");
         var fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0])*65536+parseInt(ak.fgColor[1]*256)+parseInt(ak.fgColor[2]));
         var bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0])*65536+parseInt(ak.bgColor[1]*256)+parseInt(ak.bgColor[2]));
+        var el;
         if1.contentDocument.body.style.color=fgC;
         if1.contentDocument.body.style.backgroundColor=bgC;
         if1.contentDocument.body.style.fontFamily=window.getComputedStyle(ak.node, null).getPropertyValue("font-family");
         if1.contentDocument.body.style.fontSize=(textSize*.80).toString()+'pt';
         if1.contentDocument.body.style.margin='0';
         if1.contentDocument.body.style.padding='4px';
-        if1.contentDocument.body.innerHTML='Example text at '+textSize+' points. <i>Example text in italic.</i> <b>Example text in bold.</b>';
-
+        
+        if1.contentDocument.body.appendChild(createTextNode('Example text at '+textSize+' points. '));
+        el=if1.contentDocument.createElement('i');
+        el.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
+        if1.contentDocument.body.appendChild(el);
+        el=if1.contentDocument.createElement('b');
+        el.appendChild(if1.contentDocument.createTextNode('Example text in bold.'));
+        if1.contentDocument.body.appendChild(el);
+        
         blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
         if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
             try {

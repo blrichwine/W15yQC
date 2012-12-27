@@ -184,7 +184,6 @@ blr.W15yQC.HTMLReportWindow = {
           if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
             
             file = fp.file;
-            // work with returned nsILocalFile...
             if(/\.html?$/.test(file.path)==false) {
               file.initWithPath(file.path+'.html');
             }
