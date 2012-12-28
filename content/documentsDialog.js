@@ -40,39 +40,40 @@ if (!blr) { var blr = {}; }
 blr.W15yQC.DocumentsDialog = {
     aDocumentsList: null,
     fnPopulateTree: function(aDocumentsList) {
+        var tbc, i, treecell, treeitem, treerow, ak, textbox;
         if(aDocumentsList != null && aDocumentsList.length && aDocumentsList.length > 0) {
-            var tbc = document.getElementById('treeboxChildren');
+            tbc = document.getElementById('treeboxChildren');
             if(tbc != null) {
-                for(var i=0; i<aDocumentsList.length; i++) {
-                    var treeitem = document.createElement('treeitem');
-                    var treerow = document.createElement('treerow');
-                    var treecell = document.createElement('treecell');
+                for(i=0; i<aDocumentsList.length; i++) {
+                    treeitem = document.createElement('treeitem');
+                    treerow = document.createElement('treerow');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',i+1);
                     treerow.appendChild(treecell);
                     
-                    var ak = aDocumentsList[i];
+                    ak = aDocumentsList[i];
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.title);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',ak.language);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.dir);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.URL);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.compatMode);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.docType);
                     treerow.appendChild(treecell);
 
@@ -92,7 +93,7 @@ blr.W15yQC.DocumentsDialog = {
                 }
             }
         } else {
-            var textbox = document.getElementById('note-text');
+            textbox = document.getElementById('note-text');
             textbox.value = "What? How can this be? No documents were detected.";
         }
     },
@@ -112,13 +113,14 @@ blr.W15yQC.DocumentsDialog = {
     },
     
     updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox');
-        var textbox = document.getElementById('note-text');
+        var treebox = document.getElementById('treebox'),
+            textbox = document.getElementById('note-text'),
+            selectedRow;
         
         if(blr.W15yQC.DocumentsDialog.aDocumentsList != null && blr.W15yQC.DocumentsDialog.aDocumentsList.length>0) {
             if(bHighlightElement === null) bHighlightElement = true;
     
-            var selectedRow = treebox.currentIndex;
+            selectedRow = treebox.currentIndex;
             if(selectedRow == null || treebox.currentIndex < 0) {
                 selectedRow = 0;
                 bHighlightElement = false;
@@ -138,7 +140,7 @@ blr.W15yQC.DocumentsDialog = {
             if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
                 try {
                     blr.W15yQC.fnMoveToElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.body);
-                } catch(err) {}
+                } catch(ex) {}
             }
             if(bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.body, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc);
         }      
@@ -150,24 +152,26 @@ blr.W15yQC.DocumentsDialog = {
     
     validateDocumentContents: function() {
 
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex,
+            outerHeight, outerWidth, outputWindow, reportDoc, form, de, ie, he;
+            
         if(selectedRow != null && treebox.currentIndex >= 0) {
-            var outputWindow=window.open('');
-            var reportDoc = outputWindow.document;
-            var form = reportDoc.createElement('form');
+            outputWindow=window.open('');
+            reportDoc = outputWindow.document;
+            form = reportDoc.createElement('form');
             form.setAttribute('method', 'post');
             form.setAttribute('action', 'http://validator.w3.org/check');
             form.setAttribute('enctype', 'multipart/form-data');
     
-            var de = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.documentElement;
-            var ie = reportDoc.createElement('input');
+            de = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.documentElement;
+            ie = reportDoc.createElement('input');
             ie.setAttribute('id', 'direct_prefill_no');
             ie.setAttribute('name', 'prefill');
             ie.setAttribute('value', '0');
             ie.setAttribute('checked', 'checked');
             ie.setAttribute('type', 'radio');
-            var he = reportDoc.createElement('input');
+            he = reportDoc.createElement('input');
             he.setAttribute('type', 'hidden');
             he.setAttribute('name', 'fragment');
             he.setAttribute('id', 'fragment');
@@ -179,14 +183,15 @@ blr.W15yQC.DocumentsDialog = {
     },
 
     validateDocumentURL: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex,
+            URL;
         if(selectedRow != null && treebox.currentIndex >= 0) {
-            var URL = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.URL;
+            URL = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.URL;
             if(URL != null) {
                 window.open('http://validator.w3.org/check?uri='+encodeURI(URL)+'&charset=%28detect+automatically%29&doctype=Inline&group=0');
             }    
         }
     }
     
-}
+};
