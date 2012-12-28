@@ -41,35 +41,36 @@ blr.W15yQC.badIDsDialog = {
     aDocumentsList: null,
     aBadIDsList: null,
     fnPopulateTree: function(aDocumentsList, aBadIDsList) {
+        var tbc, ch, treecell, treeitem, treerow, i, ak, textbox;
         if(aDocumentsList != null && aBadIDsList != null && aBadIDsList.length && aBadIDsList.length > 0) {
-            var tbc = document.getElementById('treeboxChildren');
+            tbc = document.getElementById('treeboxChildren');
             if(tbc != null) {
                 if(aDocumentsList.length<=1) {
-                    var ch = document.getElementById('col-header-documentNumber');
+                    ch = document.getElementById('col-header-documentNumber');
                     ch.setAttribute('hidden','true');
                 }
-                for(var i=0; i<aBadIDsList.length; i++) {
-                    var treeitem = document.createElement('treeitem');
-                    var treerow = document.createElement('treerow');
-                    var treecell = document.createElement('treecell');
+                for(i=0; i<aBadIDsList.length; i++) {
+                    treeitem = document.createElement('treeitem');
+                    treerow = document.createElement('treerow');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',i+1);
                     treerow.appendChild(treecell);
                     
-                    var ak = aBadIDsList[i];
+                    ak = aBadIDsList[i];
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.ownerDocumentNumber);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',aDocumentsList[ak.ownerDocumentNumber-1].URL);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.nodeDescription);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.id);
                     treerow.appendChild(treecell);
                     
@@ -88,7 +89,7 @@ blr.W15yQC.badIDsDialog = {
                 }
             }
         } else {
-            var textbox = document.getElementById('note-text');
+            textbox = document.getElementById('note-text');
             textbox.value = "No duplicate or invalid IDs were detected.";
         }
     },
@@ -115,12 +116,13 @@ blr.W15yQC.badIDsDialog = {
     },
     
     updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox');
-        var textbox = document.getElementById('note-text');
+        var treebox = document.getElementById('treebox'),
+            textbox = document.getElementById('note-text'),
+            selectedRow, box;
 
         if(bHighlightElement === null) bHighlightElement = true;
 
-        var selectedRow = treebox.currentIndex;
+        selectedRow = treebox.currentIndex;
         if(selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
             bHighlightElement = false;
@@ -136,7 +138,7 @@ blr.W15yQC.badIDsDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].xpath, "\n\n");
         
         if(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node != null) {
-            var box = blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node.getBoundingClientRect();
+            box = blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node.getBoundingClientRect();
             if(box != null) {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");                
             }
@@ -152,37 +154,38 @@ blr.W15yQC.badIDsDialog = {
     },
     
     showInFirebug: function() {
+        var treebox, selectedRow;
         if(blr.W15yQC.badIDsDialog.FirebugO!=null) {
             try{
                 if(blr.W15yQC.badIDsDialog.aBadIDsList != null && blr.W15yQC.badIDsDialog.aBadIDsList.length && blr.W15yQC.badIDsDialog.aBadIDsList.length>0) {
-                    var treebox = document.getElementById('treebox');
-                    var selectedRow = treebox.currentIndex;
+                    treebox = document.getElementById('treebox');
+                    selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) {
                         selectedRow = 0;
                     }
                     blr.W15yQC.fnResetHighlights(blr.W15yQC.badIDsDialog.aDocumentsList);
                     blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.badIDsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.badIDsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node);
+                    void function(arg){blr.W15yQC.badIDsDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.badIDsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);});}(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node);
                 }
             } catch(ex) {}
         }
     },
     
     moveToSelectedElement: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnMoveToElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node);
         }        
     },
     
     moveFocusToSelectedElement: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.badIDsDialog.aDocumentsList);
             blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedRow].node);
         }        
-    },
+    }
 
-}
+};
