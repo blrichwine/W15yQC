@@ -1662,7 +1662,7 @@ ys: 'whys'
     
     fnSetHighlightTimeout: function(doc,id) {
       try{
-        blr.W15yQC.highlightTimeoutID.push(setTimeout(function () { doc.getElementById('W15yQCElementHighlight'+id.toString()).style.backgroundColor='transparent'; }, 500));
+        blr.W15yQC.highlightTimeoutID.push(setTimeout(function () { try{doc.getElementById('W15yQCElementHighlight'+id.toString()).style.backgroundColor='transparent'; }catch(ex){}}, 500));
       } catch(ex) {
       }
     },
