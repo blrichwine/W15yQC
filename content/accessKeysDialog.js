@@ -42,62 +42,63 @@ blr.W15yQC.AccessKeyDialog = {
     aDocumentsList: null,
     aAccessKeysList: null,
     fnPopulateTree: function(aDocumentsList, aAccessKeysList) {
+        var tbc, bHasRole, bHasStateDescription, i, ak, ch, treecell, treeitem, treerow, textbox;
         if(aDocumentsList != null && aAccessKeysList != null && aAccessKeysList.length && aAccessKeysList.length > 0) {
-            var tbc = document.getElementById('treeboxChildren');
-            var bHasRole = false;
-            var bHasStateDescription = false;
+            tbc = document.getElementById('treeboxChildren');
+            bHasRole = false;
+            bHasStateDescription = false;
             if(tbc != null) {
-                for(var i=0; i<aAccessKeysList.length; i++) {
-                    var ak = aAccessKeysList[i];
+                for(i=0; i<aAccessKeysList.length; i++) {
+                    ak = aAccessKeysList[i];
                     if(ak.role) bHasRole = true;
                     if(ak.stateDescription) bHasStateDescription = true;
                 }
                 if(!bHasRole) {
-                    var ch = document.getElementById('col-header-role');
+                    ch = document.getElementById('col-header-role');
                     ch.setAttribute('hidden','true');
                 }
                 if(!bHasStateDescription) {
-                    var ch = document.getElementById('col-header-state');
+                    ch = document.getElementById('col-header-state');
                     ch.setAttribute('hidden','true');
                 }
                 if(aDocumentsList.length<=1) {
-                    var ch = document.getElementById('col-header-documentNumber');
+                    ch = document.getElementById('col-header-documentNumber');
                     ch.setAttribute('hidden','true');
                 }
-                for(var i=0; i<aAccessKeysList.length; i++) {
-                    var treeitem = document.createElement('treeitem');
-                    var treerow = document.createElement('treerow');
-                    var treecell = document.createElement('treecell');
+                for(i=0; i<aAccessKeysList.length; i++) {
+                    treeitem = document.createElement('treeitem');
+                    treerow = document.createElement('treerow');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',i+1);
                     treerow.appendChild(treecell);
                     
-                    var ak = aAccessKeysList[i];
+                    ak = aAccessKeysList[i];
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.ownerDocumentNumber);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',aDocumentsList[ak.ownerDocumentNumber-1].URL);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.nodeDescription);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.accessKey);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.effectiveLabel);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.role);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.stateDescription);
                     treerow.appendChild(treecell);
 
@@ -116,7 +117,7 @@ blr.W15yQC.AccessKeyDialog = {
                 }
             }
         } else {
-            var textbox = document.getElementById('note-text');
+            textbox = document.getElementById('note-text');
             textbox.value = "No access keys were detected.";
         }
     },
@@ -144,12 +145,13 @@ blr.W15yQC.AccessKeyDialog = {
     },
     
     updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox');
-        var textbox = document.getElementById('note-text');
+        var treebox = document.getElementById('treebox'),
+            textbox = document.getElementById('note-text'),
+            selectedRow, box;
 
         if(bHighlightElement === null) bHighlightElement = true;
 
-        var selectedRow = treebox.currentIndex;
+        selectedRow = treebox.currentIndex;
         if(selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
             bHighlightElement = false;
@@ -165,7 +167,7 @@ blr.W15yQC.AccessKeyDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].xpath, "\n\n");
         
         if(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node != null) {
-            var box = blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node.getBoundingClientRect();
+            box = blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node.getBoundingClientRect();
             if(box != null) {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");                
             }
@@ -181,33 +183,34 @@ blr.W15yQC.AccessKeyDialog = {
     },
     
     showInFirebug: function() {
+        var treebox, selectedRow;
         if(blr.W15yQC.AccessKeyDialog.FirebugO!=null) {
             try{
                 if(blr.W15yQC.AccessKeyDialog.aAccessKeysList != null && blr.W15yQC.AccessKeyDialog.aAccessKeysList.length && blr.W15yQC.AccessKeyDialog.aAccessKeysList.length>0) {
-                    var treebox = document.getElementById('treebox');
-                    var selectedRow = treebox.currentIndex;
+                    treebox = document.getElementById('treebox');
+                    selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) {
                         selectedRow = 0;
                     }
                     blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
                     blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.AccessKeyDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.AccessKeyDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
+                    void function(arg){blr.W15yQC.AccessKeyDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.AccessKeyDialog.FirebugO.Inspector.inspectFromContextMenu(arg);});}(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
                 }
             } catch(ex) {}
         }
     },
     
     moveToSelectedElement: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox = document.getElementById('treebox'),
+           selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnMoveToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
         }        
     },
     
     moveFocusToSelectedElement: function() {
-        var treebox = document.getElementById('treebox');
-        var selectedRow = treebox.currentIndex;
+        var treebox = document.getElementById('treebox'),
+            selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
             blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
@@ -218,4 +221,4 @@ blr.W15yQC.AccessKeyDialog = {
         blr.W15yQC.openHTMLReportWindow(blr.W15yQC.AccessKeyDialog.FirebugO, 'accesskeys');
     }
     
-}
+};
