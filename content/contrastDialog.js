@@ -60,12 +60,13 @@ blr.W15yQC.ContrastDialog = {
     
     forceMinSize: function(dialog) {
         if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<940 || dialog.outerHeight!=610)) { dialog.resizeTo(Math.max(940,dialog.outerWidth),610); }
-        var gbc1=document.getElementById('gbColor1');
-        var resultsC1BG=document.getElementById('resultsC1BG'); 
+        var rect, width,
+            gbc1=document.getElementById('gbColor1'),
+            resultsC1BG=document.getElementById('resultsC1BG'); 
         if(gbc1!=null && resultsC1BG!=null) {
-            var rect = gbc1.getBoundingClientRect();
+            rect = gbc1.getBoundingClientRect();
             if(rect!=null) {
-                var width=rect.right-rect.left;
+                width=rect.right-rect.left;
                 if(width>50) {
                     resultsC1BG.setAttribute('style','max-width:'+width.toString()+'px');
                 }
@@ -89,10 +90,9 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnComputeSaturationFromRGB: function(r,g,b) {
-        var maxRGB = r;
+        var minRGB = r, maxRGB = r;
         if(g>maxRGB) maxRGB = g;
         if(b>maxRGB) maxRGB = b;
-        var minRGB = r;
         if(g<minRGB) minRGB = g;
         if(b<minRGB) minRGB = b;
         
@@ -108,8 +108,9 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnRGBFromHTMLColor: function(sHTMLColor) {
+        var m;
         if(sHTMLColor != null && sHTMLColor.match) {
-        var m = sHTMLColor.match(/^\s*#?(([abcdef0-9])([abcdef0-9])([abcdef0-9])|([abcdef0-9][abcdef0-9])([abcdef0-9][abcdef0-9])([abcdef0-9][abcdef0-9]))\s*$/i);
+        m = sHTMLColor.match(/^\s*#?(([abcdef0-9])([abcdef0-9])([abcdef0-9])|([abcdef0-9][abcdef0-9])([abcdef0-9][abcdef0-9])([abcdef0-9][abcdef0-9]))\s*$/i);
         if(m != null) {
             if(m[2] == undefined) {
                 return [parseInt(m[5],16),parseInt(m[6],16),parseInt(m[7],16)];
@@ -121,8 +122,8 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnHSV2RGB: function(h,s,v) {
-            var r, g, b;
-            var i, f, p, q, t;
+            var r, g, b,
+                i, f, p, q, t;
              
             s= s / 100;
             v= v / 100;
@@ -169,8 +170,8 @@ blr.W15yQC.ContrastDialog = {
     },
 
     fnComputeWCAG2LuminosityRatio: function(r1,g1,b1, r2,g2,b2) {
-        var l1 = blr.W15yQC.ContrastDialog.fnCalculateLuminance(r1/255, g1/255, b1/255);
-        var l2 = blr.W15yQC.ContrastDialog.fnCalculateLuminance(r2/255, g2/255, b2/255);
+        var l1 = blr.W15yQC.ContrastDialog.fnCalculateLuminance(r1/255, g1/255, b1/255),
+            l2 = blr.W15yQC.ContrastDialog.fnCalculateLuminance(r2/255, g2/255, b2/255);
         return Math.round(((l1 >= l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05)) *100) / 100;
     },
     
@@ -178,13 +179,14 @@ blr.W15yQC.ContrastDialog = {
 // ----- Color 1
 
     fnColor1HTMLColorChange: function(newColor) {
+        var RGB, r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             if(newColor!=null) document.getElementById('tbHTMLColor1').value=newColor;
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor1').value);
-            var r = document.getElementById('sRed1').value = RGB[0];
-            var g = document.getElementById('sGreen1').value = RGB[1];
-            var b = document.getElementById('sBlue1').value = RGB[2];
+            RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor1').value);
+            r = document.getElementById('sRed1').value = RGB[0];
+            g = document.getElementById('sGreen1').value = RGB[1];
+            b = document.getElementById('sBlue1').value = RGB[2];
             blr.W15yQC.ContrastDialog.fgc1 = r*65536+g*256+b;
             document.getElementById('tbHTMLColor1').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
             document.getElementById('cp1').color = document.getElementById('tbHTMLColor1').value;
@@ -197,12 +199,13 @@ blr.W15yQC.ContrastDialog = {
     },
 
     fnColor1ColorPickerChange: function() {
+        var RGB, r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cp1').color);
-            var r = document.getElementById('sRed1').value = RGB[0];
-            var g = document.getElementById('sGreen1').value = RGB[1];
-            var b = document.getElementById('sBlue1').value = RGB[2];
+            RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cp1').color);
+            r = document.getElementById('sRed1').value = RGB[0];
+            g = document.getElementById('sGreen1').value = RGB[1];
+            b = document.getElementById('sBlue1').value = RGB[2];
             blr.W15yQC.ContrastDialog.fgc1 = r*65536+g*256+b;
             document.getElementById('tbHTMLColor1').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
             //document.getElementById('cp1').color = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
@@ -215,11 +218,12 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnColor1SliderChange: function() {
+        var r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var r = parseInt(document.getElementById('sRed1').value);
-            var g = parseInt(document.getElementById('sGreen1').value);
-            var b = parseInt(document.getElementById('sBlue1').value);
+            r = parseInt(document.getElementById('sRed1').value,10);
+            g = parseInt(document.getElementById('sGreen1').value,10);
+            b = parseInt(document.getElementById('sBlue1').value,10);
             
             blr.W15yQC.ContrastDialog.fgc1 = r*65536+g*256+b;
             document.getElementById('tbHTMLColor1').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
@@ -233,9 +237,10 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnColor1HSBChange: function() {
+        var RGB;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHue1').value,document.getElementById('sSat1').value,document.getElementById('sBrightness1').value);
+            RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHue1').value,document.getElementById('sSat1').value,document.getElementById('sBrightness1').value);
             document.getElementById('sRed1').value = RGB[0];
             document.getElementById('sGreen1').value = RGB[1];
             document.getElementById('sBlue1').value = RGB[2];
@@ -250,12 +255,13 @@ blr.W15yQC.ContrastDialog = {
 // ------ Color 2
 
     fnColor2HTMLColorChange: function() {
+        var RGB, r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor2').value);
-            var r = document.getElementById('sRed2').value = RGB[0];
-            var g = document.getElementById('sGreen2').value = RGB[1];
-            var b = document.getElementById('sBlue2').value = RGB[2];
+            RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor2').value);
+            r = document.getElementById('sRed2').value = RGB[0];
+            g = document.getElementById('sGreen2').value = RGB[1];
+            b = document.getElementById('sBlue2').value = RGB[2];
             blr.W15yQC.ContrastDialog.fgc2 = r*65536+g*256+b;
             document.getElementById('tbHTMLColor2').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc2);
             document.getElementById('cp1').color = document.getElementById('tbHTMLColor1').value;
@@ -268,12 +274,13 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnColor2ColorPickerChange: function() {
+        var RGB, r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cp2').color);
-            var r = document.getElementById('sRed2').value = RGB[0];
-            var g = document.getElementById('sGreen2').value = RGB[1];
-            var b = document.getElementById('sBlue2').value = RGB[2];
+            RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cp2').color);
+            r = document.getElementById('sRed2').value = RGB[0];
+            g = document.getElementById('sGreen2').value = RGB[1];
+            b = document.getElementById('sBlue2').value = RGB[2];
             blr.W15yQC.ContrastDialog.fgc2 = r*65536+g*256+b;
             document.getElementById('tbHTMLColor2').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc2);
             document.getElementById('sHue2').value = blr.W15yQC.ContrastDialog.fnComputeHueFromRGB(r,g,b);
@@ -285,11 +292,12 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnColor2SliderChange: function() {
+        var r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var r = parseInt(document.getElementById('sRed2').value);
-            var g = parseInt(document.getElementById('sGreen2').value);
-            var b = parseInt(document.getElementById('sBlue2').value);
+            r = parseInt(document.getElementById('sRed2').value,10);
+            g = parseInt(document.getElementById('sGreen2').value,10);
+            b = parseInt(document.getElementById('sBlue2').value,10);
             
             blr.W15yQC.ContrastDialog.fgc2 = r*65536+g*256+b;
             document.getElementById('tbHTMLColor2').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc2);
@@ -303,9 +311,10 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnColor2HSBChange: function() {
+        var RGB;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHue2').value,document.getElementById('sSat2').value,document.getElementById('sBrightness2').value);
+            RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHue2').value,document.getElementById('sSat2').value,document.getElementById('sBrightness2').value);
             document.getElementById('sRed2').value = RGB[0];
             document.getElementById('sGreen2').value = RGB[1];
             document.getElementById('sBlue2').value = RGB[2];
@@ -320,13 +329,14 @@ blr.W15yQC.ContrastDialog = {
 // ------ BG Color
 
     fnBGHTMLColorChange: function(newColor) {
+        var RGB, r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             if(newColor!=null) document.getElementById('tbHTMLColorBG').value=newColor;
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColorBG').value);
-            var r = document.getElementById('sRedBG').value = RGB[0];
-            var g = document.getElementById('sGreenBG').value = RGB[1];
-            var b = document.getElementById('sBlueBG').value = RGB[2];
+            RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColorBG').value);
+            r = document.getElementById('sRedBG').value = RGB[0];
+            g = document.getElementById('sGreenBG').value = RGB[1];
+            b = document.getElementById('sBlueBG').value = RGB[2];
             blr.W15yQC.ContrastDialog.bgc = r*65536+g*256+b;
             document.getElementById('tbHTMLColorBG').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.bgc);
             document.getElementById('cpBG').color = document.getElementById('tbHTMLColorBG').value;
@@ -339,12 +349,13 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnBGColorPickerChange: function() {
+        var RGB, r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cpBG').color);
-            var r = document.getElementById('sRedBG').value = RGB[0];
-            var g = document.getElementById('sGreenBG').value = RGB[1];
-            var b = document.getElementById('sBlueBG').value = RGB[2];
+            RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cpBG').color);
+            r = document.getElementById('sRedBG').value = RGB[0];
+            g = document.getElementById('sGreenBG').value = RGB[1];
+            b = document.getElementById('sBlueBG').value = RGB[2];
             blr.W15yQC.ContrastDialog.bgc = r*65536+g*256+b;
             document.getElementById('tbHTMLColorBG').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.bgc);
             document.getElementById('sHueBG').value = blr.W15yQC.ContrastDialog.fnComputeHueFromRGB(r,g,b);
@@ -356,11 +367,12 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnBGSliderChange: function() {
+        var r, g, b;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var r = parseInt(document.getElementById('sRedBG').value);
-            var g = parseInt(document.getElementById('sGreenBG').value);
-            var b = parseInt(document.getElementById('sBlueBG').value);
+            r = parseInt(document.getElementById('sRedBG').value,10);
+            g = parseInt(document.getElementById('sGreenBG').value,10);
+            b = parseInt(document.getElementById('sBlueBG').value,10);
             
             blr.W15yQC.ContrastDialog.bgc = r*65536+g*256+b;
             document.getElementById('tbHTMLColorBG').value = blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.bgc);
@@ -374,9 +386,10 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnBGHSBChange: function() {
+        var RGB;
         if(blr.W15yQC.ContrastDialog.updatingValues==false) {
             blr.W15yQC.ContrastDialog.updatingValues = true;
-            var RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHueBG').value,document.getElementById('sSatBG').value,document.getElementById('sBrightnessBG').value);
+            RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHueBG').value,document.getElementById('sSatBG').value,document.getElementById('sBrightnessBG').value);
             document.getElementById('sRedBG').value = RGB[0];
             document.getElementById('sGreenBG').value = RGB[1];
             document.getElementById('sBlueBG').value = RGB[2];
@@ -389,22 +402,22 @@ blr.W15yQC.ContrastDialog = {
     },
     
     fnUpdateContrastValuesDisplay: function() {
-        var el1, el2, el3;
-        var r1 = parseInt(document.getElementById('sRed1').value);
-        var g1 = parseInt(document.getElementById('sGreen1').value);
-        var b1 = parseInt(document.getElementById('sBlue1').value);
+        var el1, el2, r1, g1, b1, r2, g2, b2, rBG, gBG, bBG, lrc1bg, lrc2bg, lrc1rc2, c1, c2, bg, if1, if2, if3;
+        r1 = parseInt(document.getElementById('sRed1').value,10);
+        g1 = parseInt(document.getElementById('sGreen1').value,10);
+        b1 = parseInt(document.getElementById('sBlue1').value,10);
         
-        var r2 = parseInt(document.getElementById('sRed2').value);
-        var g2 = parseInt(document.getElementById('sGreen2').value);
-        var b2 = parseInt(document.getElementById('sBlue2').value);
+        r2 = parseInt(document.getElementById('sRed2').value,10);
+        g2 = parseInt(document.getElementById('sGreen2').value,10);
+        b2 = parseInt(document.getElementById('sBlue2').value,10);
         
-        var rBG = parseInt(document.getElementById('sRedBG').value);
-        var gBG = parseInt(document.getElementById('sGreenBG').value);
-        var bBG = parseInt(document.getElementById('sBlueBG').value);
+        rBG = parseInt(document.getElementById('sRedBG').value,10);
+        gBG = parseInt(document.getElementById('sGreenBG').value,10);
+        bBG = parseInt(document.getElementById('sBlueBG').value,10);
         
-        var lrc1bg = blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1,g1,b1, rBG,gBG,bBG);
-        var lrc2bg = blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r2,g2,b2, rBG,gBG,bBG);
-        var lrc1rc2 = blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1,g1,b1, r2,g2,b2);
+        lrc1bg = blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1,g1,b1, rBG,gBG,bBG);
+        lrc2bg = blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r2,g2,b2, rBG,gBG,bBG);
+        lrc1rc2 = blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1,g1,b1, r2,g2,b2);
         
         document.getElementById('resultsC1BGContrast').value = lrc1bg;
         document.getElementById('resultsC2BGContrast').value = lrc2bg;
@@ -414,10 +427,10 @@ blr.W15yQC.ContrastDialog = {
         blr.W15yQC.ContrastDialog.setResults(lrc2bg,'C2BGWCAG2AACompliant','C2BGWCAG2AACompliant18p','C2BGWCAG2AAACompliant','C2BGWCAG2AAACompliant18p');
         blr.W15yQC.ContrastDialog.setResults(lrc1rc2,'C1C2WCAG2AACompliant','C1C2WCAG2AACompliant18p','C1C2WCAG2AAACompliant','C1C2WCAG2AAACompliant18p');
 
-        var if1 = document.getElementById("iframeC1BG");
-        var c1=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
-        var c2=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc2);
-        var bg=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.bgc);
+        if1 = document.getElementById("iframeC1BG");
+        c1=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc1);
+        c2=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.fgc2);
+        bg=blr.W15yQC.ContrastDialog.fnGetColorString(blr.W15yQC.ContrastDialog.bgc);
         if1.contentDocument.body.style.color=c1;
         if1.contentDocument.body.style.backgroundColor=bg;
         if1.contentDocument.body.style.margin='0';
@@ -437,8 +450,8 @@ blr.W15yQC.ContrastDialog = {
         el1.appendChild(el2);
         if1.contentDocument.body.appendChild(el1);
         
-        var if2 = document.getElementById("iframeC2BG");
-        if2.contentDocument.body.style.color=c2
+        if2 = document.getElementById("iframeC2BG");
+        if2.contentDocument.body.style.color=c2;
         if2.contentDocument.body.style.backgroundColor=bg;
         if2.contentDocument.body.style.margin='0';
         if2.contentDocument.body.style.padding='0';
@@ -457,7 +470,7 @@ blr.W15yQC.ContrastDialog = {
         el1.appendChild(el2);
         if2.contentDocument.body.appendChild(el1);
         
-        var if3 = document.getElementById("iframeC1C2");
+        if3 = document.getElementById("iframeC1C2");
         if3.contentDocument.body.style.color=c1;
         if3.contentDocument.body.style.backgroundColor=bg;
         if3.contentDocument.body.style.margin='0';
@@ -498,10 +511,10 @@ blr.W15yQC.ContrastDialog = {
     },
  
     addSecondColor: function() {
-        var gbColor2=document.getElementById('gbColor2');
-        var resultsC1C2=document.getElementById('resultsC1C2');
-        var resultsC2BG=document.getElementById('resultsC2BG');
-        var buttonaddColor=document.getElementById('button-addColor');
+        var gbColor2=document.getElementById('gbColor2'),
+            resultsC1C2=document.getElementById('resultsC1C2'),
+            resultsC2BG=document.getElementById('resultsC2BG'),
+            buttonaddColor=document.getElementById('button-addColor');
         gbColor2.hidden=false;
         resultsC1C2.hidden=false;
         resultsC2BG.hidden=false;
@@ -510,6 +523,5 @@ blr.W15yQC.ContrastDialog = {
     
     cleanup: function() {
     }
-    
-    
-}
+
+};
