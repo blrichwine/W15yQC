@@ -8,7 +8,6 @@
   <stringbundleset id="stringbundleset">
     <stringbundle id="overlay-string-bundle" src="chrome://W15yQC/locale/overlay.properties"/>
   </stringbundleset>
-
   <menupopup id="menu_ToolsPopup">
     <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
       <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">

@@ -42,53 +42,54 @@ blr.W15yQC.LandmarksDialog = {
     aDocumentsList: null,
     aARIALandmarksList: null,
     fnPopulateTree: function(aDocumentsList, aARIALandmarksList) {
+        var tbc, ak, ch, i, treecell, treeitem, treerow, textbox, bHasStateDescription;
         if(aDocumentsList != null && aARIALandmarksList != null && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
-            var tbc = document.getElementById('treeboxChildren');
+            tbc = document.getElementById('treeboxChildren');
             if(tbc != null) {
-                var bHasStateDescription = false;
-                for(var i=0; i<aARIALandmarksList.length; i++) {
-                    var ak = aARIALandmarksList[i];
+                bHasStateDescription = false;
+                for(i=0; i<aARIALandmarksList.length; i++) {
+                    ak = aARIALandmarksList[i];
                     if(ak.stateDescription) bHasStateDescription = true;
                 }
                 if(!bHasStateDescription) {
-                    var ch = document.getElementById('col-header-state');
+                    ch = document.getElementById('col-header-state');
                     ch.setAttribute('hidden','true');
                 }
                 if(aDocumentsList.length<=1) {
-                    var ch = document.getElementById('col-header-documentNumber');
+                    ch = document.getElementById('col-header-documentNumber');
                     ch.setAttribute('hidden','true');
                 }
 
-                for(var i=0; i<aARIALandmarksList.length; i++) {
-                    var treeitem = document.createElement('treeitem');
-                    var treerow = document.createElement('treerow');
-                    var treecell = document.createElement('treecell');
+                for(i=0; i<aARIALandmarksList.length; i++) {
+                    treeitem = document.createElement('treeitem');
+                    treerow = document.createElement('treerow');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',i+1);
                     treerow.appendChild(treecell);
                     
-                    var ak = aARIALandmarksList[i];
+                    ak = aARIALandmarksList[i];
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.ownerDocumentNumber);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',aDocumentsList[ak.ownerDocumentNumber-1].URL);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.nodeDescription);
                     treerow.appendChild(treecell);
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.role);
                     treerow.appendChild(treecell);                    
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.label);
                     treerow.appendChild(treecell);
 
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.stateDescription);
                     treerow.appendChild(treecell);
 
@@ -107,7 +108,7 @@ blr.W15yQC.LandmarksDialog = {
                 }
             }
         } else {
-            var textbox = document.getElementById('note-text');
+            textbox = document.getElementById('note-text');
             textbox.value = "No ARIA Landmarks were detected.";
         }
     },
@@ -122,6 +123,8 @@ blr.W15yQC.LandmarksDialog = {
         blr.W15yQC.fnAnalyzeARIALandmarks(blr.W15yQC.LandmarksDialog.aARIALandmarksList, blr.W15yQC.LandmarksDialog.aDocumentsList);
         
         blr.W15yQC.LandmarksDialog.fnPopulateTree(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
+
+        if(blr.W15yQC.LandmarksDialog.FirebugO == null || !blr.W15yQC.AccessKeyDialog.FirebugO.Inspector ) { document.getElementById('button-showInFirebug').hidden=true; }
     },
     
     cleanup: function() {
@@ -133,13 +136,13 @@ blr.W15yQC.LandmarksDialog = {
     },
     
     updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox');
-        var textbox = document.getElementById('note-text');
-        var err;
+        var treebox = document.getElementById('treebox'),
+            textbox = document.getElementById('note-text'),
+            selectedRow, box;
         
         if(bHighlightElement === null) bHighlightElement = true;
 
-        var selectedRow = treebox.currentIndex;
+        selectedRow = treebox.currentIndex;
         if(selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
             bHighlightElement = false;
@@ -155,7 +158,7 @@ blr.W15yQC.LandmarksDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].xpath, "\n\n");
         
         if(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node != null) {
-            var box = blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node.getBoundingClientRect();
+            box = blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node.getBoundingClientRect();
             if(box != null) {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");                
             }
@@ -190,24 +193,32 @@ blr.W15yQC.LandmarksDialog = {
             blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
         }        
     },
+
+    highlightARIALandmarks: function() {
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
+        blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.LandmarksDialog.aDocumentsList,blr.W15yQC.LandmarksDialog.aARIALandmarksList);
+    },
     
     showInFirebug: function() {
+        var treebox, selectedRow;
         if(blr.W15yQC.LandmarksDialog.FirebugO!=null) {
             try{
+                blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
                 if(blr.W15yQC.LandmarksDialog.aARIALandmarksList != null && blr.W15yQC.LandmarksDialog.aARIALandmarksList.length && blr.W15yQC.LandmarksDialog.aARIALandmarksList.length>0) {
-                    var treebox = document.getElementById('treebox');
-                    var selectedRow = treebox.currentIndex;
+                    treebox = document.getElementById('treebox');
+                    selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) { selectedRow = 0; }
                     blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
                     blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.LandmarksDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LandmarksDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+                    void function(arg){blr.W15yQC.LandmarksDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LandmarksDialog.FirebugO.Inspector.inspectFromContextMenu(arg);});}(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
                 }
             } catch(ex) {}
         }
     },
     
     generateReportHTML: function() {
+        blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
         blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LandmarksDialog.FirebugO, 'landmarks');
     }
     
-}
+};

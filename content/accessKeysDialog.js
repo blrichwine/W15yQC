@@ -216,7 +216,7 @@ blr.W15yQC.AccessKeyDialog = {
             blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedRow].node);
         }        
     },
-
+    
     generateReportHTML: function() {
         blr.W15yQC.openHTMLReportWindow(blr.W15yQC.AccessKeyDialog.FirebugO, 'accesskeys');
     }
