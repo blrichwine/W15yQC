@@ -35,60 +35,9 @@ if (!blr) { var blr = {}; }
     
 blr.W15yQC.Highlighters = {
 
-    //highlightLinks: function(aDocumentsList) {
-    //    var err, styleElement = null, setHighlights=false;
-    //    //try {
-    //        if(aDocumentsList==null) {
-    //          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
-    //        }
-    //        if(aDocumentsList != null && aDocumentsList.length>0) {
-    //            styleElement = aDocumentsList[0].doc.getElementById('W15yQCLinksHighlightStyle');
-    //            if (styleElement!=null)
-    //            {
-    //                blr.W15yQC.Highlighters.removeLinkHighlights(aDocumentsList);
-    //                setHighlights = false;
-    //            } else {
-    //                blr.W15yQC.Highlighters.extendedHighlightLinks(aDocumentsList);
-    //                setHighlights = true;
-    //            }
-    //        }
-    //    //} catch (err) { }
-    //    return setHighlights; // return status of highlights
-    //},
-    //
-    //extendedHighlightLinks: function(aDocumentsList) { // TODO: What about definition lists?
-    //    var doc, styleElement, i;
-    //    if(aDocumentsList != null && aDocumentsList.length>0) {
-    //        for(i=0; i<aDocumentsList.length; i++) {
-    //            doc = aDocumentsList[i].doc;
-    //            if(doc != null) {
-    //                var styleElement = doc.createElement('style');
-    //                styleElement.innerHTML = 'dl,ol,ul{border: 2px solid red !important;margin:3px !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
-    //                styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
-    //                doc.head.insertBefore(styleElement,doc.head.firstChild);
-    //            }
-    //        }
-    //    }
-    //},
-    //
-    //removeLinkHighlights: function(aDocumentsList) {
-    //    var doc, i, styleElement=null, infoElements=null;
-    //    if(aDocumentsList != null && aDocumentsList.length>0) {
-    //        for(var i=0; i<aDocumentsList.length; i++) {
-    //            doc = aDocumentsList[i].doc;
-    //            if(doc != null) {
-    //                styleElement = doc.getElementById('W15yQCListsHighlightStyle');
-    //                if (styleElement) {
-    //                  styleElement.parentNode.removeChild(styleElement);
-    //                }
-    //            }
-    //        }
-    //    }
-    //},
-    //
     highlightLists: function(aDocumentsList) {
-        var err, styleElement = null, setHighlights=false;
-        //try {
+        var styleElement = null, setHighlights=false;
+        try {
             if(aDocumentsList==null) {
               aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
             }
@@ -103,17 +52,17 @@ blr.W15yQC.Highlighters = {
                     setHighlights = true;
                 }
             }
-        //} catch (err) { }
+        } catch (ex) { }
         return setHighlights; // return status of highlights
     },
     
     basicHighlightLists: function(aDocumentsList) {
-        var doc, styleElement, i, j, tables, tableIndex, insert, span1;
+        var doc, styleElement, i;
         if(aDocumentsList != null && aDocumentsList.length>0) {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
-                    var styleElement = doc.createElement('style');
+                    styleElement = doc.createElement('style');
                     styleElement.innerHTML = 'dl,ol,ul{border: 2px solid red !important;margin:3px !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
@@ -123,14 +72,14 @@ blr.W15yQC.Highlighters = {
     },
     
     extendedHighlightLists: function(aDocumentsList) { // TODO: What about definition lists?
+        var doc, styleElement, i, lists, listIndex, div, span;
         blr.W15yQC.Highlighters.removeListHighlights(aDocumentsList);
-        var doc, styleElement, i, j, lists, listIndex, div, span;
         if(aDocumentsList != null && aDocumentsList.length>0) {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null && doc.body && doc.head && doc.head.firstChild) {
-                    var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = 'div.w15yqcListBorder {border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:all !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
+                    styleElement = doc.createElement('style');
+                    styleElement.innerHTML = 'div.w15yqcListBorder {border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
                     styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                     lists = doc.getElementsByTagName('ul');
@@ -179,9 +128,9 @@ blr.W15yQC.Highlighters = {
     },
     
     removeListHighlights: function(aDocumentsList) {
-        var doc, i, styleElement=null, infoElements=null;
+        var doc, i, styleElement=null;
         if(aDocumentsList != null && aDocumentsList.length>0) {
-            for(var i=0; i<aDocumentsList.length; i++) {
+            for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     styleElement = doc.getElementById('W15yQCListsHighlightStyle');
@@ -194,8 +143,8 @@ blr.W15yQC.Highlighters = {
     },
     
     highlightHeadings: function(aDocumentsList, aHeadingsList) {
-        var err, styleElement = null, setHighlights=false;
-        //try {
+        var styleElement = null, setHighlights=false;
+        try {
             if(aDocumentsList==null) {
               aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
               if(aDocumentsList != null && aDocumentsList.length>0) {
@@ -213,18 +162,18 @@ blr.W15yQC.Highlighters = {
                     setHighlights = true;
                 }
             }
-        //} catch (err) { }
+        } catch (ex) { }
         return setHighlights; // return status of highlights
     },
     
     extendedHighlightHeadings: function(aDocumentsList, aHeadingsList) {
-        var doc, styleElement, i, j, tables, tableIndex, insert, span1;
+        var doc, styleElement, i, j, insert, span1;
         if(aDocumentsList != null && aDocumentsList.length>0) {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
-                    var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = '.w15yqcHeadingInsert{float:none !important}.w15yqcH1{border: 2px solid red !important;margin:2px !important}.w15yqcH2{border: 2px solid red !important;margin:2px !important}.w15yqcH3{border: 2px solid red !important;margin:2px !important}.w15yqcH4{border: 2px solid red !important;margin:2px !important}.w15yqcH5{border: 2px solid red !important;margin:2px !important}.w15yqcH6{border: 2px solid red !important;margin:2px !important}span.w15yqcHxInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:all !important}.w15yqcH1 span.w15yqcHxInsert{font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{font-size:13px;line-height:15px}';
+                    styleElement = doc.createElement('style');
+                    styleElement.innerHTML = '.w15yqcHeadingInsert{float:none !important}.w15yqcH1{border: 2px solid red !important;margin:2px !important}.w15yqcH2{border: 2px solid red !important;margin:2px !important}.w15yqcH3{border: 2px solid red !important;margin:2px !important}.w15yqcH4{border: 2px solid red !important;margin:2px !important}.w15yqcH5{border: 2px solid red !important;margin:2px !important}.w15yqcH6{border: 2px solid red !important;margin:2px !important}span.w15yqcHxInsert{border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}.w15yqcH1 span.w15yqcHxInsert{font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{font-size:13px;line-height:15px}';
                     styleElement.setAttribute('id', 'W15yQCHeadingsHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -248,7 +197,7 @@ blr.W15yQC.Highlighters = {
     removeHeadingHighlights: function(aDocumentsList) {
         var doc, i, styleElement=null, infoElements=null;
         if(aDocumentsList != null && aDocumentsList.length>0) {
-            for(var i=0; i<aDocumentsList.length; i++) {
+            for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     styleElement = doc.getElementById('W15yQCHeadingsHighlightStyle');
@@ -265,8 +214,8 @@ blr.W15yQC.Highlighters = {
     },
 
     highlightARIALandmarks: function(aDocumentsList, aARIALandmarksList) {
-        var err, styleElement = null, setHighlights=false;
-        //try {
+        var styleElement = null, setHighlights=false;
+        try {
             if(aDocumentsList==null) {
               aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
               if(aDocumentsList != null && aDocumentsList.length>0) {
@@ -284,18 +233,18 @@ blr.W15yQC.Highlighters = {
                     setHighlights = true;
                 }
             }
-        //} catch (err) { }
+        } catch (ex) { }
         return setHighlights; // return status of highlights
     },
     
     extendedHighlightARIALandmarks: function(aDocumentsList, aARIALandmarksList) {
-        var doc, styleElement, i, j, tables, tableIndex, insert, span1, sInsertText;
+        var doc, styleElement, i, j, insert, span1, sInsertText;
         if(aDocumentsList != null && aDocumentsList.length>0) {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
-                    var styleElement = doc.createElement('style');
-                    styleElement.innerHTML = '.w15yqcARIALandmarkInsert{float:none !important}.w15yqcARIALandmark{border:2px solid red !important}.w15yqcALInsert{float:none !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:all !important}';
+                    styleElement = doc.createElement('style');
+                    styleElement.innerHTML = '.w15yqcARIALandmarkInsert{float:none !important}.w15yqcARIALandmark{border:2px solid red !important}.w15yqcALInsert{float:none !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
                     styleElement.setAttribute('id', 'W15yQCARIALandmarksHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
                 }
@@ -323,7 +272,7 @@ blr.W15yQC.Highlighters = {
     removeARIALandmarkHighlights: function(aDocumentsList) {
         var doc, i, styleElement=null, infoElements=null;
         if(aDocumentsList != null && aDocumentsList.length>0) {
-            for(var i=0; i<aDocumentsList.length; i++) {
+            for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     styleElement = doc.getElementById('W15yQCARIALandmarksHighlightStyle');
@@ -340,8 +289,8 @@ blr.W15yQC.Highlighters = {
     },
 
     highlightTables: function(aDocumentsList) {
-        var err, styleElement = null, setHighlights=false;
-        //try {
+        var styleElement = null, setHighlights=false;
+        try {
             if(aDocumentsList==null) {
               aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
             }
@@ -356,7 +305,7 @@ blr.W15yQC.Highlighters = {
                     setHighlights = true;
                 }
             }
-        //} catch (err) { }
+        } catch (ex) { }
         return setHighlights; // return status of highlights
     },
     
@@ -366,7 +315,7 @@ blr.W15yQC.Highlighters = {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
-                    var styleElement = doc.createElement('style');
+                    styleElement = doc.createElement('style');
                     styleElement.innerHTML = 'table {border: 1px solid red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
                     styleElement.setAttribute('id', 'W15yQCTableHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
@@ -381,7 +330,7 @@ blr.W15yQC.Highlighters = {
             for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
-                    var styleElement = doc.createElement('style');
+                    styleElement = doc.createElement('style');
                     styleElement.innerHTML = 'div.w15yqcTHSummary, div.w15yqcTHInsert{color:black !important;border: 2px solid green !important; background-color:#AAFFAA !important;margin:3px 0px 3px 0px !important;padding:3px !important}div.w15yqcTHSummary span{font-weight:bold !important}div.w15yqcTHInsert ul{margin:0 !important;padding-left:18px !important} table.w15yqcIsDataTable {border: 2px solid red !important; } table {border: 2px dotted red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {border-right: 4px solid green !important}';
                     styleElement.setAttribute('id', 'W15yQCTableHighlightStyle');
                     doc.head.insertBefore(styleElement,doc.head.firstChild);
@@ -398,8 +347,10 @@ blr.W15yQC.Highlighters = {
     },
     
     addExtendedTableHighlights: function (doc, table) {
-        var i,insert, sMsg, scope, summary, maxCols=0, maxRows=0, nodeStack=[], node, tagName, isDataTable=false, insertParents=[], insertEls=[], sAxis, aAxisList, ul, li, sAbbr,
-        headers, headerText='', header, rowCount, colCount, span, firstRowFound=false, pastFirstRow=false, firstCol=true, nextSibling, nextRowCellIsAHeading=false,hasMoreRows=false;
+        var i,insert, sMsg, scope, nodeStack=[], node, tagName,
+        isDataTable=false, insertParents=[], insertEls=[], sAxis, aAxisList, ul, li, sAbbr,
+        headers, headerText='', header, span, foundFirstRow=false,
+        pastFirstRow=false, firstCol=true, nextSibling, nextRowCellIsAHeading=false,hasMoreRows=false;
         if(table != null && !table.className.match(new RegExp('(\\s|^)w15yqcIsDataTable(\\s|$)'))) {
             if(blr.W15yQC.fnStringHasContent(table.getAttribute('summary'))) {
                 isDataTable = true;
@@ -517,8 +468,8 @@ blr.W15yQC.Highlighters = {
                                 }
                             }
                         }
-                        if(node.firstChild != null && tagName=='tr' || tagName=='thead' || tagName=='tbody' || tagName=='tfoot') {
-                            if(firstRowFound==true) {pastFirstRow==true;}
+                        if(node.firstChild != null && (tagName=='tr' || tagName=='thead' || tagName=='tbody' || tagName=='tfoot')) {
+                            if(foundFirstRow==true) {pastFirstRow=true;}
                             firstCol=true;
                             hasMoreRows=false;
                             nextSibling=node.nextSibling;
@@ -554,7 +505,7 @@ blr.W15yQC.Highlighters = {
     removeTableHighlights: function(aDocumentsList) {
         var doc, i, styleElement=null, infoElements=null, tables=null;
         if(aDocumentsList != null && aDocumentsList.length>0) {
-            for(var i=0; i<aDocumentsList.length; i++) {
+            for(i=0; i<aDocumentsList.length; i++) {
                 doc = aDocumentsList[i].doc;
                 if(doc != null) {
                     styleElement = doc.getElementById('W15yQCTableHighlightStyle');
@@ -576,8 +527,6 @@ blr.W15yQC.Highlighters = {
                 }
             }
         }
-    },
-
-
-    
-}
+    }
+   
+};
