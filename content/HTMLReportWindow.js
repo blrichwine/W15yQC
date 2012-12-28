@@ -46,13 +46,14 @@ blr.W15yQC.HTMLReportWindow = {
     rd: null,
 
     init: function(dialog) {
+        var rw, if1;
         blr.W15yQC.fnReadUserPrefs();
         if(dialog && dialog.arguments && dialog.arguments.length) {
             if(dialog.arguments.length>1) blr.W15yQC.HTMLReportWindow.FirebugO=dialog.arguments[1];
             if(dialog.arguments.length>2) blr.W15yQC.HTMLReportWindow.sReports=dialog.arguments[2];
             if(dialog.arguments.length>3) blr.W15yQC.HTMLReportWindow.bQuick=dialog.arguments[3];
          } 
-        var rw = document.getElementById("HTMLReportWindow");
+        rw = document.getElementById("HTMLReportWindow");
         if(rw != null) {
             if(blr.W15yQC.HTMLReportWindow.bQuick) {
                 rw.setAttribute('title','Quick Report - W15y Quick Check');
@@ -60,11 +61,11 @@ blr.W15yQC.HTMLReportWindow = {
                 rw.setAttribute('title','Full Report - W15y Quick Check');
             }
         }
-        var if1 = document.getElementById("HTMLReportIFrame");
-        if(if1!=null && if1.contentDocument) { rd=if1.contentDocument; }
+        if1 = document.getElementById("HTMLReportIFrame");
+        if(if1!=null && if1.contentDocument) { blr.W15yQC.HTMLReportWindow.rd=if1.contentDocument; }
 
-        prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-        blr.W15yQC.fnInspect(rd,blr.W15yQC.HTMLReportWindow.sReports, blr.W15yQC.HTMLReportWindow.bQuick);
+        blr.W15yQC.HTMLReportWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
+        blr.W15yQC.fnInspect(blr.W15yQC.HTMLReportWindow.rd,blr.W15yQC.HTMLReportWindow.sReports, blr.W15yQC.HTMLReportWindow.bQuick);
     },
     
     windowOnKeyDown: function(win,evt) {
@@ -95,7 +96,7 @@ blr.W15yQC.HTMLReportWindow = {
     },
     
     showInFirebug: function() {
-        var treebox,aList;
+        var treebox,aList, selectedRow;
         if(blr.W15yQC.HTMLReportWindow.FirebugO!=null) {
             try{
                 if(blr.W15yQC.HTMLReportWindow.aFormControlsList != null && blr.W15yQC.HTMLReportWindow.aFormControlsList.length && blr.W15yQC.HTMLReportWindow.aFormControlsList.length>0) {
@@ -106,7 +107,7 @@ blr.W15yQC.HTMLReportWindow = {
                         treebox = document.getElementById('treebox2');
                         aList=blr.W15yQC.HTMLReportWindow.aFormControlsList;
                     }
-                    var selectedRow = treebox.currentIndex;
+                    selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) {
                         selectedRow = 0;
                     }
@@ -114,14 +115,14 @@ blr.W15yQC.HTMLReportWindow = {
                         blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
                     }
                     aList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.HTMLReportWindow.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.HTMLReportWindow.FirebugO.Inspector.inspectFromContextMenu(arg);})}(aList[selectedRow].node);
+                    void function(arg){blr.W15yQC.HTMLReportWindow.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.HTMLReportWindow.FirebugO.Inspector.inspectFromContextMenu(arg);});}(aList[selectedRow].node);
                 }
             } catch(ex) {}
         }
     },
     
      moveToSelectedElement: function() {
-        var treebox, aList;
+        var treebox, aList, selectedRow;
         if(blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus != null) {
             treebox=blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus;
             aList=blr.W15yQC.HTMLReportWindow.aLastList;
@@ -129,14 +130,14 @@ blr.W15yQC.HTMLReportWindow = {
             treebox = document.getElementById('treebox2');
             aList=blr.W15yQC.HTMLReportWindow.aFormControlsList;
         }
-        var selectedRow = treebox.currentIndex;
+        selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnMoveToElement(aList[selectedRow].node);
         }        
     },
     
     moveFocusToSelectedElement: function() {
-        var treebox, aList;
+        var treebox, aList, selectedRow;
         if(blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus != null) {
             treebox=blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus;
             aList=blr.W15yQC.HTMLReportWindow.aLastList;
@@ -144,7 +145,7 @@ blr.W15yQC.HTMLReportWindow = {
             treebox = document.getElementById('treebox2');
             aList=blr.W15yQC.HTMLReportWindow.aFormControlsList;
         }
-        var selectedRow = treebox.currentIndex;
+        selectedRow = treebox.currentIndex;
         if(selectedRow != null && treebox.currentIndex >= 0) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
             blr.W15yQC.fnMoveFocusToElement(aList[selectedRow].node);
@@ -158,11 +159,11 @@ blr.W15yQC.HTMLReportWindow = {
     },
     
     printReport: function () {
-        if(rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body && rd.body.children && rd.body.children.length &&
-           rd.defaultView && rd.defaultView.print) {
-            rd.defaultView.print();
+        if(blr.W15yQC.HTMLReportWindow.rd != null && blr.W15yQC.HTMLReportWindow.rd.documentElement && blr.W15yQC.HTMLReportWindow.rd.documentElement.innerHTML && blr.W15yQC.HTMLReportWindow.rd.body && blr.W15yQC.HTMLReportWindow.rd.body.children && blr.W15yQC.HTMLReportWindow.rd.body.children.length &&
+           blr.W15yQC.HTMLReportWindow.rd.defaultView && blr.W15yQC.HTMLReportWindow.rd.defaultView.print) {
+            blr.W15yQC.HTMLReportWindow.rd.defaultView.print();
         } else { 
-            if(prompts.alert) prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to print!");
+            if(blr.W15yQC.HTMLReportWindow.prompts.alert) blr.W15yQC.HTMLReportWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to print!");
         }
     },
     
@@ -174,7 +175,9 @@ blr.W15yQC.HTMLReportWindow = {
           nsIFilePicker,
           rv;
           
-        if(rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body && rd.body.children && rd.body.children.length) {
+        if(blr.W15yQC.HTMLReportWindow.rd != null && blr.W15yQC.HTMLReportWindow.rd.documentElement &&
+           blr.W15yQC.HTMLReportWindow.rd.documentElement.innerHTML && blr.W15yQC.HTMLReportWindow.rd.body &&
+           blr.W15yQC.HTMLReportWindow.rd.body.children && blr.W15yQC.HTMLReportWindow.rd.body.children.length) {
           nsIFilePicker = Components.interfaces.nsIFilePicker;
     
           fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
@@ -194,12 +197,12 @@ blr.W15yQC.HTMLReportWindow = {
             foStream.init(file, 0x2A, 438, 0);
             converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);  
             converter.init(foStream, "UTF-8", 0, 0);  
-            converter.writeString('<html>'+rd.documentElement.innerHTML+'</html>');
+            converter.writeString('<html>'+blr.W15yQC.HTMLReportWindow.rd.documentElement.innerHTML+'</html>');
             converter.close(); // this closes foStream            
           }
         } else { 
-            if(prompts.alert) prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
+            if(blr.W15yQC.HTMLReportWindow.prompts.alert) blr.W15yQC.HTMLReportWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
         }
-    },
+    }
 
-}
+};
