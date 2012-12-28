@@ -40,33 +40,34 @@ if (!blr) { var blr = {}; }
  */
 blr.W15yQC.FramesDialog = {
     fnPopulateTree: function(aDocumentsList, aFramesList) {
+        var tbc, bHasRole, bHasStateDescription, i, ak, ch, treecell, treeitem, treerow, textbox;
         if(aDocumentsList != null && aFramesList != null && aFramesList.length && aFramesList.length > 0) {
-            var tbc = document.getElementById('treeboxChildren');
+            tbc = document.getElementById('treeboxChildren');
             if(tbc != null) {
-                var bHasRole = false;
-                var bHasStateDescription = false;
-                for(var i=0; i<aFramesList.length; i++) {
-                    var ak = aFramesList[i];
+                bHasRole = false;
+                bHasStateDescription = false;
+                for(i=0; i<aFramesList.length; i++) {
+                    ak = aFramesList[i];
                     if(ak.stateDescription) bHasStateDescription = true;
                 }
                 if(!bHasStateDescription) {
-                    var ch = document.getElementById('col-header-state');
+                    ch = document.getElementById('col-header-state');
                     ch.setAttribute('hidden','true');
                 }
                 if(aDocumentsList.length<=1) {
-                    var ch = document.getElementById('col-header-documentNumber');
+                    ch = document.getElementById('col-header-documentNumber');
                     ch.setAttribute('hidden','true');
                 }
 
-                for(var i=0; i<aFramesList.length; i++) {
-                    var treeitem = document.createElement('treeitem');
-                    var treerow = document.createElement('treerow');
+                for(i=0; i<aFramesList.length; i++) {
+                    treeitem = document.createElement('treeitem');
+                    treerow = document.createElement('treerow');
                     
-                    var treecell = document.createElement('treecell');
+                    treecell = document.createElement('treecell');
                     treecell.setAttribute('label',i+1);
                     treerow.appendChild(treecell);
                     
-                    var ak = aFramesList[i];
+                    ak = aFramesList[i];
                     
                     treecell = document.createElement('treecell');
                     treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -111,7 +112,7 @@ blr.W15yQC.FramesDialog = {
                 }
             }
         } else {
-            var textbox = document.getElementById('note-text');
+            textbox = document.getElementById('note-text');
             textbox.value = "No frame elements were detected.";
         }
     },
@@ -137,12 +138,13 @@ blr.W15yQC.FramesDialog = {
     },
     
     updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox');
-        var textbox = document.getElementById('note-text');
+        var treebox = document.getElementById('treebox'),
+            textbox = document.getElementById('note-text'),
+            selectedRow, box;
 
         if(bHighlightElement === null) bHighlightElement = true;
 
-        var selectedRow = treebox.currentIndex;
+        selectedRow = treebox.currentIndex;
         if(selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
             bHighlightElement = false;
@@ -157,7 +159,7 @@ blr.W15yQC.FramesDialog = {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FramesDialog.aFramesList[selectedRow].nodeDescription, "\n\n");
         
         if(blr.W15yQC.FramesDialog.aFramesList[selectedRow].node != null) {
-            var box = blr.W15yQC.FramesDialog.aFramesList[selectedRow].node.getBoundingClientRect();
+            box = blr.W15yQC.FramesDialog.aFramesList[selectedRow].node.getBoundingClientRect();
             if(box != null) {
                 textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n\n");                
             }
@@ -174,17 +176,18 @@ blr.W15yQC.FramesDialog = {
     },
     
     showInFirebug: function() {
+        var treebox, selectedRow;
         if(blr.W15yQC.FramesDialog.FirebugO!=null && blr.W15yQC.FramesDialog.FirebugO.GlobalUI != null) {
             try{
                 if(blr.W15yQC.FramesDialog.aFramesList != null && blr.W15yQC.FramesDialog.aFramesList.length && blr.W15yQC.FramesDialog.aFramesList.length>0) {
-                    var treebox = document.getElementById('treebox');
-                    var selectedRow = treebox.currentIndex;
+                    treebox = document.getElementById('treebox');
+                    selectedRow = treebox.currentIndex;
                     if(selectedRow == null || treebox.currentIndex < 0) {
                         selectedRow = 0;
                     }
                     blr.W15yQC.fnResetHighlights(blr.W15yQC.FramesDialog.aDocumentsList);
                     blr.W15yQC.FramesDialog.aFramesList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.FramesDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FramesDialog.FirebugO.Inspector.inspectFromContextMenu(arg);})}(blr.W15yQC.FramesDialog.aFramesList[selectedRow].node);
+                    void function(arg){blr.W15yQC.FramesDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.FramesDialog.FirebugO.Inspector.inspectFromContextMenu(arg);});}(blr.W15yQC.FramesDialog.aFramesList[selectedRow].node);
                 }
             } catch(ex) {}
         }
@@ -213,4 +216,4 @@ blr.W15yQC.FramesDialog = {
         blr.W15yQC.openHTMLReportWindow(blr.W15yQC.FramesDialog.FirebugO, 'frames');
     }
     
-}
+};
