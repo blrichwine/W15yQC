@@ -31,331 +31,353 @@
  *    
  * 
  */
-if (!blr) { var blr = {}; }
+if (!blr) {
+  var blr = {};
+}
 
 /*
  * Object:  LuminosityCheckDialog
  * Returns:
  */
 blr.W15yQC.LuminosityCheckDialog = {
-    FirebugO: null,
-    aDocumentsList: null,
-    aLumCheckList: null,
-    iLastSelectedRow: 0,
-    fnPopulateTree: function(aDocumentsList, aLumCheckList) {
-        var tbc = document.getElementById('treeboxChildren'),
-            bHasID = false,
-            bHasClass = false,
-            treeitem, treerow, treecell, textbox,
-            ak,ch,i,
-            fgC, bgC, lRatio;
+  FirebugO: null,
+  aDocumentsList: null,
+  aLumCheckList: null,
+  iLastSelectedRow: 0,
+  fnPopulateTree: function (aDocumentsList, aLumCheckList) {
+    var tbc = document.getElementById('treeboxChildren'),
+      bHasID = false,
+      bHasClass = false,
+      treeitem, treerow, treecell, textbox,
+      ak, ch, i,
+      fgC, bgC, lRatio;
 
-        if(aDocumentsList != null && aLumCheckList != null && aLumCheckList.length && aLumCheckList.length > 0) {
-            if(tbc != null) {
-                for(i=0; i<aLumCheckList.length; i++) {
-                    ak = aLumCheckList[i];
-                    if(ak.node.hasAttribute('id')) { bHasID = true; }
-                    if(ak.node.hasAttribute('class')) { bHasClass = true; }
-                }
-                 if(!bHasID) {
-                    ch = document.getElementById('col-header-id');
-                    ch.setAttribute('hidden','true');
-                }
-                if(!bHasClass) {
-                    ch = document.getElementById('col-header-class');
-                    ch.setAttribute('hidden','true');
-                }
-               if(aDocumentsList.length<=1) {
-                    ch = document.getElementById('col-header-documentNumber');
-                    ch.setAttribute('hidden','true');
-                }
-                for(i=0; i<aLumCheckList.length; i++) {
-                    treeitem = document.createElement('treeitem');
-                    treerow = document.createElement('treerow');
-                    
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label',i+1);
-                    treerow.appendChild(treecell);
-                    
-                    ak = aLumCheckList[i];
-                    
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ak.ownerDocumentNumber);
-                    treerow.appendChild(treecell);
-                                        
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ak.nodeDescription);
-                    treerow.appendChild(treecell);
-                                        
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ak.node.tagName);
-                    treerow.appendChild(treecell);
-                                        
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+(ak.node.hasAttribute('id') ? ak.node.getAttribute('id') : '')+' ');
-                    treerow.appendChild(treecell);
-                                        
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+(ak.node.hasAttribute('class') ? ak.node.getAttribute('class') : '')+' ');
-                    treerow.appendChild(treecell);
-                                        
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+ak.textSize+' ');
-                    treerow.appendChild(treecell);
-                                        
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+ak.textWeight+' ');
-                    treerow.appendChild(treecell);
-                    
-                    fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0],10)*65536+parseInt(ak.fgColor[1],10)*256+parseInt(ak.fgColor[2],10));
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+fgC+' ');
-                    treerow.appendChild(treecell);
-                                        
-                    bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0],10)*65536+parseInt(ak.bgColor[1],10)*256+parseInt(ak.bgColor[2],10));
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+bgC+' ');
-                    treerow.appendChild(treecell);
-                    
-                    lRatio = parseFloat(ak.luminosityRatio).toFixed(2);
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+lRatio+(ak.hasBackgroundImage?'?':' ')+' ');
-                    treerow.appendChild(treecell);
-                                                            
-                    treecell = document.createElement('treecell');
-                    treecell.setAttribute('label', ' '+ak.text);
-                    treerow.appendChild(treecell);
-                                        
-                    if(ak.failed) {
-                      treerow.setAttribute('properties', 'failed');
-                    } else if(ak.warning) {
-                      treerow.setAttribute('properties', 'warning');
-                    }
+    if (aDocumentsList != null && aLumCheckList != null && aLumCheckList.length && aLumCheckList.length > 0) {
+      if (tbc != null) {
+        for (i = 0; i < aLumCheckList.length; i++) {
+          ak = aLumCheckList[i];
+          if (ak.node.hasAttribute('id')) {
+            bHasID = true;
+          }
+          if (ak.node.hasAttribute('class')) {
+            bHasClass = true;
+          }
+        }
+        if (!bHasID) {
+          ch = document.getElementById('col-header-id');
+          ch.setAttribute('hidden', 'true');
+        }
+        if (!bHasClass) {
+          ch = document.getElementById('col-header-class');
+          ch.setAttribute('hidden', 'true');
+        }
+        if (aDocumentsList.length <= 1) {
+          ch = document.getElementById('col-header-documentNumber');
+          ch.setAttribute('hidden', 'true');
+        }
+        for (i = 0; i < aLumCheckList.length; i++) {
+          treeitem = document.createElement('treeitem');
+          treerow = document.createElement('treerow');
 
-                    treeitem.appendChild(treerow);
-                    tbc.appendChild(treeitem);
-                }
-            }
-            blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
-            if(aLumCheckList.length==1) {
-                blr.W15yQC.LuminosityCheckDialog.updateNotesField([aDocumentsList,aLumCheckList], false);
-            }
-        } else {
-            textbox = document.getElementById('note-text');
-            textbox.value = "No Image elements were detected.";
-        }
-    },
-        
-    init: function(dialog) {
-        blr.W15yQC.fnReadUserPrefs();
-        blr.W15yQC.LuminosityCheckDialog.FirebugO=dialog.arguments[1];
-        blr.W15yQC.LuminosityCheckDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-        blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LuminosityCheckDialog.aDocumentsList); //http://stackoverflow.com/questions/1030747/how-to-set-a-xulrunner-main-windows-minimum-size
-        blr.W15yQC.LuminosityCheckDialog.aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.opener.parent._content.document);
-        blr.W15yQC.fnAnalyzeLuminosityCheckElements(blr.W15yQC.LuminosityCheckDialog.aLumCheckList, blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-        blr.W15yQC.LuminosityCheckDialog.fnPopulateTree(blr.W15yQC.LuminosityCheckDialog.aDocumentsList, blr.W15yQC.LuminosityCheckDialog.aLumCheckList);
-        if(blr.W15yQC.LuminosityCheckDialog.FirebugO == null || !blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector ) { document.getElementById('button-showInFirebug').hidden=true; }
-    },
-    
-    forceMinSize: function(dialog) {
-        if(dialog.outerWidth>100 && dialog.outerHeight>100 && (dialog.outerWidth<800 || dialog.outerHeight<470)) { dialog.resizeTo(Math.max(800,dialog.outerWidth),Math.max(470,dialog.outerHeight)); }
-    },
-    
-    cleanup: function() {
-        if(blr.W15yQC.LuminosityCheckDialog.aDocumentsList != null) {
-            blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-            blr.W15yQC.LuminosityCheckDialog.aDocumentsList=null;
-            blr.W15yQC.LuminosityCheckDialog.aLumCheckList=null;
-        }
-    },
-    
-    updateNotesField: function(bHighlightElement) {
-        var treebox = document.getElementById('treebox'),
-            textbox = document.getElementById('note-text'),
-            selectedRow = treebox.currentIndex,
-            ak,
-            box, textSize, textWeight, lRatio,
-            AALimit, AAALimit, sTextDescription,
-            sMeetsLimitText, sLimitMsg, sSpec,
-            if1,fgC,bgC,el,highlightElementsCB;
-            
-        if(bHighlightElement == null) { bHighlightElement = true; }
-        
-        if(selectedRow == null || treebox.currentIndex < 0) {
-            selectedRow = 0;
-            bHighlightElement = false;
-        }
-        ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
-        if(ak.notes != null) {
-            textbox.value = blr.W15yQC.fnMakeTextNotesList(ak);
-        } else {
-            textbox.value = '';
-        }
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', i + 1);
+          treerow.appendChild(treecell);
 
-        textSize = parseFloat(ak.textSize);
-        textWeight = parseInt(ak.textWeight,10);
-        lRatio = parseFloat(ak.luminosityRatio);
+          ak = aLumCheckList[i];
 
-        if(textSize>=18) {
-            AALimit = 3.0;
-            AAALimit = 4.5;
-            sTextDescription = '18pt or larger';
-        } else if(textSize >= 14 && textWeight>=700) {
-            AALimit = 3.0;
-            AAALimit = 4.5;
-            sTextDescription = 'bold and 14pt or larger';
-        } else if(textWeight<700) {
-            AALimit = 4.5;
-            AAALimit = 7.0;
-            sTextDescription = 'not bold and is smaller than 18pt';
-        } else {
-            AALimit = 4.5;
-            AAALimit = 7.0;
-            sTextDescription = 'bold and smaller than 14pt';
-        }
-        if(lRatio-AAALimit>4) {
-            sMeetsLimitText='handily meets AAA compliance.';
-        } else if(lRatio-AAALimit>0.2) {
-            sMeetsLimitText='meets AAA compliance.';
-        } else if(lRatio>=AAALimit) {
-            sMeetsLimitText='just meets AAA compliance.';
-        } else if(AAALimit-lRatio<0.2) {
-            sMeetsLimitText='meets AA compliance while just missing AAA compliance.';
-        } else if(lRatio<AALimit) {
-            sMeetsLimitText='fails to meet AA compliance.';
-        } else if(lRatio-AALimit>0.2) {
-            sMeetsLimitText='meets AA compliance.';
-        } else {
-            sMeetsLimitText='just meets AA compliance.';
-        }
-        
-        sSpec=Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec','WCAG2 AA');
-        if(sSpec=='WCAG2 AA') {
-            if(lRatio<AALimit) {
-                sLimitMsg='Failed to meet';
-            } else {
-                sLimitMsg='Meets';
-            }
-        } else {
-            if(lRatio<AAALimit) {
-                sLimitMsg='Failed to meet';
-            } else {
-                sLimitMsg='Meets';
-            }
-        }
-        
-        sLimitMsg += ' '+sSpec+': For text that is '+sTextDescription+', the minimum required contrast ratio to meet WCAG 2.0 AA compliance is: '+AALimit+
-        ":1, and to meet AAA compliance is: "+AAALimit+':1. The contrast ratio of '+lRatio+':1 '+sMeetsLimitText;
-        
-        if(ak.hasBackgroundImage==true) {
-            textbox.value = blr.W15yQC.fnJoin(textbox.value, "NOTICE: Element appears to be over a background image. Contrast results may be invalid. Verify styling against sample on the right.", "\n\n");
-        }
-        
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, sLimitMsg+"\n\n"+ak.nodeDescription, "\n\n");
-        
-        if(ak.node != null) {
-            box = ak.node.getBoundingClientRect();
-            if(box != null) {
-                textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:'+Math.floor(box.top)+', Left:'+Math.floor(box.left)+', Width:'+Math.floor(box.width)+', Height:'+Math.floor(box.height), "\n");                
-            }
-        }
-        
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: '+ak.xpath, "\n");
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.ownerDocumentNumber);
+          treerow.appendChild(treecell);
 
-        if1 = document.getElementById("iframeCSample");
-        fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0],10)*65536+parseInt(ak.fgColor[1],10)*256+parseInt(ak.fgColor[2],10));
-        bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0],10)*65536+parseInt(ak.bgColor[1],10)*256+parseInt(ak.bgColor[2],10));
-        
-        while (if1.contentDocument.body.firstChild) {
-            if1.contentDocument.body.removeChild(if1.contentDocument.body.firstChild);
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.nodeDescription);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.node.tagName);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + (ak.node.hasAttribute('id') ? ak.node.getAttribute('id') : '') + ' ');
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + (ak.node.hasAttribute('class') ? ak.node.getAttribute('class') : '') + ' ');
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + ak.textSize + ' ');
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + ak.textWeight + ' ');
+          treerow.appendChild(treecell);
+
+          fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0], 10) * 65536 + parseInt(ak.fgColor[1], 10) * 256 + parseInt(ak.fgColor[2], 10));
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + fgC + ' ');
+          treerow.appendChild(treecell);
+
+          bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0], 10) * 65536 + parseInt(ak.bgColor[1], 10) * 256 + parseInt(ak.bgColor[2], 10));
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + bgC + ' ');
+          treerow.appendChild(treecell);
+
+          lRatio = parseFloat(ak.luminosityRatio).toFixed(2);
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + lRatio + (ak.hasBackgroundImage ? '?' : ' ') + ' ');
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ' ' + ak.text);
+          treerow.appendChild(treecell);
+
+          if (ak.failed) {
+            treerow.setAttribute('properties', 'failed');
+          } else if (ak.warning) {
+            treerow.setAttribute('properties', 'warning');
+          }
+
+          treeitem.appendChild(treerow);
+          tbc.appendChild(treeitem);
         }
-        if1.contentDocument.body.style.color=fgC;
-        if1.contentDocument.body.style.backgroundColor=bgC;
-        if1.contentDocument.body.style.fontFamily=window.getComputedStyle(ak.node, null).getPropertyValue("font-family");
-        if1.contentDocument.body.style.fontSize=(textSize*0.80).toString()+'pt';
-        if1.contentDocument.body.style.margin='0';
-        if1.contentDocument.body.style.padding='4px';
-        
-        if1.contentDocument.body.appendChild(if1.contentDocument.createTextNode('Example text at '+textSize+' points. '));
-        el=if1.contentDocument.createElement('i');
-        el.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
-        if1.contentDocument.body.appendChild(el);
-        el=if1.contentDocument.createElement('b');
-        el.appendChild(if1.contentDocument.createTextNode('Example text in bold.'));
-        if1.contentDocument.body.appendChild(el);
-        
-        blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-        if(blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
-            try {
-                blr.W15yQC.fnMoveToElement(ak.node);
-            } catch(err) {}
-        }
-        highlightElementsCB = document.getElementById('chkbox-highlighton');
-        if(highlightElementsCB.checked && bHighlightElement != false) { blr.W15yQC.highlightElement(ak.node, ak.doc); }
-    },
-    
-    toggleHighlighting: function() {
-        var treebox, selectedRow, highlightElementsCB = document.getElementById('chkbox-highlighton');
-        if(highlightElementsCB.checked) {
-            treebox = document.getElementById('treebox');
-            selectedRow = treebox.currentIndex;
-            if(selectedRow != null && treebox.currentIndex >= 0) {
-                blr.W15yQC.highlightElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node, blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].doc);
-            }        
-        } else {
-            blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-        }
-    },
-    
-    moveToSelectedElement: function() {
-        var treebox, selectedRow;
-        treebox = document.getElementById('treebox');
-        selectedRow = treebox.currentIndex;
-        if(selectedRow != null && treebox.currentIndex >= 0) {
-            blr.W15yQC.fnMoveToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
-        }        
-    },
-    
-    moveFocusToSelectedElement: function() {
-        var treebox, selectedRow;
-        treebox = document.getElementById('treebox');
-        selectedRow = treebox.currentIndex;
-        if(selectedRow != null && treebox.currentIndex >= 0) {
-            blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-            blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
-        }        
-    },
-    
-    openColorsInContrastTool: function() {
-        var treebox, selectedRow, ak,fgC,bgC,newWin;
-        treebox = document.getElementById('treebox');
-        selectedRow = treebox.currentIndex;
-        if(selectedRow != null && treebox.currentIndex >= 0) {
-            ak=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
-            fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0],10)*65536+parseInt(ak.fgColor[1],10)*256+parseInt(ak.fgColor[2],10));
-            bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0],10)*65536+parseInt(ak.bgColor[1],10)*256+parseInt(ak.bgColor[2],10));
-            newWin=window.openDialog('chrome://W15yQC/content/contrastDialog.xul', 'contrastToolDialog', 'chrome,resizable=yes,centerscreen', blr, fgC, bgC);
-        }        
-    },
-    
-    showInFirebug: function() {
-        var treebox, selectedRow;
-        if(blr.W15yQC.LuminosityCheckDialog.FirebugO!=null) {
-            try{
-                if(blr.W15yQC.LuminosityCheckDialog.aLumCheckList != null && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length>0) {
-                    treebox = document.getElementById('treebox');
-                    selectedRow = treebox.currentIndex;
-                    if(selectedRow == null || treebox.currentIndex < 0) { selectedRow = 0; }
-                    blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-                    blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node.ownerDocument.defaultView.focus();
-                    void function(arg){blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function(){blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector.inspectFromContextMenu(arg);});}(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
-                }
-            } catch(ex) {}
-        }
-    },
-    
-    generateReportHTML: function() {
-        // blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LuminosityCheckDialog.FirebugO, 'luminosity');
+      }
+      blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+      if (aLumCheckList.length == 1) {
+        blr.W15yQC.LuminosityCheckDialog.updateNotesField([aDocumentsList, aLumCheckList], false);
+      }
+    } else {
+      textbox = document.getElementById('note-text');
+      textbox.value = "No Image elements were detected.";
     }
-    
+  },
+
+  init: function (dialog) {
+    blr.W15yQC.fnReadUserPrefs();
+    blr.W15yQC.LuminosityCheckDialog.FirebugO = dialog.arguments[1];
+    blr.W15yQC.LuminosityCheckDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
+    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LuminosityCheckDialog.aDocumentsList); //http://stackoverflow.com/questions/1030747/how-to-set-a-xulrunner-main-windows-minimum-size
+    blr.W15yQC.LuminosityCheckDialog.aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.opener.parent._content.document);
+    blr.W15yQC.fnAnalyzeLuminosityCheckElements(blr.W15yQC.LuminosityCheckDialog.aLumCheckList, blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+    blr.W15yQC.LuminosityCheckDialog.fnPopulateTree(blr.W15yQC.LuminosityCheckDialog.aDocumentsList, blr.W15yQC.LuminosityCheckDialog.aLumCheckList);
+    if (blr.W15yQC.LuminosityCheckDialog.FirebugO == null || !blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector) {
+      document.getElementById('button-showInFirebug').hidden = true;
+    }
+  },
+
+  forceMinSize: function (dialog) {
+    if (dialog.outerWidth > 100 && dialog.outerHeight > 100 && (dialog.outerWidth < 800 || dialog.outerHeight < 470)) {
+      dialog.resizeTo(Math.max(800, dialog.outerWidth), Math.max(470, dialog.outerHeight));
+    }
+  },
+
+  cleanup: function () {
+    if (blr.W15yQC.LuminosityCheckDialog.aDocumentsList != null) {
+      blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+      blr.W15yQC.LuminosityCheckDialog.aDocumentsList = null;
+      blr.W15yQC.LuminosityCheckDialog.aLumCheckList = null;
+    }
+  },
+
+  updateNotesField: function (bHighlightElement) {
+    var treebox = document.getElementById('treebox'),
+      textbox = document.getElementById('note-text'),
+      selectedRow = treebox.currentIndex,
+      ak,
+      box, textSize, textWeight, lRatio,
+      AALimit, AAALimit, sTextDescription,
+      sMeetsLimitText, sLimitMsg, sSpec,
+      if1, fgC, bgC, el, highlightElementsCB;
+
+    if (bHighlightElement == null) {
+      bHighlightElement = true;
+    }
+
+    if (selectedRow == null || treebox.currentIndex < 0) {
+      selectedRow = 0;
+      bHighlightElement = false;
+    }
+    ak = blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
+    if (ak.notes != null) {
+      textbox.value = blr.W15yQC.fnMakeTextNotesList(ak);
+    } else {
+      textbox.value = '';
+    }
+
+    textSize = parseFloat(ak.textSize);
+    textWeight = parseInt(ak.textWeight, 10);
+    lRatio = parseFloat(ak.luminosityRatio);
+
+    if (textSize >= 18) {
+      AALimit = 3.0;
+      AAALimit = 4.5;
+      sTextDescription = '18pt or larger';
+    } else if (textSize >= 14 && textWeight >= 700) {
+      AALimit = 3.0;
+      AAALimit = 4.5;
+      sTextDescription = 'bold and 14pt or larger';
+    } else if (textWeight < 700) {
+      AALimit = 4.5;
+      AAALimit = 7.0;
+      sTextDescription = 'not bold and is smaller than 18pt';
+    } else {
+      AALimit = 4.5;
+      AAALimit = 7.0;
+      sTextDescription = 'bold and smaller than 14pt';
+    }
+    if (lRatio - AAALimit > 4) {
+      sMeetsLimitText = 'handily meets AAA compliance.';
+    } else if (lRatio - AAALimit > 0.2) {
+      sMeetsLimitText = 'meets AAA compliance.';
+    } else if (lRatio >= AAALimit) {
+      sMeetsLimitText = 'just meets AAA compliance.';
+    } else if (AAALimit - lRatio < 0.2) {
+      sMeetsLimitText = 'meets AA compliance while just missing AAA compliance.';
+    } else if (lRatio < AALimit) {
+      sMeetsLimitText = 'fails to meet AA compliance.';
+    } else if (lRatio - AALimit > 0.2) {
+      sMeetsLimitText = 'meets AA compliance.';
+    } else {
+      sMeetsLimitText = 'just meets AA compliance.';
+    }
+
+    sSpec = Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec', 'WCAG2 AA');
+    if (sSpec == 'WCAG2 AA') {
+      if (lRatio < AALimit) {
+        sLimitMsg = 'Failed to meet';
+      } else {
+        sLimitMsg = 'Meets';
+      }
+    } else {
+      if (lRatio < AAALimit) {
+        sLimitMsg = 'Failed to meet';
+      } else {
+        sLimitMsg = 'Meets';
+      }
+    }
+
+    sLimitMsg += ' ' + sSpec + ': For text that is ' + sTextDescription + ', the minimum required contrast ratio to meet WCAG 2.0 AA compliance is: ' + AALimit +
+      ":1, and to meet AAA compliance is: " + AAALimit + ':1. The contrast ratio of ' + lRatio + ':1 ' + sMeetsLimitText;
+
+    if (ak.hasBackgroundImage == true) {
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, "NOTICE: Element appears to be over a background image. Contrast results may be invalid. Verify styling against sample on the right.", "\n\n");
+    }
+
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, sLimitMsg + "\n\n" + ak.nodeDescription, "\n\n");
+
+    if (ak.node != null) {
+      box = ak.node.getBoundingClientRect();
+      if (box != null) {
+        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n");
+      }
+    }
+
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n");
+
+    if1 = document.getElementById("iframeCSample");
+    fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0], 10) * 65536 + parseInt(ak.fgColor[1], 10) * 256 + parseInt(ak.fgColor[2], 10));
+    bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0], 10) * 65536 + parseInt(ak.bgColor[1], 10) * 256 + parseInt(ak.bgColor[2], 10));
+
+    while (if1.contentDocument.body.firstChild) {
+      if1.contentDocument.body.removeChild(if1.contentDocument.body.firstChild);
+    }
+    if1.contentDocument.body.style.color = fgC;
+    if1.contentDocument.body.style.backgroundColor = bgC;
+    if1.contentDocument.body.style.fontFamily = window.getComputedStyle(ak.node, null).getPropertyValue("font-family");
+    if1.contentDocument.body.style.fontSize = (textSize * 0.80).toString() + 'pt';
+    if1.contentDocument.body.style.margin = '0';
+    if1.contentDocument.body.style.padding = '4px';
+
+    if1.contentDocument.body.appendChild(if1.contentDocument.createTextNode('Example text at ' + textSize + ' points. '));
+    el = if1.contentDocument.createElement('i');
+    el.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
+    if1.contentDocument.body.appendChild(el);
+    el = if1.contentDocument.createElement('b');
+    el.appendChild(if1.contentDocument.createTextNode('Example text in bold.'));
+    if1.contentDocument.body.appendChild(el);
+
+    blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+    if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
+      try {
+        blr.W15yQC.fnMoveToElement(ak.node);
+      } catch (err) {}
+    }
+    highlightElementsCB = document.getElementById('chkbox-highlighton');
+    if (highlightElementsCB.checked && bHighlightElement != false) {
+      blr.W15yQC.highlightElement(ak.node, ak.doc);
+    }
+  },
+
+  toggleHighlighting: function () {
+    var treebox, selectedRow, highlightElementsCB = document.getElementById('chkbox-highlighton');
+    if (highlightElementsCB.checked) {
+      treebox = document.getElementById('treebox');
+      selectedRow = treebox.currentIndex;
+      if (selectedRow != null && treebox.currentIndex >= 0) {
+        blr.W15yQC.highlightElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node, blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].doc);
+      }
+    } else {
+      blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+    }
+  },
+
+  moveToSelectedElement: function () {
+    var treebox, selectedRow;
+    treebox = document.getElementById('treebox');
+    selectedRow = treebox.currentIndex;
+    if (selectedRow != null && treebox.currentIndex >= 0) {
+      blr.W15yQC.fnMoveToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
+    }
+  },
+
+  moveFocusToSelectedElement: function () {
+    var treebox, selectedRow;
+    treebox = document.getElementById('treebox');
+    selectedRow = treebox.currentIndex;
+    if (selectedRow != null && treebox.currentIndex >= 0) {
+      blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+      blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
+    }
+  },
+
+  openColorsInContrastTool: function () {
+    var treebox, selectedRow, ak, fgC, bgC, newWin;
+    treebox = document.getElementById('treebox');
+    selectedRow = treebox.currentIndex;
+    if (selectedRow != null && treebox.currentIndex >= 0) {
+      ak = blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow];
+      fgC = blr.W15yQC.fnGetColorString(parseInt(ak.fgColor[0], 10) * 65536 + parseInt(ak.fgColor[1], 10) * 256 + parseInt(ak.fgColor[2], 10));
+      bgC = blr.W15yQC.fnGetColorString(parseInt(ak.bgColor[0], 10) * 65536 + parseInt(ak.bgColor[1], 10) * 256 + parseInt(ak.bgColor[2], 10));
+      newWin = window.openDialog('chrome://W15yQC/content/contrastDialog.xul', 'contrastToolDialog', 'chrome,resizable=yes,centerscreen', blr, fgC, bgC);
+    }
+  },
+
+  showInFirebug: function () {
+    var treebox, selectedRow;
+    if (blr.W15yQC.LuminosityCheckDialog.FirebugO != null) {
+      try {
+        if (blr.W15yQC.LuminosityCheckDialog.aLumCheckList != null && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length > 0) {
+          treebox = document.getElementById('treebox');
+          selectedRow = treebox.currentIndex;
+          if (selectedRow == null || treebox.currentIndex < 0) {
+            selectedRow = 0;
+          }
+          blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
+          blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node.ownerDocument.defaultView.focus();
+          void
+
+          function (arg) {
+            blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function () {
+              blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
+            });
+          }(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedRow].node);
+        }
+      } catch (ex) {}
+    }
+  },
+
+  generateReportHTML: function () {
+    // blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LuminosityCheckDialog.FirebugO, 'luminosity');
+  }
+
 };
