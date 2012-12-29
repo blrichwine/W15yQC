@@ -7,18 +7,18 @@
     <em:id>W15yQuickCheck@blrichwine.gmail.com</em:id>
     <em:name>W15y Quick Check</em:name>
     <em:type>2</em:type>
-    <em:version>1.0b13</em:version>
+    <em:version>1.0b14</em:version>
     <em:optionsURL>chrome://W15yQC/content/options.xul</em:optionsURL>
     <em:optionsType>1</em:optionsType>
     <em:description>Basic web accessibility checker extension for Firefox.</em:description>
     <em:creator>Brian Richwine</em:creator>
     <!-- optional items -->
     <em:contributor>Brian Richwine</em:contributor>
-    <em:homepageURL>http://code.google.com</em:homepageURL>
-    <!--em:optionsURL>chrome://sampleext/content/settings.xul</em:optionsURL>
-    <em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL>
+    <em:homepageURL>http://blrichwine.github.com/W15yQC/</em:homepageURL>
+    <em:aboutURL>chrome://W15yQC/content/aboutDialog.xul</em:aboutURL>
+    <!--
     <em:iconURL>chrome://sampleext/skin/mainicon.png</em:iconURL>
-    <em:updateURL>http://sampleextension.mozdev.org/update.rdf</em:updateURL-->
+    <em:updateURL>http://sampleextension.mozdev.org/update.rdf</em:updateURL -->
 
     <!-- Firefox -->
     <em:targetApplication>

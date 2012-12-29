@@ -38,6 +38,13 @@
  * 2012.06.19 - Working on i18n of HTML reports -- need to pick up again at display headings
  * 2012.06.25 - Working on user prefs, added common misspellings from three sources to word list
  * Dev notes are now stored in git commits...
+ 
+ How to update the version number
+   1. Update blr.W15yQC.version in overlay.js
+   2. Update version text in aboutDialog.xul
+   3. Update <em:version> in install.rdf
+ 
+ 
  *
  * QA Tasks
  *   - Review text in HTML report for consistency
