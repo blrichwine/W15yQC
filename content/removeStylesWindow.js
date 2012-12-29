@@ -49,12 +49,12 @@ blr.W15yQC.RemoveStylesWindow = {
     srcDoc: null,
 
     init: function(dialog) {
-        var metaElements, i, styleElement, rd;
+        var metaElements, i, styleElement, rd, if1;
         
         blr.W15yQC.fnReadUserPrefs();
         blr.W15yQC.RemoveStylesWindow.FirebugO=dialog.arguments[1];
         blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[2];
-        var if1 = document.getElementById("HTMLReportIFrame");
+        if1 = document.getElementById("HTMLReportIFrame");
         blr.W15yQC.RemoveStylesWindow.rd=if1.contentDocument;
         rd=blr.W15yQC.RemoveStylesWindow.rd;
         
@@ -268,13 +268,13 @@ blr.W15yQC.RemoveStylesWindow = {
                     }
                 } else if(sRole=='heading') {
                     if(blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
-                        level=parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level'))).toString();
+                        level=parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level')),10).toString();
                     } else { // TODO: How is this calculated when it is left out?
                         level='2'; // TODO: What should this be when it was left out?
                     }
-                    if(parseInt(level)>6) {
+                    if(parseInt(level,10)>6) {
                         level='6';
-                    } else if(parseInt(level)<1) {
+                    } else if(parseInt(level,10)<1) {
                         level='1';
                     }
                     node=rd.createElement('h'+level);
@@ -339,7 +339,7 @@ blr.W15yQC.RemoveStylesWindow = {
     },
     
     fnLinearizeTables: function(doc, rootNode) {
-      var c, i, j, firstMoved,div;
+      var c, i, j, firstMoved,div,frameDocument;
       if (doc != null && doc.body) {
         if (rootNode == null) { rootNode = doc.body; }
         for (c = rootNode.firstChild; c != null; c = c==null ? rootNode.firstChild : c.nextSibling) {
@@ -447,6 +447,6 @@ blr.W15yQC.RemoveStylesWindow = {
         } else { 
             if(blr.W15yQC.RemoveStylesWindow.prompts.alert) blr.W15yQC.RemoveStylesWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
         }
-    },
+    }
 
-}
+};
