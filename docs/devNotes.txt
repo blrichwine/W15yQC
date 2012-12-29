@@ -130,6 +130,8 @@
             
       *** FIX ASAP***
         - Validate: https://addons.mozilla.org/en-US/developers/
+        - Check for replys on : https://forums.mozilla.org/addons/viewtopic.php?f=31&t=11767
+        
         - Should all images have alt attribute? Decide if images with ARIA labels and no alt attribute should be flagged for not having alternative text.
           Currently they are called out for not having an alt attribute.
         - JAWS TESTS
@@ -148,7 +150,6 @@
         - Remove styles view, show semantics: details+summary, HTML5 aside, etc., figure+figcaption
         - Handle ARIA in remove styles view
         - Load configuration from a file (rules to include, exclude, expert level, ignores, etc.)
-        - Add support for closing window with appropriate key in windows.
         - Add lang attribute highlighter that highlights language changes
         - overlay.xul: wrap the opendialog call in an extra (empty catch) try catch block so the second call to open.dialog doesn't take place on error in the dialog itself.
         - Need a print CSS file for the HTML Report - background images are not printing!
@@ -158,7 +159,6 @@
            -- Spider for examples of useless fallback canvas content
            -- Test for useless fallback content
         - Semantic view should include any fallback content from applicable tags (canvas)
-        - Semantic view 
         - Create misc section?
         - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
         - Make HTML table report enhanced line item view dialog.
