@@ -232,4 +232,4 @@ blr.W15yQC.LicenseDialog = {
 '<p>END OF TERMS AND CONDITIONS</p>';
 document.getElementById('button-showFullLicense').setAttribute('label','Show brief license');
     }
-}
+};
