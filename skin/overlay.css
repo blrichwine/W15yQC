@@ -6,7 +6,11 @@
    list-style-image: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") !important;
    cursor: pointer;
 }
-#W15yTPB-HTMLReport {
+#W15yTPB-HTMLQuickReport {
+   list-style-image: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") !important;
+   cursor: pointer;
+}
+#W15yTPB-HTMLFullReport {
    list-style-image: url("chrome://w15yqc/skin/W15yQCIcon16x16.png") !important;
    cursor: pointer;
 }

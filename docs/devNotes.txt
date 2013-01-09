@@ -136,6 +136,15 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      From firefox chrome://browser/content/browser.xul:
+       -BrowserViewSourceOfDocument(content.document);
+       <menuitem id="context-inspect"
+                 hidden="true"
+                 label="&inspectContextMenu.label;"
+                 accesskey="&inspectContextMenu.accesskey;"
+                 oncommand="gContextMenu.inspectNode();"/>
+       Context menu what was clicked: https://developer.mozilla.org/en-US/docs/XUL/PopupGuide/Extensions
+       
         - Validate: https://addons.mozilla.org/en-US/developers/
         - Check for replys on : https://forums.mozilla.org/addons/viewtopic.php?f=31&t=11767
         

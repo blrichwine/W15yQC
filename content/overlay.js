@@ -6205,7 +6205,7 @@ ys: 'whys'
           if((i % 4) == 0) {
             if(progressWindow != null) {
               progressWindow.document.getElementById('percent').value=Math.round(3*i/aHeadingsList.length)+12;
-              progressWindow.document.getElementById('detailText').value='Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString();
+              progressWindow.document.getElementById('detailText').value='Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%';
               progressWindow.focus();
               blr.W15yQC.fnDoEvents();
             }
@@ -6786,7 +6786,7 @@ ys: 'whys'
         if(i>20 && (i % 5)==0){
           if(progressWindow != null) {
             progressWindow.document.getElementById('percent').value=Math.round(51*i/aLinksList.length)+24;
-            progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString();
+            progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%';
             progressWindow.focus();
           }
           blr.W15yQC.fnDoEvents();
@@ -7801,9 +7801,14 @@ ys: 'whys'
      */
 
     fnUpdateProgress: function(progressWindow, v, detailText) {
+      var p,dt;
       if(progressWindow != null && progressWindow.document) {
-        progressWindow.document.getElementById('percent').value=v;
-        progressWindow.document.getElementById('detailText').value=detailText;
+        p=progressWindow.document.getElementById('percent');
+        dt=progressWindow.document.getElementById('detailText');
+        if(p!=null && dt!=null && p.value && dt.value) {
+          p=progressWindow.document.getElementById('percent').value=v;
+          dt=progressWindow.document.getElementById('detailText').value=detailText;
+        }
         progressWindow.focus();
       }
       blr.W15yQC.fnDoEvents();
