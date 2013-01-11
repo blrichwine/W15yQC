@@ -136,6 +136,7 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      Add blr.W15yQC.bQuick = false; to each inspector dialog
       Need smart scroll to feature.
         - Right now it scrolls to the top each element and makes it difficult to see. How can we scroll it only part way?
         - Can we only scroll it when necessary?
