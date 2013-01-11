@@ -7,3 +7,5 @@ pref("extensions.W15yQC.getElements.includeLabelElementsInFormControls", false);
 pref("extensions.W15yQC.getElements.includeHiddenElements", false);
 pref("extensions.W15yQC.testContrast.MinSpec", 'WCAG2 AA');
 pref("extensions.W15yQC.rulesToExcludeList", "");
+pref("extensions.W15yQC.rulesToExcludeList", "");
+pref("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", false);

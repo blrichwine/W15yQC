@@ -10,6 +10,7 @@
 	<prefpane id="myPane" width="700" style="padding:20px">
 
     <preferences>
+      <preference id="autoScrollToSelectedElement" name="extensions.W15yQC.inspectElements.autoScrollToSelectedElements" type="bool"/>
       <preference id="userExpertLevel" name="extensions.W15yQC.userExpertLevel" type="int"/>
       <preference id="collapsedByDefault" name="extensions.W15yQC.HTMLReport.collapsedByDefault" type="bool"/>
       <preference id="showOnlyIssuesByDefault" name="extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault" type="bool"/>
@@ -24,6 +25,7 @@
 		<tabs id="W15yQC_tabs">
 			<tab label="General" selected="true"/>
 			<tab label="HTML Report"/>
+			<tab label="Inspector Dialogs"/>
 			<tab label="Analysis"/>
 			<tab label="Rules"/>
 		</tabs>
@@ -48,6 +50,10 @@
 				<checkbox label="Show Only Elements with Issues by Default" preference="showOnlyIssuesByDefault"/>
 			</tabpanel>
 			
+			<tabpanel id="W15yQC_tab_InspectorDialogs" orient="vertical">
+				<checkbox label="Auto Scroll to Selected Element" preference="autoScrollToSelectedElement"/>
+			</tabpanel>
+
 			<tabpanel id="W15yQC_tab_Analysis" orient="vertical">
 				<checkbox label="Include Label Elements in Form Controls" preference="includeLabelElementsInFormControls"/>
 				<checkbox label="Include Hidden Elements" preference="includeHiddenElements"/>
