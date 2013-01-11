@@ -99,7 +99,7 @@ blr.W15yQC.HeadingsDialog = {
           treerow.appendChild(treecell);
 
           sIndent = '';
-          for (j = 0; j < ak.level - 1; j++) sIndent += '  ';
+          for (j = 0; j < ak.level - 1; j++) sIndent += '   ';
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', sIndent + ak.text);
           treerow.appendChild(treecell);
