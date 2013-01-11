@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B14',
+    version: '1.0-B15',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -4254,7 +4254,7 @@ ys: 'whys'
                 }
                 break;                
               case 'aria-level':
-                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(sInt,10)<1) {
+                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(attrValue,10)<1) {
                   blr.W15yQC.fnAddNote(no, 'ariaAttrMustBePosIntOneOrGreater',[attrValue,attrName]); // TODO: QA This
                 }
                 break;
