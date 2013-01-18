@@ -5953,18 +5953,27 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass;
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
 
       if (aImagesList && aImagesList.length > 0) {
+        for (i = 0; i < aImagesList.length; i++) {
+          io = aImagesList[i];
+          if(blr.W15yQC.fnStringHasContent(io.title)) bHasTitle=true;
+          if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) bHasARIALabel=true;
+        }
         table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
-                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt'),
-                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
-                                                            blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+        colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
+                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt')];
+        if(bHasTitle) colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
+        if(bHasARIALabel) colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+        colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
+        colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
         msgHash = new blr.W15yQC.HashTable();
 
         tbody = rd.createElement('tbody');
@@ -5977,7 +5986,12 @@ ys: 'whys'
           } else if (io.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.alt, io.title, io.ariaLabel, io.src, sNotes], sClass);
+          colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.alt];
+          colValues.push(io.title);
+          colValues.push(io.ariaLabel);
+          colValues.push(io.src);
+          colValues.push(io.sNotes);
+          blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
