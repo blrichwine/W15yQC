@@ -136,6 +136,13 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      Back to back links do not have a space between them (Sakai 2.9 skip nav links are an example)
+      In form control list, highlight label elements with a different background color. Place a title attribute on the element that says "label" or "form control"
+      If a link has a role of presentation on it, and is in a list (current tool in tools list of sakai 2.9 portal, does JAWS announce it when moving through the list?
+        Currently it is not listed in the remove styles view.)
+      Remove Styles view is not displaying aria-label values on landmarks
+      Ability to submit sitemaps for scanning in a project. (http://support.google.com/webmasters/bin/answer.py?hl=en&answer=183668)
+      Detect alt text for Flash objects, other embedded objects, canvas, etc.
       Add effective label columns to the appropriate HTML Report sections and inspector dialogs
       Add blr.W15yQC.bQuick = false; to each inspector dialog -- maybe not, added it to the open dialog routine.
       Find pronounciation dictionary, use Perl to create list of homonyms by reverse indexing the pronounciation codes, create expanded list from this.

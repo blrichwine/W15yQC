@@ -3104,6 +3104,9 @@ ys: 'whys'
 
     fnGetARIALabelText: function (node, doc) {
       var sLabelText = null;
+      if(doc==null && node != null && node.ownerDocument) {
+        doc=node.ownerDocument;
+      }
       if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('aria-label')) {
           sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
@@ -5987,8 +5990,8 @@ ys: 'whys'
             sClass = 'warning';
           }
           colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.alt];
-          colValues.push(io.title);
-          colValues.push(io.ariaLabel);
+          if(bHasTitle) colValues.push(io.title);
+          if(bHasARIALabel) colValues.push(io.ariaLabel);
           colValues.push(io.src);
           colValues.push(io.sNotes);
           blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
