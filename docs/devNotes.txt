@@ -136,12 +136,14 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      Add treat domains as the same list (iuadapts.indiana.edu and indiana.edu/~iuadapts)
+      Option to ask what domain to consider documents with file:// as their URL as (so local files can be treated as on a server somewhere)
       Back to back links do not have a space between them (Sakai 2.9 skip nav links are an example)
       In form control list, highlight label elements with a different background color. Place a title attribute on the element that says "label" or "form control"
       If a link has a role of presentation on it, and is in a list (current tool in tools list of sakai 2.9 portal, does JAWS announce it when moving through the list?
         Currently it is not listed in the remove styles view.)
-      Remove Styles view is not displaying aria-label values on landmarks
       Ability to submit sitemaps for scanning in a project. (http://support.google.com/webmasters/bin/answer.py?hl=en&answer=183668)
+        -- Parse xml: https://developer.mozilla.org/en-US/docs/Parsing_and_serializing_XML
       Detect alt text for Flash objects, other embedded objects, canvas, etc.
       Add effective label columns to the appropriate HTML Report sections and inspector dialogs
       Add blr.W15yQC.bQuick = false; to each inspector dialog -- maybe not, added it to the open dialog routine.
@@ -300,6 +302,7 @@
       
 FIXED:
 
+        - Remove Styles view is not displaying aria-label values on landmarks [Fixed]
         - What about definition lists / highlighting? [done]
         - Add support for closing window with appropriate key in windows. [Mozilla seems to be taking care of this automatically.]
         - DETERMINE HOW JAWS LINEARIZES A TABLE WITH ROW SPAN VALUES then linearize layout tables in semantic view [done]

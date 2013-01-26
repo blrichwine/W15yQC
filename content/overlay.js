@@ -725,6 +725,16 @@ ys: 'whys'
           setTimeout(function () {
             blr.W15yQC.autoAdjustColumnWidths(treebox, iLimitCounter);
           }, 2);
+        } else if(iLimitCounter>1) {
+          for (i = 0; i < cols.length; i++) {
+            if (cols[i].width > 1 && cols[i].width < 150) {
+              newWidth = cols[i].width + 1; // Final bump to make sure columns don't clip on scrolling treeview
+              ch = treebox.ownerDocument.getElementById(cols[i].id);
+              if (ch) {
+                ch.setAttribute('width', newWidth);
+              }
+            }
+          }
         }
       }
     },
@@ -1580,6 +1590,10 @@ ys: 'whys'
         case 'about':
           dialogID = 'aboutDialog';
           dialogPath = 'chrome://W15yQC/content/aboutDialog.xul';
+          break;
+        case 'scanner':
+          dialogID = 'scannerWindow';
+          dialogPath = 'chrome://W15yQC/content/scanner.xul';
           break;
         }
         if (dialogID != null) {
