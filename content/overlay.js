@@ -725,6 +725,16 @@ ys: 'whys'
           setTimeout(function () {
             blr.W15yQC.autoAdjustColumnWidths(treebox, iLimitCounter);
           }, 2);
+        } else if(iLimitCounter>1) {
+          for (i = 0; i < cols.length; i++) {
+            if (cols[i].width > 1 && cols[i].width < 150) {
+              newWidth = cols[i].width + 1; // Final bump to make sure columns don't clip on scrolling treeview
+              ch = treebox.ownerDocument.getElementById(cols[i].id);
+              if (ch) {
+                ch.setAttribute('width', newWidth);
+              }
+            }
+          }
         }
       }
     },
@@ -999,12 +1009,12 @@ ys: 'whys'
     },
 
     fnOkToIncludeNote: function(msgKey) {
-      var expertLevel=0, severityLevel=0, bQuick=false;
+      var expertLevel=0, severityLevel=0, bIncludeInQuickReport=false;
       if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
-        bQuick = blr.W15yQC.noteDetails[msgKey][0];
+        bIncludeInQuickReport = blr.W15yQC.noteDetails[msgKey][0];
         severityLevel = blr.W15yQC.noteDetails[msgKey][1];
         expertLevel = blr.W15yQC.noteDetails[msgKey][2];
-        if((expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (bQuick==true && blr.W15yQC.bQuick==true)) {
+        if((expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (bIncludeInQuickReport==true && blr.W15yQC.bQuick==true)) {
           return true;
         }
       }
@@ -1018,7 +1028,7 @@ ys: 'whys'
             sMsgTxt = null,
             bHasExplanation = false,
             sExplanation = null,
-            bQuick = false,
+            bIncludeInQuickReport = false,
             severityLevel = 0,
             expertLevel = 0,
             nd,
@@ -1026,7 +1036,7 @@ ys: 'whys'
 
         if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
           nd = blr.W15yQC.noteDetails[msgKey];
-          bQuick = nd[0];
+          bIncludeInQuickReport = nd[0];
           severityLevel = nd[1];
           expertLevel = nd[2];
           bHasExplanation = nd[3];
@@ -1048,7 +1058,7 @@ ys: 'whys'
           sMsgTxt = blr.W15yQC.fnGetString('missingSBProperty', [msgKey]);
           if(sMsgTxt == null) { sMsgTxt = 'Missing String Bundle Property for:'+msgKey; }
         }
-        return new blr.W15yQC.resolvedNote(msgKey, bQuick, severityLevel, expertLevel, sMsgTxt, sExplanation, URL);
+        return new blr.W15yQC.resolvedNote(msgKey, bIncludeInQuickReport, severityLevel, expertLevel, sMsgTxt, sExplanation, URL);
       }
       return null;
     },
@@ -1581,8 +1591,13 @@ ys: 'whys'
           dialogID = 'aboutDialog';
           dialogPath = 'chrome://W15yQC/content/aboutDialog.xul';
           break;
+        case 'scanner':
+          dialogID = 'scannerWindow';
+          dialogPath = 'chrome://W15yQC/content/scanner.xul';
+          break;
         }
         if (dialogID != null) {
+          blr.W15yQC.bQuick = false; // Make sure this has been reset
           win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj);
           if(win!=null && win.focus) win.focus();
         }
@@ -3103,6 +3118,9 @@ ys: 'whys'
 
     fnGetARIALabelText: function (node, doc) {
       var sLabelText = null;
+      if(doc==null && node != null && node.ownerDocument) {
+        doc=node.ownerDocument;
+      }
       if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('aria-label')) {
           sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
@@ -5952,18 +5970,27 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass;
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
 
       if (aImagesList && aImagesList.length > 0) {
+        for (i = 0; i < aImagesList.length; i++) {
+          io = aImagesList[i];
+          if(blr.W15yQC.fnStringHasContent(io.title)) bHasTitle=true;
+          if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) bHasARIALabel=true;
+        }
         table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
-                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt'),
-                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHARIALabel'),
-                                                            blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+        colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
+                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAlt')];
+        if(bHasTitle) colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
+        if(bHasARIALabel) colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+        colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
+        colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+
+        table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
         msgHash = new blr.W15yQC.HashTable();
 
         tbody = rd.createElement('tbody');
@@ -5976,7 +6003,12 @@ ys: 'whys'
           } else if (io.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.alt, io.title, io.ariaLabel, io.src, sNotes], sClass);
+          colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.alt];
+          if(bHasTitle) colValues.push(io.title);
+          if(bHasARIALabel) colValues.push(io.ariaLabel);
+          colValues.push(io.src);
+          colValues.push(io.sNotes);
+          blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -6729,7 +6761,7 @@ ys: 'whys'
               frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               blr.W15yQC.fnGetLinks(frameDocument, frameDocument.body, aLinksList);
             } else { // keep looking through current document
-              if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false) {
+              if (c.tagName && blr.W15yQC.fnNodeIsHidden(c) == false && (blr.W15yQC.bQuick==false || blr.W15yQC.fnStringHasContent(c.getAttribute('href'))==true)) { // TODO: QA bquick
                 if(c.tagName.toLowerCase()=='a') {  // document the link
                   xPath = blr.W15yQC.fnGetElementXPath(c);
                   nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
@@ -6740,7 +6772,7 @@ ys: 'whys'
                   href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);
                   sState = blr.W15yQC.fnGetNodeState(c);
                   aLinksList.push(new blr.W15yQC.linkElement(c, xPath, nodeDescription, doc, aLinksList.length, role, sState, text, title, target, href));
-                } else if(c.tagName.toLowerCase()=='area') {
+                } else if(c.tagName.toLowerCase()=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                   xPath = blr.W15yQC.fnGetElementXPath(c);
                   nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                   role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
@@ -7040,10 +7072,17 @@ ys: 'whys'
       if (aLinksList && aLinksList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
-                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
-                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
-                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+        if(blr.W15yQC.bQuick==true) {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
+                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+                                                              blr.W15yQC.fnGetString('hrsTHNotes')]);
+        } else {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
+                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+                                                              blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+        }
         msgHash = new blr.W15yQC.HashTable();
 
         tbody = rd.createElement('tbody');
@@ -7055,7 +7094,11 @@ ys: 'whys'
           } else if (aLinksList[i].warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
+          if(blr.W15yQC.bQuick==true) {
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), sNotes], sClass);
+          } else {
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
+          }
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -7817,9 +7860,8 @@ ys: 'whys'
     fnInspect: function (reportDoc,sReports, bQuick) {
       var aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
-      if(bQuick == null) { bQuick = false; }
+      if(bQuick == null || bQuick != true) { bQuick = false; }
       blr.W15yQC.bQuick = bQuick;
-      // Sanity checks against the code:
       blr.W15yQC.fnNonDOMIntegrityTests();
       blr.W15yQC.fnReadUserPrefs();
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -7831,14 +7873,14 @@ ys: 'whys'
         if(sReports==null) { sReports=''; }
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
-        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc, bQuick);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc);
         if(sReports=='' || sReports.indexOf('title')>=0) { blr.W15yQC.fnInspectWindowTitle(reportDoc); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
  
         if(sReports=='' || sReports.indexOf('documents')>=0) {
           aDocumentsList = blr.W15yQC.fnInspectDocuments(reportDoc);
         } else {
-          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document, bQuick);
+          aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
         }
         blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
 

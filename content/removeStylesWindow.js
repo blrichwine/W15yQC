@@ -74,7 +74,6 @@ blr.W15yQC.RemoveStylesWindow = {
 
     styleElement.setAttribute('id', 'W15yQCRemoveStylesWindowStyles');
     rd.head.insertBefore(styleElement, rd.head.firstChild);
-
     blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
     blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(rd);
   },
@@ -286,7 +285,7 @@ blr.W15yQC.RemoveStylesWindow = {
                   borderStyle = 'border:1px solid black;';
                   sLabel = blr.W15yQC.fnJoin('Image', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
                 }
-                node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
+                node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color black !important');
                 node.setAttribute('role', 'img');
                 if (blr.W15yQC.fnStringHasContent(sLabel)) {
                   node.setAttribute('aria-label', sLabel);
@@ -311,6 +310,8 @@ blr.W15yQC.RemoveStylesWindow = {
               node.appendChild(rd.createTextNode(blr.W15yQC.fnGetEffectiveLabelText(c, doc)));
             } else if (/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
               node = rd.createElement('span');
+            } else if (/^(frameset)$/i.test(c.tagName)) {
+              node = rd.createElement('div');
             } else {
               node = rd.importNode(c, false);
               if (/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
@@ -322,7 +323,6 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
               }
             }
-
 
               if (node != null && bSkipElement == false) {
                 for (i = 0; i < node.attributes.length; i++) {

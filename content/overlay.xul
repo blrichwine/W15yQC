@@ -50,6 +50,8 @@
           <menupopup onpopupshowing="blr.W15yQC.fnInitToolsMenuPopup(document)">
             <menuitem id="W15yQC_menuEntry_contrastToolDialog" accesskey="c" label="Contrast Tool" 
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
+            <menuitem id="W15yQC_menuEntry_projectScanner" accesskey="p" label="Project Scanner" 
+                      oncommand="blr.W15yQC.openDialog('scanner');"/>
             <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="s" label="Remove Styles" 
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
             <menuitem id="W15yQC_menuEntry_focusHighlighter" accesskey="f" label="Focus Tracker" 

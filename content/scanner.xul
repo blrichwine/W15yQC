@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:window
+      id="ScannerWindow"
+      title="Scanner - W15yQC"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+			width="1200"
+			height="600"
+			onkeydown="blr.W15yQC.ScannerWindow.windowOnKeyDown(this,event)"
+			onkeyup="blr.W15yQC.ScannerWindow.windowOnKeyUp(event)"
+			onresize="blr.W15yQC.ScannerWindow.forceMinSize(this)"
+      onload="blr.W15yQC.ScannerWindow.init(this)"
+			onclose="blr.W15yQC.ScannerWindow.cleanup(this)">
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/ScannerWindow.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
+			<xul:menubar id="sample-menubar">
+				<xul:menu id="file-menu" label="File">
+					<xul:menupopup id="file-popup">
+						<xul:menuitem label="New Project"/>
+						<xul:menuitem label="Open Project"/>
+						<xul:menuitem label="Save Project"/>
+						<xul:menuitem label="Save Project As"/>
+						<xul:menuseparator/>
+						<xul:menuitem label="Import URLs" oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
+						<xul:menuseparator/>
+						<xul:menuitem label="Exit"/>
+					</xul:menupopup>
+				</xul:menu>
+				<xul:menu id="edit-menu" label="Edit">
+					<xul:menupopup id="edit-popup">
+						<xul:menuitem label="Delete"/>
+					</xul:menupopup>
+				</xul:menu>
+				<xul:menu id="edit-menu" label="Scan">
+					<xul:menupopup id="edit-popup">
+						<xul:menuitem label="Scan All" oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
+						<xul:menuitem label="Scan New" oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
+					</xul:menupopup>
+				</xul:menu>
+				<xul:menu id="edit-menu" label="View">
+					<xul:menupopup id="edit-popup">
+						<xul:menuitem label="Overall Report"/>
+						<xul:menuitem label="URL Report"/>
+						<xul:menuitem label="View URL"/>
+					</xul:menupopup>
+				</xul:menu>
+			</xul:menubar>
+			<xul:hbox id="top-toolbar" align="left">
+				 <xul:button id="button-newProject"
+					 label="New Project"
+					 oncommand="blr.W15yQC.ScannerWindow.newProject()"/>
+				 <xul:button id="button-openProject"
+					 label="Open Project"
+					 oncommand="blr.W15yQC.ScannerWindow.openProject()"/>
+				 <xul:button id="button-saveProject"
+					 label="Save Project"
+					 oncommand="blr.W15yQC.ScannerWindow.saveProject()"/>
+				 <xul:button id="button-importLinks"
+					 label="Import Links"
+					 tooltiptext="Import links from a sitemap or text file."
+					 oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
+				 <xul:button id="button-ScanNew"
+					 label="Scan New Links"
+					 oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
+				 <xul:button id="button-ScanAll"
+					 label="Scan All Links"
+					 oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
+				 <xul:spacer flex="1"/>
+				 <xul:button id="button-close"
+					 label="Close"
+					 oncommand="window.close();"/>
+      </xul:hbox>
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
+      onselect="">
+         <xul:treecols>
+						<xul:treecol ordinal="1" id="col-header-number"
+							 label=" # "
+							 hidden="false"
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-url"
+							 label="URL"
+							 hidden="false"
+							 style="text-align:left"
+				       flex="3"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter  ordinal="4" class="tree-splitter" />
+						<xul:treecol ordinal="5" id="col-header-priority"
+							 label="Priority"
+							 hidden="false"
+							 fixed="true"
+							 onclick=""/>
+						<xul:splitter ordinal="6" class="tree-splitter" />
+						<xul:treecol ordinal="7" id="col-header-source"
+							 label="Source"
+							 hidden="false"
+							 sortDirection="" 
+							 flex="1"
+							 onclick=""/>
+            <xul:splitter ordinal="8" class="tree-splitter" /> 
+						<xul:treecol ordinal="9" id="col-header-dateScanned"
+							 label="Date"
+							 hidden="false"
+							 sortDirection="" 
+							 fixed="true"
+							 onclick=""/>
+            <xul:splitter ordinal="10" class="tree-splitter" /> 
+            <xul:treecol ordinal="11" id="col-header-results"
+               label="Results"
+				       style="text-align:left"
+               sortDirection=""
+				       flex="3"
+               onclick=""/>
+         </xul:treecols>
+				 <xul:treechildren id="treeboxChildren"/>
+      </xul:tree>
+			<xul:hbox>
+				 <xul:button id="button-scanURL"
+					 label="Scan URL"
+					 oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
+			</xul:hbox>
+			<xul:vbox id="iFrameHolder">
+				 <xul:iframe id="pageBeingScannedIFrame" src="about:blank" type="content" flex="1" style="overflow:auto"/>
+			</xul:vbox>
+   </xul:vbox>
+	 <xul:hbox style="border-top:thin solid black">
+	 	 <xul:label flex="5" id="progressMeterLabel" control="progressMeter" value="No Project"/><xul:progressmeter flex="12" id="progressMeter" mode="determined" value="0"/>
+	 </xul:hbox>
+</xul:window>
