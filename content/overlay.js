@@ -683,7 +683,7 @@ ys: 'whys'
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-        consoleServ.logStringMessage(sMsg);
+        if(/US/.test(sMsg)) consoleServ.logStringMessage(sMsg);
       } catch (ex) {};
     },
 
@@ -7147,9 +7147,8 @@ ys: 'whys'
 
 
     fnAnalyzeLinks: function (aLinksList, aDocumentsList, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
-      var i, aChildImages, j, linkText, maxRect, aSameHrefAndOnclick, aSameLinkText, aSoundsTheSame, aDiffTextSameHref, hrefsAreEqual,
+      var i, aChildImages, j, linkText, maxRect, bHrefsAreEqual,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
-      blr.W15yQC.fnLog('fnAnalyzeLinks-starts');
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
@@ -7221,50 +7220,49 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
-          aSameLinkText = [];
-          aSoundsTheSame = [];
-          aSameHrefAndOnclick = [];
-          aDiffTextSameHref = [];
-
-          for (j = 0; j < aLinksList.length; j++) {
-            if (j != i) {
-              hrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL,aLinksList[i].href, aLinksList[j].doc.URL,aLinksList[j].href);
-              bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text,aLinksList[j].text);
-              if (aLinksList[j].text && aLinksList[j].text.length > 0) {
-                if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || hrefsAreEqual == false || aLinksList[i].href.length < 1)) {
-                  aSameLinkText.push(j+1);
-                } else if (aLinksList[i].length>2 && aLinksList[i].soundex == aLinksList[j].soundex && hrefsAreEqual == false) {
-                  aSoundsTheSame.push(j+1);
-                }
+          for (j = i+1; j < aLinksList.length; j++) {
+            bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href);
+            bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text);
+            if (aLinksList[j].text && aLinksList[j].text.length > 0) {
+              if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || bHrefsAreEqual == false || aLinksList[i].href.length < 1)) {
+                aLinksList[i].aSameLinkText.push(j+1);
+                aLinksList[j].aSameLinkText.push(i+1);
+              } else if (aLinksList[i].soundex == aLinksList[j].soundex && bHrefsAreEqual == false) {
+                aLinksList[i].aSoundsTheSame.push(j+1);
+                aLinksList[j].aSoundsTheSame.push(i+1);
               }
+            }
 
-              if (aLinksList[i].href != null && hrefsAreEqual == true && bLinkTextsAreDifferent == true) {
-                bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
-                if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
-                  if(bOnclickValuesAreDifferent == false) {
-                    aSameHrefAndOnclick.push(j+1);
-                  }
-                } else { // unless javascript:;, #, javascript:void(0)
-                  if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) { aDiffTextSameHref.push(j+1); }
+            if (aLinksList[i].href != null && bHrefsAreEqual == true && bLinkTextsAreDifferent == true) {
+              bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
+              if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
+                if(bOnclickValuesAreDifferent == false) {
+                  aLinksList[i].aSameHrefAndOnclick.push(j+1);
+                  aLinksList[j].aSameHrefAndOnclick.push(i+1);
+                }
+              } else { // unless javascript:;, #, javascript:void(0)
+                if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) {
+                  aLinksList[i].aDiffTextSameHref.push(j+1);
+                  aLinksList[j].aDiffTextSameHref.push(i+1);
                 }
               }
             }
           }
 
-          if(aSameLinkText.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [blr.W15yQC.fnCutoffString(aSameLinkText.toString(),99)]); //
+          if(aLinksList[i].aSameLinkText.length>0) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [blr.W15yQC.fnCutoffString(aLinksList[i].aSameLinkText.toString(),99)]); //
           }
 
-          if(aSoundsTheSame.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[blr.W15yQC.fnCutoffString(aSoundsTheSame.toString(),99)]); //
+          if(aLinksList[i].aSoundsTheSame.length>0) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[blr.W15yQC.fnCutoffString(aLinksList[i].aSoundsTheSame.toString(),99)]); //
           }
 
-          if(aSameHrefAndOnclick.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHrefOnclick',[blr.W15yQC.fnCutoffString(aSameHrefAndOnclick.toString(),99)]); //
+          if(aLinksList[i].aSameHrefAndOnclick.length>0) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHrefOnclick',[blr.W15yQC.fnCutoffString(aLinksList[i].aSameHrefAndOnclick.toString(),99)]); //
           }
 
-          if(aDiffTextSameHref.length>0) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHref',[blr.W15yQC.fnCutoffString(aDiffTextSameHref.toString(),99)]); //
+          if(aLinksList[i].aDiffTextSameHref.length>0) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDiffSameHref',[blr.W15yQC.fnCutoffString(aLinksList[i].aDiffTextSameHref.toString(),99)]); //
           }
 
         } else {
@@ -7346,40 +7344,6 @@ ys: 'whys'
                   }
                 }
               }
-
-
-
-
-              //for (var j = 0; j < aLinksList.length; j++) {
-              //  if (aLinksList[j] != null && aLinksList[j].node != null && aLinksList[j].ownerDocumentNumber == aLinksList[i].ownerDocumentNumber && aLinksList[j].node.hasAttribute && aLinksList[j].node.hasAttribute('id') && aLinksList[j].node.getAttribute('id') == sTargetId) {
-              //    blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargetsLink',[(j + 1)]); //
-              //    bTargetFound = true;
-              //    break;
-              //  }
-              //}
-              //if (sSamePageLinkTarget == null) {
-              //  // See if any other nodes have the desired id
-              //  var targetNode = aLinksList[i].doc.getElementById(sTargetId);
-              //  if (targetNode != null) {
-              //    blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargets',[blr.W15yQC.fnDescribeElement(targetNode)]); //
-              //    bTargetFound = true;
-              //  }
-              //}
-              //if (sSamePageLinkTarget == null) {
-              //  // Now look and see if any links have the desired name value
-              //  for (var j = 0; j < aLinksList.length; j++) {
-              //    if (aLinksList[j] != null && aLinksList[j].node != null && aLinksList[j].ownerDocumentNumber == aLinksList[i].ownerDocumentNumber && aLinksList[j].node.hasAttribute && aLinksList[j].node.hasAttribute('name') && aLinksList[j].node.getAttribute('name') == sTargetId) {
-              //      blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargetsLink',[(j + 1)]); //
-              //      bTargetFound = true;
-              //      break;
-              //    }
-              //  }
-              //}
-              //
-              //if (bTargetFound == false) {
-              //  blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargetDoesNotExist'); //
-              //}
-              //// is link target ambiguous / non unique?
 
               if(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].idHashTable.getItem(sTargetId)>1) {
                 blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargetIDisNotUnique'); //
@@ -8785,6 +8749,10 @@ ys: 'whys'
     this.doc = doc;
     this.orderNumber = orderNumber;
     this.role = role;
+    this.aSameLinkText= [];
+    this.aSoundsTheSame= [];
+    this.aSameHrefAndOnclick= [];
+    this.aDiffTextSameHref= [];
     this.stateDescription = stateDescription;
     this.text = text;
     this.title = title;
@@ -8800,6 +8768,10 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
+    aSameLinkText: null,
+    aSoundsTheSame: null,
+    aSameHrefAndOnclick: null,
+    aDiffTextSameHref: null,
     notes: null,
     failed: false,
     warning: false,
