@@ -1604,7 +1604,7 @@ ys: 'whys'
       }
     },
 
-    openHTMLReportWindow: function (bQuick, firebugObj, sReports) {
+    openHTMLReportWindow: function (bQuick, firebugObj, sReports, sourceDocument) {
       var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow', win;
       
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -1614,7 +1614,7 @@ ys: 'whys'
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, firebugObj, sReports, bQuick);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, firebugObj, sReports, bQuick, sourceDocument);
         if(win!=null && win.focus) win.focus();
       }
     },
@@ -4629,11 +4629,10 @@ ys: 'whys'
       node.appendChild(script);
     },
 
-    fnInitDisplayWindow: function (doc, reportDoc) {
-      var topURL, topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
+    fnInitDisplayWindow: function (windowURL, reportDoc) {
+      var topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
       
-      topURL = doc.URL;
-      titleText = blr.W15yQC.fnGetString('hrsTitle', [topURL]);
+      titleText = blr.W15yQC.fnGetString('hrsTitle', [windowURL]);
       if(reportDoc == null) {
         outputWindow = window.open('');
         if(outputWindow && outputWindow.document) reportDoc = outputWindow.document;
@@ -4950,8 +4949,8 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aFramesList);
     },
 
-    fnDisplayWindowDetails: function (rd) {
-      var div, div2, element;
+    fnDisplayWindowDetails: function (rd, oW15yQCReport) {
+      var div, div2, element, sWindowTitle, sWindowURL;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentDetails');
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnGetString('hrsWindowDetails'));
@@ -4960,8 +4959,16 @@ ys: 'whys'
       element.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsWindowTitle')));
       div2.appendChild(element);
 
+      if(oW15yQCReport != null) {
+        sWindowTitle = oW15yQCReport.sWindowTitle;
+        sWindowURL = oW15yQCReport.sWindowURL;
+      } else {
+        sWindowTitle = window.top.content.document.title;
+        sWindowURL = window.top.content.document.URL;
+      }
+      
       element = rd.createElement('p');
-      element.appendChild(rd.createTextNode(window.top.content.document.title));
+      element.appendChild(rd.createTextNode(sWindowTitle));
       div2.appendChild(element);
 
       element = rd.createElement('h3');
@@ -4969,7 +4976,7 @@ ys: 'whys'
       div2.appendChild(element);
 
       element = rd.createElement('p');
-      element.appendChild(rd.createTextNode(window.top.content.document.URL));
+      element.appendChild(rd.createTextNode(sWindowURL));
       div2.appendChild(element);
 
       div.appendChild(div2);
@@ -5090,16 +5097,20 @@ ys: 'whys'
     },
 
     fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, inTable, nestingDepth) {
-      var docNumber, node, sID, idCount, frameDocument, style, ARIALandmarkLevel=1;
-      bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false); 
+      var docNumber, node, sID, idCount, frameDocument, style, ARIALandmarkLevel=1,
+        sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
+        text, title, target, href, sState, 
+        bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false); 
 
       if (doc != null) {
         if (oW15yResults == null) {
           oW15yResults = new blr.W15yQC.W15yResults();
           // Put the top window's document in the list
-          oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(doc, doc.URL, aDocumentsList.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
-          blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[aDocumentsList.length-1],doc.body);
-          blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[aDocumentsList.length-1],doc.body.parentNode);
+          oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(doc, doc.URL, oW15yResults.aDocuments.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
+          blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],doc.body);
+          blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],doc.body.parentNode);
+          oW15yResults.sWindowTitle = doc.title;
+          oW15yResults.sWindowURL = doc.URL;
           ARIAElementStack = [];
         }
         docNumber = oW15yResults.aDocuments.length - 1;
@@ -5114,7 +5125,7 @@ ys: 'whys'
                   oW15yResults.aDocuments[docNumber].hasFullJustifiedText=true;
                 }
               }
-              if(node.tagName) {
+              if(node.tagName && node.hasAttribute) {
                 if (node.hasAttribute('id') == true) {
                   sID = blr.W15yQC.fnTrim(node.getAttribute('id'));
                   idCount = 1;
@@ -5180,7 +5191,7 @@ ys: 'whys'
                       sARIALabel = blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc);
                     }
                     sState = blr.W15yQC.fnGetNodeState(node);
-                    aARIAElementsList.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, aARIAElementsList.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
+                    oW15yResults.aARIAElements.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, oW15yResults.aARIAElements.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
                     ARIAElementStack.push(node);
 
                     switch (sRole) {
@@ -5205,7 +5216,7 @@ ys: 'whys'
                     }
                   }
                   
-                  switch (tagName) {
+                  switch (sTagName) {
                     case 'area':
                       xPath = blr.W15yQC.fnGetElementXPath(node);
                       nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
@@ -5221,7 +5232,7 @@ ys: 'whys'
                       if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
                       src = null;
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
-                      oW15yResults.aImages.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                      oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       break;
                     case 'canvas':
                       // TODO: What to do here? Get alternative content? text?
@@ -5243,7 +5254,7 @@ ys: 'whys'
                       src = null;
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                       blr.W15yQC.fnLog('Image el:'+effectiveLabel);
-                      oW15yResults.aImages.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                      oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       break;
                     case 'input': // TODO: QA This!
                       if (node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'image') {
@@ -5262,7 +5273,7 @@ ys: 'whys'
                         if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
                         src = null;
                         if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
-                        oW15yResults.aImages.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                        oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       }
                       break;
                   }
@@ -5277,13 +5288,13 @@ ys: 'whys'
                   bFoundHeading=false;
                   if(sRole=='heading') {
                     bFoundHeading=true;
-                    if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))==true) {
+                    if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
                       headingLevel=parseInt(node.getAttribute('aria-level'));
                     } else { // TODO: Look deeper at this. JAWS 13 seems to default to heading level 2 if not specified
                       headingLevel=2;
                     }
                   } else {
-                    switch (tagName) {
+                    switch (sTagName) {
                     case 'h1':
                     case 'h2':
                     case 'h3':
@@ -5293,7 +5304,7 @@ ys: 'whys'
                       if (blr.W15yQC.fnNodeIsHidden(node) == false) {
                         // Document heading
                         bFoundHeading=true;
-                        headingLevel = tagName.substring(1);
+                        headingLevel = sTagName.substring(1);
                       }
                       break;
                     }
@@ -5305,7 +5316,7 @@ ys: 'whys'
                     oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, headingLevel, text));
                   }
 
-                  if (tagName == 'form') {
+                  if (sTagName == 'form') {
                     sXPath = blr.W15yQC.fnGetElementXPath(node);
                     sFormDescription = blr.W15yQC.fnDescribeElement(node);
                     ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(node, oW15yResults.aDocuments);
@@ -5328,8 +5339,8 @@ ys: 'whys'
                       sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node, doc);
                       sEffectiveLabelText = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
                     } else {
-                      blr.W15yQC.fnLog("---In front of switch:"+node.tagName.toLowerCase());
-                      switch(node.tagName.toLowerCase()) {
+                      blr.W15yQC.fnLog("---In front of switch:"+sTagName);
+                      switch(sTagName) {
                         case 'fieldset':
                           sLabelTagText = blr.W15yQC.fnGetLegendText(node);
                           break;
@@ -5346,10 +5357,10 @@ ys: 'whys'
                     sName = node.getAttribute('name');
                     sValue = node.getAttribute('value');
       
-                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, sEffectiveLabelText, sStateDescription, sValue));
+                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, sEffectiveLabelText, sStateDescription, sValue));
                   }
 
-                  if(tagName=='a') {  // document the link
+                  if(sTagName=='a') {  // document the link
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                     text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
@@ -5358,7 +5369,7 @@ ys: 'whys'
                     href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, text, title, target, href));
-                  } else if(c.tagName.toLowerCase()=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
+                  } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                     text = blr.W15yQC.fnGetEffectiveLabelText(node, doc); // TODO: Vet this with JAWS!
@@ -5369,7 +5380,7 @@ ys: 'whys'
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, text, title, target, href));
                   }
                   
-                  if (tagName == 'table') {
+                  if (sTagName == 'table') {
                     // Document table
                     if (nestingDepth == null) { nestingDepth = 0; }
                     if(inTable != null || nestingDepth>0) {
@@ -5385,7 +5396,7 @@ ys: 'whys'
                       oW15yResults.aTables[inTable].isDataTable=true;
                     }
                   } else if(inTable != null) { // TODO: Is this necessary? Does the table analysis do this?
-                    switch(tagName) {
+                    switch(sTagName) {
                       case 'th':
                         oW15yResults.aTables[inTable].isDataTable=true;
                         oW15yResults.aTables[inTable].bHasTHCells = true;
@@ -6321,8 +6332,8 @@ ys: 'whys'
       if (aImagesList && aImagesList.length > 0) {
         for (i = 0; i < aImagesList.length; i++) {
           io = aImagesList[i];
-          if(blr.W15yQC.fnStringHasContent(io.title)) bHasTitle=true;
-          if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) bHasARIALabel=true;
+          if(blr.W15yQC.fnStringHasContent(io.title)) { bHasTitle=true; }
+          if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) { bHasARIALabel=true; }
         }
         table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
@@ -6350,7 +6361,7 @@ ys: 'whys'
           if(bHasTitle) colValues.push(io.title);
           if(bHasARIALabel) colValues.push(io.ariaLabel);
           colValues.push(io.src);
-          colValues.push(io.sNotes);
+          colValues.push(sNotes);
           blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
         }
         table.appendChild(tbody);
@@ -6360,7 +6371,6 @@ ys: 'whys'
         blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoImagesDetected'));
       }
       rd.body.appendChild(div);
-
     },
 
     fnGetAccessKeys: function (doc, rootNode, aAccessKeysList) {
@@ -8072,7 +8082,9 @@ ys: 'whys'
       return aBadIDsList;
     },
 
-
+    fnDescribeWindow: function (oW15yQCReport) {
+      
+    },
 
     /*
      *
@@ -8200,7 +8212,106 @@ ys: 'whys'
       blr.W15yQC.fnDoEvents();
     },
 
-    fnInspect: function (reportDoc,sReports, bQuick) {
+    fnFullInspect: function (reportDoc, sourceDocument, sReports) {
+      var aDocumentsList, dialogID, dialogPath, progressWindow, oW15yQCReport;
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+      blr.W15yQC.fnNonDOMIntegrityTests();
+      blr.W15yQC.fnReadUserPrefs();
+
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
+        dialogID = 'licenseDialog';
+        dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+      }
+
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        if(sReports==null) { sReports=''; }
+        if(sourceDocument==null) { sourceDocument=window.top.content.document; }
+        
+        progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
+        blr.W15yQC.fnDoEvents();
+
+        oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(sourceDocument.URL, reportDoc);
+
+        if(sReports=='' || sReports.indexOf('title')>=0) {
+          blr.W15yQC.fnDisplayWindowDetails(reportDoc, oW15yQCReport);
+        }
+        
+        blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
+ 
+        if(sReports=='' || sReports.indexOf('documents')>=0) {
+          blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayDocumentsResults(reportDoc, oW15yQCReport.aDocuments);
+        }
+        
+        blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
+
+        if(sReports=='' || sReports.indexOf('frames')>=0) { 
+          blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport.aFrames, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayFrameTitleResults(reportDoc, oW15yQCReport.aFrames);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 10, 'Getting Headings');
+
+        if(sReports=='' || sReports.indexOf('headings')>=0) {
+          blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport.aHeadings, oW15yQCReport.aDocuments, progressWindow);
+          blr.W15yQC.fnDisplayHeadingsResults(reportDoc, oW15yQCReport.aHeadings);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 15, 'Getting ARIA Landmarks');
+
+        if(sReports=='' || sReports.indexOf('landmarks')>=0) {
+          blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport.aARIALandmarks, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayARIALandmarksResults(reportDoc, oW15yQCReport.aARIALandmarks);
+        }
+        
+        if(sReports=='' || sReports.indexOf('aria')>=0 && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+          blr.W15yQC.fnUpdateProgress(progressWindow, 18, 'Getting ARIA');
+          blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport.aARIAElements, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayARIAElementsResults(reportDoc, oW15yQCReport.aARIAElements);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 24, 'Getting Links');
+
+        if(sReports=='' || sReports.indexOf('links')>=0) {
+          blr.W15yQC.fnAnalyzeLinks(oW15yQCReport.aLinks, oW15yQCReport.aDocuments, progressWindow);
+          blr.W15yQC.fnDisplayLinkResults(reportDoc, oW15yQCReport.aLinks);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 75, 'Getting Forms');
+
+        if(sReports=='' || sReports.indexOf('forms')>=0) {
+          blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport.aForms, oW15yQCReport.aFormControls, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayFormResults(reportDoc, oW15yQCReport.aForms);
+          blr.W15yQC.fnDisplayFormControlResults(reportDoc, oW15yQCReport.aFormControls);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Geting Images');
+
+        if(sReports=='' || sReports.indexOf('images')>=0) {
+          blr.W15yQC.fnAnalyzeImages(oW15yQCReport.aImages, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayImagesResults(reportDoc, oW15yQCReport.aImages);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 90, 'Getting Access Keys');
+
+        if(sReports=='' || sReports.indexOf('accesskeys')>=0) {
+          blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport.aAccessKeys, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, oW15yQCReport.aAccessKeys);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 95, 'Getting Tables');
+
+        if(sReports=='' || sReports.indexOf('tables')>=0) {
+          blr.W15yQC.fnAnalyzeTables(oW15yQCReport.aTables, oW15yQCReport.aDocuments);
+          blr.W15yQC.fnDisplayTableResults(reportDoc, oW15yQCReport.aTables);
+        }
+        blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
+        
+        blr.W15yQC.fnDisplayFooter(reportDoc);
+        progressWindow.close();
+        progressWindow = null;
+        reportDoc.defaultView.focus();
+        return reportDoc;
+      }
+      return null;
+    },
+
+    fnQuickInspect: function (reportDoc, sReports, bQuick) {
       var aDocumentsList, dialogID, dialogPath, progressWindow;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if(bQuick == null || bQuick != true) { bQuick = false; }
@@ -8216,7 +8327,7 @@ ys: 'whys'
         if(sReports==null) { sReports=''; }
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
-        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document, reportDoc);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(window.top.content.document.URL, reportDoc);
         if(sReports=='' || sReports.indexOf('title')>=0) { blr.W15yQC.fnInspectWindowTitle(reportDoc); }
         blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
  
@@ -8265,16 +8376,14 @@ ys: 'whys'
     },
 
     fnScannerInspect: function (sourceDocument) {
-      var oW15yQCReport, dialogID, dialogPath, progressWindow;
+      var oW15yQCReport=null;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
-      blr.W15yQC.fnReadUserPrefs();
+      blr.W15yQC.fnReadUserPrefs(); // TODO: Move this to the scanner window init
       blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
 
       oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
-      
-      // Was this covered?  if(sReports=='' || sReports.indexOf('title')>=0) { blr.W15yQC.fnInspectWindowTitle(reportDoc); }
       
       blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport.aDocuments);
       
@@ -8297,15 +8406,10 @@ ys: 'whys'
       blr.W15yQC.fnAnalyzeAccessKeys(aAccessKeysList, aDocumentsList);
 
       blr.W15yQC.fnAnalyzeTables(aTablesList, aDocumentsList);
+      
+      blr.W15yQC.fnDescribeWindow(oW15yQCReport);
 
-        if(sReports=='' || sReports.indexOf('tables')>=0) { blr.W15yQC.fnInspectTables(reportDoc, aDocumentsList, progressWindow); }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
-        blr.W15yQC.fnDisplayFooter(reportDoc);
-        progressWindow.close();
-        progressWindow = null;
-        reportDoc.defaultView.focus();
-        return reportDoc;
-      return null;
+      return oW15yQCReport;
     },
 
 

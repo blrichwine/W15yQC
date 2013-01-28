@@ -12,9 +12,9 @@
     <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
       <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">
         <menuitem id="W15yQC_menuEntry_fullReport" label="Quick Check" 
-                  oncommand="blr.W15yQC.openHTMLReportWindow(true);"/>
+                  oncommand="blr.W15yQC.openHTMLReportWindow(true, window.top.content.document);"/>
         <menuitem id="W15yQC_menuEntry_fullReport" label="Full Report" 
-                  oncommand="blr.W15yQC.openHTMLReportWindow(false);"/>
+                  oncommand="blr.W15yQC.openHTMLReportWindow(false, window.top.content.document);"/>
         <menuseparator/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys" 
                   oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>

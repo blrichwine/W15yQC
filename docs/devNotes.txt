@@ -136,6 +136,7 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      Ratio of text that is structured vs. unstructure (contained in an ARIA Landmark vs. Not, etc.)
       Add treat domains as the same list (iuadapts.indiana.edu and indiana.edu/~iuadapts)
       Option to ask what domain to consider documents with file:// as their URL as (so local files can be treated as on a server somewhere)
       Back to back links do not have a space between them (Sakai 2.9 skip nav links are an example)

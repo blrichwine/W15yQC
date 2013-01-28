@@ -46,7 +46,8 @@ blr.W15yQC.HTMLReportWindow = {
   bCmdIsPressed: false,
   bQuick: false,
   rd: null,
-
+  sourceDocument: null,
+  
   init: function (dialog) {
     var rw, if1;
     blr.W15yQC.fnReadUserPrefs();
@@ -54,6 +55,7 @@ blr.W15yQC.HTMLReportWindow = {
       if (dialog.arguments.length > 1) blr.W15yQC.HTMLReportWindow.FirebugO = dialog.arguments[1];
       if (dialog.arguments.length > 2) blr.W15yQC.HTMLReportWindow.sReports = dialog.arguments[2];
       if (dialog.arguments.length > 3) blr.W15yQC.HTMLReportWindow.bQuick = dialog.arguments[3];
+      if (dialog.arguments.length > 4) blr.W15yQC.HTMLReportWindow.sourceDocument = dialog.arguments[4];
     }
     rw = document.getElementById("HTMLReportWindow");
     if (rw != null) {
@@ -69,7 +71,12 @@ blr.W15yQC.HTMLReportWindow = {
     }
 
     blr.W15yQC.HTMLReportWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-    blr.W15yQC.fnInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sReports, blr.W15yQC.HTMLReportWindow.bQuick);
+    
+    if(blr.W15yQC.HTMLReportWindow.bQuick) {
+        blr.W15yQC.fnInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sReports, blr.W15yQC.HTMLReportWindow.bQuick);
+    } else {
+        blr.W15yQC.fnFullInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sourceDocument, blr.W15yQC.HTMLReportWindow.sReports);
+    }
   },
 
   windowOnKeyDown: function (win, evt) {
