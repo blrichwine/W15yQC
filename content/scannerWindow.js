@@ -537,6 +537,16 @@ blr.W15yQC.ScannerWindow = {
   
   iFrameLoaded: function() {
     // Check iFrame Contents
+    var oW15yQCResults, iFrame, iFrameDoc;
+    iFrame=document.getElementById('pageBeingScannedIFrame');
+    if(iFrame!=null) {
+      iFrameDoc=iFrame.contentDocument;
+      if(iFrameDoc!=null) {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
+        oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc);
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
+      } else alert('iFrameDoc is null');
+    }
     blr.W15yQC.ScannerWindow.scanNextLink();
   },
 
@@ -545,7 +555,7 @@ blr.W15yQC.ScannerWindow = {
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
     blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID=setTimeout(function () {
           blr.W15yQC.ScannerWindow.iFrameLoaded();
-        }, 200);
+        }, 500);
   },
   
   stopScanning: function() {

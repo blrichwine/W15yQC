@@ -5165,8 +5165,8 @@ ys: 'whys'
                 frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
                 // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
                 oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, oW15yResults.aDocuments.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
-                blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body);
-                blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode);
+                if(frameDocument && frameDocument.body) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body); }
+                if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
 
                 // get frame contents
                 blr.W15yQC.fnGetElements(frameDocument, frameDocument.body, oW15yResults, ARIAElementStack, inTable, nestingDepth);
@@ -5566,14 +5566,19 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidIDs',[aDocumentsList[i].invalidIDsCount,sIDList]); // QA iframeTests01.html
           }
 
-          selectorTest = /{[^:]outline[^:]*:[^;}]+(\b0|none)/;
-          doc=aDocumentsList[i].doc;
-          for(j = 0; j < doc.styleSheets.length; ++j) {
-            for(k = 0; k < doc.styleSheets[j].cssRules.length; ++k) {
-              if(selectorTest.test(doc.styleSheets[j].cssRules[k].cssText)){
-                suspectCSS=blr.W15yQC.fnJoinIfNew(suspectCSS, doc.styleSheets[j].cssRules[k].cssText,' ');
+          suspectCSS='';
+          try {
+            selectorTest = /{[^:]outline[^:]*:[^;}]+(\b0|none)/;
+            doc=aDocumentsList[i].doc;
+            for(j = 0; j < doc.styleSheets.length; ++j) {
+              for(k = 0; k < doc.styleSheets[j].cssRules.length; ++k) {
+                if(selectorTest.test(doc.styleSheets[j].cssRules[k].cssText)){
+                  suspectCSS=blr.W15yQC.fnJoinIfNew(suspectCSS, doc.styleSheets[j].cssRules[k].cssText,' ');
+                }
               }
-            }
+            }            
+          } catch(ex) {
+            
           }
           if(suspectCSS!='') {
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docCSSSuppressingOutline',[blr.W15yQC.fnCutoffString(suspectCSS,500)]); // 
@@ -8264,6 +8269,9 @@ ys: 'whys'
           blr.W15yQC.fnAnalyzeTables(oW15yQCReport.aTables, oW15yQCReport.aDocuments);
           blr.W15yQC.fnDisplayTableResults(reportDoc, oW15yQCReport.aTables);
         }
+
+        blr.W15yQC.fnDescribeWindow(oW15yQCReport);
+        
         blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
         
         blr.W15yQC.fnDisplayFooter(reportDoc);
@@ -8340,7 +8348,7 @@ ys: 'whys'
     },
 
     fnScannerInspect: function (sourceDocument) {
-      var oW15yQCReport=null;
+      var oW15yQCReport=null, progressWindow=null;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
@@ -8348,28 +8356,28 @@ ys: 'whys'
       blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
 
       oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
-      
+
       blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport.aDocuments);
       
       blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport.aFrames, oW15yQCReport.aDocuments);
 
       blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport.aHeadings, oW15yQCReport.aDocuments, progressWindow);
 
-      blr.W15yQC.fnAnalyzeARIALandmarks(aARIALandmarksList, aDocumentsList);
+      blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport.aARIALandmarks, oW15yQCReport.aDocuments);
         
       if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
-        blr.W15yQC.fnAnalyzeARIAElements(aARIAElementsList, aDocumentsList);
+        blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport.aARIAElements, oW15yQCReport.aDocuments);
       }
 
-      blr.W15yQC.fnAnalyzeLinks(aLinksList, aDocumentsList, progressWindow);
+      blr.W15yQC.fnAnalyzeLinks(oW15yQCReport.aLinks, oW15yQCReport.aDocuments, progressWindow);
 
-      blr.W15yQC.fnAnalyzeFormControls(aFormsList, aFormControlsList, aDocumentsList);
+      blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport.aForms, oW15yQCReport.aFormControls, oW15yQCReport.aDocuments);
 
-      blr.W15yQC.fnAnalyzeImages(aImagesList, aDocumentsList);
+      blr.W15yQC.fnAnalyzeImages(oW15yQCReport.aImages, oW15yQCReport.aDocuments);
       
-      blr.W15yQC.fnAnalyzeAccessKeys(aAccessKeysList, aDocumentsList);
+      blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport.aAccessKeys, oW15yQCReport.aDocuments);
 
-      blr.W15yQC.fnAnalyzeTables(aTablesList, aDocumentsList);
+      blr.W15yQC.fnAnalyzeTables(oW15yQCReport.aTables, oW15yQCReport.aDocuments);
       
       blr.W15yQC.fnDescribeWindow(oW15yQCReport);
 
