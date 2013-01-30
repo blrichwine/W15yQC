@@ -39,7 +39,7 @@
 				</xul:menu>
 				<xul:menu id="edit-menu" label="Scan">
 					<xul:menupopup id="edit-popup">
-						<xul:menuitem label="Scan All" oncommand="blr.W15yQC.ScannerWindow.scanscan()"/>
+						<xul:menuitem label="Scan All" oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
 						<xul:menuitem label="Scan New" oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
 					</xul:menupopup>
 				</xul:menu>
@@ -130,7 +130,7 @@
 					 oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
 			</xul:hbox>
 			<xul:vbox id="iFrameHolder">
-				 <xul:iframe id="pageBeingScannedIFrame" src="http://www.cnn.com/" type="content" flex="1" style="overflow:auto"/>
+				 <xul:iframe id="pageBeingScannedIFrame" type="content" flex="1" style="overflow:auto"/>
 			</xul:vbox>
    </xul:vbox>
 	 <xul:hbox style="border-top:thin solid black">

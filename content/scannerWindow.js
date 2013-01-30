@@ -121,12 +121,18 @@ blr.W15yQC.ScannerWindow = {
   
 
   init: function (dialog) {
+    blr.W15yQC.fnLog('scanner-init');
+    if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+    blr.W15yQC.fnReadUserPrefs(); // TODO: Move this to the scanner window init
+    blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
+
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
   },
 
   cleanup: function (dialog) {
+    blr.W15yQC.fnLog('scanner-cleanup');
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
       clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
@@ -134,6 +140,7 @@ blr.W15yQC.ScannerWindow = {
   },
   
   updateProjectDisplay: function() {
+    blr.W15yQC.fnLog('scanner-updateProjectDisplay');
     var tbc, url, i,
         treeitem, treerow, treecell;
     
@@ -246,6 +253,7 @@ blr.W15yQC.ScannerWindow = {
   },
   
   resetProjectToNew: function(bAskBeforeResettingIfUnsavedChanges) {
+    blr.W15yQC.fnLog('scanner-resetProjectToNew');
     var bCancel=false;
     
     if(bAskBeforeResettingIfUnsavedChanges==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges) {
@@ -264,6 +272,7 @@ blr.W15yQC.ScannerWindow = {
   },
   
   addUrlToProject: function (sURL, sDocURL, source, priority) {
+    blr.W15yQC.fnLog('scanner-addUrlToProject');
     var url;
     if(blr.W15yQC.ScannerWindow.urlList==null) {
       blr.W15yQC.ScannerWindow.urlList = [];
@@ -275,6 +284,7 @@ blr.W15yQC.ScannerWindow = {
   },
   
   newProject: function() {
+    blr.W15yQC.fnLog('scanner-newProject');
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
   },
@@ -283,6 +293,7 @@ blr.W15yQC.ScannerWindow = {
   },
   
   importLinks: function () {
+    blr.W15yQC.fnLog('scanner-importLinks');
     var fp, rv, file, data, fstream, cstream, cancel=false,
         nsIFilePicker = Components.interfaces.nsIFilePicker,
         xmlParser, xmlDoc, urls, i, sURL, priority, sourceFileName;
@@ -363,7 +374,10 @@ blr.W15yQC.ScannerWindow = {
   },
 
   setStateAsScanning: function() {
+    blr.W15yQC.fnLog('scanner-setStateAsScanning');
     blr.W15yQC.ScannerWindow.stateScanning = true;
+    blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
+    blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
     document.getElementById('button-newProject').disabled = true;
     document.getElementById('button-openProject').disabled = true;
     document.getElementById('button-saveProject').disabled = true;
@@ -374,8 +388,12 @@ blr.W15yQC.ScannerWindow = {
   },
   
   setStateAsNotScanning: function() {
+    blr.W15yQC.fnLog('scanner-setStateAsNotScanning');
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
     blr.W15yQC.ScannerWindow.stateScanning = false;
     blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
+    blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     document.getElementById('button-newProject').disabled = false;
     document.getElementById('button-openProject').disabled = false;
     document.getElementById('button-saveProject').disabled = false;
@@ -386,6 +404,8 @@ blr.W15yQC.ScannerWindow = {
   },
   
   scanAllLinks: function() {
+    blr.W15yQC.fnLog('scanner-scanAllLinks');
+    blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
     if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
       blr.W15yQC.ScannerWindow.setStateAsScanning();
       blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
@@ -394,23 +414,44 @@ blr.W15yQC.ScannerWindow = {
     }
   },
   
+  scanNewLinks: function() {
+    blr.W15yQC.fnLog('scanner-scanNewLinks');
+    blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
+    if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+      blr.W15yQC.ScannerWindow.setStateAsScanning();
+      blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
+      blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
+      blr.W15yQC.ScannerWindow.scanNextLink();
+    }
+  },
+  
   scanNextLink: function() {
-    blr.W15yQC.ScannerWindow.stateCurrentIndex++;
-    if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
-      blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
+    blr.W15yQC.fnLog('scanner-scanNextLink');
+    if(blr.W15yQC.ScannerWindow.stateStopScanningRequested!=true) {
+      blr.W15yQC.ScannerWindow.stateCurrentIndex++;
+      if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
+        blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
+      } else {
+        blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+      }
     } else {
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+      alert('Scanning stopped due to user request.');
     }
   },
   
   scanURL: function(oURL) {
+    blr.W15yQC.fnLog('scanner-scanURL');
     stateWaitingOnUrlToLoad=true;
     blr.W15yQC.ScannerWindow.scanLoadUrlInIFrame(oURL.loc);
   },
 
   scanLoadUrlInIFrame: function(sURL) {
+    blr.W15yQC.fnLog('scanner-scanLoadUrlInIFrame');
     var iFrameHolder, iFrame;
+
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
 
     if(sURL != null && blr.W15yQC.ScannerWindow.fnUrlIsNotBlackListed(sURL) && blr.W15yQC.ScannerWindow.fnUrlAppearsScannable(sURL)) {
       iFrameHolder = document.getElementById('iFrameHolder');
@@ -421,6 +462,7 @@ blr.W15yQC.ScannerWindow = {
       }
       // create new iFrame so we can get onload event notification
       // research blocking pop-ups from iframe
+      blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=true;
       blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID=setTimeout(function () {
         blr.W15yQC.ScannerWindow.iFrameTimedOut(sURL);
       }, 20000);
@@ -438,49 +480,57 @@ blr.W15yQC.ScannerWindow = {
   },
     
   iFrameTimedOut: function(sURL) {
-    blr.W15yQC.ScannerWindow.scanNextLink();
+    blr.W15yQC.fnLog('scanner-iFrameTimedOut');
+    if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
+      blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
+      
+      alert('iFrameTimedOut:');
+      //blr.W15yQC.ScannerWindow.scanNextLink();
+    }
   },
   
   iFrameLoaded: function() {
+    blr.W15yQC.fnLog('scanner-iFrameLoaded');
     // Check iFrame Contents
     var oW15yQCResults, iFrame, iFrameDoc;
-    iFrame=document.getElementById('pageBeingScannedIFrame');
-    if(iFrame!=null) {
-      iFrameDoc=iFrame.contentDocument;
-      if(iFrameDoc!=null) {
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
-        oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc);
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
-      } else alert('iFrameDoc is null');
-    }
-    blr.W15yQC.ScannerWindow.scanNextLink();
-  },
 
-  scanscan: function() {
-    // Check iFrame Contents
-    var oW15yQCResults, iFrame, iFrameDoc;
-    iFrame=document.getElementById('pageBeingScannedIFrame');
-    if(iFrame!=null) {
-      iFrameDoc=iFrame.contentDocument;
-      if(iFrameDoc!=null) {
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
-        oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc);
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
-      } else alert('iFrameDoc is null');
-    }
-    //blr.W15yQC.ScannerWindow.scanNextLink();
-  },
-
-  iFrameOnLoadEventFired: function() {
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
-    blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID=setTimeout(function () {
-          blr.W15yQC.ScannerWindow.iFrameLoaded();
-        }, 500);
+
+    if(iFrame!=null) {
+      iFrameDoc=iFrame.contentDocument;
+      if(iFrameDoc!=null) {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
+        oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc);
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
+      } else alert('iFrameDoc is null');
+    }
+    // blr.W15yQC.ScannerWindow.scanNextLink();
+    alert('scan complete');
+  },
+
+  iFrameOnLoadEventFired: function(currentURLIndex) {
+    blr.W15yQC.fnLog('scanner-iFrameOnLoadEventFired');
+    var iFrame=document.getElementById('pageBeingScannedIFrame');
+    if(iFrame!=null) {
+      iFrame.removeEventListener("load", function(e) {
+          blr.W15yQC.ScannerWindow.iFrameOnLoadEventFired();
+        }, true);
+    }
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
+
+    if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
+      blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
+      
+      blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID=setTimeout(function () {
+            blr.W15yQC.ScannerWindow.iFrameLoaded();
+          }, 1000);
+    }
   },
   
   stopScanning: function() {
-    
+    blr.W15yQC.ScannerWindow.stateStopScanningRequested=true;
   },
   
   windowOnKeyDown: function() {

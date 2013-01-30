@@ -683,7 +683,7 @@ ys: 'whys'
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-        if(/US/.test(sMsg)) consoleServ.logStringMessage(sMsg);
+        if(/scanner/.test(sMsg)) consoleServ.logStringMessage(sMsg);
       } catch (ex) {};
     },
 
@@ -8349,14 +8349,9 @@ ys: 'whys'
       return null;
     },
 
-    fnScannerInspect: function (sourceDocument) {
+    fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
       var oW15yQCReport=null, progressWindow=null;
-
-      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
-
-      blr.W15yQC.fnReadUserPrefs(); // TODO: Move this to the scanner window init
-      blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
-
+      
       oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
 
       blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport.aDocuments);
