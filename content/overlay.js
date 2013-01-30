@@ -5099,7 +5099,9 @@ ys: 'whys'
     fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, inTable, nestingDepth) {
       var docNumber, node, sID, idCount, frameDocument, style, ARIALandmarkLevel=1,
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
-        text, title, target, href, sState, 
+        text, title, target, href, sState, effectiveLabel, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
+        sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
+        frameSrc, frameId, frameName, tableSummary,
         bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false); 
 
       if (doc != null) {
@@ -5157,10 +5159,10 @@ ys: 'whys'
                 frameSrc = blr.W15yQC.fnGetNodeAttribute(node, 'src', null);
                 frameId = blr.W15yQC.fnGetNodeAttribute(node, 'id', null);
                 frameName = blr.W15yQC.fnGetNodeAttribute(node, 'name', null);
-                role = blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
+                sRole = blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
                 xPath = blr.W15yQC.fnGetElementXPath(node);
                 nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, role, frameId, frameName, frameTitle, frameSrc));
+                oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, frameSrc));
                 // Document the new document
                 frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
                 // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
@@ -7804,7 +7806,7 @@ ys: 'whys'
                     switch(stackedTagName) {
                       case 'tr':
                         blr.W15yQC.fnLog('leaving tr:columnRowSpans:'+columnRowSpans.toString());
-                        while(columnRowSpans[columnsInThisRow]>0) {
+                        while(columnRowSpans[columnsInThisRow]>0) { // TODO: This is generating reference to undefined property columnRowSpans[columnsInThisRow] warnings
                           columnsInThisRow++;
                           if(columnRowSpans.length<columnsInThisRow+1) {
                             columnRowSpans.push(0);

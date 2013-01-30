@@ -119,100 +119,6 @@ blr.W15yQC.ScannerWindow = {
     document.getElementById('progressMeter').value=p;
   },
   
-  fnPopulateTree: function (aDocumentsList, aLinksList) {
-    var tbc, bHasRole, bHasStateDescription, bHasTarget, i, ak, ch, treecell, treeitem, treerow, textbox;
-    if (aDocumentsList != null && aLinksList != null && aLinksList.length && aLinksList.length > 0) {
-      tbc = document.getElementById('treeboxChildren');
-      bHasRole = false;
-      bHasStateDescription = false;
-      bHasTarget = false;
-      if (tbc != null) {
-        for (i = 0; i < aLinksList.length; i++) {
-          ak = aLinksList[i];
-          if (ak.role != null) bHasRole = true;
-          if (ak.target != null) bHasTarget = true;
-          if (ak.stateDescription != null) bHasStateDescription = true;
-        }
-        if (!bHasRole) {
-          ch = document.getElementById('col-header-role');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasTarget) {
-          ch = document.getElementById('col-header-target');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasStateDescription) {
-          ch = document.getElementById('col-header-state');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (aDocumentsList.length <= 1) {
-          ch = document.getElementById('col-header-documentNumber');
-          ch.setAttribute('hidden', 'true');
-        }
-        for (i = 0; i < aLinksList.length; i++) {
-          treeitem = document.createElement('treeitem');
-          treerow = document.createElement('treerow');
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
-          treerow.appendChild(treecell);
-
-          ak = aLinksList[i];
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.ownerDocumentNumber);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', aDocumentsList[ak.ownerDocumentNumber - 1].URL);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.nodeDescription);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.text);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.title);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.target);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.href);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.role);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.stateDescription);
-          treerow.appendChild(treecell);
-
-          if (ak.failed) {
-            treerow.setAttribute('properties', 'failed');
-          } else if (ak.warning) {
-            treerow.setAttribute('properties', 'warning');
-          }
-
-          treeitem.appendChild(treerow);
-          tbc.appendChild(treeitem);
-        }
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
-        if (aLinksList.length == 1) {
-          blr.W15yQC.LinksDialog.updateNotesField([aDocumentsList, aLinksList], false);
-        }
-      }
-    } else {
-      textbox = document.getElementById('note-text');
-      textbox.value = "No links were detected.";
-    }
-  },
 
   init: function (dialog) {
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
@@ -548,6 +454,21 @@ blr.W15yQC.ScannerWindow = {
       } else alert('iFrameDoc is null');
     }
     blr.W15yQC.ScannerWindow.scanNextLink();
+  },
+
+  scanscan: function() {
+    // Check iFrame Contents
+    var oW15yQCResults, iFrame, iFrameDoc;
+    iFrame=document.getElementById('pageBeingScannedIFrame');
+    if(iFrame!=null) {
+      iFrameDoc=iFrame.contentDocument;
+      if(iFrameDoc!=null) {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
+        oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc);
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
+      } else alert('iFrameDoc is null');
+    }
+    //blr.W15yQC.ScannerWindow.scanNextLink();
   },
 
   iFrameOnLoadEventFired: function() {
