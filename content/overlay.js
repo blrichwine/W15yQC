@@ -2915,12 +2915,16 @@ ys: 'whys'
 
     fnGetOwnerDocumentNumber: function (node, aDocumentsList) {
       var i;
-      if (node !== null && aDocumentsList !== null && aDocumentsList.length) {
-        for (i = 0; i < aDocumentsList.length; i++) {
-          if (node.ownerDocument === aDocumentsList[i].doc) { return i + 1; }
+      try {
+        if (node !== null && node.ownerDocument && node.ownerDocument != null && aDocumentsList !== null && aDocumentsList.length) {
+          for (i = 0; i < aDocumentsList.length; i++) {
+            try {
+              if (node.ownerDocument === aDocumentsList[i].doc) { return i + 1; }
+            } catch (ex) { }
+          }
         }
-      }
-      return 'huh?';
+      } catch (ex2) { }
+      return -1;
     },
 
     fnGetParentFormElement: function (node) {
@@ -5107,12 +5111,14 @@ ys: 'whys'
       if (doc != null) {
         if (oW15yResults == null) {
           oW15yResults = new blr.W15yQC.W15yResults();
+
           // Put the top window's document in the list
           oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(doc, doc.URL, oW15yResults.aDocuments.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
           blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],doc.body);
           blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],doc.body.parentNode);
           oW15yResults.sWindowTitle = doc.title;
           oW15yResults.sWindowURL = doc.URL;
+          oW15yResults.dDateChecked = Date.now();
           ARIAElementStack = [];
         }
         docNumber = oW15yResults.aDocuments.length - 1;
@@ -8352,30 +8358,42 @@ ys: 'whys'
     fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
       var oW15yQCReport=null, progressWindow=null;
       
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnGetElements');
       oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeDocuments');
       blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport.aDocuments);
       
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFrameTitles');
       blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport.aFrames, oW15yQCReport.aDocuments);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeHeadings');
       blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport.aHeadings, oW15yQCReport.aDocuments, progressWindow);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIALandmarks');
       blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport.aARIALandmarks, oW15yQCReport.aDocuments);
         
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIAElements');
       if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
         blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport.aARIAElements, oW15yQCReport.aDocuments);
       }
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeLinks');
       blr.W15yQC.fnAnalyzeLinks(oW15yQCReport.aLinks, oW15yQCReport.aDocuments, progressWindow);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFormControls');
       blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport.aForms, oW15yQCReport.aFormControls, oW15yQCReport.aDocuments);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeImages');
       blr.W15yQC.fnAnalyzeImages(oW15yQCReport.aImages, oW15yQCReport.aDocuments);
       
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeAccessKeys');
       blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport.aAccessKeys, oW15yQCReport.aDocuments);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeTables');
       blr.W15yQC.fnAnalyzeTables(oW15yQCReport.aTables, oW15yQCReport.aDocuments);
       
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnDescribeWindow');
       blr.W15yQC.fnDescribeWindow(oW15yQCReport);
 
       return oW15yQCReport;
@@ -8451,7 +8469,21 @@ ys: 'whys'
    */
 
   blr.W15yQC.W15yResults = function () {
-    
+    this.sWindowTitle=null;
+    this.sWindowURL= null;
+    this.dDateChecked= null;
+    this.aDocuments= [];
+    this.aFrames= [];
+    this.aHeadings= [];
+    this.aARIALandmarks= [];
+    this.aARIAElements= [];
+    this.aForms= [];
+    this.aFormControls= [];
+    this.aLinks= [];
+    this.aImages= [];
+    this.aAccessKeys= [];
+    this.aBadIDs= [];
+    this.aTables= [];
   };
 
   blr.W15yQC.W15yResults.prototype = {

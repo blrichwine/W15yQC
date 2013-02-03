@@ -105,7 +105,6 @@
 							 label="Source"
 							 hidden="false"
 							 sortDirection="" 
-							 flex="1"
 							 onclick=""/>
             <xul:splitter ordinal="8" class="tree-splitter" /> 
 						<xul:treecol ordinal="9" id="col-header-dateScanned"
@@ -115,11 +114,221 @@
 							 fixed="true"
 							 onclick=""/>
             <xul:splitter ordinal="10" class="tree-splitter" /> 
-            <xul:treecol ordinal="11" id="col-header-results"
-               label="Results"
+						<xul:treecol ordinal="11" id="col-header-title"
+							 label="Title"
+							 hidden="false"
+							 sortDirection="" 
+							 fixed="true"
+							 onclick=""/>
+            <xul:splitter ordinal="12" class="tree-splitter" /> 
+            <xul:treecol ordinal="13" id="col-header-results-items"
+               label="Items"
+							 hidden="false"
 				       style="text-align:left"
                sortDirection=""
-				       flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="14" class="tree-splitter" /> 
+            <xul:treecol ordinal="15" id="col-header-results-items"
+               label="Warnings"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="16" class="tree-splitter" /> 
+            <xul:treecol ordinal="17" id="col-header-results-failures"
+               label="Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="18" class="tree-splitter" /> 
+            <xul:treecol ordinal="19" id="col-header-results-score"
+               label="Score"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="20" class="tree-splitter" /> 
+            <xul:treecol ordinal="21" id="col-header-results-text"
+               label="Text"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="22" class="tree-splitter" /> 
+            <xul:treecol ordinal="23" id="col-header-results-d"
+               label="D" tooltiptext="Downloads"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="24" class="tree-splitter" /> 
+            <xul:treecol ordinal="25" id="col-header-results-h"
+               label="F" tooltiptext="Frames"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="26" class="tree-splitter" /> 
+            <xul:treecol ordinal="27" id="col-header-results-hf"
+               label="FW" tooltiptext="Frame Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="28" class="tree-splitter" /> 
+            <xul:treecol ordinal="29" id="col-header-results-hf"
+               label="FF" tooltiptext="Frame Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="30" class="tree-splitter" /> 
+            <xul:treecol ordinal="31" id="col-header-results-h"
+               label="H" tooltiptext="Headings"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="32" class="tree-splitter" /> 
+            <xul:treecol ordinal="33" id="col-header-results-hf"
+               label="HW" tooltiptext="Headings Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="34" class="tree-splitter" /> 
+            <xul:treecol ordinal="35" id="col-header-results-hf"
+               label="HF" tooltiptext="Headings Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="36" class="tree-splitter" /> 
+            <xul:treecol ordinal="37" id="col-header-results-h"
+               label="AL" tooltiptext="ARIA Landmarks"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="38" class="tree-splitter" /> 
+            <xul:treecol ordinal="39" id="col-header-results-hf"
+               label="ALW" tooltiptext="ARIA Landmarks Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="40" class="tree-splitter" /> 
+            <xul:treecol ordinal="41" id="col-header-results-hf"
+               label="ALF" tooltiptext="ARIA Landmarks Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="42" class="tree-splitter" /> 
+            <xul:treecol ordinal="43" id="col-header-results-h"
+               label="A" tooltiptext="ARIA Elements"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="44" class="tree-splitter" /> 
+            <xul:treecol ordinal="45" id="col-header-results-hf"
+               label="AW" tooltiptext="ARIA Elements Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="46" class="tree-splitter" /> 
+            <xul:treecol ordinal="47" id="col-header-results-hf"
+               label="AF" tooltiptext="ARIA Elements Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="48" class="tree-splitter" /> 
+            <xul:treecol ordinal="49" id="col-header-results-h"
+               label="L" tooltiptext="Links"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="50" class="tree-splitter" /> 
+            <xul:treecol ordinal="51" id="col-header-results-hf"
+               label="LW" tooltiptext="Link Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="52" class="tree-splitter" /> 
+            <xul:treecol ordinal="53" id="col-header-results-hf"
+               label="LF" tooltiptext="Link Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="54" class="tree-splitter" /> 
+            <xul:treecol ordinal="55" id="col-header-results-h"
+               label="FC" tooltiptext="Form Controls"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="56" class="tree-splitter" /> 
+            <xul:treecol ordinal="57" id="col-header-results-hf"
+               label="FCW" tooltiptext="Frorm Control Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="58" class="tree-splitter" /> 
+            <xul:treecol ordinal="59" id="col-header-results-hf"
+               label="FCF" tooltiptext="Form Control Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="60" class="tree-splitter" /> 
+            <xul:treecol ordinal="61" id="col-header-results-l"
+               label="AK" tooltiptext="Access Keys"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="62" class="tree-splitter" /> 
+            <xul:treecol ordinal="63" id="col-header-results-lf"
+               label="AKW" tooltiptext="Access Keys Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="64" class="tree-splitter" /> 
+            <xul:treecol ordinal="65" id="col-header-results-f"
+               label="AKF" tooltiptext="Access Keys Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="66" class="tree-splitter" /> 
+            <xul:treecol ordinal="67" id="col-header-results-ff"
+               label="T" tooltiptext="Tables"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="68" class="tree-splitter" /> 
+            <xul:treecol ordinal="69" id="col-header-results-ff"
+               label="TW" tooltiptext="Tables Warnings"
+							 hidden="true"
+				       style="text-align:left"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="70" class="tree-splitter" /> 
+            <xul:treecol ordinal="71" id="col-header-results-ff"
+               label="TF" tooltiptext="Tables Failures"
+							 hidden="false"
+				       style="text-align:left"
+               sortDirection=""
                onclick=""/>
          </xul:treecols>
 				 <xul:treechildren id="treeboxChildren"/>

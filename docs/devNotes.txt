@@ -136,6 +136,9 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
+      https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
+      Audit all objects and verify each property has a value set in the contructor. Test that objects are doing what we think they are doing.
       Hints on how to detect listeners? https://developer.mozilla.org/en-US/docs/DOM/element.removeEventListener
       Ratio of text that is structured vs. unstructure (contained in an ARIA Landmark vs. Not, etc.)
       Add treat domains as the same list (iuadapts.indiana.edu and indiana.edu/~iuadapts)
