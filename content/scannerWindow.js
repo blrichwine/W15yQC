@@ -101,6 +101,8 @@ if (!blr) {
 blr.W15yQC.ScannerWindow = {
   FirebugO: null,
   urlList: [],
+  urlMustMatchList: [],
+  urlMustNotMatchList: [],
   projectHasUnsavedChanges: false,
   iFrameOnLoadEventTimeOutTimerID: null,
   iFrameOnLoadEventFilterTimerID: null,
@@ -139,6 +141,9 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
+    blr.W15yQC.ScannerWindow.urlMustMatchList.push('iuadapts.+(/[a-z]*|\.(s?html?))$');
+    blr.W15yQC.ScannerWindow.urlMustMatchList.push('http://www.indiana.edu/~iuadapts.+(\.(s?html?))$');
+    blr.W15yQC.ScannerWindow.addUrlToProject('http://iuadapts.indiana.edu/','http://iuadapts.indiana.edu/','origin',1.0);
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
   },
@@ -161,7 +166,7 @@ blr.W15yQC.ScannerWindow = {
       row=document.createElement('treerow');
       row.setAttribute('id','URL'+urlIndex);
       bNew=true;
-      for(i=0;i<36;i++) {
+      for(i=0;i<39;i++) {
         row.appendChild(document.createElement('treecell'));
       }
     }
@@ -193,15 +198,18 @@ blr.W15yQC.ScannerWindow = {
     row.children[24].setAttribute('label',url.linksCount);
     row.children[25].setAttribute('label',url.linksWarnings);
     row.children[26].setAttribute('label',url.linksFailures);
-    row.children[27].setAttribute('label',url.formControlsCount);
-    row.children[28].setAttribute('label',url.formControlsWarnings);
-    row.children[29].setAttribute('label',url.formControlsFailures);
-    row.children[30].setAttribute('label',url.accessKeysCount);
-    row.children[31].setAttribute('label',url.accessKeysWarnings);
-    row.children[32].setAttribute('label',url.accessKeysFailures);
-    row.children[33].setAttribute('label',url.tablesCount);
-    row.children[34].setAttribute('label',url.tablesWarnings);
-    row.children[35].setAttribute('label',url.tablesFailures);
+    row.children[27].setAttribute('label',url.imagesCount);
+    row.children[28].setAttribute('label',url.imagesWarnings);
+    row.children[29].setAttribute('label',url.imagesFailures);
+    row.children[30].setAttribute('label',url.formControlsCount);
+    row.children[31].setAttribute('label',url.formControlsWarnings);
+    row.children[32].setAttribute('label',url.formControlsFailures);
+    row.children[33].setAttribute('label',url.accessKeysCount);
+    row.children[34].setAttribute('label',url.accessKeysWarnings);
+    row.children[35].setAttribute('label',url.accessKeysFailures);
+    row.children[36].setAttribute('label',url.tablesCount);
+    row.children[37].setAttribute('label',url.tablesWarnings);
+    row.children[38].setAttribute('label',url.tablesFailures);
     if(bNew) {
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
@@ -223,26 +231,60 @@ blr.W15yQC.ScannerWindow = {
         for (i = 0; i < blr.W15yQC.ScannerWindow.urlList.length; i++) {
           blr.W15yQC.ScannerWindow.updateUrlInTree(i);
         }
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
       }
     }
+    blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
   },
   
-  fnURLTypeIsWhiteListed: function (sURL) {
+  urlMatchesProjectMustMatchList: function (sURL) {
+    var i,re; 
+    if(blr.W15yQC.ScannerWindow.urlMustMatchList!=null && blr.W15yQC.ScannerWindow.urlMustMatchList.length>0) {
+      if(sURL!=null) { 
+        for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
+          re=blr.W15yQC.ScannerWindow.urlMustMatchList[i];
+          re=new RegExp(re.replace(/\//g,'\\/'),'i'); 
+          if(sURL.match(re)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
     return true;
+  },
+
+  urlIsBlackListed: function(sURL) {
+    if(sURL!=null) {
+      if(/javascript:/i.test(sURL) ||
+         /\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|pdf|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  },
+  
+  urlMatchesProjectMustNotMatchList: function (sURL) {
+    var i,re;
+    if(blr.W15yQC.ScannerWindow.urlMustNotMatchList!=null && blr.W15yQC.ScannerWindow.urlMustNotMatchList.length>0) {
+      if(sURL!=null) {
+        for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
+          re=blr.W15yQC.ScannerWindow.urlMustNotMatchList[i];
+          re=new RegExp(re.replace(/\//g,'\\/'),'i'); 
+          if(sURL.match(re)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    return false;
   },
 
   fnUrlAppearsScannable: function (sURL) {
     return true;
   },
-  
-  fnUrlIsNotBlackListed: function (sURL) {
-    if(/javascript:/.test(sURL) || /\.(exe|dmg)$/.test(sURL)) {
-      return false;
-    }
-    return true;  
-  },
-  
+    
   // http://regexlib.com/REDetails.aspx?regexp_id=96
   fnAppearsToBeURL: function (sURL) { // TODO: QA THIS!!!
     if (sURL != null && sURL.match(/(https?:\/\/)?[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
@@ -264,7 +306,7 @@ blr.W15yQC.ScannerWindow = {
     return sUrl;
   },
 
-  fnNormalizeURL: function(docURL, sUrl) {
+  normalizeURL: function(docURL, sUrl) {
     var firstPart;
     if(docURL != null && sUrl != null && sUrl.length>0) {
       docURL = blr.W15yQC.fnTrim(docURL);
@@ -295,11 +337,33 @@ blr.W15yQC.ScannerWindow = {
     return sUrl;
   },
 
-  fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-    if(url1 != null) { url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1)); }
-    if(url2 != null) { url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2)); }
-    return (url1 == url2);
+  fnRemoveNamedAnchor: function(sURL) {
+    if(sURL!=null) {
+      sURL=sURL.replace(/#.+$/, '');
+    }
+    return sURL;
   },
+  
+    fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
+      if(url1 != null) {
+        url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
+        url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+        url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+        url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+      }
+      if(url2 != null) {
+        url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
+        url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+        url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+        url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+      }
+      
+      if(url1!=url2 && url1!=null && url2!=null) {
+        url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
+        url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
+      }
+      return (url1 == url2);
+    },
   
   resetProjectToNew: function(bAskBeforeResettingIfUnsavedChanges) {
     // blr.W15yQC.fnLog('scanner-resetProjectToNew');
@@ -316,19 +380,46 @@ blr.W15yQC.ScannerWindow = {
     return bCancel;
   },
   
-  urlAlreadInList: function(sURL, sDocURL) {
+  urlAlreadInList: function(sURL) {
+    var i;
+    if(blr.W15yQC.ScannerWindow.urlList!=null) {
+      for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+        if(blr.W15yQC.ScannerWindow.fnURLsAreEqual('', blr.W15yQC.ScannerWindow.urlList[i].loc, '', sURL)) {
+          return true;
+        }
+      }
+    }
     return false;
   },
   
   addUrlToProject: function (sURL, sDocURL, source, priority) {
     // blr.W15yQC.fnLog('scanner-addUrlToProject');
     var url;
+    sURL=blr.W15yQC.ScannerWindow.fnRemoveNamedAnchor(sURL);
     if(blr.W15yQC.ScannerWindow.urlList==null) {
       blr.W15yQC.ScannerWindow.urlList = [];
     }
-    if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL)) {
+    sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
+    if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
+       blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) &&
+       !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL) &&
+       !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
       url=new blr.W15yQC.ProjectURL(sURL, source, priority);
       blr.W15yQC.ScannerWindow.urlList.push(url);
+    }
+  },
+  
+  scanResultsForURLs: function(oW15yQCResults) {
+    var i;
+    if(oW15yQCResults != null) {
+      if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length) {
+        for(i=0;i<oW15yQCResults.aLinks.length;i++) {
+          if(oW15yQCResults.aLinks[i].href!=null) {
+            blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href,oW15yQCResults.sWindowURL,oW15yQCResults.sWindowURL,1.0); 
+            blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
+          }
+        }
+      }
     }
   },
   
@@ -341,17 +432,17 @@ blr.W15yQC.ScannerWindow = {
       url.windowTitle=oW15yQCResults.sWindowTitle;
       url.dateScanned = oW15yQCResults.dDateChecked;
       url.score= null;
-      url.textSize= null;
+      url.textSize= oW15yQCResults.iTextSize;
       url.downloadsCount= null;
 
-      if(oW15yQCResults.aAccessKeys && oW15yQCResults.aAccessKeys.length>0) {
-        url.accessKeysCount=oW15yQCResults.aAccessKeys.length;
-        url.accessKeysFailures=oW15yQCResults.aAccessKeys.failedCount;
-        url.accessKeysWarnings=oW15yQCResults.aAccessKeys.warningCount;
+      if(oW15yQCResults.aFrames && oW15yQCResults.aFrames.length>0) {
+        url.framesCount=oW15yQCResults.aFrames.length;
+        url.framesFailures=oW15yQCResults.aFrames.failedCount;
+        url.framesWarnings=oW15yQCResults.aFrames.warningCount;
       } else {
-        url.accessKeysCount=0;
-        url.accessKeysFailures=0;
-        url.accessKeysWarnings=0;
+        url.framesCount=0;
+        url.framesFailures=0;
+        url.framesWarnings=0;
       }
 
       if(oW15yQCResults.aHeadings && oW15yQCResults.aHeadings.length>0) {
@@ -364,14 +455,24 @@ blr.W15yQC.ScannerWindow = {
         url.headingsWarnings=0;
       }
 
-      if(oW15yQCResults.aFrames && oW15yQCResults.aFrames.length>0) {
-        url.framesCount=oW15yQCResults.aFrames.length;
-        url.framesFailures=oW15yQCResults.aFrames.failedCount;
-        url.framesWarnings=oW15yQCResults.aFrames.warningCount;
+      if(oW15yQCResults.aARIALandmarks && oW15yQCResults.aARIALandmarks.length>0) {
+        url.ARIALandmarksCount=oW15yQCResults.aARIALandmarks.length;
+        url.ARIALandmarksFailures=oW15yQCResults.aARIALandmarks.failedCount;
+        url.ARIALandmarksWarnings=oW15yQCResults.aARIALandmarks.warningCount;
       } else {
-        url.framesCount=0;
-        url.framesFailures=0;
-        url.framesWarnings=0;
+        url.ARIALandmarksCount=0;
+        url.ARIALandmarksFailures=0;
+        url.ARIALandmarksWarnings=0;
+      }
+
+      if(oW15yQCResults.aARIAElements && oW15yQCResults.aARIAElements.length>0) {
+        url.ARIAElementsCount=oW15yQCResults.aARIAElements.length;
+        url.ARIAElementsFailures=oW15yQCResults.aARIAElements.failedCount;
+        url.ARIAElementsWarnings=oW15yQCResults.aARIAElements.warningCount;
+      } else {
+        url.ARIAElementsCount=0;
+        url.ARIAElementsFailures=0;
+        url.ARIAElementsWarnings=0;
       }
 
       if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length>0) {
@@ -384,6 +485,16 @@ blr.W15yQC.ScannerWindow = {
         url.linksWarnings=0;
       }
 
+      if(oW15yQCResults.aImages && oW15yQCResults.aImages.length>0) {
+        url.imagesCount=oW15yQCResults.aImages.length;
+        url.imagesFailures=oW15yQCResults.aImages.failedCount;
+        url.imagesWarnings=oW15yQCResults.aImages.warningCount;
+      } else {
+        url.imagesCount=0;
+        url.imagesFailures=0;
+        url.imagesWarnings=0;
+      }
+
       if(oW15yQCResults.aFormControls && oW15yQCResults.aFormControls.length>0) {
         url.formControlsCount=oW15yQCResults.aFormControls.length;
         url.formControlsFailures=oW15yQCResults.aFormControls.failedCount;
@@ -392,6 +503,16 @@ blr.W15yQC.ScannerWindow = {
         url.formControlsCount=0;
         url.formControlsFailures=0;
         url.formControlsWarnings=0;
+      }
+
+      if(oW15yQCResults.aAccessKeys && oW15yQCResults.aAccessKeys.length>0) {
+        url.accessKeysCount=oW15yQCResults.aAccessKeys.length;
+        url.accessKeysFailures=oW15yQCResults.aAccessKeys.failedCount;
+        url.accessKeysWarnings=oW15yQCResults.aAccessKeys.warningCount;
+      } else {
+        url.accessKeysCount=0;
+        url.accessKeysFailures=0;
+        url.accessKeysWarnings=0;
       }
 
       if(oW15yQCResults.aTables && oW15yQCResults.aTables.length>0) {
@@ -412,6 +533,7 @@ blr.W15yQC.ScannerWindow = {
       
       row=document.getElementById('URL'+urlIndex);
       blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.stateCurrentIndex);
+      blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
     }
   },
   
@@ -588,7 +710,7 @@ blr.W15yQC.ScannerWindow = {
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
 
-    if(sURL != null && blr.W15yQC.ScannerWindow.fnUrlIsNotBlackListed(sURL) && blr.W15yQC.ScannerWindow.fnUrlAppearsScannable(sURL)) {
+    if(sURL != null && !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && blr.W15yQC.ScannerWindow.fnUrlAppearsScannable(sURL)) {
       iFrameHolder = document.getElementById('iFrameHolder');
       iFrame = document.getElementById('pageBeingScannedIFrame');
       if(iFrame != null) {
@@ -639,9 +761,10 @@ blr.W15yQC.ScannerWindow = {
       if(iFrameDoc!=null) {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
         oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
-        blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);        
+        blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
         //treeview.view.setCellText(treeview.currentIndex,treeview.columns[4],oW15yQCResults.sWindowTitle);
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
+        blr.W15yQC.ScannerWindow.scanResultsForURLs(oW15yQCResults);
         oW15yQCResults = null;
       } else alert('iFrameDoc is null');
     }
@@ -668,6 +791,15 @@ blr.W15yQC.ScannerWindow = {
   
   stopScanning: function() {
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=true;
+  },
+  
+  openSelectedURL: function() {
+    var treebox = document.getElementById('treebox'), selectedRow;
+
+    selectedRow = treebox.currentIndex;
+    if (selectedRow >= 0) {
+      window.open(blr.W15yQC.ScannerWindow.urlList[selectedRow].loc);
+    }
   },
   
   windowOnKeyDown: function() {
@@ -719,6 +851,9 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
   this.linksCount=null;
   this.linksWarnings=null;
   this.linksFailures=null;
+  this.imagesCount=null;
+  this.imagesWarnings=null;
+  this.imagesFailures=null;
   this.formControlsCount=null;
   this.formControlsWarnings=null;
   this.formControlsFailures=null;
@@ -758,6 +893,9 @@ blr.W15yQC.ProjectURL.prototype = {
   linksCount: null,
   linksWarnings: null,
   linksFailures: null,
+  imagesCount: null,
+  imagesWarnings: null,
+  imagesFailures: null,
   formControlsCount: null,
   formControlsWarnings: null,
   formControlsFailures: null,

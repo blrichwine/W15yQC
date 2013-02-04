@@ -692,7 +692,7 @@ ys: 'whys'
 
       var cols, i, j, newWidth, ch,
           tree,
-          rowCount,
+          rowCount, 
           bChangeMade;
 
       if (iLimitCounter == null) {
@@ -1887,8 +1887,23 @@ ys: 'whys'
     },
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      if(url1 != null) { url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1)); }
-      if(url2 != null) { url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2)); }
+      if(url1 != null) {
+        url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
+        url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+        url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+        url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+      }
+      if(url2 != null) {
+        url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
+        url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+        url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+        url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+      }
+      
+      if(url1!=url2 && url1!=null && url2!=null) {
+        url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
+        url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
+      }
       return (url1 == url2);
     },
 
@@ -8060,7 +8075,20 @@ ys: 'whys'
     },
 
     fnDescribeWindow: function (oW15yQCReport) {
+      var i;
       
+      if(oW15yQCReport != null) {
+        oW15yQCReport.iTextSize=0;
+        if(oW15yQCReport.aDocuments != null) {
+          for(i=0;i<oW15yQCReport.aDocuments.length;i++) {
+            try {
+              if(oW15yQCReport.aDocuments[i] && oW15yQCReport.aDocuments[i].doc && oW15yQCReport.aDocuments[i].doc.body) {
+                oW15yQCReport.iTextSize=oW15yQCReport.iTextSize+oW15yQCReport.aDocuments[i].doc.body.textContent.length;
+              }
+            } catch(ex) {}
+          }
+        }
+      }
     },
 
     /*
@@ -8471,6 +8499,7 @@ ys: 'whys'
   blr.W15yQC.W15yResults = function () {
     this.sWindowTitle=null;
     this.sWindowURL= null;
+    this.iTextSize = 0;
     this.dDateChecked= null;
     this.aDocuments= [];
     this.aFrames= [];
@@ -8489,6 +8518,7 @@ ys: 'whys'
   blr.W15yQC.W15yResults.prototype = {
     sWindowTitle: null,
     sWindowURL: null,
+    iTextSize: null,
     dDateChecked: null,
     aDocuments: [],
     aFrames: [],
