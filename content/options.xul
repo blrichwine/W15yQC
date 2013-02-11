@@ -70,7 +70,7 @@
 							</menupopup>
 						</menulist>
 					</hbox>
-					<tree enableColumnDrag="false" id="tEquivalentDomains" flex="1" seltype="single" rows="5">
+					<tree enableColumnDrag="false" id="tEquivalentDomains" flex="1" seltype="single" rows="5" hidecolumnpicker="true">
 						 <treecols>
 								<treecol ordinal="1" id="col-header-domain1"
 									 label=" Domain 1 "

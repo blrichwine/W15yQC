@@ -1020,6 +1020,17 @@ blr.W15yQC.ScannerWindow = {
     }
   },
   
+  setProjectSettings: function() {
+    var newURL = new blr.W15yQC.ProjectURL(),
+      dialogID = 'scannerProjectSettingsDialog',
+      dialogPath = 'chrome://W15yQC/content/scannerProjectSettingsDialog.xul';
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      blr.W15yQC.ScannerWindow.bManualURLAdd=true;
+      window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+    }
+    blr.W15yQC.ScannerWindow.updateControlStates();
+  },
+  
   addNewURL: function () {
     var newURL = new blr.W15yQC.ProjectURL(),
       dialogID = 'addScannerURLDialog',
@@ -1128,12 +1139,15 @@ blr.W15yQC.ScannerWindow = {
   
   doClose: function() {
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
-    if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
-      result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Exit without saving?");
-      return false;
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
+        result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Exit without saving?");
+        return false;
+      }
+      window.close();
+      return true;
     }
-    window.close();
-    return true;
+    return false;
   },
 
   windowOnKeyDown: function() {
