@@ -11,14 +11,20 @@
 			buttonlabelcancel="Cancel"
 			buttonlabelaccept="OK"
 			ondialogaccept="return blr.W15yQC.scannerProjectSettingsDialog.doOK();"
-			ondialogcancel="return true;">
+			ondialogcancel="return true;"
+			onload="blr.W15yQC.scannerProjectSettingsDialog.init(this);">
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/scannerProjectSettingsDialog.js"/>
 	 <xul:vbox>
 			<xul:hbox align="center">
 				 <xul:label value="Project Title:" control="tbTitle"/><xul:textbox id="tbTitle" flex="1" style="min-width:50em" value="" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
 			</xul:hbox>
-			<xul:label value="Must Match List" control="tMustMatchList"/>
-			<xul:tree enableColumnDrag="false" id="tMustMatchList" flex="1" seltype="single" rows="3" hidecolumnpicker="true">
+	 <xul:groupbox>
+			<xul:caption label="URLs Must Match"/>
+			<xul:label value="Must Match List (must match at least one of the these if set)" control="tMustMatchList"/>
+			<xul:tree enableColumnDrag="false" id="tMustMatchList" flex="1" seltype="single" rows="4" hidecolumnpicker="true" onselect="blr.W15yQC.scannerProjectSettingsDialog.updateControls();">
 				 <xul:treecols>
 						<xul:treecol ordinal="1" id="col-header-matchSpec"
 							 label=" Match Specification "
@@ -42,15 +48,21 @@
 			</xul:tree>
 			<xul:hbox>
 				 <xul:button id="button-addMustMatch"
-					 label="Add Domains"
-					 oncommand="blr.W15yQC.options.fnAddDomainEquiv()"/>
+					 label="Add Must Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnAddMustMatch()"/>
+				 <xul:button id="button-editMustMatch"
+					 label="Edit Must Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnEditMustMatch()"/>
 				 <xul:button id="button-deleteMustMatch"
-					 label="Delete Domains"
-					 oncommand="blr.W15yQC.options.fnDeleteSelectedDomains()"/>
+					 label="Delete Must Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnDeleteMustMatch()"/>
 				 <xul:spacer flex="1"/>
 			</xul:hbox>
-			<xul:label value="Must Not Match List" control="tMustNotMatchList"/>
-			<xul:tree enableColumnDrag="false" id="tMustMatchList" flex="1" seltype="single" rows="3" hidecolumnpicker="true">
+	 </xul:groupbox>
+	 <xul:groupbox>
+			<xul:caption label="URLs Must Not Match"/>
+			<xul:label value="Must Not Match List (must not match any of the these)" control="tMustNotMatchList"/>
+			<xul:tree enableColumnDrag="false" id="tMustNotMatchList" flex="1" seltype="single" rows="4" hidecolumnpicker="true" onselect="blr.W15yQC.scannerProjectSettingsDialog.updateControls();">
 				 <xul:treecols>
 						<xul:treecol ordinal="1" id="col-header-matchSpec"
 							 label=" Match Specification "
@@ -74,13 +86,17 @@
 			</xul:tree>
 			<xul:hbox>
 				 <xul:button id="button-addMustNotMatch"
-					 label="Add Domains"
-					 oncommand="blr.W15yQC.options.fnAddDomainEquiv()"/>
+					 label="Add Must Not Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnAddMustNotMatch()"/>
+				 <xul:button id="button-editMustNotMatch"
+					 label="Edit Must Not Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnEditMustNotMatch()"/>
 				 <xul:button id="button-deleteMustNotMatch"
-					 label="Delete Domains"
-					 oncommand="blr.W15yQC.options.fnDeleteSelectedDomains()"/>
+					 label="Delete Must Not Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnDeleteMustNotMatch()"/>
 				 <xul:spacer flex="1"/>
 			</xul:hbox>
+	 </xul:groupbox>
 			<xul:checkbox label="Process Pages for URLs" id="cbParseForLinks" checked="true"/>
 			<xul:hbox align="center">
 				 <xul:label value="Maximum URL Link Depth from Original URLs:" control="tbMaxLengthDepth"/>

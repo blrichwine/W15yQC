@@ -153,10 +153,12 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  * Returns:
  */
 blr.W15yQC.ScannerWindow = {
-  FirebugO: null,
+  sProjectTitle: '',
   urlList: [],
   urlMustMatchList: [],
+  urlMustMatchListType: [],
   urlMustNotMatchList: [],
+  urlMustNotMatchListType: [],
   parseForLinks: true,
   projectHasUnsavedChanges: false,
   projectSettingsHaveBeenSet: false,
@@ -173,7 +175,7 @@ blr.W15yQC.ScannerWindow = {
   pageLoadFilter: 1000,
   bManualURLAdd: false,
   maximumURLCount: 5000,
-  maximumURLDepth: 0,
+  maximumURLDepth: 5000,
   
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -207,7 +209,9 @@ blr.W15yQC.ScannerWindow = {
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.urlMustMatchList.push('iuadapts.+(/[a-z]*|\.(s?html?))$');
+    blr.W15yQC.ScannerWindow.urlMustMatchListType.push(true);
     blr.W15yQC.ScannerWindow.urlMustMatchList.push('http://www.indiana.edu/~iuadapts.+(\.(s?html?))$');
+    blr.W15yQC.ScannerWindow.urlMustMatchListType.push(true);
     blr.W15yQC.ScannerWindow.addUrlToProject('http://iuadapts.indiana.edu/','http://iuadapts.indiana.edu/','origin',1.0);
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
@@ -246,7 +250,7 @@ blr.W15yQC.ScannerWindow = {
       row=document.createElement('treerow');
       row.setAttribute('id','URL'+urlIndex);
       bNew=true;
-      for(i=0;i<40;i++) {
+      for(i=0;i<41;i++) {
         row.appendChild(document.createElement('treecell'));
       }
     }
@@ -261,42 +265,48 @@ blr.W15yQC.ScannerWindow = {
     }
     row.children[2].setAttribute('label',sPriority);
     row.children[3].setAttribute('label',url.source);
-    row.children[4].setAttribute('label',url.dateScanned ? (new Date(url.dateScanned)).toDateString() : null);
-    row.children[5].setAttribute('label',url.contentType);
-    row.children[6].setAttribute('label',url.windowTitle);
-    row.children[7].setAttribute('label',url.itemsCount);
-    row.children[8].setAttribute('label',url.warningsCount);
-    row.children[9].setAttribute('label',url.failuresCount);
-    row.children[10].setAttribute('label',url.score);
-    row.children[11].setAttribute('label',url.textSize);
-    row.children[12].setAttribute('label',url.downloadsCount);
-    row.children[13].setAttribute('label',url.framesCount);
-    row.children[14].setAttribute('label',url.framesWarnings);
-    row.children[15].setAttribute('label',url.framesFailures);
-    row.children[16].setAttribute('label',url.headingsCount);
-    row.children[17].setAttribute('label',url.headingsWarnings);
-    row.children[18].setAttribute('label',url.headingsFailures);
-    row.children[19].setAttribute('label',url.ARIALandmarksCount);
-    row.children[20].setAttribute('label',url.ARIALandmarksWarnings);
-    row.children[21].setAttribute('label',url.ARIALandmarksFailures);
-    row.children[22].setAttribute('label',url.ARIAElementsCount);
-    row.children[23].setAttribute('label',url.ARIAElementsWarnings);
-    row.children[24].setAttribute('label',url.ARIAElementsFailures);
-    row.children[25].setAttribute('label',url.linksCount);
-    row.children[26].setAttribute('label',url.linksWarnings);
-    row.children[27].setAttribute('label',url.linksFailures);
-    row.children[28].setAttribute('label',url.imagesCount);
-    row.children[29].setAttribute('label',url.imagesWarnings);
-    row.children[30].setAttribute('label',url.imagesFailures);
-    row.children[31].setAttribute('label',url.formControlsCount);
-    row.children[32].setAttribute('label',url.formControlsWarnings);
-    row.children[33].setAttribute('label',url.formControlsFailures);
-    row.children[34].setAttribute('label',url.accessKeysCount);
-    row.children[35].setAttribute('label',url.accessKeysWarnings);
-    row.children[36].setAttribute('label',url.accessKeysFailures);
-    row.children[37].setAttribute('label',url.tablesCount);
-    row.children[38].setAttribute('label',url.tablesWarnings);
-    row.children[39].setAttribute('label',url.tablesFailures);
+    row.children[4].setAttribute('label',url.linkDepth);
+    row.children[5].setAttribute('label',url.dateScanned ? (new Date(url.dateScanned)).toDateString() : null);
+    row.children[6].setAttribute('label',url.contentType);
+    row.children[7].setAttribute('label',url.windowTitle);
+    row.children[8].setAttribute('label',url.itemsCount);
+    row.children[9].setAttribute('label',url.warningsCount);
+    row.children[10].setAttribute('label',url.failuresCount);
+    row.children[11].setAttribute('label',url.score);
+    row.children[12].setAttribute('label',url.textSize);
+    row.children[13].setAttribute('label',url.downloadsCount);
+    row.children[14].setAttribute('label',url.framesCount);
+    row.children[15].setAttribute('label',url.framesWarnings);
+    row.children[16].setAttribute('label',url.framesFailures);
+    row.children[17].setAttribute('label',url.headingsCount);
+    row.children[18].setAttribute('label',url.headingsWarnings);
+    row.children[19].setAttribute('label',url.headingsFailures);
+    row.children[20].setAttribute('label',url.ARIALandmarksCount);
+    row.children[21].setAttribute('label',url.ARIALandmarksWarnings);
+    row.children[22].setAttribute('label',url.ARIALandmarksFailures);
+    row.children[23].setAttribute('label',url.ARIAElementsCount);
+    row.children[24].setAttribute('label',url.ARIAElementsWarnings);
+    row.children[25].setAttribute('label',url.ARIAElementsFailures);
+    row.children[26].setAttribute('label',url.linksCount);
+    row.children[27].setAttribute('label',url.linksWarnings);
+    row.children[28].setAttribute('label',url.linksFailures);
+    row.children[29].setAttribute('label',url.imagesCount);
+    row.children[30].setAttribute('label',url.imagesWarnings);
+    row.children[31].setAttribute('label',url.imagesFailures);
+    row.children[32].setAttribute('label',url.formControlsCount);
+    row.children[33].setAttribute('label',url.formControlsWarnings);
+    row.children[34].setAttribute('label',url.formControlsFailures);
+    row.children[35].setAttribute('label',url.accessKeysCount);
+    row.children[36].setAttribute('label',url.accessKeysWarnings);
+    row.children[37].setAttribute('label',url.accessKeysFailures);
+    row.children[38].setAttribute('label',url.tablesCount);
+    row.children[39].setAttribute('label',url.tablesWarnings);
+    row.children[40].setAttribute('label',url.tablesFailures);
+
+    if (url.windowTitleNotUnique==true) {
+      treerow.setAttribute('properties', 'failed');
+    }
+
     if(bNew) {
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
@@ -326,18 +336,21 @@ blr.W15yQC.ScannerWindow = {
   },
   
   urlMatchesProjectMustMatchList: function (sURL) {
-    var i,re;
+    var i,sMatchSpec,regex;
     if(blr.W15yQC.ScannerWindow.urlMustMatchList!=null && blr.W15yQC.ScannerWindow.urlMustMatchList.length>0) {
       if(sURL!=null) { 
         for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
-          re=blr.W15yQC.ScannerWindow.urlMustMatchList[i];
-          re=new RegExp(re.replace(/\//g,'\\/'),'i'); 
-          if(sURL.match(re)) {
+          sMatchSpec=blr.W15yQC.ScannerWindow.urlMustMatchList[i];
+          if(blr.W15yQC.ScannerWindow.urlMustMatchListType[i]==true) {
+            regex=new RegExp(sMatchSpec,'i'); 
+            if(regex.test(sURL)) {
+              return true;
+            }
+          } else if((sURL.toLowerCase()).indexOf(sMatchSpec.toLowerCase())>=0) {
             return true;
           }
         }
       }
-      //alert('does not match must match list');
       return false;
     }
     return true;
@@ -356,14 +369,17 @@ blr.W15yQC.ScannerWindow = {
   },
   
   urlMatchesProjectMustNotMatchList: function (sURL) {
-    var i,re;
+    var i,sMatchSpec,regex;
     if(blr.W15yQC.ScannerWindow.urlMustNotMatchList!=null && blr.W15yQC.ScannerWindow.urlMustNotMatchList.length>0) {
       if(sURL!=null) {
         for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
-          re=blr.W15yQC.ScannerWindow.urlMustNotMatchList[i];
-          re=new RegExp(re.replace(/\//g,'\\/'),'i'); 
-          if(sURL.match(re)) {
-            //alert('matches must not match list');
+          sMatchSpec=blr.W15yQC.ScannerWindow.urlMustNotMatchList[i];
+          if(blr.W15yQC.ScannerWindow.urlMustMatchListType[i]==true) {
+            regex=new RegExp(sMatchSpec,'i'); 
+            if(regex.test(sURL)) {
+              return true;
+            }
+          } else if((sURL.toLowerCase()).indexOf(sMatchSpec.toLowerCase())>=0) {
             return true;
           }
         }
@@ -518,13 +534,18 @@ blr.W15yQC.ScannerWindow = {
       if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
          (blr.W15yQC.ScannerWindow.bManualURLAdd==true || (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
          !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
+        
         url=new blr.W15yQC.ProjectURL(sURL, source, priority);
+        if(blr.W15yQC.ScannerWindow.stateScanning==true) {
+          url.linkDepth=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth + 1;
+        }
         if(dontParseForLinks==null) {
           dontParseForLinks=false;
         }
         url.dontParseForLinks=dontParseForLinks;
         blr.W15yQC.ScannerWindow.urlList.push(url);
         blr.W15yQC.projectHasUnsavedChanges=true;
+        
       }
     } else {
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
@@ -738,22 +759,32 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
-  objectToString: function (o, bDig) {
-    var p, out = '';
-    if (o != null) {
-      for (p in o) {
-        if (o[p].toString() == '[object Object]' && bDig != false) {
-          out += 'STARTOBJ' + p + ': [' + blr.W15yQC.ScannerWindow.objectToString(o[p], false) + ']\n';
-        } else {
-          out += p + ': ' + o[p] + '\n';
+  inspectPageTitle: function(pti) {
+    var i, sPageTitle;
+    if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
+      sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
+      for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+        if(i!=pti) {
+          if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
+            
+          } 
         }
       }
     }
-    return out;
   },
-
-  inspectPageTitle: function() {
-    
+  
+  inspectPageTitles: function() {
+    var i, j, sPageTitle;
+    if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
+      sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
+      for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+        if(i!=pti) {
+          if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
+            
+          } 
+        }
+      }
+    }
   },
   
   setStateAsScanning: function() {
@@ -940,6 +971,7 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
           if(blr.W15yQC.ScannerWindow.parseForLinks==true &&
+             blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth <= blr.W15yQC.ScannerWindow.maximumURLDepth &&
              blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dontParseForLinks==false) {
             blr.W15yQC.ScannerWindow.bManualURLAdd=false;
             blr.W15yQC.ScannerWindow.scanResultsForURLs(oW15yQCResults);
@@ -1004,8 +1036,8 @@ blr.W15yQC.ScannerWindow = {
         textbox=document.createElement('textbox');
         iframeHolder.insertBefore(textbox,scannerIFrame);
       }
-      if(scannerIFrame!=null) {
-        iframeHolder.removeChild(scannerIFrame);
+      if(scannerIFrame!=null && scannerIFrame.parentNode) {
+        scannerIFrame.parentNode.removeChild(scannerIFrame);
       }
       
       selectedRow = treebox.currentIndex;
@@ -1167,6 +1199,7 @@ blr.W15yQC.ScannerWindow = {
 blr.W15yQC.ProjectURL = function (loc, source, priority) {
   this.loc = loc;
   this.source = source;
+  this.linkDepth = 0;
   if(priority != null && !isNaN(parseFloat(priority))) {
     this.priority = parseFloat(priority);
   } else {
@@ -1176,6 +1209,7 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
   this.dateScanned=null;
   this.contentType=null;
   this.windowTitle=null;
+  this.windowTitleNotUnique=false;
   this.itemsCount=null;
   this.warningsCount=null;
   this.failuresCount=null;
@@ -1215,11 +1249,13 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
 blr.W15yQC.ProjectURL.prototype = {
   loc: null,
   source: null,
+  linkDepth: 0,
   priority: 1.0,
   dontParseForLinks: false,
   dateScanned: null,
   contentType: null,
   windowTitle: null,
+  windowTitleNotUnique: null,
   itemsCount: null,
   warningsCount: null,
   failuresCount: null,

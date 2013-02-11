@@ -128,9 +128,9 @@ blr.W15yQC.options = {
     var treebox=document.getElementById('tEquivalentDomains'),
       selectedRow = treebox.currentIndex,
       row;
-      
+
     if(selectedRow>=0) {
-      row=document.getElementById('Domains'+selectedRow);
+      row=treebox.getElementsByTagName('treeitem')[selectedRow];
       if(row!=null) {
         row.parentNode.removeChild(row);
       }
