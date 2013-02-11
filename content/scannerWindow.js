@@ -171,6 +171,7 @@ blr.W15yQC.ScannerWindow = {
   pageLoadTimeLimit: 20000,
   pageLoadFilter: 1000,
   bManualURLAdd: false,
+  maximumURLCount: 5000,
   
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -243,7 +244,7 @@ blr.W15yQC.ScannerWindow = {
       row=document.createElement('treerow');
       row.setAttribute('id','URL'+urlIndex);
       bNew=true;
-      for(i=0;i<39;i++) {
+      for(i=0;i<40;i++) {
         row.appendChild(document.createElement('treecell'));
       }
     }
@@ -259,40 +260,41 @@ blr.W15yQC.ScannerWindow = {
     row.children[2].setAttribute('label',sPriority);
     row.children[3].setAttribute('label',url.source);
     row.children[4].setAttribute('label',url.dateScanned ? (new Date(url.dateScanned)).toDateString() : null);
-    row.children[5].setAttribute('label',url.windowTitle);
-    row.children[6].setAttribute('label',url.itemsCount);
-    row.children[7].setAttribute('label',url.warningsCount);
-    row.children[8].setAttribute('label',url.failuresCount);
-    row.children[9].setAttribute('label',url.score);
-    row.children[10].setAttribute('label',url.textSize);
-    row.children[11].setAttribute('label',url.downloadsCount);
-    row.children[12].setAttribute('label',url.framesCount);
-    row.children[13].setAttribute('label',url.framesWarnings);
-    row.children[14].setAttribute('label',url.framesFailures);
-    row.children[15].setAttribute('label',url.headingsCount);
-    row.children[16].setAttribute('label',url.headingsWarnings);
-    row.children[17].setAttribute('label',url.headingsFailures);
-    row.children[18].setAttribute('label',url.ARIALandmarksCount);
-    row.children[19].setAttribute('label',url.ARIALandmarksWarnings);
-    row.children[20].setAttribute('label',url.ARIALandmarksFailures);
-    row.children[21].setAttribute('label',url.ARIAElementsCount);
-    row.children[22].setAttribute('label',url.ARIAElementsWarnings);
-    row.children[23].setAttribute('label',url.ARIAElementsFailures);
-    row.children[24].setAttribute('label',url.linksCount);
-    row.children[25].setAttribute('label',url.linksWarnings);
-    row.children[26].setAttribute('label',url.linksFailures);
-    row.children[27].setAttribute('label',url.imagesCount);
-    row.children[28].setAttribute('label',url.imagesWarnings);
-    row.children[29].setAttribute('label',url.imagesFailures);
-    row.children[30].setAttribute('label',url.formControlsCount);
-    row.children[31].setAttribute('label',url.formControlsWarnings);
-    row.children[32].setAttribute('label',url.formControlsFailures);
-    row.children[33].setAttribute('label',url.accessKeysCount);
-    row.children[34].setAttribute('label',url.accessKeysWarnings);
-    row.children[35].setAttribute('label',url.accessKeysFailures);
-    row.children[36].setAttribute('label',url.tablesCount);
-    row.children[37].setAttribute('label',url.tablesWarnings);
-    row.children[38].setAttribute('label',url.tablesFailures);
+    row.children[5].setAttribute('label',url.contentType);
+    row.children[6].setAttribute('label',url.windowTitle);
+    row.children[7].setAttribute('label',url.itemsCount);
+    row.children[8].setAttribute('label',url.warningsCount);
+    row.children[9].setAttribute('label',url.failuresCount);
+    row.children[10].setAttribute('label',url.score);
+    row.children[11].setAttribute('label',url.textSize);
+    row.children[12].setAttribute('label',url.downloadsCount);
+    row.children[13].setAttribute('label',url.framesCount);
+    row.children[14].setAttribute('label',url.framesWarnings);
+    row.children[15].setAttribute('label',url.framesFailures);
+    row.children[16].setAttribute('label',url.headingsCount);
+    row.children[17].setAttribute('label',url.headingsWarnings);
+    row.children[18].setAttribute('label',url.headingsFailures);
+    row.children[19].setAttribute('label',url.ARIALandmarksCount);
+    row.children[20].setAttribute('label',url.ARIALandmarksWarnings);
+    row.children[21].setAttribute('label',url.ARIALandmarksFailures);
+    row.children[22].setAttribute('label',url.ARIAElementsCount);
+    row.children[23].setAttribute('label',url.ARIAElementsWarnings);
+    row.children[24].setAttribute('label',url.ARIAElementsFailures);
+    row.children[25].setAttribute('label',url.linksCount);
+    row.children[26].setAttribute('label',url.linksWarnings);
+    row.children[27].setAttribute('label',url.linksFailures);
+    row.children[28].setAttribute('label',url.imagesCount);
+    row.children[29].setAttribute('label',url.imagesWarnings);
+    row.children[30].setAttribute('label',url.imagesFailures);
+    row.children[31].setAttribute('label',url.formControlsCount);
+    row.children[32].setAttribute('label',url.formControlsWarnings);
+    row.children[33].setAttribute('label',url.formControlsFailures);
+    row.children[34].setAttribute('label',url.accessKeysCount);
+    row.children[35].setAttribute('label',url.accessKeysWarnings);
+    row.children[36].setAttribute('label',url.accessKeysFailures);
+    row.children[37].setAttribute('label',url.tablesCount);
+    row.children[38].setAttribute('label',url.tablesWarnings);
+    row.children[39].setAttribute('label',url.tablesFailures);
     if(bNew) {
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
@@ -370,7 +372,7 @@ blr.W15yQC.ScannerWindow = {
   },
 
   fnUrlAppearsScannable: function (sURL) {
-    return true;
+    return blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL);
   },
     
   // http://regexlib.com/REDetails.aspx?regexp_id=96
@@ -426,7 +428,7 @@ blr.W15yQC.ScannerWindow = {
   },
 
   fnRemoveNamedAnchor: function(sURL) {
-    if(sURL!=null) {
+    if(sURL !=null && sURL.replace) {
       sURL=sURL.replace(/#.+$/, '');
     }
     return sURL;
@@ -503,16 +505,20 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.urlList==null) {
       blr.W15yQC.ScannerWindow.urlList = [];
     }
-    sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
-    if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
-       (blr.W15yQC.ScannerWindow.bManualURLAdd==true || (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
-       !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
-      url=new blr.W15yQC.ProjectURL(sURL, source, priority);
-      if(dontParseForLinks==null) {
-        dontParseForLinks=false;
+    if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
+      sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
+      if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
+         (blr.W15yQC.ScannerWindow.bManualURLAdd==true || (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
+         !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
+        url=new blr.W15yQC.ProjectURL(sURL, source, priority);
+        if(dontParseForLinks==null) {
+          dontParseForLinks=false;
+        }
+        url.dontParseForLinks=dontParseForLinks;
+        blr.W15yQC.ScannerWindow.urlList.push(url);
       }
-      url.dontParseForLinks=dontParseForLinks;
-      blr.W15yQC.ScannerWindow.urlList.push(url);
+    } else {
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
     }
   },
   
@@ -537,7 +543,6 @@ blr.W15yQC.ScannerWindow = {
     if(oW15yQCResults!=null && blr.W15yQC.ScannerWindow.urlList && blr.W15yQC.ScannerWindow.urlList.length>0 && urlIndex<blr.W15yQC.ScannerWindow.urlList.length) {
 
       url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
-
       url.windowTitle=oW15yQCResults.sWindowTitle;
       url.dateScanned = oW15yQCResults.dDateChecked;
       url.score= null;
@@ -928,17 +933,22 @@ blr.W15yQC.ScannerWindow = {
     if(iFrame!=null) {
       iFrameDoc=iFrame.contentDocument;
       if(iFrameDoc!=null) {
+        blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].contentType=iFrameDoc.contentType;
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
-        oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
-        blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
-        blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
-        if(blr.W15yQC.ScannerWindow.parseForLinks==true &&
-           blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dontParseForLinks==false) {
-          blr.W15yQC.ScannerWindow.bManualURLAdd=false;
-          blr.W15yQC.ScannerWindow.scanResultsForURLs(oW15yQCResults);
+        try {
+          oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
+          blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
+          blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
+          if(blr.W15yQC.ScannerWindow.parseForLinks==true &&
+             blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dontParseForLinks==false) {
+            blr.W15yQC.ScannerWindow.bManualURLAdd=false;
+            blr.W15yQC.ScannerWindow.scanResultsForURLs(oW15yQCResults);
+          }
+          oW15yQCResults = null;
+        } catch(ex) {
+          blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].windowDescription="An error occurred while checking this URL:\n"+ex.toString();
         }
-        oW15yQCResults = null;
       } else alert('iFrameDoc is null');
     }
 
@@ -1141,6 +1151,7 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
   }
   this.dontParseForLinks=false;
   this.dateScanned=null;
+  this.contentType=null;
   this.windowTitle=null;
   this.itemsCount=null;
   this.warningsCount=null;
@@ -1184,6 +1195,7 @@ blr.W15yQC.ProjectURL.prototype = {
   priority: 1.0,
   dontParseForLinks: false,
   dateScanned: null,
+  contentType: null,
   windowTitle: null,
   itemsCount: null,
   warningsCount: null,
