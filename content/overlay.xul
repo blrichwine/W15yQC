@@ -117,6 +117,7 @@
           <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Remove Styles" oncommand="blr.W15yQC.fnRemoveStyles();"/>
           <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
           <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
+          <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Project Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Options" label="Options" type="menu" onmouseover="" class="toolbarbutton">

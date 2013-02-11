@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+      id="scannerProjectSettingsDialog"
+      title="Add Eauivalent Domains - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+			buttons="accept,cancel"
+			buttonlabelcancel="Cancel"
+			buttonlabelaccept="OK"
+			ondialogaccept="return blr.W15yQC.scannerProjectSettingsDialog.doOK();"
+			ondialogcancel="blr.W15yQC.scannerProjectSettingsDialog.doCancel(); return true;">
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/scannerProjectSettingsDialog.js"/>
+	 <xul:vbox>
+			<xul:hbox align="center">
+				 <xul:label value="Project Title:" control="tbTitle"/><xul:textbox id="tbTitle" flex="1" style="min-width:50em" value="" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+			</xul:hbox>
+			<label value="Must Match List" control="tMustMatchList"/>
+			<tree enableColumnDrag="false" id="tMustMatchList" flex="1" seltype="single" rows="3">
+				 <treecols>
+						<treecol ordinal="1" id="col-header-matchSpec"
+							 label=" Match Specification "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 flex="1"
+							 sortDirection="" 
+							 onclick=""/>
+						<splitter ordinal="2" class="tree-splitter" />
+						<treecol  ordinal="3" id="col-header-type"
+							 label=" Type "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 sortDirection="" 
+							 onclick=""/>
+				 </treecols>
+				 <treechildren id="tMustMatchListChildren"/>
+			</tree>
+			<hbox>
+				 <button id="button-addMustMatch"
+					 label="Add Domains"
+					 oncommand="blr.W15yQC.options.fnAddDomainEquiv()"/>
+				 <button id="button-deleteMustMatch"
+					 label="Delete Domains"
+					 oncommand="blr.W15yQC.options.fnDeleteSelectedDomains()"/>
+				 <spacer flex="1"/>
+			</hbox>
+			<label value="Must Not Match List" control="tMustNotMatchList"/>
+			<tree enableColumnDrag="false" id="tMustMatchList" flex="1" seltype="single" rows="3">
+				 <treecols>
+						<treecol ordinal="1" id="col-header-matchSpec"
+							 label=" Match Specification "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 flex="1"
+							 sortDirection="" 
+							 onclick=""/>
+						<splitter ordinal="2" class="tree-splitter" />
+						<treecol  ordinal="3" id="col-header-type"
+							 label=" Type "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 sortDirection="" 
+							 onclick=""/>
+				 </treecols>
+				 <treechildren id="tMustNotMatchListChildren"/>
+			</tree>
+			<hbox>
+				 <button id="button-addMustNotMatch"
+					 label="Add Domains"
+					 oncommand="blr.W15yQC.options.fnAddDomainEquiv()"/>
+				 <button id="button-deleteMustNotMatch"
+					 label="Delete Domains"
+					 oncommand="blr.W15yQC.options.fnDeleteSelectedDomains()"/>
+				 <spacer flex="1"/>
+			</hbox>
+			<checkbox label="Process Pages for URLs" id="cbParseForLinks" checked="true"/>
+			<xul:hbox align="left">
+				 <xul:label value="Maximum URL Link Depth from Original URLs:" control="tbMaxLengthDepth"/>
+				 <xul:textbox id="tbMaxLengthDepth" style="min-width:6em" value="5000" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+			</xul:hbox>
+	 </xul:vbox>    
+</xul:dialog>

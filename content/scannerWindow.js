@@ -159,6 +159,7 @@ blr.W15yQC.ScannerWindow = {
   urlMustNotMatchList: [],
   parseForLinks: true,
   projectHasUnsavedChanges: false,
+  projectSettingsHaveBeenSet: false,
   iFrameOnLoadEventTimeOutTimerID: null,
   iFrameOnLoadEventFilterTimerID: null,
   stateScanning: false,
@@ -172,6 +173,7 @@ blr.W15yQC.ScannerWindow = {
   pageLoadFilter: 1000,
   bManualURLAdd: false,
   maximumURLCount: 5000,
+  maximumURLDepth: 0,
   
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -466,11 +468,17 @@ blr.W15yQC.ScannerWindow = {
   
   resetProjectToNew: function(bAskBeforeResettingIfUnsavedChanges) {
     // blr.W15yQC.fnLog('scanner-resetProjectToNew');
-    var bCancel=false;
+    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result,
+        bCancel=false;
+    if(bAskBeforeResettingIfUnsavedChanges==null) { bAskBeforeResettingIfUnsavedChanges=true; }
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       if(bAskBeforeResettingIfUnsavedChanges==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges) {
         // present alert dialog with query to save changes and Yes, No, Cancel buttons
         // If saving, perform a quiet save (not a save as dialog)
+        if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
+          result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Reset project to new without saving?");
+          if(!result) { bCancel=true; }
+        }
       }
       if(!bCancel) {
         blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = false;
@@ -516,6 +524,7 @@ blr.W15yQC.ScannerWindow = {
         }
         url.dontParseForLinks=dontParseForLinks;
         blr.W15yQC.ScannerWindow.urlList.push(url);
+        blr.W15yQC.projectHasUnsavedChanges=true;
       }
     } else {
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
@@ -542,6 +551,7 @@ blr.W15yQC.ScannerWindow = {
     var row, url;
     if(oW15yQCResults!=null && blr.W15yQC.ScannerWindow.urlList && blr.W15yQC.ScannerWindow.urlList.length>0 && urlIndex<blr.W15yQC.ScannerWindow.urlList.length) {
 
+      blr.W15yQC.projectHasUnsavedChanges=true;
       url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
       url.windowTitle=oW15yQCResults.sWindowTitle;
       url.dateScanned = oW15yQCResults.dDateChecked;
@@ -776,36 +786,25 @@ blr.W15yQC.ScannerWindow = {
       buttonStopScanning=document.getElementById('button-stopScanning'),
       buttonOpenSelectedURL=document.getElementById('button-openSelectedURL'),
       buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
+      buttonAddNewURL=document.getElementById('button-addNewURL'),
       buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');      
     
     if(selectedRow==null) { selectedRow=-1;}
     
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
-      document.getElementById('button-newProject').disabled = true;
-      document.getElementById('button-openProject').disabled = true;
-      document.getElementById('button-saveProject').disabled = true;
-      document.getElementById('button-importLinks').disabled = true;
-      document.getElementById('button-ScanNew').disabled = true;
-      document.getElementById('button-ScanAll').disabled = true;
-      document.getElementById('button-close').disabled = true;
 			buttonScanSelectedURL.disabled=true;
       buttonStopScanning.disabled=false;
       buttonOpenSelectedURL.disabled=true;
+      buttonAddNewURL.disabled=true;
       buttonEditSelectedURL.disabled=true;
       buttonDeleteSelectedURL.disabled=true;
       if(textbox!=null) {
         iframeHolder.removeChild(textbox);
       }
     } else {
-      document.getElementById('button-newProject').disabled = false;
-      document.getElementById('button-openProject').disabled = false;
-      document.getElementById('button-saveProject').disabled = false;
-      document.getElementById('button-importLinks').disabled = false;
-      document.getElementById('button-ScanNew').disabled = false;
-      document.getElementById('button-ScanAll').disabled = false;
-      document.getElementById('button-close').disabled = false;
 			buttonScanSelectedURL.disabled=selectedRow<0;
       buttonStopScanning.disabled=true;
+      buttonAddNewURL.disabled=false;
       buttonOpenSelectedURL.disabled=selectedRow<0;
       buttonEditSelectedURL.disabled=selectedRow<0;
       buttonDeleteSelectedURL.disabled=selectedRow<0;
@@ -1127,6 +1126,16 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
+  doClose: function() {
+    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
+    if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
+      result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Exit without saving?");
+      return false;
+    }
+    window.close();
+    return true;
+  },
+
   windowOnKeyDown: function() {
     
   },

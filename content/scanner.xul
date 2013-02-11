@@ -20,64 +20,44 @@
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/scannerWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
 			<xul:menubar id="sample-menubar">
+				<xul:menu id="project-menu" label="Scanner">
+					<xul:menupopup id="project-popup">
+						<xul:menuitem label="Scanning Project Settings" oncommand="blr.W15yQC.ScannerWindow.setProjectSettings()"/>
+						<xul:menuseparator/>
+						<xul:menuitem label="Exit" oncommand="blr.W15yQC.ScannerWindow.doClose()"/>
+					</xul:menupopup>
+				</xul:menu>
 				<xul:menu id="file-menu" label="File">
 					<xul:menupopup id="file-popup">
-						<xul:menuitem label="New Project"/>
-						<xul:menuitem label="Open Project"/>
-						<xul:menuitem label="Save Project"/>
-						<xul:menuitem label="Save Project As"/>
+						<xul:menuitem label="New Project" oncommand="blr.W15yQC.ScannerWindow.newProject()"/>
+						<xul:menuitem label="Open Project" oncommand="blr.W15yQC.ScannerWindow.openProject()"/>
+						<xul:menuitem label="Save Project" oncommand="blr.W15yQC.ScannerWindow.saveProject()"/>
+						<xul:menuitem label="Save Project As" oncommand="blr.W15yQC.ScannerWindow.saveProjectAs()"/>
 						<xul:menuseparator/>
 						<xul:menuitem label="Import URLs" oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
-						<xul:menuseparator/>
-						<xul:menuitem label="Exit"/>
 					</xul:menupopup>
 				</xul:menu>
 				<xul:menu id="edit-menu" label="Edit">
 					<xul:menupopup id="edit-popup">
 						<xul:menuitem label="Add URL" oncommand="blr.W15yQC.ScannerWindow.addNewURL()"/>
-						<xul:menuitem label="Edit URL"/>
-						<xul:menuitem label="Delete URL"/>
+						<xul:menuitem label="Edit URL" oncommand="blr.W15yQC.ScannerWindow.editSelectedURL()"/>
+						<xul:menuitem label="Delete URL" oncommand="blr.W15yQC.ScannerWindow.deleteSelectedURL()"/>
 					</xul:menupopup>
 				</xul:menu>
 				<xul:menu id="edit-menu" label="Scan">
 					<xul:menupopup id="edit-popup">
 						<xul:menuitem label="Scan All" oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
 						<xul:menuitem label="Scan New" oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
+						<xul:menuitem label="Scan URL" oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
 					</xul:menupopup>
 				</xul:menu>
 				<xul:menu id="edit-menu" label="View">
 					<xul:menupopup id="edit-popup">
 						<xul:menuitem label="Overall Report"/>
-						<xul:menuitem label="URL Report"/>
-						<xul:menuitem label="View URL"/>
+						<xul:menuitem label="View URL" oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
 					</xul:menupopup>
 				</xul:menu>
 			</xul:menubar>
-			<xul:hbox id="top-toolbar" align="left">
-				 <xul:button id="button-newProject"
-					 label="New Project"
-					 oncommand="blr.W15yQC.ScannerWindow.newProject()"/>
-				 <xul:button id="button-openProject"
-					 label="Open Project"
-					 oncommand="blr.W15yQC.ScannerWindow.openProject()"/>
-				 <xul:button id="button-saveProject"
-					 label="Save Project"
-					 oncommand="blr.W15yQC.ScannerWindow.saveProject()"/>
-				 <xul:button id="button-importLinks"
-					 label="Import Links"
-					 tooltiptext="Import links from a sitemap or text file."
-					 oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
-				 <xul:button id="button-ScanNew"
-					 label="Scan New Links"
-					 oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
-				 <xul:button id="button-ScanAll"
-					 label="Scan All Links"
-					 oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
-				 <xul:spacer flex="1"/>
-				 <xul:button id="button-close"
-					 label="Close"
-					 oncommand="window.close();"/>
-      </xul:hbox>
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
 				 onselect="blr.W15yQC.ScannerWindow.updateNotesField()">
          <xul:treecols>
@@ -93,7 +73,7 @@
 							 label="URL"
 							 hidden="false"
 							 style="text-align:left"
-				       flex="3"
+				       flex="2"
 							 sortDirection="" 
 							 onclick=""/>
 						<xul:splitter  ordinal="4" class="tree-splitter" />
@@ -128,6 +108,7 @@
 							 hidden="false"
 							 sortDirection="" 
 							 fixed="false"
+							 flex="1"
 							 onclick=""/>
             <xul:splitter ordinal="14" class="tree-splitter" /> 
             <xul:treecol ordinal="15" id="col-header-results-items"
@@ -374,6 +355,9 @@
 					 label="Open URL"
 					 oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
 				 <xul:spacer flex="1"/>
+				 <xul:button id="button-addNewURL"
+					 label="Add URL"
+					 oncommand="blr.W15yQC.ScannerWindow.addNewURL()"/>
 				 <xul:button id="button-editSelectedURL"
 					 label="Edit URL"
 					 oncommand="blr.W15yQC.ScannerWindow.editSelectedURL()"/>
