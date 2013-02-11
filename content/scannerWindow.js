@@ -68,7 +68,64 @@
  *    Flash (spider for GUIDs for the objects)
  *    Access keys
  *    Skip Nav (Spider for the most common link texts for the first 4 links on a page)
+ *
+ *  Score:
+ *    Documents (5%)
+ *      All documents have titles
+ *      All documents have default human language
+ *
+ *    Uses Headings (25%)
+ *      Headings use proper hierarchy
+ *      Has a H1
+ *      If no ARIA Landmarks has more than 1 heading
+ *      Has enough headings for the amount of content
+ *      If has Main Landmark, Main Landmark contains a Heading
+ *    Uses ARIA Landmarks 
+ *      Has a MAIN Landmark
+ *      All content contained in a landmark
+ *      All landmarks+lables are unique
+ *    Has Frames
+ *      All Frames have titles
+ *      
+ *    Has Tables
+ *      No datatables that aren't marked as presentation
+ *      All content in datatables are covered by headers
+ *      Datatables are not complex
+ *      Datatables larger than x columns have captions or summary attributes
+ *      
+ *    Form controls
+ *      All form controls are labeled
+ *      radio buttons have legends
+ *      All form controls have meaningful labels
+ *    Links
+ *      All links have text
+ *      All links have meaningful text
+ *      All links are unique
+ *      No links have different titles
+ *    Uses Images
+ *      All images have alt text or are labeled presentational
+ *      
+ *    Uses ARIA
+ *      All Roles are valid
+ *    IDs
+ *      All are valid
+ *      All are unique
+ *    Accesskeys
+ *      No Access keys
+ *      Has Access keys
+ *        All accesskeys are unique
+ *        No accesskeys have conflicts
+ *      
+ *      
+ *
+ *
  *    
+ *  Scanner: addURL
+ *    URL
+ *    Priority
+ *    Don't scan for URLs
+ *    
+ *
  *
  * Project definition:
  *   File Name:
@@ -90,9 +147,6 @@
  */
 Components.utils.import("resource://gre/modules/osfile.jsm");
 
-if (!blr) {
-  var blr = {};
-}
 
 /*
  * Object:  ScannerWindow
@@ -103,17 +157,20 @@ blr.W15yQC.ScannerWindow = {
   urlList: [],
   urlMustMatchList: [],
   urlMustNotMatchList: [],
+  parseForLinks: true,
   projectHasUnsavedChanges: false,
   iFrameOnLoadEventTimeOutTimerID: null,
   iFrameOnLoadEventFilterTimerID: null,
   stateScanning: false,
   stateScanningAllLinks: false,
+  stateScanningOneLink: false,
   stateWaitingOnUrlToLoad: false,
   stateCheckingURL: false,
   stateStopScanningRequested: false,
   stateCurrentIndex: 0,
   pageLoadTimeLimit: 20000,
   pageLoadFilter: 1000,
+  bManualURLAdd: false,
   
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -132,33 +189,53 @@ blr.W15yQC.ScannerWindow = {
     if(fPercentage != null) {
       blr.W15yQC.ScannerWindow.fnUpdatePercentage(fPercentage);
     }
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
   init: function (dialog) {
-    // blr.W15yQC.fnLog('scanner-init');
+    var treebox = document.getElementById('treebox'),
+      iframeHolder = document.getElementById('iFrameHolder'),
+      textbox = document.getElementById('note-text'),
+      scannerIFrame = document.getElementById('pageBeingScannedIFrame');
+      
     if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
     blr.W15yQC.fnReadUserPrefs(); // TODO: Move this to the scanner window init
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
-    //blr.W15yQC.ScannerWindow.urlMustMatchList.push('iuadapts.+(/[a-z]*|\.(s?html?))$');
-    //blr.W15yQC.ScannerWindow.urlMustMatchList.push('http://www.indiana.edu/~iuadapts.+(\.(s?html?))$');
-    //blr.W15yQC.ScannerWindow.addUrlToProject('http://iuadapts.indiana.edu/','http://iuadapts.indiana.edu/','origin',1.0);
+    blr.W15yQC.ScannerWindow.urlMustMatchList.push('iuadapts.+(/[a-z]*|\.(s?html?))$');
+    blr.W15yQC.ScannerWindow.urlMustMatchList.push('http://www.indiana.edu/~iuadapts.+(\.(s?html?))$');
+    blr.W15yQC.ScannerWindow.addUrlToProject('http://iuadapts.indiana.edu/','http://iuadapts.indiana.edu/','origin',1.0);
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
+
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
   cleanup: function (dialog) {
-    // blr.W15yQC.fnLog('scanner-cleanup');
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
       clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
     }
   },
   
+  selectRow: function(row, override) {
+    var treeview=document.getElementById('treebox');
+    if(override==null) { override=false; }
+    if(treeview != null && (treeview.currentIndex && treeview.currentIndex<0 || override==true)) {
+      if(blr.W15yQC.ScannerWindow.urlList != null && row!=null && row<blr.W15yQC.ScannerWindow.urlList.length) {
+        try {
+          if(treeview.focus) treeview.focus();
+          if(treeview.view) treeview.view.selection.select(row);
+          if(treeview.boxObject && treeview.boxObject.ensureRowIsVisible) {treeview.boxObject.ensureRowIsVisible(row);}
+        } catch(ex) {}
+      }
+    }
+  },
+  
   updateUrlInTree: function(urlIndex) {
     var tbc = document.getElementById('treeboxChildren'),
-      treeitem, row, treecell, i, url, bNew=false;
+      treeitem, row, treecell, i, url, bNew=false, sPriority;
     
     row=document.getElementById('URL'+urlIndex);
     if(row==null) {
@@ -173,7 +250,13 @@ blr.W15yQC.ScannerWindow = {
     url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
     row.children[0].setAttribute('label',urlIndex+1);
     row.children[1].setAttribute('label',url.loc);
-    row.children[2].setAttribute('label',url.priority);
+    if(url.priority && url.priority.toString) {
+      sPriority=url.priority.toString();
+      if(!/\./.test(sPriority)) { sPriority=sPriority+'.0'};
+    } else {
+      sPriority='';
+    }
+    row.children[2].setAttribute('label',sPriority);
     row.children[3].setAttribute('label',url.source);
     row.children[4].setAttribute('label',url.dateScanned ? (new Date(url.dateScanned)).toDateString() : null);
     row.children[5].setAttribute('label',url.windowTitle);
@@ -231,13 +314,15 @@ blr.W15yQC.ScannerWindow = {
         for (i = 0; i < blr.W15yQC.ScannerWindow.urlList.length; i++) {
           blr.W15yQC.ScannerWindow.updateUrlInTree(i);
         }
+        blr.W15yQC.ScannerWindow.selectRow(0);
       }
     }
     blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
   urlMatchesProjectMustMatchList: function (sURL) {
-    var i,re; 
+    var i,re;
     if(blr.W15yQC.ScannerWindow.urlMustMatchList!=null && blr.W15yQC.ScannerWindow.urlMustMatchList.length>0) {
       if(sURL!=null) { 
         for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
@@ -248,6 +333,7 @@ blr.W15yQC.ScannerWindow = {
           }
         }
       }
+      //alert('does not match must match list');
       return false;
     }
     return true;
@@ -256,7 +342,8 @@ blr.W15yQC.ScannerWindow = {
   urlIsBlackListed: function(sURL) {
     if(sURL!=null) {
       if(/javascript:/i.test(sURL) ||
-         /\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|pdf|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
+         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|pdf|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
+        if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('url is black listed'); }
         return true;
       }
       return false;
@@ -272,6 +359,7 @@ blr.W15yQC.ScannerWindow = {
           re=blr.W15yQC.ScannerWindow.urlMustNotMatchList[i];
           re=new RegExp(re.replace(/\//g,'\\/'),'i'); 
           if(sURL.match(re)) {
+            //alert('matches must not match list');
             return true;
           }
         }
@@ -294,7 +382,7 @@ blr.W15yQC.ScannerWindow = {
   },
 
   fnAppearsToBeFullyQualifiedURL: function (sURL) { // TODO: QA THIS!!!
-    if (sURL != null && sURL.match(/https?:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
+    if (sURL != null && sURL.match(/[a-z]+:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
       return true;
     }
     return false;
@@ -344,38 +432,53 @@ blr.W15yQC.ScannerWindow = {
     return sURL;
   },
   
-    fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      if(url1 != null) {
-        url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
-        url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+  fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
+    var i,r;
+    if(url1 != null) {
+      url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
+      for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
+        r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
+        url1 = url1.replace(r,'//'+blr.W15yQC.domainEq2[i]);
       }
-      if(url2 != null) {
-        url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
-        url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+      //url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+      //url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+      //url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+    }
+    if(url2 != null) {
+      url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
+      for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
+        r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
+        url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[i]);
       }
-      
-      if(url1!=url2 && url1!=null && url2!=null) {
-        url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
-        url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
-      }
-      return (url1 == url2);
-    },
+      //url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+      //url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+      //url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+    }
+    
+    if(url1!=url2 && url1!=null && url2!=null) {
+      url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
+      url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
+    }
+    return (url1 == url2);
+  },
   
   resetProjectToNew: function(bAskBeforeResettingIfUnsavedChanges) {
     // blr.W15yQC.fnLog('scanner-resetProjectToNew');
     var bCancel=false;
-    
-    if(bAskBeforeResettingIfUnsavedChanges==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges) {
-      // present alert dialog with query to save changes and Yes, No, Cancel buttons
-      // If saving, perform a quiet save (not a save as dialog)
-    }
-    if(!bCancel) {
-      blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = false;
-      blr.W15yQC.ScannerWindow.urlList = [];
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(bAskBeforeResettingIfUnsavedChanges==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges) {
+        // present alert dialog with query to save changes and Yes, No, Cancel buttons
+        // If saving, perform a quiet save (not a save as dialog)
+      }
+      if(!bCancel) {
+        blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = false;
+        blr.W15yQC.ScannerWindow.urlList = [];
+        blr.W15yQC.ScannerWindow.urlMustMatchList = [];
+        blr.W15yQC.ScannerWindow.urlMustNotMatchList = [];
+        blr.W15yQC.ScannerWindow.parseForLinks = true;
+      }
+    } else {
+      bCancel=true;
     }
     return bCancel;
   },
@@ -385,6 +488,7 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.urlList!=null) {
       for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
         if(blr.W15yQC.ScannerWindow.fnURLsAreEqual('', blr.W15yQC.ScannerWindow.urlList[i].loc, '', sURL)) {
+          if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('URL already in list'); }
           return true;
         }
       }
@@ -392,7 +496,7 @@ blr.W15yQC.ScannerWindow = {
     return false;
   },
   
-  addUrlToProject: function (sURL, sDocURL, source, priority) {
+  addUrlToProject: function (sURL, sDocURL, source, priority, dontParseForLinks) {
     // blr.W15yQC.fnLog('scanner-addUrlToProject');
     var url;
     sURL=blr.W15yQC.ScannerWindow.fnRemoveNamedAnchor(sURL);
@@ -401,18 +505,23 @@ blr.W15yQC.ScannerWindow = {
     }
     sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
     if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
-       blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) &&
-       !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL) &&
+       (blr.W15yQC.ScannerWindow.bManualURLAdd==true || (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
        !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
       url=new blr.W15yQC.ProjectURL(sURL, source, priority);
+      if(dontParseForLinks==null) {
+        dontParseForLinks=false;
+      }
+      url.dontParseForLinks=dontParseForLinks;
       blr.W15yQC.ScannerWindow.urlList.push(url);
     }
   },
   
   scanResultsForURLs: function(oW15yQCResults) {
-    var i;
+    var i, iFrameDoc;
     if(oW15yQCResults != null) {
       if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length) {
+        iFrameDoc=document.getElementById('pageBeingScannedIFrame');
+        if(iFrameDoc!=null) { blr.W15yQC.ScannerWindow.fnUpdateStatus('Scanning page for URLs to add.'+iFrameDoc.title); }
         for(i=0;i<oW15yQCResults.aLinks.length;i++) {
           if(oW15yQCResults.aLinks[i].href!=null) {
             blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href,oW15yQCResults.sWindowURL,oW15yQCResults.sWindowURL,1.0); 
@@ -529,12 +638,12 @@ blr.W15yQC.ScannerWindow = {
       url.warningsCount= url.accessKeysWarnings+url.headingsWarnings+url.framesWarnings+url.linksWarnings+url.formControlsWarnings+url.tablesWarnings;
       url.failuresCount= url.accessKeysFailures+url.headingsFailures+url.framesFailures+url.linksFailures+url.formControlsFailures+url.tablesFailures;
 
-      url.windowDescription=null;
-      
+      url.windowDescription=oW15yQCResults.sWindowDescription;
       row=document.getElementById('URL'+urlIndex);
       blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.stateCurrentIndex);
       blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
     }
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
   newProject: function() {
@@ -611,6 +720,7 @@ blr.W15yQC.ScannerWindow = {
       }
     }
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
   objectToString: function (o, bDig) {
@@ -627,18 +737,16 @@ blr.W15yQC.ScannerWindow = {
     return out;
   },
 
+  inspectPageTitle: function() {
+    
+  },
+  
   setStateAsScanning: function() {
     // blr.W15yQC.fnLog('scanner-setStateAsScanning');
     blr.W15yQC.ScannerWindow.stateScanning = true;
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
-    document.getElementById('button-newProject').disabled = true;
-    document.getElementById('button-openProject').disabled = true;
-    document.getElementById('button-saveProject').disabled = true;
-    document.getElementById('button-importLinks').disabled = true;
-    document.getElementById('button-ScanNew').disabled = true;
-    document.getElementById('button-ScanAll').disabled = true;
-    document.getElementById('button-close').disabled = true;
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
   setStateAsNotScanning: function() {
@@ -647,14 +755,68 @@ blr.W15yQC.ScannerWindow = {
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
     blr.W15yQC.ScannerWindow.stateScanning = false;
     blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
+    blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
+    blr.W15yQC.ScannerWindow.scan
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
-    document.getElementById('button-newProject').disabled = false;
-    document.getElementById('button-openProject').disabled = false;
-    document.getElementById('button-saveProject').disabled = false;
-    document.getElementById('button-importLinks').disabled = false;
-    document.getElementById('button-ScanNew').disabled = false;
-    document.getElementById('button-ScanAll').disabled = false;
-    document.getElementById('button-close').disabled = false;
+    blr.W15yQC.ScannerWindow.updateControlStates();
+  },
+  
+  updateControlStates: function() {
+    var treebox = document.getElementById('treebox'),
+      selectedRow = treebox.currentIndex,
+      iframeHolder = document.getElementById('iFrameHolder'),
+      textbox = document.getElementById('note-text'),
+      scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
+			buttonScanSelectedURL=document.getElementById('button-scanSelectedURL'),
+      buttonStopScanning=document.getElementById('button-stopScanning'),
+      buttonOpenSelectedURL=document.getElementById('button-openSelectedURL'),
+      buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
+      buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');      
+    
+    if(selectedRow==null) { selectedRow=-1;}
+    
+    if(blr.W15yQC.ScannerWindow.stateScanning==true) {
+      document.getElementById('button-newProject').disabled = true;
+      document.getElementById('button-openProject').disabled = true;
+      document.getElementById('button-saveProject').disabled = true;
+      document.getElementById('button-importLinks').disabled = true;
+      document.getElementById('button-ScanNew').disabled = true;
+      document.getElementById('button-ScanAll').disabled = true;
+      document.getElementById('button-close').disabled = true;
+			buttonScanSelectedURL.disabled=true;
+      buttonStopScanning.disabled=false;
+      buttonOpenSelectedURL.disabled=true;
+      buttonEditSelectedURL.disabled=true;
+      buttonDeleteSelectedURL.disabled=true;
+      if(textbox!=null) {
+        iframeHolder.removeChild(textbox);
+      }
+    } else {
+      document.getElementById('button-newProject').disabled = false;
+      document.getElementById('button-openProject').disabled = false;
+      document.getElementById('button-saveProject').disabled = false;
+      document.getElementById('button-importLinks').disabled = false;
+      document.getElementById('button-ScanNew').disabled = false;
+      document.getElementById('button-ScanAll').disabled = false;
+      document.getElementById('button-close').disabled = false;
+			buttonScanSelectedURL.disabled=selectedRow<0;
+      buttonStopScanning.disabled=true;
+      buttonOpenSelectedURL.disabled=selectedRow<0;
+      buttonEditSelectedURL.disabled=selectedRow<0;
+      buttonDeleteSelectedURL.disabled=selectedRow<0;
+      if(textbox==null) {
+        textbox=document.createElement('textbox');
+        textbox.setAttribute('id','note-text');
+        textbox.setAttribute('readonly','true');
+        textbox.setAttribute('multiline','true');
+        textbox.setAttribute('rows','8');
+        textbox.setAttribute('flex','1');
+        iframeHolder.insertBefore(textbox,scannerIFrame);
+      }
+      if(scannerIFrame!=null) {
+        iframeHolder.removeChild(scannerIFrame);
+      }
+    }
   },
   
   scanAllLinks: function() {
@@ -664,6 +826,7 @@ blr.W15yQC.ScannerWindow = {
       blr.W15yQC.ScannerWindow.setStateAsScanning();
       blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
       blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
+      blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
       blr.W15yQC.ScannerWindow.scanNextLink();
     }
   },
@@ -675,6 +838,7 @@ blr.W15yQC.ScannerWindow = {
       blr.W15yQC.ScannerWindow.setStateAsScanning();
       blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
       blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
+      blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
       blr.W15yQC.ScannerWindow.scanNextLink();
     }
   },
@@ -684,16 +848,17 @@ blr.W15yQC.ScannerWindow = {
     var treeview=document.getElementById('treebox');
     
     if(blr.W15yQC.ScannerWindow.stateStopScanningRequested!=true) {
+      blr.W15yQC.ScannerWindow.updateControlStates();
       blr.W15yQC.ScannerWindow.stateCurrentIndex++;
       if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
-        if(treeview.focus) treeview.focus();
-        if(treeview.view) treeview.view.selection.select(blr.W15yQC.ScannerWindow.stateCurrentIndex);
+        blr.W15yQC.ScannerWindow.selectRow(blr.W15yQC.ScannerWindow.stateCurrentIndex,true);
         blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
       } else {
         blr.W15yQC.ScannerWindow.setStateAsNotScanning();
       }
     } else {
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Scanning stopped due to user request.');
       alert('Scanning stopped due to user request.');
     }
   },
@@ -741,8 +906,12 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
       blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
       
-      alert('iFrameTimedOut:');
-      //blr.W15yQC.ScannerWindow.scanNextLink();
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('URL timed out.');
+      if(blr.W15yQC.ScannerWindow.stateScanningOneLink==false) {
+        blr.W15yQC.ScannerWindow.scanNextLink();
+      } else {
+        blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+      }
     }
   },
   
@@ -761,15 +930,23 @@ blr.W15yQC.ScannerWindow = {
       if(iFrameDoc!=null) {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
         oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
+        blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
         blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
-        //treeview.view.setCellText(treeview.currentIndex,treeview.columns[4],oW15yQCResults.sWindowTitle);
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
-        blr.W15yQC.ScannerWindow.scanResultsForURLs(oW15yQCResults);
+        if(blr.W15yQC.ScannerWindow.parseForLinks==true &&
+           blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dontParseForLinks==false) {
+          blr.W15yQC.ScannerWindow.bManualURLAdd=false;
+          blr.W15yQC.ScannerWindow.scanResultsForURLs(oW15yQCResults);
+        }
         oW15yQCResults = null;
       } else alert('iFrameDoc is null');
     }
 
-    blr.W15yQC.ScannerWindow.scanNextLink();
+    if(blr.W15yQC.ScannerWindow.stateScanningOneLink==false) {
+      blr.W15yQC.ScannerWindow.scanNextLink();
+    } else {
+      blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+    }
   },
 
   iFrameOnLoadEventFired: function(currentURLIndex) {
@@ -791,15 +968,153 @@ blr.W15yQC.ScannerWindow = {
   
   stopScanning: function() {
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=true;
+    blr.W15yQC.ScannerWindow.fnUpdateStatus('Stop scanning requested.');
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
   openSelectedURL: function() {
     var treebox = document.getElementById('treebox'), selectedRow;
-
+    
+    blr.W15yQC.ScannerWindow.updateControlStates();
     selectedRow = treebox.currentIndex;
     if (selectedRow >= 0) {
       window.open(blr.W15yQC.ScannerWindow.urlList[selectedRow].loc);
     }
+  },
+  
+  updateNotesField: function () {
+    var treebox = document.getElementById('treebox'),
+      iframeHolder = document.getElementById('iFrameHolder'),
+      textbox = document.getElementById('note-text'),
+      scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
+      selectedRow, rows;
+
+    blr.W15yQC.ScannerWindow.updateControlStates();
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(textbox==null) {
+        textbox=document.createElement('textbox');
+        iframeHolder.insertBefore(textbox,scannerIFrame);
+      }
+      if(scannerIFrame!=null) {
+        iframeHolder.removeChild(scannerIFrame);
+      }
+      
+      selectedRow = treebox.currentIndex;
+      if (blr.W15yQC.ScannerWindow.urlList != null && iframeHolder != null &&
+          (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
+        if (blr.W15yQC.ScannerWindow.urlList[selectedRow].windowDescription != null) {
+          textbox.value = blr.W15yQC.ScannerWindow.urlList[selectedRow].windowDescription;
+        } else {
+          textbox.value = '';
+        }
+      }
+    }
+  },
+  
+  addNewURL: function () {
+    var newURL = new blr.W15yQC.ProjectURL(),
+      dialogID = 'addScannerURLDialog',
+      dialogPath = 'chrome://W15yQC/content/addScannerURLDialog.xul';
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      blr.W15yQC.ScannerWindow.bManualURLAdd=true;
+      window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr, newURL);
+      if(newURL != null && newURL.loc !=null) {
+        blr.W15yQC.ScannerWindow.addUrlToProject(newURL.loc,null,newURL.source,newURL.priority,newURL.dontParseForLinks);
+        blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
+      }
+    }
+    blr.W15yQC.ScannerWindow.bManualURLAdd=false;
+    blr.W15yQC.ScannerWindow.updateControlStates();
+},
+
+  scanSelectedURL: function() {
+    var treebox = document.getElementById('treebox'),
+      iframeHolder = document.getElementById('iFrameHolder'),
+      textbox = document.getElementById('note-text'),
+      scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
+      selectedRow, rows,
+      editURL = new blr.W15yQC.ProjectURL(),
+      dialogID = 'addScannerURLDialog',
+      dialogPath = 'chrome://W15yQC/content/addScannerURLDialog.xul';
+
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      selectedRow = treebox.currentIndex;
+      if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
+        blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
+        blr.W15yQC.ScannerWindow.setStateAsScanning();
+        blr.W15yQC.ScannerWindow.stateCurrentIndex=selectedRow-1;
+        blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
+        blr.W15yQC.ScannerWindow.scanNextLink();
+      }
+    }
+    
+  },
+
+  editSelectedURL: function() {
+    var treebox = document.getElementById('treebox'),
+      iframeHolder = document.getElementById('iFrameHolder'),
+      textbox = document.getElementById('note-text'),
+      scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
+      selectedRow, rows,
+      editURL = new blr.W15yQC.ProjectURL(),
+      dialogID = 'addScannerURLDialog',
+      dialogPath = 'chrome://W15yQC/content/addScannerURLDialog.xul';
+
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      blr.W15yQC.ScannerWindow.bManualURLAdd=true;
+      if(textbox==null) {
+        textbox=document.createElement('textbox');
+        iframeHolder.insertBefore(textbox,scannerIFrame);
+      }
+      if(scannerIFrame!=null) {
+        iframeHolder.removeChild(scannerIFrame);
+      }
+      
+      selectedRow = treebox.currentIndex;
+      if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
+        editURL.loc=blr.W15yQC.ScannerWindow.urlList[selectedRow].loc;
+        editURL.priority=blr.W15yQC.ScannerWindow.urlList[selectedRow].priority;
+        editURL.dontParseForLinks=blr.W15yQC.ScannerWindow.urlList[selectedRow].dontParseForLinks;
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr, editURL);
+        if(editURL != null && editURL.loc !=null) {
+          blr.W15yQC.ScannerWindow.urlList[selectedRow].loc=editURL.loc;
+          blr.W15yQC.ScannerWindow.urlList[selectedRow].priority=editURL.priority;
+          blr.W15yQC.ScannerWindow.urlList[selectedRow].dontParseForLinks=editURL.dontParseForLinks;
+          blr.W15yQC.ScannerWindow.urlList[selectedRow].source=editURL.source;
+          blr.W15yQC.ScannerWindow.updateUrlInTree(selectedRow);
+        }
+      }
+    }
+    blr.W15yQC.ScannerWindow.bManualURLAdd=false;
+    blr.W15yQC.ScannerWindow.updateControlStates();
+  },
+  
+  deleteSelectedURL: function() {
+    var treebox = document.getElementById('treebox'),
+      iframeHolder = document.getElementById('iFrameHolder'),
+      textbox = document.getElementById('note-text'),
+      scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
+      selectedRow, rows;
+
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(textbox==null) {
+        textbox=document.createElement('textbox');
+        iframeHolder.insertBefore(textbox,scannerIFrame);
+      }
+      if(scannerIFrame!=null) {
+        iframeHolder.removeChild(scannerIFrame);
+      }
+      
+      selectedRow = treebox.currentIndex;
+      if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
+        blr.W15yQC.ScannerWindow.urlList.splice(selectedRow,1);
+        blr.W15yQC.ScannerWindow.updateProjectDisplay();
+        blr.W15yQC.ScannerWindow.selectRow(selectedRow-1,true);
+        blr.W15yQC.ScannerWindow.selectRow(selectedRow,true);
+      }
+    }
+    blr.W15yQC.ScannerWindow.bManualURLAdd=false;
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
   windowOnKeyDown: function() {
@@ -816,7 +1131,6 @@ blr.W15yQC.ScannerWindow = {
   
 };
 
-
 blr.W15yQC.ProjectURL = function (loc, source, priority) {
   this.loc = loc;
   this.source = source;
@@ -825,6 +1139,7 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
   } else {
     this.priority = 1.0;
   }
+  this.dontParseForLinks=false;
   this.dateScanned=null;
   this.windowTitle=null;
   this.itemsCount=null;
@@ -867,6 +1182,7 @@ blr.W15yQC.ProjectURL.prototype = {
   loc: null,
   source: null,
   priority: 1.0,
+  dontParseForLinks: false,
   dateScanned: null,
   windowTitle: null,
   itemsCount: null,

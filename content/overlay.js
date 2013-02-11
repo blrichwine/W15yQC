@@ -49,6 +49,8 @@ if (!blr.W15yQC) {
     // User prefs
     bIncludeHidden: false,
     bAutoScrollToSelectedElementInInspectorDialogs: true,
+    domainEq1: [],
+    domainEq2: [],
     
     // Homophones object for sounds like routine
     // TODO: add 20 most mispelled words
@@ -759,7 +761,6 @@ ys: 'whys'
 
     fnTrim: function (str) {
       if(str != null && str.replace) { return str.replace(/^\s*|\s*$/g, ''); }
-      if(str != null) { blr.W15yQC.fnLog("fnTrim: passed:"+str.toString()); }
       return str;
     },
 
@@ -1232,6 +1233,14 @@ ys: 'whys'
     fnIsValidNumber: function (sNumber) {
       sNumber = blr.W15yQC.fnTrim(sNumber);
       if(sNumber != null && sNumber.length>0 && /^[0-9e\.\,\+\-]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
+        return true;
+      }
+      return false;
+    },
+
+    fnIsValidSimpleFloat: function (sNumber) {
+      sNumber = blr.W15yQC.fnTrim(sNumber);
+      if(sNumber != null && sNumber.length>0 && /^[0-9\.]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
         return true;
       }
       return false;
@@ -1887,17 +1896,26 @@ ys: 'whys'
     },
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
+      var i,r;
       if(url1 != null) {
         url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
-        url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+        for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
+          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
+          url1 = url1.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+        }
+        //url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+        //url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+        //url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
       }
       if(url2 != null) {
         url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
-        url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
+        for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
+          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
+          url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+        }
+        //url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
+        //url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
+        //url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
       }
       
       if(url1!=url2 && url1!=null && url2!=null) {
@@ -2364,6 +2382,18 @@ ys: 'whys'
       return sMissingIDs;
     },
 
+    fnAppearsToBeSkipNavLink: function (sLinkText, sHref) {
+      if(sLinkText!=null && sLinkText.length>2) {
+        if(/#/.test(sHref)) {
+          return true;
+        }
+        if(/(skip|jump).*(nav|main content)/i.test(sLinkText)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
     fnIsMeaningfulLinkText: function(sText, minLength) {
       if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
       if(sText != null && sText.toLowerCase) {
@@ -2629,6 +2659,13 @@ ys: 'whys'
     // http://regexlib.com/REDetails.aspx?regexp_id=96
     fnAppearsToBeURL: function (sText) { // TODO: QA THIS!!!
       if (sText != null && sText.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
+        return true;
+      }
+      return false;
+    },
+
+    fnAppearsToBeFullyQualifiedURL: function (sURL) { // TODO: QA THIS!!!
+      if (sURL != null && sURL.match(/[a-z]+:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
         return true;
       }
       return false;
@@ -8074,9 +8111,33 @@ ys: 'whys'
       return aBadIDsList;
     },
 
+    fnQuantify: function (count, s1, s2) {
+      if(count == 1) {
+        return '1 '+s1;
+      } else if(count>1) {
+        return count.toString()+' '+s2;
+      } else return '';
+    },
+    
     fnDescribeWindow: function (oW15yQCReport) {
-      var i;
-      
+      /*
+       * all content contained in landmark. main landmrk missing.
+       * has skip navigation link(s)
+       * has x data tables (x with summaries or captions, x complex, x with content not covered by headers)
+       * has following valid ARIA roles: xxx, following invalid rolls:
+       * use of ARIA appears invalid
+       * has bad IDs
+       * has x lists of links
+       * has x unlabeled form controls. has x other controls with errors / x warnings.
+       * document default language is (not) indicated,x/x documents have default language indicated
+       * page content has the following lang attribute values:
+       * page has mathml
+       * doc types used: xxxx, and x unrecognized doc types
+       * 
+       */
+      var i, sDesc='', documentsCount=0, wordProcCount=0, slidesCount=0, pdfsCount=0, spreadSheetCount=0,
+        audioFileCount=0, avFileCount=0, bHasSkipNav=false;
+//      oW15yQCReport = new blr.W15yQC.W15yResults();
       if(oW15yQCReport != null) {
         oW15yQCReport.iTextSize=0;
         if(oW15yQCReport.aDocuments != null) {
@@ -8088,7 +8149,38 @@ ys: 'whys'
             } catch(ex) {}
           }
         }
+
+        if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length && oW15yQCReport.aFrames.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aFrames.length, 'frame', 'frames'), ', ');
+        }
+        if(oW15yQCReport.aHeadings && oW15yQCReport.aHeadings.length && oW15yQCReport.aHeadings.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aHeadings.length, 'heading', 'headings'), ', ');
+        }
+        if(oW15yQCReport.aARIALandmarks && oW15yQCReport.aARIALandmarks.length && oW15yQCReport.aARIALandmarks.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aARIALandmarks.length, 'landmark', 'landmarks'), ', ');
+        }
+        if(oW15yQCReport.aLinks && oW15yQCReport.aLinks.length && oW15yQCReport.aLinks.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aLinks.length, 'link', 'links'), ', ');
+          if(blr.W15yQC.fnAppearsToBeSkipNavLink(oW15yQCReport.aLinks[0].text,oW15yQCReport.aLinks[0].href)==true) {
+            bHasSkipNav=true;
+          }
+          for(i=0;i<oW15yQCReport.aLinks.length;i++) {
+            if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(doc|docx)$/i.test(oW15yQCReport.aLinks[i].href)) { // TODO: hasNotHTMLExtension
+              wordProcCount++;
+            }
+          }
+        }
+        if(oW15yQCReport.aFormControls && oW15yQCReport.aFormControls.length && oW15yQCReport.aFormControls.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aFormControls.length, 'form control', 'form controls'), ', ');
+        }
+        if(sDesc.length>2) {
+          sDesc='Page contains: '+sDesc+".\n";
+        }
+        if(bHasSkipNav) {
+          sDesc=blr.W15yQC.fnJoin(sDesc,'Appears to have skip navigation link(s).',"\n");
+        }
       }
+      oW15yQCReport.sWindowDescription=sDesc;
     },
 
     /*
@@ -8430,6 +8522,7 @@ ys: 'whys'
 
     
     fnReadUserPrefs: function() {
+      var sDomains, aEquivDomains, aDomainPair;
       if(Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec",'')=='') {
         Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
       }
@@ -8441,7 +8534,23 @@ ys: 'whys'
       if(focusInspectorOn) {
         blr.W15yQC.fnTurnOnFocusHighlighter();
       }
-      
+      blr.W15yQC.domainEq1=[];
+      blr.W15yQC.domainEq2=[];
+      sDomains=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences","");
+      if(sDomains!=null && sDomains.length>3) {
+        aEquivDomains=sDomains.split("|");
+        if(aEquivDomains != null && aEquivDomains.length>0) {
+          for(i=0;i<aEquivDomains.length;i++) { 
+            if(/=/.test(aEquivDomains[i])==true) {
+              aDomainPair=aEquivDomains[i].split("=");
+              if(aDomainPair!=null && aDomainPair.length==2) {
+                blr.W15yQC.domainEq1.push(aDomainPair[0]);
+                blr.W15yQC.domainEq2.push(aDomainPair[1]);
+              }
+            }
+          }
+        }
+      }
     },
 
     fnRemoveStyles: function (firebugObj) {
@@ -8499,6 +8608,7 @@ ys: 'whys'
   blr.W15yQC.W15yResults = function () {
     this.sWindowTitle=null;
     this.sWindowURL= null;
+    this.sWindowDescription=null;
     this.iTextSize = 0;
     this.dDateChecked= null;
     this.aDocuments= [];
@@ -8518,6 +8628,7 @@ ys: 'whys'
   blr.W15yQC.W15yResults.prototype = {
     sWindowTitle: null,
     sWindowURL: null,
+    sWindowDescription: null,
     iTextSize: null,
     dDateChecked: null,
     aDocuments: [],
@@ -8531,7 +8642,11 @@ ys: 'whys'
     aImages: [],
     aAccessKeys: [],
     aBadIDs: [],
-    aTables: []
+    aTables: [],
+    toString: function() {
+      if(this.iTextSize!=null) return this.iTextSize.toString();
+      return '';
+    }
   };
   
   blr.W15yQC.note = function (msgKey, aParameters) {

@@ -7,7 +7,11 @@
 	buttons="accept, cancel"
 	title="W15yQC Web Accessibility Quick Check Options">
  
-	<prefpane id="myPane" width="700" style="padding:20px">
+   <script>
+			var blr=this.arguments[0];
+   </script>
+	<script type="application/x-javascript" src="chrome://W15yQC/content/options.js"/>
+	<prefpane id="myPane" width="700" style="padding:20px" onload="blr.W15yQC.options.init(this)">
 
     <preferences>
       <preference id="autoScrollToSelectedElement" name="extensions.W15yQC.inspectElements.autoScrollToSelectedElements" type="bool"/>
@@ -66,6 +70,37 @@
 							</menupopup>
 						</menulist>
 					</hbox>
+					<tree enableColumnDrag="true" id="tEquivalentDomains" flex="1" seltype="single" rows="5">
+						 <treecols>
+								<treecol ordinal="1" id="col-header-domain1"
+									 label=" Domain 1 "
+									 hidden="false"
+									 style="text-align:left"
+									 fixed="false"
+									 flex="1"
+									 sortDirection="" 
+									 onclick=""/>
+								<splitter ordinal="2" class="tree-splitter" />
+								<treecol  ordinal="3" id="col-header-domain2"
+									 label=" Domain 2 "
+									 hidden="false"
+									 style="text-align:left"
+									 fixed="false"
+									 flex="1"
+									 sortDirection="" 
+									 onclick=""/>
+						 </treecols>
+						 <treechildren id="tEquivDomainsChildren"/>
+					</tree>
+					<hbox>
+						 <button id="button-addDomains"
+							 label="Add Domains"
+							 oncommand="blr.W15yQC.options.fnAddDomainEquiv()"/>
+						 <button id="button-deleteDomains"
+							 label="Delete Domains"
+							 oncommand="blr.W15yQC.options.fnDeleteSelectedDomains()"/>
+						 <spacer flex="1"/>
+					</hbox>
 			</tabpanel>
 			
 			<tabpanel id="W15yQC_tab_exclude" orient="vertical">
@@ -73,12 +108,13 @@
 				<description style="width: 250px; font-size: 10px; padding-left: 5px;">
 					Create a list of rule tokens for W15yQC to ignore. Use a comma and a space between each keyword (e.g. 'lnkTooSmallToHit, tblEmptyTable, tblDTisComplex').
 				</description>
-
 				<textbox id="rulesToExcludeListText" preference="rulesToExcludeList" multiline="true"/>
 			</tabpanel>
 		</tabpanels>
 	</tabbox>
 
 	</prefpane>
-
+	<script>
+		blr.W15yQC.options.init(this);
+	</script>
 </prefwindow>
