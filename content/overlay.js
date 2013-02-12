@@ -5157,7 +5157,7 @@ ys: 'whys'
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
         text, title, target, href, sState, effectiveLabel, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
-        frameSrc, frameId, frameName, tableSummary,
+        frameSrc, frameId, frameName, tableSummary, i,
         bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false); 
 
       if (doc != null) {
@@ -5173,8 +5173,14 @@ ys: 'whys'
           oW15yResults.dDateChecked = Date.now();
           ARIAElementStack = [];
         }
-        docNumber = oW15yResults.aDocuments.length - 1;
 
+        for (i = 0; i < oW15yResults.aDocuments.length; i++) {
+          if (doc === oW15yResults.aDocuments[i].doc) {
+            docNumber = i;
+            break;
+          }
+        }
+        
         if (rootNode == null) { rootNode = doc.body; }
         if (rootNode != null && rootNode.firstChild != null) {
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
@@ -5221,10 +5227,12 @@ ys: 'whys'
                 xPath = blr.W15yQC.fnGetElementXPath(node);
                 nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                 oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, frameSrc));
+                oW15yResults.aFrames[oW15yResults.aFrames.length-1].ownerDocumentNumber=docNumber+1;
                 // Document the new document
                 frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
                 // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
                 oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, oW15yResults.aDocuments.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
+                oW15yResults.aDocuments[oW15yResults.aDocuments.length-1].ownerDocumentNumber=docNumber+1;
                 if(frameDocument && frameDocument.body) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body); }
                 if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
 
@@ -5252,6 +5260,7 @@ ys: 'whys'
                     }
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aARIAElements.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, oW15yResults.aARIAElements.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
+                    oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
                     ARIAElementStack.push(node);
 
                     switch (sRole) {
@@ -5272,6 +5281,7 @@ ys: 'whys'
                           }
                         }
                         oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, sRole, sARIALabel, sState));
+                        oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                         break;
                     }
                   }
@@ -5293,6 +5303,7 @@ ys: 'whys'
                       src = null;
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                      oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
                       break;
                     case 'canvas':
                       // TODO: What to do here? Get alternative content? text?
@@ -5315,6 +5326,7 @@ ys: 'whys'
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                       blr.W15yQC.fnLog('Image el:'+effectiveLabel);
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                      oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
                       break;
                     case 'input': // TODO: QA This!
                       if (node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'image') {
@@ -5334,6 +5346,7 @@ ys: 'whys'
                         src = null;
                         if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                         oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
+                        oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
                       }
                       break;
                   }
@@ -5343,6 +5356,7 @@ ys: 'whys'
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                     effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(node);
                     oW15yResults.aAccessKeys.push(new blr.W15yQC.accessKey(node, xPath, nodeDescription, doc, oW15yResults.aAccessKeys.length, sRole, accessKey, effectiveLabel));
+                    oW15yResults.aAccessKeys[oW15yResults.aAccessKeys.length-1].ownerDocumentNumber=docNumber+1;
                   }
 
                   bFoundHeading=false;
@@ -5374,6 +5388,7 @@ ys: 'whys'
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                     text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
                     oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, headingLevel, text));
+                    oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
                   }
 
                   if (sTagName == 'form') {
@@ -5384,6 +5399,7 @@ ys: 'whys'
                     sAction = blr.W15yQC.fnGetNodeAttribute(node, 'action', null);
                     sMethod = blr.W15yQC.fnGetNodeAttribute(node, 'method', null);
                     oW15yResults.aForms.push(new blr.W15yQC.formElement(node, sXPath, sFormDescription, doc, ownerDocumentNumber, oW15yResults.aForms.length + 1, sName, sRole, sAction, sMethod));
+                    oW15yResults.aForms[oW15yResults.aForms.length-1].ownerDocumentNumber=docNumber+1;
                   } else if ((blr.W15yQC.fnIsFormControlNode(node) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(node)))) {
                     // Document the form control
                     xPath = blr.W15yQC.fnGetElementXPath(node);
@@ -5418,6 +5434,7 @@ ys: 'whys'
                     sValue = node.getAttribute('value');
       
                     oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, sEffectiveLabelText, sStateDescription, sValue));
+                    oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
                   }
 
                   if(sTagName=='a') {  // document the link
@@ -5429,6 +5446,7 @@ ys: 'whys'
                     href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, text, title, target, href));
+                    oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
                   } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
@@ -5438,6 +5456,7 @@ ys: 'whys'
                     href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, text, title, target, href));
+                    oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
                   }
                   
                   if (sTagName == 'table') {
@@ -5452,6 +5471,7 @@ ys: 'whys'
                     tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(node, 'summary', null));
                     inTable = oW15yResults.aTables.length;
                     oW15yResults.aTables.push(new blr.W15yQC.table(node, xPath, nodeDescription, doc, oW15yResults.aTables.length, sRole, nestingDepth, title, tableSummary));
+                    oW15yResults.aTables[oW15yResults.aTables.length-1].ownerDocumentNumber=docNumber+1;
                     if(tableSummary != null && tableSummary.length>0) {
                       oW15yResults.aTables[inTable].isDataTable=true;
                     }
@@ -5805,7 +5825,7 @@ ys: 'whys'
         iBannerLandmarkCount = 0;
         iContentInfoLandmarkCount = 0;
         for (i = 0; i < aARIALandmarksList.length; i++) {
-          aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
+          //aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
           blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
           if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
             iMainLandmarkCount++;
@@ -5962,7 +5982,7 @@ ys: 'whys'
       if (aARIAElementsList != null && aARIAElementsList.length) {
 
         for (i = 0; i < aARIAElementsList.length; i++) {
-          aARIAElementsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIAElementsList[i].node, aDocumentsList);
+          //aARIAElementsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIAElementsList[i].node, aDocumentsList);
           aARIAElementsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aARIAElementsList[i].node);
           blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIAElementsList[i].node, aARIAElementsList[i].doc, aARIAElementsList[i]);
 
@@ -6338,7 +6358,7 @@ ys: 'whys'
       if (aImagesList != null && aImagesList.length) {
 
         for (i = 0; i < aImagesList.length; i++) {
-          aImagesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aImagesList[i].node, aDocumentsList);
+          //aImagesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aImagesList[i].node, aDocumentsList);
           if (aImagesList[i].node != null && aImagesList[i].node.hasAttribute && aImagesList[i].node.hasAttribute('longdesc') == true) {
             aImagesList[i].longdescURL = aImagesList[i].node.getAttribute('longdesc');
             if(blr.W15yQC.fnAppearsToBeValidLongdesc(aImagesList[i].longdescURL) == false) {
@@ -6491,7 +6511,7 @@ ys: 'whys'
       };
       if (aAccessKeysList != null && aAccessKeysList.length && aAccessKeysList.length > 0) {
         for (i = 0; i < aAccessKeysList.length; i++) {
-          aAccessKeysList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aAccessKeysList[i].node, aDocumentsList);
+          //aAccessKeysList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aAccessKeysList[i].node, aDocumentsList);
           aAccessKeysList[i].stateDescription = blr.W15yQC.fnGetNodeState(aAccessKeysList[i].node);
         }
         for (i = 0; i < aAccessKeysList.length; i++) {
@@ -6644,7 +6664,7 @@ ys: 'whys'
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         for (i = 0; i < aHeadingsList.length; i++) {
-          aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
+          //aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
           if (aHeadingsList[i].text != null && aHeadingsList[i].text.length && aHeadingsList[i].text.length > 0) {
             aHeadingsList[i].text = blr.W15yQC.fnCleanSpaces(aHeadingsList[i].text);
@@ -6799,7 +6819,7 @@ ys: 'whys'
               if (c.tagName != null && c.tagName.toLowerCase() == 'form') {
                 sXPath = blr.W15yQC.fnGetElementXPath(c);
                 sFormDescription = blr.W15yQC.fnDescribeElement(c);
-                ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
+                //ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
                 sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                 sName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
                 sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
@@ -6859,7 +6879,7 @@ ys: 'whys'
       // Check if form labels are empty, not meaningful, the same as other form controls, or sound like any other label texts
       if (aFormsList != null && aFormsList.length > 0) {
         for (i = 0; i < aFormsList.length; i++) {
-          aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
+          //aFormsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormsList[i].node, aDocumentsList);
           aSameNames = [];
           for (j = 0; j < aFormsList.length; j++) {
             if (i != j) {
@@ -6894,7 +6914,7 @@ ys: 'whys'
 
       if (aFormControlsList != null && aFormControlsList.length > 0) {
         for (i = 0; i < aFormControlsList.length; i++) {
-          aFormControlsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormControlsList[i].node, aDocumentsList);
+          //aFormControlsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFormControlsList[i].node, aDocumentsList);
           aFormControlsList[i].parentFormNumber = blr.W15yQC.fnGetParentFormNumber(aFormControlsList[i].parentFormNode, aFormsList);
           aFormControlsList[i].legendText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].legendText);
           aFormControlsList[i].labelTagText = blr.W15yQC.fnCleanSpaces(aFormControlsList[i].labelTagText);
@@ -7217,7 +7237,7 @@ ys: 'whys'
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
-        aLinksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLinksList[i].node, aDocumentsList);
+        //aLinksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLinksList[i].node, aDocumentsList);
         aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
@@ -7588,7 +7608,7 @@ ys: 'whys'
       // TODO: Test on a table caption, on nest tables with captions, on multiple captions on a given table
       // QUESTION: If a table has multiple captions, what does JAWS do?
       for (i = 0; i < aTablesList.length; i++) {
-        aTablesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aTablesList[i].node, aDocumentsList);
+        //aTablesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aTablesList[i].node, aDocumentsList);
         aTablesList[i].stateDescription = blr.W15yQC.fnGetNodeState(aTablesList[i].node);
         // Find parent table element
         if(i>0 && aTablesList[i].nestingLevel>0) {

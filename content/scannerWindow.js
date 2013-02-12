@@ -175,7 +175,7 @@ blr.W15yQC.ScannerWindow = {
   pageLoadFilter: 1000,
   bManualURLAdd: false,
   maximumURLCount: 5000,
-  maximumURLDepth: 5000,
+  maximumURLDepth: 20,
   
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -212,7 +212,10 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.urlMustMatchListType.push(true);
     blr.W15yQC.ScannerWindow.urlMustMatchList.push('http://www.indiana.edu/~iuadapts.+(\.(s?html?))$');
     blr.W15yQC.ScannerWindow.urlMustMatchListType.push(true);
+    blr.W15yQC.ScannerWindow.urlMustNotMatchList.push('people/index.shtml');
+    blr.W15yQC.ScannerWindow.urlMustNotMatchListType.push(false);
     blr.W15yQC.ScannerWindow.addUrlToProject('http://iuadapts.indiana.edu/','http://iuadapts.indiana.edu/','origin',1.0);
+    blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=true;
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
 
@@ -488,20 +491,22 @@ blr.W15yQC.ScannerWindow = {
         bCancel=false;
     if(bAskBeforeResettingIfUnsavedChanges==null) { bAskBeforeResettingIfUnsavedChanges=true; }
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
-      if(bAskBeforeResettingIfUnsavedChanges==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges) {
+      if(bAskBeforeResettingIfUnsavedChanges==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
         // present alert dialog with query to save changes and Yes, No, Cancel buttons
         // If saving, perform a quiet save (not a save as dialog)
-        if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
-          result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Reset project to new without saving?");
-          if(!result) { bCancel=true; }
-        }
+        result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Reset project to new without saving?");
+        if(!result) { bCancel=true; }
       }
       if(!bCancel) {
         blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = false;
         blr.W15yQC.ScannerWindow.urlList = [];
         blr.W15yQC.ScannerWindow.urlMustMatchList = [];
         blr.W15yQC.ScannerWindow.urlMustNotMatchList = [];
+        blr.W15yQC.ScannerWindow.urlMustMatchListType = [];
+        blr.W15yQC.ScannerWindow.urlMustNotMatchListType = [];
         blr.W15yQC.ScannerWindow.parseForLinks = true;
+        blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=false;
+        blr.W15yQC.ScannerWindow.maximumURLDepth=20;
       }
     } else {
       bCancel=true;
@@ -526,38 +531,40 @@ blr.W15yQC.ScannerWindow = {
     // blr.W15yQC.fnLog('scanner-addUrlToProject');
     var url;
     sURL=blr.W15yQC.ScannerWindow.fnRemoveNamedAnchor(sURL);
-    if(blr.W15yQC.ScannerWindow.urlList==null) {
-      blr.W15yQC.ScannerWindow.urlList = [];
-    }
-    if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
-      sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
-      if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
-         (blr.W15yQC.ScannerWindow.bManualURLAdd==true || (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
-         !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
-        
-        url=new blr.W15yQC.ProjectURL(sURL, source, priority);
-        if(blr.W15yQC.ScannerWindow.stateScanning==true) {
-          url.linkDepth=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth + 1;
-        }
-        if(dontParseForLinks==null) {
-          dontParseForLinks=false;
-        }
-        url.dontParseForLinks=dontParseForLinks;
-        blr.W15yQC.ScannerWindow.urlList.push(url);
-        blr.W15yQC.projectHasUnsavedChanges=true;
-        
+    if(sURL!=null && sURL.length && sURL.length>0) {
+      if(blr.W15yQC.ScannerWindow.urlList==null) {
+        blr.W15yQC.ScannerWindow.urlList = [];
       }
-    } else {
-      blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
+      if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
+        sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
+        if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
+           (blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
+            (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
+           !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
+          
+          url=new blr.W15yQC.ProjectURL(sURL, source, priority);
+          if(blr.W15yQC.ScannerWindow.stateScanning==true) {
+            url.linkDepth=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth + 1;
+          }
+          if(dontParseForLinks==null) {
+            dontParseForLinks=false;
+          }
+          url.dontParseForLinks=dontParseForLinks;
+          blr.W15yQC.ScannerWindow.urlList.push(url);
+          blr.W15yQC.projectHasUnsavedChanges=true;
+          
+        }
+      } else {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
+      }
     }
   },
   
   scanResultsForURLs: function(oW15yQCResults) {
-    var i, iFrameDoc;
+    var i;
     if(oW15yQCResults != null) {
       if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length) {
-        iFrameDoc=document.getElementById('pageBeingScannedIFrame');
-        if(iFrameDoc!=null) { blr.W15yQC.ScannerWindow.fnUpdateStatus('Scanning page for URLs to add.'+iFrameDoc.title); }
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Scanning page for URLs to add. '+oW15yQCResults.sWindowTitle);
         for(i=0;i<oW15yQCResults.aLinks.length;i++) {
           if(oW15yQCResults.aLinks[i].href!=null) {
             blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href,oW15yQCResults.sWindowURL,oW15yQCResults.sWindowURL,1.0); 
@@ -856,25 +863,41 @@ blr.W15yQC.ScannerWindow = {
   
   scanAllLinks: function() {
     // blr.W15yQC.fnLog('scanner-scanAllLinks');
-    blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
-    if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
-      blr.W15yQC.ScannerWindow.setStateAsScanning();
-      blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
-      blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
-      blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
-      blr.W15yQC.ScannerWindow.scanNextLink();
+    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService),
+      result, bCancel=false;
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet!=true) {
+        result = prompts.confirm(null, "Scanner Project Has Not Been Configured", "It's recommended to configure the URL 'Must Match' settings before continuing. Continue any way?");
+        if(!result) { bCancel=true; }
+      }
+      if(!bCancel && blr.W15yQC.ScannerWindow.stateScanning!=true && blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+        blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
+        blr.W15yQC.ScannerWindow.setStateAsScanning();
+        blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
+        blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
+        blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
+        blr.W15yQC.ScannerWindow.scanNextLink();
+      }
     }
   },
   
   scanNewLinks: function() {
     // blr.W15yQC.fnLog('scanner-scanNewLinks');
-    blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
-    if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
-      blr.W15yQC.ScannerWindow.setStateAsScanning();
-      blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
-      blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
-      blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
-      blr.W15yQC.ScannerWindow.scanNextLink();
+    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService),
+      result, bCancel=false;
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet!=true) {
+        result = prompts.confirm(null, "Scanner Project Has Not Been Configured", "It's recommended to configure the URL 'Must Match' settings before continuing. Continue any way?");
+        if(!result) { bCancel=true; }
+      }
+      if(!bCancel && blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+        blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
+        blr.W15yQC.ScannerWindow.setStateAsScanning();
+        blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
+        blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
+        blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
+        blr.W15yQC.ScannerWindow.scanNextLink();
+      }
     }
   },
   
@@ -884,7 +907,16 @@ blr.W15yQC.ScannerWindow = {
     
     if(blr.W15yQC.ScannerWindow.stateStopScanningRequested!=true) {
       blr.W15yQC.ScannerWindow.updateControlStates();
+      
       blr.W15yQC.ScannerWindow.stateCurrentIndex++;
+      
+      if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true) {
+        while(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned!=null &&
+           blr.W15yQC.ScannerWindow.stateCurrentIndex < blr.W15yQC.ScannerWindow.urlList.length) {
+          blr.W15yQC.ScannerWindow.stateCurrentIndex++;
+        }
+      }
+      
       if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.selectRow(blr.W15yQC.ScannerWindow.stateCurrentIndex,true);
         blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
@@ -919,6 +951,7 @@ blr.W15yQC.ScannerWindow = {
       }
       // create new iFrame so we can get onload event notification
       // research blocking pop-ups from iframe
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting for page to load: '+sURL);
       blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=true;
       blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID=setTimeout(function () {
         blr.W15yQC.ScannerWindow.iFrameTimedOut();
@@ -970,6 +1003,7 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
           blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
+          blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = true;
           if(blr.W15yQC.ScannerWindow.parseForLinks==true &&
              blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth <= blr.W15yQC.ScannerWindow.maximumURLDepth &&
              blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dontParseForLinks==false) {
@@ -1092,9 +1126,9 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
-        blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
         blr.W15yQC.ScannerWindow.setStateAsScanning();
         blr.W15yQC.ScannerWindow.stateCurrentIndex=selectedRow-1;
+        blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
         blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
         blr.W15yQC.ScannerWindow.scanNextLink();
       }

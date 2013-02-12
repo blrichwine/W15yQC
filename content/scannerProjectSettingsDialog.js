@@ -222,6 +222,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
     var i, count, treebox, treecells;
     blr.W15yQC.scannerProjectSettingsDialog.checkFields();
     if(blr.W15yQC.scannerProjectSettingsDialog.bFieldsAreOK==true) {
+      blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=true;
       blr.W15yQC.ScannerWindow.sProjectTitle=blr.W15yQC.fnTrim(document.getElementById('tbTitle').value);
       blr.W15yQC.ScannerWindow.parseForLinks=document.getElementById('cbParseForLinks').checked;
       blr.W15yQC.ScannerWindow.maximumURLDepth=parseInt(document.getElementById('tbMaxLengthDepth').value);
