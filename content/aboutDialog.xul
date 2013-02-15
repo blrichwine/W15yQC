@@ -13,7 +13,7 @@
 	 onload="">
 	 <xul:vbox id="aboutDialog">
 			<xul:description value="W15y Quick Check" class="name"/>
-			<xul:description value="Version 1.0 - Beta 15" class="version"/>
+			<xul:description value="Version 1.0 - Beta 16" class="version"/>
 			<xul:description value="Released:" class="title"/>
 			<xul:description value="December 13, 2012" class="text"/>
 			<xul:description value="Author:" class="title"/>

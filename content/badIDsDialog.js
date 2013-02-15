@@ -97,19 +97,22 @@ blr.W15yQC.badIDsDialog = {
   },
 
   init: function (dialog) {
+    var oW15yQCReport;
+
     blr.W15yQC.fnReadUserPrefs();
     if (dialog != null && dialog.arguments != null && dialog.arguments.length > 1) {
       blr.W15yQC.badIDsDialog.FirebugO = dialog.arguments[1];
     }
-    blr.W15yQC.badIDsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.badIDsDialog.aDocumentsList);
-
-    blr.W15yQC.badIDsDialog.aBadIDsList = blr.W15yQC.fnGetBadIDs(window.opener.parent._content.document, blr.W15yQC.badIDsDialog.aDocumentsList);
-
-    blr.W15yQC.badIDsDialog.fnPopulateTree(blr.W15yQC.badIDsDialog.aDocumentsList, blr.W15yQC.badIDsDialog.aBadIDsList);
     if (blr.W15yQC.badIDsDialog.FirebugO == null || !blr.W15yQC.badIDsDialog.FirebugO.Inspector) {
       document.getElementById('button-showInFirebug').hidden = true;
     }
+
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    blr.W15yQC.badIDsDialog.aDocumentsList = oW15yQCReport.aDocuments;
+
+    blr.W15yQC.badIDsDialog.aBadIDsList = blr.W15yQC.fnGetBadIDs(window.opener.parent._content.document, blr.W15yQC.badIDsDialog.aDocumentsList);
+    blr.W15yQC.badIDsDialog.aBadIDsList = oW15yQCReport.aBadIDs;
+    blr.W15yQC.badIDsDialog.fnPopulateTree(blr.W15yQC.badIDsDialog.aDocumentsList, blr.W15yQC.badIDsDialog.aBadIDsList);
   },
 
   cleanup: function () {

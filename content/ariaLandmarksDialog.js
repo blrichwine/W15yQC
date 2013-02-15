@@ -116,19 +116,20 @@ blr.W15yQC.LandmarksDialog = {
   },
 
   init: function (dialog) {
+    var oW15yQCReport;
+
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.LandmarksDialog.FirebugO = dialog.arguments[1];
-    blr.W15yQC.LandmarksDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LandmarksDialog.aDocumentsList);
-
-    blr.W15yQC.LandmarksDialog.aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeARIALandmarks(blr.W15yQC.LandmarksDialog.aARIALandmarksList, blr.W15yQC.LandmarksDialog.aDocumentsList);
-
-    blr.W15yQC.LandmarksDialog.fnPopulateTree(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
-
     if (blr.W15yQC.LandmarksDialog.FirebugO == null || !blr.W15yQC.AccessKeyDialog.FirebugO.Inspector) {
       document.getElementById('button-showInFirebug').hidden = true;
     }
+
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    blr.W15yQC.LandmarksDialog.aDocumentsList = oW15yQCReport.aDocuments;
+    blr.W15yQC.LandmarksDialog.aARIALandmarksList = oW15yQCReport.aARIALandmarks;
+    blr.W15yQC.fnAnalyzeARIALandmarks(blr.W15yQC.LandmarksDialog.aARIALandmarksList, blr.W15yQC.LandmarksDialog.aDocumentsList);
+
+    blr.W15yQC.LandmarksDialog.fnPopulateTree(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
   },
 
   cleanup: function () {

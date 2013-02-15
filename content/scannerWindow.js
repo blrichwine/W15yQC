@@ -88,7 +88,7 @@
  *      All Frames have titles
  *      
  *    Has Tables
- *      No datatables that aren't marked as presentation
+ *      No layout tables that aren't marked as presentation
  *      All content in datatables are covered by headers
  *      Datatables are not complex
  *      Datatables larger than x columns have captions or summary attributes
