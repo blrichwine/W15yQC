@@ -1901,6 +1901,7 @@ ys: 'whys'
       if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
       sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
       sUrl = sUrl.replace(/\/\.\//, '/','g');
+      sUrl = sUrl.replace(/([^\/:]\/)\/+/, '/','g');
       return sUrl;
     },
 

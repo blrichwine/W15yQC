@@ -417,41 +417,41 @@ blr.W15yQC.ScannerWindow = {
     return sUrl;
   },
 
-  normalizeURL: function(docURL, sUrl) {
-    var firstPart;
-    if(docURL != null && sUrl != null && sUrl.length>0) {
-      docURL = blr.W15yQC.fnTrim(docURL);
-      sUrl = blr.W15yQC.fnTrim(sUrl);
-      if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
-        firstPart = docURL.match(/^([a-z-]+:)\/\//);
-          if(firstPart != null) {
-            sUrl=firstPart[1]+sUrl;
-          }
-      }
-      if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
-        firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
-        if(firstPart != null) {
-          sUrl = firstPart[1]+firstPart[2]+sUrl;
-        } else {
-          firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
-          if(firstPart != null) {
-            if(sUrl.match(/^[\/\\]/) != null) {
-              sUrl = firstPart[1]+firstPart[2]+sUrl;
-            } else {
-              sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
-            }
-          }
-        }
-      }
-    }
-    if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
-
-    sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
-    sUrl = sUrl.replace(/\/\.\//, '/','g');
-
-    return sUrl;
-  },
-
+  //normalizeURL: function(docURL, sUrl) {
+  //  var firstPart;
+  //  if(docURL != null && sUrl != null && sUrl.length>0) {
+  //    docURL = blr.W15yQC.fnTrim(docURL);
+  //    sUrl = blr.W15yQC.fnTrim(sUrl);
+  //    if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
+  //      firstPart = docURL.match(/^([a-z-]+:)\/\//);
+  //        if(firstPart != null) {
+  //          sUrl=firstPart[1]+sUrl;
+  //        }
+  //    }
+  //    if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
+  //      firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
+  //      if(firstPart != null) {
+  //        sUrl = firstPart[1]+firstPart[2]+sUrl;
+  //      } else {
+  //        firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
+  //        if(firstPart != null) {
+  //          if(sUrl.match(/^[\/\\]/) != null) {
+  //            sUrl = firstPart[1]+firstPart[2]+sUrl;
+  //          } else {
+  //            sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  //  if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
+  //
+  //  sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
+  //  sUrl = sUrl.replace(/\/\.\//, '/','g');
+  //
+  //  return sUrl;
+  //},
+  //
   fnRemoveNamedAnchor: function(sURL) {
     if(sURL !=null && sURL.replace) {
       sURL=sURL.replace(/#.+$/, '');
@@ -540,7 +540,7 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.urlList = [];
       }
       if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
-        sURL = blr.W15yQC.ScannerWindow.normalizeURL(sDocURL,sURL);
+        sURL = blr.W15yQC.fnNormalizeURL(sDocURL,sURL);
         if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
            (blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
             (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
@@ -555,7 +555,7 @@ blr.W15yQC.ScannerWindow = {
           }
           url.dontParseForLinks=dontParseForLinks;
           blr.W15yQC.ScannerWindow.urlList.push(url);
-          blr.W15yQC.projectHasUnsavedChanges=true;
+          blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
           
         }
       } else {
@@ -585,7 +585,7 @@ blr.W15yQC.ScannerWindow = {
 
     if(oW15yQCResults!=null && blr.W15yQC.ScannerWindow.urlList && blr.W15yQC.ScannerWindow.urlList.length>0 && urlIndex<blr.W15yQC.ScannerWindow.urlList.length) {
 
-      blr.W15yQC.projectHasUnsavedChanges=true;
+      blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
       url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
       url.windowTitle=oW15yQCResults.sWindowTitle;
       url.dateScanned = oW15yQCResults.dDateChecked;

@@ -62,7 +62,7 @@
 				<checkbox label="Include Label Elements in Form Controls" preference="includeLabelElementsInFormControls"/>
 				<checkbox label="Include Hidden Elements" preference="includeHiddenElements"/>
 					<hbox>
-						<label control="mlCCS" value="Color Contrast Spec:" style="font-weight: bold;padding-top:5px"/>
+						<label control="mlCCS" value="Color Contrast Spec:" style="padding-top:5px"/>
 						<menulist id="mlCCS" preference="testContrastMinSpec">
 							<menupopup>
 								<menuitem label="WCAG 2 AA" value="WCAG2 AA"/>
@@ -70,6 +70,7 @@
 							</menupopup>
 						</menulist>
 					</hbox>
+					<label control="tEquivalentDomains" value="Equivalent Domains:"/>
 					<tree enableColumnDrag="false" id="tEquivalentDomains" flex="1" seltype="single" rows="5" hidecolumnpicker="true">
 						 <treecols>
 								<treecol ordinal="1" id="col-header-domain1"
