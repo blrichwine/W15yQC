@@ -8279,63 +8279,147 @@ ys: 'whys'
     },
     
     fnComputeScore: function(oW15yQCReport) {
-      var score=0, ps, headingScore=0, itemsCount=0, failures=0, warnings=0;
+      var score=100, ps, itemsCount=0, failures=0, warnings=0, sDesc='', offset=0;
       if(oW15yQCReport!=null) {
         ps=oW15yQCReport.PageScore;
         if(ps!=null) {
           // Page and Frame Titles (15)
-          if(ps.bAllDocumentsHaveTitles==true) { score=score+5;}
-          if(ps.bAllDocumentsHaveDefaultHumanLanguage==true) { score=score+5;}
-          if(ps.bAllFramesHaveTitles==true) { score=score+5;}
+          if(ps.bAllDocumentsHaveTitles!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all documents have titles (-5).",' ');
+          }
+          if(ps.bAllDocumentsHaveDefaultHumanLanguage!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all documents specify default human language (-5).",' ');
+          }
+          if(ps.bAllFramesHaveTitles!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all frames have titles (-5).",' ');
+          }
           
           // Headings and Landmarks (20) 35
           if(ps.bUsesHeadings==true || ps.bUsesARIALandmarks==true) {
             if(ps.bUsesHeadings==true) {
-              headingScore=headingScore+4;
-              if(ps.bHasALevelOneHeading==true) { headingScore=headingScore+4;}
-              if(ps.bHeadingHierarchyIsCorrect==true) { headingScore=headingScore+4;}
-              if(ps.bHasMultipleHeadings==true) { headingScore=headingScore+4;}
-              if(ps.bHasEnoughHeadingsForContent==true) { headingScore=headingScore+4;}
+              if(ps.bHasALevelOneHeading!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Does not have a level one heading (-4).",' ');
+              }
+              if(ps.bHeadingHierarchyIsCorrect!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Headings hierarchy skips levels (-4).",' ');
+              }
+              if(ps.bHasMultipleHeadings!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Does not have multiple headings (-4).",' ');
+              }
+              if(ps.bHasEnoughHeadingsForContent!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Does not have enough headings for content (-4).",' ');
+              }
+            } else {
+              score=score-20;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Does not use Headings (-20).",' ');
             }
             if(ps.bUsesARIALandmarks==true) {
-              headingScore=headingScore+4;
-              if(ps.bHasMainLandmark==true) { headingScore=headingScore+4;}
-              if(ps.bMainLandmarkContainsHeading==true) { headingScore=headingScore+4;}
-              if(ps.bAllLandmarksUnique==true) { headingScore=headingScore+4;}
-              if(ps.bAllContentContainedInLandmark==true) { headingScore=headingScore+4;}
-              headingScore=headingScore/2; 
-            }
-            score=score+headingScore;
+              if(ps.bHasMainLandmark!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Uses ARIA Landmarks, but does not have a Main Landmark (-4).",' ');
+              }
+              if(ps.bMainLandmarkContainsHeading!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Main ARIA Landmark does not contain a heading (-4).",' ');
+              }
+              if(ps.bAllLandmarksUnique!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Not all ARIA Landmarks are unique (-4).",' ');
+              }
+              if(ps.bAllContentContainedInLandmark!=true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Not all content is contained in an ARIA Landmark (-4).",' ');
+              }
+            } 
+          } else {
+            score=score-20;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Does not use Headings or ARIA Landmarks (-20).",' ');
           }
           
           // Links (15) 50
-          if(ps.bAllLinksHaveText==true) { score=score+5;}
-          if(ps.bAllLinksHaveMeaningfulText==true) { score=score+3;}
-          if(ps.bAllLinksAreUnique==true) { score=score+4;}
-          if(ps.bNoLinksHaveTitleTextDiffThanLinkText==true) { score=score+3;}
+          if(ps.bAllLinksHaveText!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all links have link text (-5).",' ');
+          }
+
+          if(ps.bHasSkipNavLinks!=true) {
+            score=score-3;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Does not appear to have skip navigation links (-3).",' ');
+          }
+          if(ps.bAllLinksHaveMeaningfulText!=true) {
+            score=score-3;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all links have meaningful link text (-3).",' ');
+          }
+          if(ps.bAllLinksAreUnique!=true) {
+            score=score-4;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all links have unique link text (-4).",' ');
+          }
+          if(ps.bNoLinksHaveTitleTextDiffThanLinkText!=true) {
+            score=score-3;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Some links have title text that is different from the link text (-3).",' ');
+          }
           
           // Form Controls (15) 65
-          if(ps.bAllFormControlsAreLabeled==true) { score=score+5;}
-          if(ps.bAllRadioButtonsHaveLegends==true) { score=score+5;}
-          if(ps.bAllFormControlsHaveMeaningfulLabels==true) { score=score+5;}
+          if(ps.bAllFormControlsAreLabeled!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all form controls are labeled (-5).",' ');
+          }
+          if(ps.bAllRadioButtonsHaveLegends!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all radio buttons have legends (-5).",' ');
+          }
+          if(ps.bAllFormControlsHaveMeaningfulLabels!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all form controls have meaningful labels (-5).",' ');
+          }
           
           // Images (15) 80
-          if(ps.bAllImagesHaveAltTextOrAreMarkedPresentational==true) { score=score+10;}
-          if(ps.bAllAltTextIsMeaningful==true) { score=score+5;}
+          if(ps.bAllImagesHaveAltTextOrAreMarkedPresentational!=true) {
+            score=score-10;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Not all images have alt text or are marked presentational (-5).",' ');
+          }
+          if(ps.bAllAltTextIsMeaningful!=true) {
+            score=score-5;
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Some images have alternate text that does not appear to be meaningful (-5).",' ');
+          }
 
           // Accesskeys (potential -10) 80
           if(ps.bUsesAccessKeys==true) {
-            if(ps.bAllAccessKeysUnique!=true) { score=score-5;}
-            if(ps.bNoAccessKeysHaveConflicts!=true) { score=score-5;}
+            if(ps.bAllAccessKeysUnique!=true) {
+              score=score-5;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Not all access keys are unique (-5).",' ');
+            }
+            if(ps.bNoAccessKeysHaveConflicts!=true) {
+              score=score-5;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Some access keys conflict with browser functions (-5).",' ');
+            }
           }
           
           // Tables (10) 90
-          score=score+10
           if(ps.bHasTables==true) {
-            if(ps.bLayoutTablesAreMarkedPresentational!=true) { score=score-5;}
-            if(ps.bAllContentInDataTablesCoveredByHeader!=true) { score=score-5;}
-            if(ps.bDataTablesAreNotComplex!=true) { score=score-5;}
-            if(ps.bLargeDataTablesHaveCaptionsOrSummary!=true) { score=score-5;}
+            if(ps.bLayoutTablesAreMarkedPresentational!=true) {
+              score=score-5;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Not all apparent layout tables are marked presentational (-5).",' ');
+            }
+            if(ps.bAllContentInDataTablesCoveredByHeader!=true) {
+              score=score-5;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Not all content in data tables are covered by headers (-5).",' ');
+            }
+            if(ps.bDataTablesAreNotComplex!=true) {
+              score=score-5;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Some data tables are complex (-5).",' ');
+            }
+            if(ps.bLargeDataTablesHaveCaptionsOrSummary!=true) {
+              score=score-5;
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Not all large data tables have captions or summaries (-5).",' ');
+            }
           }
           
           if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length>0) {
@@ -8393,10 +8477,16 @@ ys: 'whys'
           }
     
           if(itemsCount>0) {
-            score=score+Math.floor((10.0*(itemsCount-failures)/itemsCount)*((itemsCount-warnings/4)/itemsCount));
+            offset=Math.floor((30.0*(itemsCount-failures)/itemsCount)*((itemsCount-warnings/5)/itemsCount))-30;
+            score=score+offset;
+            if(offset<0) {
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Penalty for "+failures.toString()+" failures and "+warnings.toString()+" warings ("+offset.toString()+").",' ');
+            }
           }
         }
       }
+      oW15yQCReport.PageScore.sDescription=sDesc;
+      if(score<0) { score=0; }
       oW15yQCReport.iScore=score;
     },
     
@@ -8420,7 +8510,7 @@ ys: 'whys'
         audioFileCount=0, avFileCount=0, bHasSkipNav=false;
 //      oW15yQCReport = new blr.W15yQC.W15yResults();
       if(oW15yQCReport != null) {
-
+        oW15yQCReport.PageScore.bHasSkipNavLinks=false;
         if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length && oW15yQCReport.aFrames.length>0) {
           sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aFrames.length, 'frame', 'frames'), ', ');
         }
@@ -8434,6 +8524,7 @@ ys: 'whys'
           sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aLinks.length, 'link', 'links'), ', ');
           if(blr.W15yQC.fnAppearsToBeSkipNavLink(oW15yQCReport.aLinks[0].text,oW15yQCReport.aLinks[0].href)==true) {
             bHasSkipNav=true;
+            oW15yQCReport.PageScore.bHasSkipNavLinks=true;
           }
           for(i=0;i<oW15yQCReport.aLinks.length;i++) {
             if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(doc|docx)$/i.test(oW15yQCReport.aLinks[i].href)) { // TODO: hasNotHTMLExtension
@@ -8564,6 +8655,7 @@ ys: 'whys'
         }
 
         blr.W15yQC.fnDescribeWindow(oW15yQCReport);
+        blr.W15yQC.fnComputeScore(oW15yQCReport);
         
         blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
         
@@ -8715,6 +8807,8 @@ ys: 'whys'
 
   blr.W15yQC.PageScore = function () {
     this.iScore=0;
+    this.sDescription=null;
+    this.bHasSkipNavLinks=null;
     this.bAllDocumentsHaveTitles=true;
     this.bAllDocumentsHaveDefaultHumanLanguage=null;
     this.bAllFramesHaveTitles=null;
@@ -8754,6 +8848,8 @@ ys: 'whys'
 
   blr.W15yQC.PageScore.prototype = {
     iScore: null,
+    sDescription: null,
+    bHasSkipNavLinks: null,
     bAllDocumentsHaveTitles: null,
     bAllDocumentsHaveDefaultHumanLanguage: null,
     bAllFramesHaveTitles: null,

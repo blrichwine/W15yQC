@@ -687,7 +687,7 @@ blr.W15yQC.ScannerWindow = {
       url.warningsCount= url.accessKeysWarnings+url.headingsWarnings+url.framesWarnings+url.linksWarnings+url.formControlsWarnings+url.tablesWarnings;
       url.failuresCount= url.accessKeysFailures+url.headingsFailures+url.framesFailures+url.linksFailures+url.formControlsFailures+url.tablesFailures;
 
-      url.windowDescription=oW15yQCResults.sWindowDescription;
+      url.windowDescription=blr.W15yQC.fnJoin(oW15yQCResults.sWindowDescription, oW15yQCResults.PageScore.sDescription, "\n");
       row=document.getElementById('URL'+urlIndex);
       blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.stateCurrentIndex);
       blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
