@@ -6752,7 +6752,7 @@ ys: 'whys'
       oW15yResults.PageScore.bHasALevelOneHeading=false;
       oW15yResults.PageScore.bHeadingHierarchyIsCorrect=true;
       oW15yResults.PageScore.bHasMultipleHeadings=false;
-      
+      oW15yResults.PageScore.bHasEnoughHeadingsForContent=true;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         oW15yResults.PageScore.bUsesHeadings=true;
@@ -8348,10 +8348,9 @@ ys: 'whys'
             score=score-5;
             sDesc=blr.W15yQC.fnJoin(sDesc,"Not all links have link text (-5).",' ');
           }
-
-          if(ps.bHasSkipNavLinks!=true) {
+          if(ps.bHasSkipNavLinks!=true && !(ps.bUsesARIALandmarks == true && ps.bMainLandmarkContainsHeading==true)) {
             score=score-3;
-            sDesc=blr.W15yQC.fnJoin(sDesc,"Does not appear to have skip navigation links (-3).",' ');
+            sDesc=blr.W15yQC.fnJoin(sDesc,"Does not appear to have skip navigation links or ARIA Main Landmark (-3).",' ');
           }
           if(ps.bAllLinksHaveMeaningfulText!=true) {
             score=score-3;
