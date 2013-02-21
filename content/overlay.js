@@ -5533,7 +5533,7 @@ ys: 'whys'
     },
     
     
-    fnGetDocuments: function (doc, rootNode, aDocumentsList) { alert("NEVER HERE");
+    fnGetDocuments: function (doc, rootNode, aDocumentsList) { 
       var docNumber, c, sID, idCount, frameDocument,style;
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
