@@ -134,7 +134,7 @@
             <xul:splitter ordinal="20" class="tree-splitter" /> 
             <xul:treecol ordinal="21" id="col-header-results-failures"
                label="Failures"
-							 hidden="true"
+							 hidden="false"
 				       style="text-align:right"
                sortDirection=""
                onclick=""/>

@@ -261,7 +261,7 @@ blr.W15yQC.FormControlsDialog = {
 
     blr.W15yQC.FormControlsDialog.aFormsList = oW15yQCReport.aForms;
     blr.W15yQC.FormControlsDialog.aFormControlsList = oW15yQCReport.aFormControls;
-    blr.W15yQC.fnAnalyzeFormControls(blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList, blr.W15yQC.FormControlsDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
 
     blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
   },

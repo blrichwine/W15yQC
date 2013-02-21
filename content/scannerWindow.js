@@ -445,6 +445,10 @@ blr.W15yQC.ScannerWindow = {
       }
     }
     if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
+
+    sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
+    sUrl = sUrl.replace(/\/\.\//, '/','g');
+
     return sUrl;
   },
 
@@ -577,13 +581,15 @@ blr.W15yQC.ScannerWindow = {
   
   updateURL: function (urlIndex, oW15yQCResults) {
     var row, url;
+    blr.W15yQC.ScannerWindow.fnUpdateStatus('');
+
     if(oW15yQCResults!=null && blr.W15yQC.ScannerWindow.urlList && blr.W15yQC.ScannerWindow.urlList.length>0 && urlIndex<blr.W15yQC.ScannerWindow.urlList.length) {
 
       blr.W15yQC.projectHasUnsavedChanges=true;
       url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
       url.windowTitle=oW15yQCResults.sWindowTitle;
       url.dateScanned = oW15yQCResults.dDateChecked;
-      url.score= null;
+      url.score= oW15yQCResults.iScore;
       url.textSize= oW15yQCResults.iTextSize;
       url.downloadsCount= null;
 
@@ -1012,7 +1018,8 @@ blr.W15yQC.ScannerWindow = {
           }
           oW15yQCResults = null;
         } catch(ex) {
-          blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].windowDescription="An error occurred while checking this URL:\n"+ex.toString();
+          blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].windowDescription="An error occurred while checking this URL:\n"+ex.toString()+
+          "\nFile:"+ex.fileName+"\nLineNumber:"+ex.lineNumber+"\nStack:"+ex.stack;
         }
       } else alert('iFrameDoc is null');
     }

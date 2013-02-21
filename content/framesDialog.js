@@ -132,10 +132,10 @@ blr.W15yQC.FramesDialog = {
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
 
     blr.W15yQC.FramesDialog.aDocumentsList = oW15yQCReport.aDocuments;
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FramesDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
 
     blr.W15yQC.FramesDialog.aFramesList = oW15yQCReport.aFrames;
-    blr.W15yQC.fnAnalyzeFrameTitles(blr.W15yQC.FramesDialog.aFramesList, blr.W15yQC.FramesDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
     blr.W15yQC.FramesDialog.fnPopulateTree(blr.W15yQC.FramesDialog.aDocumentsList, blr.W15yQC.FramesDialog.aFramesList);
   },
 

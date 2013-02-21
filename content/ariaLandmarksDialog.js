@@ -127,7 +127,7 @@ blr.W15yQC.LandmarksDialog = {
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
     blr.W15yQC.LandmarksDialog.aDocumentsList = oW15yQCReport.aDocuments;
     blr.W15yQC.LandmarksDialog.aARIALandmarksList = oW15yQCReport.aARIALandmarks;
-    blr.W15yQC.fnAnalyzeARIALandmarks(blr.W15yQC.LandmarksDialog.aARIALandmarksList, blr.W15yQC.LandmarksDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
 
     blr.W15yQC.LandmarksDialog.fnPopulateTree(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
   },

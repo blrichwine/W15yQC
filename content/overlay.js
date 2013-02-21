@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B16',
+    version: '1.0-B18',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -685,7 +685,7 @@ ys: 'whys'
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-        if(/scanner/.test(sMsg)) consoleServ.logStringMessage(sMsg);
+        if(/Port/.test(sMsg)) consoleServ.logStringMessage(sMsg);
       } catch (ex) {};
     },
 
@@ -944,6 +944,7 @@ ys: 'whys'
       lnkTxtDiffSameHrefOnclick: [true,1,0,false,null],
       lnkTxtDiffSameHref: [true,1,0,false,null],
       lnkTxtEmpty: [true,2,0,false,null],
+      lnkTitleTxtDiffThanLinkTxt: [false, 1, 0, true, null],
       lnkIsNamedAnchor: [true,0,0,false,null],
       lnkTargetsLink: [true,0,0,false,null],
       lnkTargets: [true,0,0,false,null],
@@ -1655,13 +1656,19 @@ ys: 'whys'
     },
 
     fnMoveToElement: function(node) {
-      var err;
+      var err, top;
       if(node != null && node.hasAttribute && node.nodeType==1) {
         try {
           if(blr.W15yQC.fnNodeIsHidden(node) || blr.W15yQC.fnNodeIsMasked(node)) {
             node.ownerDocument.defaultView.scrollTo(0,0);
           } else {
-            node.scrollIntoView(true);
+            if(blr.W15yQC.fnNodeInViewPort(node)==false) {
+              top=node.ownerDocument.body.scrollTop;
+              node.scrollIntoView(true);
+              if(top != node.ownerDocument.body.scrollTop) {
+                node.ownerDocument.body.scrollTop=node.ownerDocument.body.scrollTop-10;
+              }
+            }
           }
           blr.W15yQC.fnDoEvents();
         } catch(err) {}
@@ -1892,6 +1899,8 @@ ys: 'whys'
         }
       }
       if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
+      sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
+      sUrl = sUrl.replace(/\/\.\//, '/','g');
       return sUrl;
     },
 
@@ -2712,50 +2721,26 @@ ys: 'whys'
       return false;
     },
 
-    fnIsMeaningfulAltTextTest: function (sText, no) {
-      sText = blr.W15yQC.fnCleanSpaces(sText);
-      if (sText == null || sText == '') {
-        blr.W15yQC.fnAddNote(no, 'imgNoAltText'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgSpacerShouldHaveEmptyAltTxt'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAppearsToBeImageFileName(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgAltTxtIsFileName'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAppearsToBeURL(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgAltTxtIsURL'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAppearsToBeJunkText(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgAltTxtIsJunk'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAppearsToBeDefaultAltText(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgAltTxtIsDefault'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAltTextAppearsIfItShouldBeEmpty(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgAltTxtIsDecorative'); // QA imageTests01.html
-        return no;
-      }
-      if (blr.W15yQC.fnAltTextAppearsToHaveRedundantImageReferenceInIt(sText)) { // QA File imageTests01.html
-        blr.W15yQC.fnAddNote(no, 'imgAltTxtIncludesImageTxt'); // QA imageTests01.html
-        return no;
-      }
-
-      return no;
-    },
-
     fnIsOnlyNextOrPreviousText: function (str) { // TODO: What about other languages?
       if(str != null && str.replace) {
         if(blr.W15yQC.bEnglishLocale) { str=str.replace(/[^a-z0-9\s]/ig,' '); }
         str = blr.W15yQC.fnCleanSpaces(str);
         if(str.match(/^(next|prev|previous)$/i)) { return true; }
       }
+      return false;
+    },
+
+    fnNodeInViewPort: function (node) { // TODO: QA This. Does it work correctly with frames, etc?
+      var i, l, r, height, rects;
+      try {
+        height = node.ownerDocument.defaultView.innerHeight;
+        rects = node.getClientRects();
+        if (node.offsetWidth === 0 || node.offsetHeight === 0) { return false; }
+        for (i = 0, l = rects.length; i < l; i++) {
+          r = rects[i];
+          if( r.top+(node.offsetHeight/2) > 0 ? r.top+(node.offsetHeight/2) <= height : (r.bottom-(node.offsetHeight/2) > 0 && r.bottom-(node.offsetHeight/2) <= height)) { return true; }
+        }
+      } catch(ex) {}
       return false;
     },
 
@@ -3194,8 +3179,8 @@ ys: 'whys'
           explictLabelsList,
           i;
       if (node != null && node.getAttribute && doc != null) {
-        if(node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') {
-          sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);
+        if(node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') { // TODO: Check this!! I don't believe it.
+          sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);  // TODO: Check this!! I don't believe it.
         } else {
           implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
           if (implicitLabelNode != null) {
@@ -3213,7 +3198,7 @@ ys: 'whys'
       }
       return sLabelText;
     },
-
+    
     fnGetEffectiveLabelText: function (node, doc) {
       // TODO: pick up role="button", etc? JAWS does...
       // TODO: return an effective Label Object that contains the text and a property that tells the text source
@@ -4948,7 +4933,8 @@ ys: 'whys'
     fnAnalyzeFrameTitles: function (oW15yResults) {
       var i, framedDocumentBody, j, aFramesList=oW15yResults.aFrames, aDocumentsList=oW15yResults.aDocuments;
 
-      oW15yResults.bAllFramesHaveTitles=true;
+      oW15yResults.PageScore.bAllFramesHaveTitles=true;
+      
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
       for (i = 0; i < aFramesList.length; i++) {
@@ -4974,11 +4960,11 @@ ys: 'whys'
           blr.W15yQC.fnAddNote(aFramesList[i], 'frameContentScriptGenerated');
         }
         if (aFramesList[i].title == null) {
-          oW15yResults.bAllFramesHaveTitles=false;
+          oW15yResults.PageScore.bAllFramesHaveTitles=false;
           blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleMissing'); // QA iframeTests01.html
         } else if (aFramesList[i].title != null && aFramesList[i].title.length > 0) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aFramesList[i].title)) {
-            oW15yResults.bAllFramesHaveTitles=false;
+            oW15yResults.PageScore.bAllFramesHaveTitles=false;
             blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleOnlyASCII'); // QA iframeTests01.html
           } else if (blr.W15yQC.fnIsMeaningfulDocTitleText (aFramesList[i].title) == false) { // TODO: QA This
             blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleNotMeaningful'); // TODO: QA This
@@ -4995,7 +4981,7 @@ ys: 'whys'
             }
           }
         } else {
-          oW15yResults.bAllFramesHaveTitles=false;
+          oW15yResults.PageScore.bAllFramesHaveTitles=false;
           blr.W15yQC.fnAddNote(aFramesList[i], 'frameTitleEmpty'); // QA iframeTests01.html
         }
         if(aFramesList[i].node != null && aFramesList[i].node.hasAttribute('id')==true) {
@@ -5157,20 +5143,23 @@ ys: 'whys'
       }
     },
 
-    fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, inTable, nestingDepth) {
-      var docNumber, node, sID, idCount, frameDocument, style, ARIALandmarkLevel=1,
+    fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, nestingDepth) {
+      var docNumber, node, sID, idCount, frameDocument, style,
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
         text, title, target, href, sState, effectiveLabel, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
-        frameSrc, frameId, frameName, tableSummary, i,
+        frameSrc, frameId, frameName, tableSummary, i, accessKey,
         bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false); 
 
       if (doc != null) {
         if (oW15yResults == null) {
           oW15yResults = new blr.W15yQC.W15yResults();
           oW15yResults.iTextSize=0;
+          ARIALandmarkLevel=0;
           oW15yResults.PageScore=new blr.W15yQC.PageScore();
-
+          oW15yResults.PageScore.bAllContentContainedInLandmark=true;
+          oW15yResults.PageScore.bUsesARIABesidesLandmarks=false;
+          oW15yResults.PageScore.bAllIDsAreUnique=true;
           // Put the top window's document in the list
           oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(doc, doc.URL, oW15yResults.aDocuments.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
           blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],doc.body);
@@ -5204,6 +5193,7 @@ ys: 'whys'
                   idCount = 1;
                   if(oW15yResults.aDocuments[docNumber].idHashTable.hasItem(sID)) {
                     idCount = oW15yResults.aDocuments[docNumber].idHashTable.getItem(sID)+1;
+                    oW15yResults.PageScore.bAllIDsAreUnique=false;
                     oW15yResults.aDocuments[docNumber].IDsUnique = false;
                     if(idCount == 2) {
                       if(oW15yResults.aDocuments[docNumber].nonUniqueIDs.length<5) {
@@ -5244,7 +5234,7 @@ ys: 'whys'
                 if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
 
                 // get frame contents
-                blr.W15yQC.fnGetElements(frameDocument, frameDocument.body, oW15yResults, ARIAElementStack, inTable, nestingDepth);
+                blr.W15yQC.fnGetElements(frameDocument, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, nestingDepth);
               } else {
                 if (node.nodeType == 1 && node.hasAttribute && blr.W15yQC.fnNodeIsHidden(node) == false) {
                   sARIALabel=null;
@@ -5290,6 +5280,8 @@ ys: 'whys'
                         oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, sRole, sARIALabel, sState));
                         oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                         break;
+                      default:
+                        oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
                     }
                   }
                   
@@ -5311,6 +5303,10 @@ ys: 'whys'
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
+                      if(effectiveLabel!=null) {
+                        oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
+                        if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
+                      }
                       break;
                     case 'canvas':
                       // TODO: What to do here? Get alternative content? text?
@@ -5334,7 +5330,10 @@ ys: 'whys'
                       blr.W15yQC.fnLog('Image el:'+effectiveLabel);
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
-                      if(effectiveLabel!=null) { oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length; }
+                      if(effectiveLabel!=null) {
+                        oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
+                        if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
+                      }
                       break;
                     case 'input': // TODO: QA This!
                       if (node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'image') {
@@ -5516,7 +5515,7 @@ ys: 'whys'
                   }
                 }
                 // keep looking through current document
-                blr.W15yQC.fnGetElements(doc, node, oW15yResults, ARIAElementStack, inTable, nestingDepth);
+                blr.W15yQC.fnGetElements(doc, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, nestingDepth);
                 if(inTable != null && node.tagName.toLowerCase() == 'table') {
                   inTable = null; // TODO: Does this need to be an array stack? 
                   if(nestingDepth>0) { nestingDepth += -1; }
@@ -5524,6 +5523,7 @@ ys: 'whys'
               }
             } else if (node.nodeType == 3 && node.textContent){
               oW15yResults.iTextSize=oW15yResults.iTextSize+node.textContent.length;
+              if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
             }
           }
         }
@@ -5532,7 +5532,7 @@ ys: 'whys'
     },
     
     
-    fnGetDocuments: function (doc, rootNode, aDocumentsList) {
+    fnGetDocuments: function (doc, rootNode, aDocumentsList) { alert("NEVER HERE");
       var docNumber, c, sID, idCount, frameDocument,style;
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
@@ -5608,7 +5608,7 @@ ys: 'whys'
       var i, aSameTitles, j, k, sIDList, sLangList, selectorTest, doc, suspectCSS='', aDocumentsList=oW15yResults.aDocuments;
       
       oW15yResults.PageScore.bAllDocumentsHaveTitles=true; 
-      oW15yResults.bAllDocumentsHaveDefaultHumanLanguage=true;
+      oW15yResults.PageScore.bAllDocumentsHaveDefaultHumanLanguage=true;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aDocumentsList !== null && aDocumentsList.length) {
@@ -5840,8 +5840,14 @@ ys: 'whys'
         
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
+
+      oW15yResults.PageScore.bUsesARIALandmarks=false;
+      oW15yResults.PageScore.bHasMainLandmark=false;
+      oW15yResults.PageScore.bMainLandmarkContainsHeading=false;
+      oW15yResults.PageScore.bAllLandmarksUnique=true;
       
-      if (aARIALandmarksList != null && aARIALandmarksList.length) {
+      if (aARIALandmarksList != null && aARIALandmarksList.length && aARIALandmarksList.length>0) {
+        oW15yResults.PageScore.bUsesARIALandmarks=true;
         iMainLandmarkCount = 0;
         iBannerLandmarkCount = 0;
         iContentInfoLandmarkCount = 0;
@@ -5849,6 +5855,15 @@ ys: 'whys'
           //aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
           blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
           if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
+            oW15yResults.PageScore.bHasMainLandmark=true;
+            if(aARIALandmarksList[i].node.getElementsByTagName('h1') ||
+               aARIALandmarksList[i].node.getElementsByTagName('h2') ||
+               aARIALandmarksList[i].node.getElementsByTagName('h3') ||
+               aARIALandmarksList[i].node.getElementsByTagName('h4') ||
+               aARIALandmarksList[i].node.getElementsByTagName('h5') ||
+               aARIALandmarksList[i].node.getElementsByTagName('h6')) {
+              oW15yResults.PageScore.bMainLandmarkContainsHeading=true;
+            }
             iMainLandmarkCount++;
           } else if(aARIALandmarksList[i].role.toLowerCase() == 'banner') {
             iBannerLandmarkCount++;
@@ -5868,6 +5883,7 @@ ys: 'whys'
           }
           
           if(aSameLabelText.length>0) {
+            oW15yResults.PageScore.bAllLandmarksUnique=false;
             if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].label)) {
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]);   // QA ariaTests01.html
             } else {
@@ -6000,7 +6016,11 @@ ys: 'whys'
       var i, sRoleAndLabel, sRoleAndLabel2, j, aARIAElementsList=oW15yResults.aARIAElements, aDocumentsList=oW15yResults.aDocuments;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA
-      if (aARIAElementsList != null && aARIAElementsList.length) {
+
+      //oW15yResults.PageScore.bAllARIARolesAreValid=true;
+      //oW15yResults.PageScore.bNoARIAErrors=true;
+
+      if (aARIAElementsList != null && aARIAElementsList.length && aARIAElementsList.length>0) {
 
         for (i = 0; i < aARIAElementsList.length; i++) {
           //aARIAElementsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIAElementsList[i].node, aDocumentsList);
@@ -6374,8 +6394,12 @@ ys: 'whys'
     },
 
     fnAnalyzeImages: function (oW15yResults) {
-      var i, sCombinedLabel, aImagesList=oW15yResults.aImages, aDocumentsList=oW15yResults.aDocuments;
+      var i, sCombinedLabel, sText, aImagesList=oW15yResults.aImages, aDocumentsList=oW15yResults.aDocuments;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+
+      oW15yResults.PageScore.bAllImagesHaveAltTextOrAreMarkedPresentational=true;
+      oW15yResults.PageScore.bAllAltTextIsMeaningful=true;
+
       if (aImagesList != null && aImagesList.length) {
 
         for (i = 0; i < aImagesList.length; i++) {
@@ -6392,6 +6416,7 @@ ys: 'whys'
           }
           aImagesList[i].stateDescription = blr.W15yQC.fnGetNodeState(aImagesList[i].node);
           if (aImagesList[i].alt == null && blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node) == false) {
+            oW15yResults.PageScore.bAllImagesHaveMeaningfulAltTextOrAreMarkedPresentational=false;
             blr.W15yQC.fnAddNote(aImagesList[i], 'imgMissingAltAttribute'); // QA imageTests01.html
           }
           sCombinedLabel = blr.W15yQC.fnTrim(blr.W15yQC.fnJoin(blr.W15yQC.fnJoin(aImagesList[i].alt, aImagesList[i].title, ''), aImagesList[i].ariaLabel, ''));
@@ -6403,10 +6428,38 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgHasAltTextAndPresRole'); // QA imageTests01.html
           } else {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aImagesList[i].effectiveLabel)) {
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtOnlyASCII'); // QA imageTests01.html
             }
-            aImagesList[i] = blr.W15yQC.fnIsMeaningfulAltTextTest(aImagesList[i].effectiveLabel, aImagesList[i]);
+            
+            sText = blr.W15yQC.fnCleanSpaces(aImagesList[i].effectiveLabel);
+            if (sText == null || sText == '') {
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgNoAltText'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgSpacerShouldHaveEmptyAltTxt'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAppearsToBeImageFileName(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsFileName'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAppearsToBeURL(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsURL'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAppearsToBeJunkText(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsJunk'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAppearsToBeDefaultAltText(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsDefault'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAltTextAppearsIfItShouldBeEmpty(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsDecorative'); // QA imageTests01.html
+            } else if (blr.W15yQC.fnAltTextAppearsToHaveRedundantImageReferenceInIt(sText)) { // QA File imageTests01.html
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIncludesImageTxt'); // QA imageTests01.html
+            }
+            
             if(blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(aImagesList[i].src) == true) {
+              oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgSpacerWithAltTxt'); // QA imageTests01.html
             }
           }
@@ -6530,7 +6583,14 @@ ys: 'whys'
         's': "Alt+S is used to open the Safety Menu in IE and to read the Status Bar in the WindowEyes Screen-reader.",
         'z': "Alt+Z is used to open the Add to Favorites Menu in IE."
       };
+
+      oW15yResults.PageScore.bUsesAccessKeys=false;
+      oW15yResults.PageScore.bAllAccessKeysUnique=true;
+      oW15yResults.PageScore.bNoAccessKeysHaveConflicts=true;
+      oW15yResults.PageScore.bAllAccessKeysHaveLabels=true;
+
       if (aAccessKeysList != null && aAccessKeysList.length && aAccessKeysList.length > 0) {
+        oW15yResults.PageScore.bUsesAccessKeys=true;
         for (i = 0; i < aAccessKeysList.length; i++) {
           //aAccessKeysList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aAccessKeysList[i].node, aDocumentsList);
           aAccessKeysList[i].stateDescription = blr.W15yQC.fnGetNodeState(aAccessKeysList[i].node);
@@ -6538,12 +6598,14 @@ ys: 'whys'
         for (i = 0; i < aAccessKeysList.length; i++) {
           ak = aAccessKeysList[i];
           if (htMajorConflicts[ak.accessKey.toLowerCase()] != null && htMajorConflicts[ak.accessKey.toLowerCase()].length) {
+            oW15yResults.PageScore.bNoAccessKeysHaveConflicts=false;
             blr.W15yQC.fnAddNote(ak, 'akConflict',[htMajorConflicts[ak.accessKey.toLowerCase()]]); //  QA accesskeyTests01.html
           }
           if (ak.effectiveLabel == null) {
             blr.W15yQC.fnAddNote(ak, 'akNoLabel'); // Can't get this to fire
           } else if (ak.effectiveLabel.length && ak.effectiveLabel.length > 0) {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(ak.effectiveLabel)) {
+              oW15yResults.PageScore.bAllAccessKeysHaveLabels=false;
               blr.W15yQC.fnAddNote(ak, 'akLabelOnlyASCII'); // QA accesskeyTests01.html
             } else if (blr.W15yQC.fnIsMeaningfulLinkText(ak.effectiveLabel) == false) {
               blr.W15yQC.fnAddNote(ak, 'akLabelNotMeaningful'); //  QA accesskeyTests01.html
@@ -6565,12 +6627,14 @@ ys: 'whys'
             }
             
             if(aValuesDuplicated.length>0) {
+              oW15yResults.PageScore.bAllAccessKeysUnique=true;
               blr.W15yQC.fnAddNote(ak, 'akValueNotUnique', [blr.W15yQC.fnCutoffString(aValuesDuplicated.toString(),99)]); //
             }
             if(aLabelsDuplicated.length>0) {
               blr.W15yQC.fnAddNote(ak, 'akLabelNotUnique', [blr.W15yQC.fnCutoffString(aLabelsDuplicated.toString(),99)]); //
             }
           } else {
+            oW15yResults.PageScore.bAllAccessKeysHaveLabels=false;
             blr.W15yQC.fnAddNote(ak, 'akLabelEmpty'); // QA accesskeyTests01.html
           }
 
@@ -6682,13 +6746,26 @@ ys: 'whys'
 
     fnAnalyzeHeadings: function (oW15yResults, progressWindow) {
       var i, previousHeadingLevel, aHeadingsList=oW15yResults.aHeadings, aDocumentsList=oW15yResults.aDocuments;
+
+      oW15yResults.PageScore.bUsesHeadings=false;
+      oW15yResults.PageScore.bHasALevelOneHeading=false;
+      oW15yResults.PageScore.bHeadingHierarchyIsCorrect=true;
+      oW15yResults.PageScore.bHasMultipleHeadings=false;
+      
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
+        oW15yResults.PageScore.bUsesHeadings=true;
+        if(aHeadingsList.length > 0) {
+          oW15yResults.PageScore.bHasMultipleHeadings=true;
+        }
         for (i = 0; i < aHeadingsList.length; i++) {
           //aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
           if (aHeadingsList[i].text != null && aHeadingsList[i].text.length && aHeadingsList[i].text.length > 0) {
             aHeadingsList[i].text = blr.W15yQC.fnCleanSpaces(aHeadingsList[i].text);
+          }
+          if(aHeadingsList[i].level==1) {
+            oW15yResults.PageScore.bHasALevelOneHeading=true;
           }
         }
         previousHeadingLevel = 0;
@@ -6702,6 +6779,7 @@ ys: 'whys'
             }
           }
           if (aHeadingsList[i].level - previousHeadingLevel > 1) {
+              oW15yResults.PageScore.bHeadingHierarchyIsCorrect=false;
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); // QA: headings01.html
           }
           previousHeadingLevel = aHeadingsList[i].level;
@@ -6896,6 +6974,10 @@ ys: 'whys'
           i, j, aSameNames, subForms, aSameLabelText, aSoundsTheSame, bShouldntHaveBoth, nodeTagName, nodeTypeValue,
           explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist;
 
+      oW15yResults.PageScore.bAllFormControlsAreLabeled=true;
+      oW15yResults.PageScore.bAllRadioButtonsHaveLegends=true;
+      oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=true;
+          
       // TODO: Add check that name value is unique to a given form unless it is a radio button
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if form labels are empty, not meaningful, the same as other form controls, or sound like any other label texts
@@ -6949,12 +7031,17 @@ ys: 'whys'
         for (i = 0; i < aFormControlsList.length; i++) {
           if (aFormControlsList[i].labelTagText == null && aFormControlsList[i].legendText == null && aFormControlsList[i].title == null && (aFormControlsList[i].effectiveLabelText == null || aFormControlsList[i].effectiveLabelText.length < 1)) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); //
+              oW15yResults.PageScore.bAllFormControlsAreLabeled=false;
           } else if (aFormControlsList[i].effectiveLabelText != null && aFormControlsList[i].effectiveLabelText.length > 0) {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aFormControlsList[i].effectiveLabelText)) {
+              oW15yResults.PageScore.bAllFormControlsAreLabeled=false;
+              oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=false;
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); // 
             } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(aFormControlsList[i].effectiveLabelText) == true) {
+              oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=false;
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNextPrev'); //
             } else if (blr.W15yQC.fnIsMeaningfulFormLabelText(aFormControlsList[i].effectiveLabelText) == false) {
+              oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=false;
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNotMeaningful'); //
             }
             if(blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node)==false) {
@@ -6982,6 +7069,7 @@ ys: 'whys'
               }
             }
           } else {
+            oW15yResults.PageScore.bAllFormControlsAreLabeled=false;
             blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelEmpty'); //
           }
 
@@ -7008,6 +7096,7 @@ ys: 'whys'
           
           // frmCtrlRadioButtonWOLegendText
           if(nodeTagName == 'input' && nodeTypeValue == 'radio' && blr.W15yQC.fnStringHasContent(aFormControlsList[i].legendText)==false) {
+              oW15yResults.PageScore.bAllRadioButtonsHaveLegends=false;
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlRadioButtonWOLegendText'); // formcontrols01.html
           }
           // frmCtrlInputTypeImageWOAltAttr frmCtrlInputTypeImageWOAltText
@@ -7257,6 +7346,12 @@ ys: 'whys'
       var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+
+      oW15yResults.PageScore.bAllLinksHaveText=true;
+      oW15yResults.PageScore.bAllLinksHaveMeaningfulText=true;
+      oW15yResults.PageScore.bAllLinksAreUnique=true;
+      oW15yResults.PageScore.bNoLinksHaveTitleTextDiffThanLinkText=true;
+
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
         //aLinksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLinksList[i].node, aDocumentsList);
@@ -7307,19 +7402,28 @@ ys: 'whys'
         }
 
         if (aLinksList[i].text == null) {
+          oW15yResults.PageScore.bAllLinksHaveText=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
         } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
           linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
+          
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
+            oW15yResults.PageScore.bAllLinksHaveText=false;
+            oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtOnlyASCII'); //
           } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(linkText)) {
+            oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNextPrev'); //
           } else if (linkText.match(/^link to /i)) { // TODO: Make functions for testing for this.
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtBeginWithLink'); //
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
+            oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
           }
-
+          if(blr.W15yQC.fnStringHasContent(aLinksList[i].title) && blr.W15yQC.fnStringsEffectivelyEqual(aLinksList[i].title,linkText)==false) {
+            oW15yResults.PageScore.bNoLinksHaveTitleTextDiffThanLinkText=false;
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTitleTxtDiffThanLinkTxt'); // TODO: QA This!
+          }
           maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
 
           if(maxRect != null && maxRect[0] < 14 && maxRect[1] < 14 && (maxRect[0] > 0 && maxRect[1]>0) &&
@@ -7357,10 +7461,12 @@ ys: 'whys'
           }
 
           if(aLinksList[i].aSameLinkText.length>0) {
+            oW15yResults.PageScore.bAllLinksAreUnique=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotUnique', [blr.W15yQC.fnCutoffString(aLinksList[i].aSameLinkText.toString(),99)]); //
           }
 
           if(aLinksList[i].aSoundsTheSame.length>0) {
+            oW15yResults.PageScore.bAllLinksAreUnique=true;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtDoesntSoundUnique',[blr.W15yQC.fnCutoffString(aLinksList[i].aSoundsTheSame.toString(),99)]); //
           }
 
@@ -7374,6 +7480,7 @@ ys: 'whys'
 
         } else {
           if (aLinksList[i].node && aLinksList[i].node.hasAttribute && aLinksList[i].node.hasAttribute('href') == true) {
+            oW15yResults.PageScore.bAllLinksHaveText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtEmpty'); //
           } else if (aLinksList[i].node && aLinksList[i].node.getAttribute && ((aLinksList[i].node.getAttribute('name') != null && aLinksList[i].node.getAttribute('name').length > 0) || (aLinksList[i].node.getAttribute('id') != null && aLinksList[i].node.getAttribute('id').length > 0))) {
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
@@ -7630,6 +7737,14 @@ ys: 'whys'
       //
       // TODO: Test on a table caption, on nest tables with captions, on multiple captions on a given table
       // QUESTION: If a table has multiple captions, what does JAWS do?
+
+      oW15yResults.PageScore.bHasTables=false;
+      oW15yResults.PageScore.bLayoutTablesAreMarkedPresentational=true;
+      oW15yResults.PageScore.bAllContentInDataTablesCoveredByHeader=true;
+      oW15yResults.PageScore.bDataTablesAreNotComplex=true;
+      oW15yResults.PageScore.bLargeDataTablesHaveCaptionsOrSummary=true;
+
+
       for (i = 0; i < aTablesList.length; i++) {
         //aTablesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aTablesList[i].node, aDocumentsList);
         aTablesList[i].stateDescription = blr.W15yQC.fnGetNodeState(aTablesList[i].node);
@@ -8162,6 +8277,128 @@ ys: 'whys'
       } else return '';
     },
     
+    fnComputeScore: function(oW15yQCReport) {
+      var score=0, ps, headingScore=0, itemsCount=0, failures=0, warnings=0;
+      if(oW15yQCReport!=null) {
+        ps=oW15yQCReport.PageScore;
+        if(ps!=null) {
+          // Page and Frame Titles (15)
+          if(ps.bAllDocumentsHaveTitles==true) { score=score+5;}
+          if(ps.bAllDocumentsHaveDefaultHumanLanguage==true) { score=score+5;}
+          if(ps.bAllFramesHaveTitles==true) { score=score+5;}
+          
+          // Headings and Landmarks (20) 35
+          if(ps.bUsesHeadings==true || ps.bUsesARIALandmarks==true) {
+            if(ps.bUsesHeadings==true) {
+              headingScore=headingScore+4;
+              if(ps.bHasALevelOneHeading==true) { headingScore=headingScore+4;}
+              if(ps.bHeadingHierarchyIsCorrect==true) { headingScore=headingScore+4;}
+              if(ps.bHasMultipleHeadings==true) { headingScore=headingScore+4;}
+              if(ps.bHasEnoughHeadingsForContent==true) { headingScore=headingScore+4;}
+            }
+            if(ps.bUsesARIALandmarks==true) {
+              headingScore=headingScore+4;
+              if(ps.bHasMainLandmark==true) { headingScore=headingScore+4;}
+              if(ps.bMainLandmarkContainsHeading==true) { headingScore=headingScore+4;}
+              if(ps.bAllLandmarksUnique==true) { headingScore=headingScore+4;}
+              if(ps.bAllContentContainedInLandmark==true) { headingScore=headingScore+4;}
+              headingScore=headingScore/2; 
+            }
+            score=score+headingScore;
+          }
+          
+          // Links (15) 50
+          if(ps.bAllLinksHaveText==true) { score=score+5;}
+          if(ps.bAllLinksHaveMeaningfulText==true) { score=score+3;}
+          if(ps.bAllLinksAreUnique==true) { score=score+4;}
+          if(ps.bNoLinksHaveTitleTextDiffThanLinkText==true) { score=score+3;}
+          
+          // Form Controls (15) 65
+          if(ps.bAllFormControlsAreLabeled==true) { score=score+5;}
+          if(ps.bAllRadioButtonsHaveLegends==true) { score=score+5;}
+          if(ps.bAllFormControlsHaveMeaningfulLabels==true) { score=score+5;}
+          
+          // Images (15) 80
+          if(ps.bAllImagesHaveAltTextOrAreMarkedPresentational==true) { score=score+10;}
+          if(ps.bAllAltTextIsMeaningful==true) { score=score+5;}
+
+          // Accesskeys (potential -10) 80
+          if(ps.bUsesAccessKeys==true) {
+            if(ps.bAllAccessKeysUnique!=true) { score=score-5;}
+            if(ps.bNoAccessKeysHaveConflicts!=true) { score=score-5;}
+          }
+          
+          // Tables (10) 90
+          score=score+10
+          if(ps.bHasTables==true) {
+            if(ps.bLayoutTablesAreMarkedPresentational!=true) { score=score-5;}
+            if(ps.bAllContentInDataTablesCoveredByHeader!=true) { score=score-5;}
+            if(ps.bDataTablesAreNotComplex!=true) { score=score-5;}
+            if(ps.bLargeDataTablesHaveCaptionsOrSummary!=true) { score=score-5;}
+          }
+          
+          if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length>0) {
+            itemsCount=oW15yQCReport.aFrames.length;
+            failures=oW15yQCReport.aFrames.failedCount;
+            warnings=oW15yQCReport.aFrames.warningCount;
+          }
+    
+          if(oW15yQCReport.aHeadings && oW15yQCReport.aHeadings.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aHeadings.length;
+            failures=failures+oW15yQCReport.aHeadings.failedCount;
+            warnings=warnings+oW15yQCReport.aHeadings.warningCount;
+          }
+    
+          if(oW15yQCReport.aARIALandmarks && oW15yQCReport.aARIALandmarks.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aARIALandmarks.length;
+            failures=failures+oW15yQCReport.aARIALandmarks.failedCount;
+            warnings=warnings+oW15yQCReport.aARIALandmarks.warningCount;
+          }
+    
+          if(oW15yQCReport.aARIAElements && oW15yQCReport.aARIAElements.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aARIAElements.length;
+            failures=failures+oW15yQCReport.aARIAElements.failedCount;
+            warnings=warnings+oW15yQCReport.aARIAElements.warningCount;
+          }
+    
+          if(oW15yQCReport.aLinks && oW15yQCReport.aLinks.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aLinks.length;
+            failures=failures+oW15yQCReport.aLinks.failedCount;
+            warnings=warnings+oW15yQCReport.aLinks.warningCount;
+          }
+    
+          if(oW15yQCReport.aImages && oW15yQCReport.aImages.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aImages.length;
+            failures=failures+oW15yQCReport.aImages.failedCount;
+            warnings=warnings+oW15yQCReport.aImages.warningCount;
+          }
+    
+          if(oW15yQCReport.aFormControls && oW15yQCReport.aFormControls.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aFormControls.length;
+            failures=failures+oW15yQCReport.aFormControls.failedCount;
+            warnings=warnings+oW15yQCReport.aFormControls.warningCount;
+          }
+    
+          if(oW15yQCReport.aAccessKeys && oW15yQCReport.aAccessKeys.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aAccessKeys.length;
+            failures=failures+oW15yQCReport.aAccessKeys.failedCount;
+            warnings=warnings+oW15yQCReport.aAccessKeys.warningCount;
+          }
+    
+          if(oW15yQCReport.aTables && oW15yQCReport.aTables.length>0) {
+            itemsCount=itemsCount+oW15yQCReport.aTables.length;
+            failures=failures+oW15yQCReport.aTables.failedCount;
+            warnings=warnings+oW15yQCReport.aTables.warningCount;
+          }
+    
+          if(itemsCount>0) {
+            score=score+Math.floor((10.0*(itemsCount-failures)/itemsCount)*((itemsCount-warnings/4)/itemsCount));
+          }
+        }
+      }
+      oW15yQCReport.iScore=score;
+    },
+    
     fnDescribeWindow: function (oW15yQCReport) {
       /*
        * all content contained in landmark. main landmrk missing.
@@ -8344,45 +8581,48 @@ ys: 'whys'
 
     fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
       var oW15yQCReport=null, progressWindow=null;
-      
       if(progressUpdateFunction!=null) progressUpdateFunction('fnGetElements');
       oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeDocuments');
-      blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
       
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFrameTitles');
-      blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport.aFrames, oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeHeadings');
-      blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport.aHeadings, oW15yQCReport.aDocuments, progressWindow);
+      blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, progressWindow);
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIALandmarks');
-      blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport.aARIALandmarks, oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
         
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIAElements');
       if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
-        blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport.aARIAElements, oW15yQCReport.aDocuments);
+        blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
       }
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeLinks');
-      blr.W15yQC.fnAnalyzeLinks(oW15yQCReport.aLinks, oW15yQCReport.aDocuments, progressWindow);
+      blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFormControls');
-      blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport.aForms, oW15yQCReport.aFormControls, oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeImages');
-      blr.W15yQC.fnAnalyzeImages(oW15yQCReport.aImages, oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
       
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeAccessKeys');
-      blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport.aAccessKeys, oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
 
       if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeTables');
-      blr.W15yQC.fnAnalyzeTables(oW15yQCReport.aTables, oW15yQCReport.aDocuments);
+      blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
       
       if(progressUpdateFunction!=null) progressUpdateFunction('fnDescribeWindow');
       blr.W15yQC.fnDescribeWindow(oW15yQCReport);
 
+      if(progressUpdateFunction!=null) progressUpdateFunction('fnComputeScore');
+      blr.W15yQC.fnComputeScore(oW15yQCReport);
+
+      if(progressUpdateFunction!=null) progressUpdateFunction('finished scan');
       return oW15yQCReport;
     },
 
@@ -8481,7 +8721,7 @@ ys: 'whys'
     this.bHasALevelOneHeading=null;
     this.bHeadingHierarchyIsCorrect=null;
     this.bHasEnoughHeadingsForContent=null;
-    this.bHasLandmarksOrMultipleHeadings=null;
+    this.bHasMultipleHeadings=null;
     this.bMainLandmarkContainsHeading=null;
     this.bUsesARIALandmarks=null;
     this.bHasMainLandmark=null;
@@ -8499,11 +8739,13 @@ ys: 'whys'
     this.bAllLinksHaveMeaningfulText=null;
     this.bAllLinksAreUnique=null;
     this.bNoLinksHaveTitleTextDiffThanLinkText=null;
-    this.bAllImagesHaveMeaningfulAltTextOrAreMarkedPresentational=null;
+    this.bAllImagesHaveAltTextOrAreMarkedPresentational=null;
+    this.bAllAltTextIsMeaningful=null;
     this.bUsesARIABesidesLandmarks=null;
     this.bAllARIARolesAreValid=null;
     this.bNoARIAErrors=null;
     this.bUsesAccessKeys=null;
+    this.bAllAccessKeysHaveLabels=null;
     this.bAllAccessKeysUnique=null;
     this.bNoAccessKeysHaveConflicts=null;
     this.bAllIDsAreUnique=null;
@@ -8536,11 +8778,13 @@ ys: 'whys'
     bAllLinksHaveMeaningfulText: null,
     bAllLinksAreUnique: null,
     bNoLinksHaveTitleTextDiffThanLinkText: null,
-    bAllImagesHaveMeaningfulAltTextOrAreMarkedPresentational: null,
+    bAllImagesHaveAltTextOrAreMarkedPresentational: null,
+    bAllAltTextIsMeaningful: null,
     bUsesARIABesidesLandmarks: null,
     bAllARIARolesAreValid: null,
     bNoARIAErrors: null,
     bUsesAccessKeys: null,
+    bAllAccessKeysHaveLabels: null,
     bAllAccessKeysUnique: null,
     bNoAccessKeysHaveConflicts: null,
     bAllIDsAreUnique: null,
@@ -8573,6 +8817,7 @@ ys: 'whys'
     sWindowURL: null,
     sWindowDescription: null,
     iTextSize: null,
+    PageScore: null,
     iScore: null,
     dDateChecked: null,
     aDocuments: [],

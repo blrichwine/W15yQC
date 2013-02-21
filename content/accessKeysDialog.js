@@ -140,7 +140,7 @@ blr.W15yQC.AccessKeyDialog = {
     blr.W15yQC.AccessKeyDialog.aDocumentsList = oW15yQCReport.aDocuments;
     blr.W15yQC.AccessKeyDialog.aAccessKeysList = oW15yQCReport.aAccessKeys;
     
-    blr.W15yQC.fnAnalyzeAccessKeys(blr.W15yQC.AccessKeyDialog.aAccessKeysList, blr.W15yQC.AccessKeyDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
 
     blr.W15yQC.AccessKeyDialog.fnPopulateTree(blr.W15yQC.AccessKeyDialog.aDocumentsList, blr.W15yQC.AccessKeyDialog.aAccessKeysList);
   },

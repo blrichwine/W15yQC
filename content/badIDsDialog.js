@@ -111,7 +111,7 @@ blr.W15yQC.badIDsDialog = {
     blr.W15yQC.badIDsDialog.aDocumentsList = oW15yQCReport.aDocuments;
 
     blr.W15yQC.badIDsDialog.aBadIDsList = blr.W15yQC.fnGetBadIDs(window.opener.parent._content.document, blr.W15yQC.badIDsDialog.aDocumentsList);
-    blr.W15yQC.badIDsDialog.aBadIDsList = oW15yQCReport.aBadIDs;
+    //blr.W15yQC.badIDsDialog.aBadIDsList = oW15yQCReport.aBadIDs;
     blr.W15yQC.badIDsDialog.fnPopulateTree(blr.W15yQC.badIDsDialog.aDocumentsList, blr.W15yQC.badIDsDialog.aBadIDsList);
   },
 

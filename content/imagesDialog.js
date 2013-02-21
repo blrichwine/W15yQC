@@ -176,7 +176,7 @@ blr.W15yQC.ImagesDialog = {
     blr.W15yQC.ImagesDialog.aDocumentsList = oW15yQCReport.aDocuments;
 
     blr.W15yQC.ImagesDialog.aImagesList = oW15yQCReport.aImages;
-    blr.W15yQC.fnAnalyzeImages(blr.W15yQC.ImagesDialog.aImagesList, blr.W15yQC.ImagesDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
     blr.W15yQC.ImagesDialog.fnPopulateTree(blr.W15yQC.ImagesDialog.aDocumentsList, blr.W15yQC.ImagesDialog.aImagesList);
   },
 

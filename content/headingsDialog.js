@@ -144,7 +144,7 @@ blr.W15yQC.HeadingsDialog = {
     //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.HeadingsDialog.aDocumentsList);
 
     blr.W15yQC.HeadingsDialog.aHeadingsList = oW15yQCReport.aHeadings;
-    blr.W15yQC.fnAnalyzeHeadings(blr.W15yQC.HeadingsDialog.aHeadingsList, blr.W15yQC.HeadingsDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport);
     blr.W15yQC.HeadingsDialog.fnPopulateTree(blr.W15yQC.HeadingsDialog.aDocumentsList, blr.W15yQC.HeadingsDialog.aHeadingsList);
   },
 

@@ -107,7 +107,7 @@ blr.W15yQC.DocumentsDialog = {
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
     blr.W15yQC.DocumentsDialog.aDocumentsList = oW15yQCReport.aDocuments;
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.DocumentsDialog.aDocumentsList);
+    blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
     blr.W15yQC.DocumentsDialog.fnPopulateTree(blr.W15yQC.DocumentsDialog.aDocumentsList);
   },
 

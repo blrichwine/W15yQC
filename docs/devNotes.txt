@@ -137,6 +137,9 @@
             
       *** FIX ASAP***
       look up common skip navigation link texts
+      look for meaningful content inside of role="application" and provide warning.
+      Look for inappropriate role="application" use.
+      
       do we need a fixup URL routine to deal with \ used in place of / ?
       warn when link title text is different than the effective link text and the aria-descriptions
       Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
