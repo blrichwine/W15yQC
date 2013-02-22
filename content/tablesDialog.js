@@ -147,19 +147,22 @@ blr.W15yQC.TablesDialog = {
   },
 
   init: function (dialog) {
+    var oW15yQCReport;
+
     blr.W15yQC.fnReadUserPrefs();
     if (dialog != null && dialog.arguments != null && dialog.arguments.length > 1) {
       blr.W15yQC.TablesDialog.FirebugO = dialog.arguments[1];
     }
-    blr.W15yQC.TablesDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.TablesDialog.aDocumentsList);
-
-    blr.W15yQC.TablesDialog.aTablesList = blr.W15yQC.fnGetTables(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeTables(blr.W15yQC.TablesDialog.aTablesList, blr.W15yQC.TablesDialog.aDocumentsList);
-    blr.W15yQC.TablesDialog.fnPopulateTree(blr.W15yQC.TablesDialog.aDocumentsList, blr.W15yQC.TablesDialog.aTablesList);
     if (blr.W15yQC.TablesDialog.FirebugO == null || !blr.W15yQC.TablesDialog.FirebugO.Inspector) {
       document.getElementById('button-showInFirebug').hidden = true;
     }
+
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    blr.W15yQC.TablesDialog.aDocumentsList = oW15yQCReport.aDocuments;
+
+    blr.W15yQC.TablesDialog.aTablesList = oW15yQCReport.aTables;
+    blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
+    blr.W15yQC.TablesDialog.fnPopulateTree(blr.W15yQC.TablesDialog.aDocumentsList, blr.W15yQC.TablesDialog.aTablesList);
   },
 
   cleanup: function () {

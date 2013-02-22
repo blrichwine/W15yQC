@@ -125,20 +125,24 @@ blr.W15yQC.AccessKeyDialog = {
   },
 
   init: function (dialog) {
+    var oW15yQCReport;
+
     blr.W15yQC.fnReadUserPrefs();
+
     if (dialog != null && dialog.arguments != null && dialog.arguments.length > 1) {
       blr.W15yQC.AccessKeyDialog.FirebugO = dialog.arguments[1];
     }
-    blr.W15yQC.AccessKeyDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.AccessKeyDialog.aDocumentsList);
-
-    blr.W15yQC.AccessKeyDialog.aAccessKeysList = blr.W15yQC.fnGetAccessKeys(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeAccessKeys(blr.W15yQC.AccessKeyDialog.aAccessKeysList, blr.W15yQC.AccessKeyDialog.aDocumentsList);
-
-    blr.W15yQC.AccessKeyDialog.fnPopulateTree(blr.W15yQC.AccessKeyDialog.aDocumentsList, blr.W15yQC.AccessKeyDialog.aAccessKeysList);
     if (blr.W15yQC.AccessKeyDialog.FirebugO == null || !blr.W15yQC.AccessKeyDialog.FirebugO.Inspector) {
       document.getElementById('button-showInFirebug').hidden = true;
     }
+
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    blr.W15yQC.AccessKeyDialog.aDocumentsList = oW15yQCReport.aDocuments;
+    blr.W15yQC.AccessKeyDialog.aAccessKeysList = oW15yQCReport.aAccessKeys;
+    
+    blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
+
+    blr.W15yQC.AccessKeyDialog.fnPopulateTree(blr.W15yQC.AccessKeyDialog.aDocumentsList, blr.W15yQC.AccessKeyDialog.aAccessKeysList);
   },
 
   cleanup: function () {

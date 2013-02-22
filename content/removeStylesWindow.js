@@ -28,7 +28,11 @@
  * TODO:
  *      
  *    - Internationalize?
- *    
+ *    - How is this handling buttons? Buttons with ARIA Labels that override child text?
+ *    - How is this handling links with ARIA Labels?
+ *    - DIV and SPAN elements with title attribute?
+ *    - HTML5 and ARIA state info?
+ *    - FIELDSET+LEGEND text?
  * 
  */
 if (!blr) {
@@ -112,8 +116,8 @@ blr.W15yQC.RemoveStylesWindow = {
 
   fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
-      sLabel, sEnteringLabel,
-      sExitingLabel, sRole, sTagName, level, bKeepStyle = false,
+      sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
+      sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
       box, width, height, borderStyle, bSkipElement = false,
       c2;
     if (oValues == null) {
@@ -123,6 +127,7 @@ blr.W15yQC.RemoveStylesWindow = {
         iNumberOfARIALandmarks: 0
       };
     }
+
     if (doc != null) {
       if (rootNode == null) {
         rootNode = doc.body;
@@ -133,6 +138,9 @@ blr.W15yQC.RemoveStylesWindow = {
       for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
         bKeepStyle = false;
         bSkipElement = false;
+        sTagName='';
+        sRole='';
+        sTagTypeAttr='';
         if (c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
           if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
@@ -156,21 +164,22 @@ blr.W15yQC.RemoveStylesWindow = {
             div.appendChild(p);
           } else { // keep looking through current document
             if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && c.tagName.toLowerCase() !== 'script' && blr.W15yQC.fnNodeIsHidden(c) == false) {
-              node=null;
+              node = null;
               bSkipElement = false;
-              sTagName=c.tagName.toLowerCase();
+              sTagName = c.tagName.toLowerCase();
+              if (c.hasAttribute('type')) {
+                sTagTypeAttr = c.getAttribute('type').toLowerCase();
+              } else {
+                sTagTypeAttr = '';
+              }
               if (c.hasAttribute('role')) {
                 sRole = c.getAttribute('role').toLowerCase();
               } else {
                 sRole = '';
               }
-            
-              if (blr.W15yQC.fnIsARIALandmark(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
-                        sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" ||
-                        sRole == "treegrid" || sRole == "status" || sRole == "note" ||
-                        sRole == "list" || sRole == "listitem" || sRole == "img" || sRole == "grid" || sRole == "document" ||
-                        sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
-                bInAriaBlock = true;  // TODO: Should the landmark role prevent the natural element role?
+
+              if (blr.W15yQC.fnIsARIALandmark(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" || sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" || sRole == "note" || sRole == "list" || sRole == "listitem" || sRole == "img" || sRole == "grid" || sRole == "document" || sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
+                bInAriaBlock = true; // TODO: Should the landmark role prevent the natural element role?
                 if (sRole == "menubar") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ') + ' To navigate use the left and right arrow keys.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ');
@@ -180,6 +189,9 @@ blr.W15yQC.RemoveStylesWindow = {
                 } else if (blr.W15yQC.fnIsARIALandmark(c)) {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark.';
+                } else if (sRole == 'presentation') {
+                  sEnteringLabel = '';
+                  sExitingLabel = '';
                 } else {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + '.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + '.';
@@ -187,142 +199,142 @@ blr.W15yQC.RemoveStylesWindow = {
                 div = rd.createElement('div');
                 div.setAttribute('style', 'border:thin solid black;margin: 3px 2px 3px 0px');
                 appendNode.appendChild(div);
-                p = rd.createElement('p');
-                p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
-                p.appendChild(rd.createTextNode('Entering ARIA ' + sEnteringLabel));
-                div.appendChild(p);
+                if (sEnteringLabel > '') {
+                  p = rd.createElement('p');
+                  p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
+                  p.appendChild(rd.createTextNode('Entering ARIA ' + sEnteringLabel));
+                  div.appendChild(p);
+                }
                 div2 = rd.createElement('div');
                 div2.setAttribute('style', 'padding:5px');
                 div.appendChild(div2);
                 appendNode = div2;
-              } else if(blr.W15yQC.fnStringsEffectivelyEqual(sRole, 'presentation') == true && sTagName != 'table') {
-                bSkipElement = true;
-                node=null;
-              } 
+              }
 
-            if (bSkipElement==false && c.tagName.toLowerCase() == 'object' || c.tagName.toLowerCase() == 'embed') {
-              if ((c.hasAttribute('type') && c.getAttribute('type').toLowerCase() == "application/x-shockwave-flash") || (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase() == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
-                sLabel = 'Flash Object';
-              } else {
-                sLabel = c.tagName.toLowerCase();
-              }
-              box = c.getBoundingClientRect();
-              if (box != null && box.width && box.height) {
-                width = box.width;
-                height = box.height;
-              }
-              if (width > 800) {
-                width = 800;
-              }
-              if (height > 300) {
-                height = 300;
-              }
-              if (width > 100) {
-                if (height > 100) {
-                  width = 'width:' + width.toString() + 'px;';
+              if (bSkipElement == false && sTagName == 'object' || sTagName == 'embed') {
+                if ((sTagTypeAttr == "application/x-shockwave-flash") || (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase() == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
+                  sLabel = 'Flash Object';
                 } else {
-                  width = 'min-width:' + width.toString() + 'px;';
+                  sLabel = c.tagName.toLowerCase();
                 }
-              } else {
-                width = '';
-              }
-              if (height > 50) {
-                height = 'height:' + height.toString() + 'px;';
-              } else {
-                height = '';
-              }
-              node = rd.createElement('span');
-              bKeepStyle = true;
-              node.setAttribute('style', 'display:table-cell;border:thin solid black;color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
-              if (blr.W15yQC.fnStringHasContent(sLabel)) {
-                node.setAttribute('aria-label', sLabel);
-              }
-              node.appendChild(rd.createTextNode(sLabel));
-            } else if (sRole == 'img' || c.tagName.toLowerCase() == 'img') {
-              if (blr.W15yQC.fnStringsEffectivelyEqual(c.getAttribute('role'), 'presentation') == true || (c.hasAttribute('alt') == true && c.getAttribute('alt') == "")) { // Ignore if presentation role or alt=""
-                bSkipElement = true;
-                node = null;
-              } else {
-                bSkipElement = false;
                 box = c.getBoundingClientRect();
                 if (box != null && box.width && box.height) {
                   width = box.width;
                   height = box.height;
                 }
-                if (width > 700) {
-                  width = 700;
-                } else if (width < 30) {
-                  width = 30;
+                if (width > 800) {
+                  width = 800;
                 }
                 if (height > 300) {
                   height = 300;
                 }
-                if (width > 5) {
-                  width = 'width:' + width.toString() + 'px;';
+                if (width > 100) {
+                  if (height > 100) {
+                    width = 'width:' + width.toString() + 'px;';
+                  } else {
+                    width = 'min-width:' + width.toString() + 'px;';
+                  }
                 } else {
                   width = '';
                 }
-                if (height > 5) {
+                if (height > 50) {
                   height = 'height:' + height.toString() + 'px;';
                 } else {
                   height = '';
                 }
-
                 node = rd.createElement('span');
                 bKeepStyle = true;
-                if (blr.W15yQC.fnElementIsChildOf(c, 'a')) {
-                  borderStyle = 'border:1px solid blue;';
-                  sLabel = blr.W15yQC.fnJoin('Image-Link', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
-                  c2 = appendNode;
-                  while (c2 != null && c2.tagName.toLowerCase() != 'a') c2 = c2.parentNode;
-                  if (c2 != null) {
-                    div = rd.createElement('div');
-                    div.setAttribute('style', 'border:solid 1px blue;display:table-cell;margin:2px');
-                    c2.parentNode.insertBefore(div, c2);
-                    div.appendChild(c2);
-                  }
-                } else {
-                  borderStyle = 'border:1px solid black;';
-                  sLabel = blr.W15yQC.fnJoin('Image', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
-                }
-                node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color black !important');
-                node.setAttribute('role', 'img');
+                node.setAttribute('style', 'display:table-cell;border:thin solid black;color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
                 if (blr.W15yQC.fnStringHasContent(sLabel)) {
                   node.setAttribute('aria-label', sLabel);
                 }
                 node.appendChild(rd.createTextNode(sLabel));
-              }
-            } else if (sRole == 'heading') {
-              if (blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
-                level = parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level')), 10).toString();
-              } else { // TODO: How is this calculated when it is left out?
-                level = '2'; // TODO: What should this be when it was left out?
-              }
-              if (parseInt(level, 10) > 6) {
-                level = '6';
-              } else if (parseInt(level, 10) < 1) {
-                level = '1';
-              }
-              node = rd.createElement('h' + level);
-              node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c, doc)));
-            } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
-              node = rd.createElement('button');
-              node.appendChild(rd.createTextNode(blr.W15yQC.fnGetEffectiveLabelText(c, doc)));
-            } else if (/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
-              node = rd.createElement('span');
-            } else if (/^(frameset)$/i.test(c.tagName)) {
-              node = rd.createElement('div');
-            } else {
-              node = rd.importNode(c, false);
-              if (/^(img|input)$/i.test(node.tagName) && node.hasAttribute('src')) {
-                node.setAttribute('src', 'dont-load-' + node.getAttribute('src'));
-              } else if (/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
-                node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
-                if (blr.W15yQC.fnFirstChildElementIs(c, 'img') == false) {
-                  node.insertBefore(rd.createTextNode('Link: '), node.firstChild);
+              } else if (sRole == 'img' || c.tagName.toLowerCase() == 'img') {
+                if (blr.W15yQC.fnStringsEffectivelyEqual(c.getAttribute('role'), 'presentation') == true || (c.hasAttribute('alt') == true && c.getAttribute('alt') == "")) { // Ignore if presentation role or alt=""
+                  bSkipElement = true;
+                  node = null;
+                } else {
+                  bSkipElement = false;
+                  box = c.getBoundingClientRect();
+                  if (box != null && box.width && box.height) {
+                    width = box.width;
+                    height = box.height;
+                  }
+                  if (width > 700) {
+                    width = 700;
+                  } else if (width < 30) {
+                    width = 30;
+                  }
+                  if (height > 300) {
+                    height = 300;
+                  }
+                  if (width > 5) {
+                    width = 'width:' + width.toString() + 'px;';
+                  } else {
+                    width = '';
+                  }
+                  if (height > 5) {
+                    height = 'height:' + height.toString() + 'px;';
+                  } else {
+                    height = '';
+                  }
+
+                  node = rd.createElement('span');
+                  bKeepStyle = true;
+                  if (blr.W15yQC.fnElementIsChildOf(c, 'a')) {
+                    borderStyle = 'border:1px solid blue;';
+                    sLabel = blr.W15yQC.fnJoin('Image-Link', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
+                    c2 = appendNode;
+                    while (c2 != null && c2.tagName.toLowerCase() != 'a') c2 = c2.parentNode;
+                    if (c2 != null) {
+                      div = rd.createElement('div');
+                      div.setAttribute('style', 'border:solid 1px blue;display:table-cell;margin:2px');
+                      c2.parentNode.insertBefore(div, c2);
+                      div.appendChild(c2);
+                    }
+                  } else {
+                    borderStyle = 'border:1px solid black;';
+                    sLabel = blr.W15yQC.fnJoin('Image', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
+                  }
+                  node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color black !important');
+                  node.setAttribute('role', 'img');
+                  if (blr.W15yQC.fnStringHasContent(sLabel)) {
+                    node.setAttribute('aria-label', sLabel);
+                  }
+                  node.appendChild(rd.createTextNode(sLabel));
+                }
+              } else if (sRole == 'heading') {
+                if (blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
+                  level = parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level')), 10).toString();
+                } else { // TODO: How is this calculated when it is left out?
+                  level = '2'; // TODO: What should this be when it was left out?
+                }
+                if (parseInt(level, 10) > 6) {
+                  level = '6';
+                } else if (parseInt(level, 10) < 1) {
+                  level = '1';
+                }
+                node = rd.createElement('h' + level);
+                node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c, doc)));
+              } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
+                node = rd.createElement('button');
+                node.appendChild(rd.createTextNode(blr.W15yQC.fnGetEffectiveLabelText(c, doc)));
+              } else if (/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
+                node = rd.createElement('span');
+              } else if (/^(frameset)$/i.test(c.tagName)) {
+                node = rd.createElement('div');
+              } else {
+                node = rd.importNode(c, false);
+                if (node.hasAttribute('src') == true) {
+                  node.setAttribute('src', 'dont-load-' + node.getAttribute('src'));
+                }
+                if (/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
+                  node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
+                  if (blr.W15yQC.fnFirstChildElementIs(c, 'img') == false) {
+                    node.insertBefore(rd.createTextNode('Link: '), node.firstChild);
+                  }
                 }
               }
-            }
 
               if (node != null && bSkipElement == false) {
                 for (i = 0; i < node.attributes.length; i++) {
@@ -337,17 +349,60 @@ blr.W15yQC.RemoveStylesWindow = {
                 } else {
                   bKeepStyle = false;
                 }
+                if(sTagName=='input' && /^(button|checkbox|hidden|image|radio|reset|submit)$/.test(sTagTypeAttr)==false) {
+                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
+                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
+                    
+                    if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
+                        if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
+                            appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
+                        }
+                    } else {
+                        if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
+                            sControlsOtherText=c.getAttribute('title');
+                            if(blr.W15yQC.fnStringHasContent(sControlsOtherText)) {
+                              appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
+                            }
+                        }
+                    }
+                }
+                if (sRole == 'listitem' || sRole == 'menuitem' || sRole == 'tab' || sRole == 'treeitem' || sRole == 'tooltip') {
+                  appendNode.appendChild(rd.createTextNode(sRole + ': '));
+                } else if(sRole=='presentation' && /^(table|ul|ol|body|title|html|dl)$/.test(sTagName)==false) {
+                    node=rd.createElement('div');
+                }
+                
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
+                
+                if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {
+                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
+                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
+                    
+                    if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
+                        if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
+                            appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
+                        }
+                    } else {
+                        if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
+                            sControlsOtherText=c.getAttribute('title');
+                            if(blr.W15yQC.fnStringHasContent(sControlsOtherText)) {
+                              appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
+                            }
+                        }
+                    }
+                }
               }
               //alert('digging into:'+node.tagName);
               if (c.tagName.toLowerCase() != 'object' && c.tagName.toLowerCase() != 'embed') { // TODO: Research alt material for object and embed... how does it work?
                 blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
               }
               if (bInAriaBlock == true) {
-                p = rd.createElement('p');
-                p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-top:thin solid #999');
-                p.appendChild(rd.createTextNode('Leaving ' + sExitingLabel));
-                div.appendChild(p);
+                if (sExitingLabel > '') {
+                  p = rd.createElement('p');
+                  p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-top:thin solid #999');
+                  p.appendChild(rd.createTextNode('Leaving ' + sExitingLabel));
+                  div.appendChild(p);
+                }
                 appendNode = div.parentNode;
                 bInAriaBlock = false;
               }

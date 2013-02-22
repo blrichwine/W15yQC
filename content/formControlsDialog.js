@@ -247,20 +247,23 @@ blr.W15yQC.FormControlsDialog = {
   },
 
   init: function (dialog) {
+    var oW15yQCReport;
     blr.W15yQC.fnReadUserPrefs();
+
     blr.W15yQC.FormControlsDialog.FirebugO = dialog.arguments[1];
-    blr.W15yQC.FormControlsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);
-
-    var aFormControlsLists = blr.W15yQC.fnGetFormControls(window.opener.parent._content.document, null, blr.W15yQC.FormControlsDialog.aDocumentsList);
-    blr.W15yQC.FormControlsDialog.aFormControlsList = aFormControlsLists[1];
-    blr.W15yQC.FormControlsDialog.aFormsList = aFormControlsLists[0];
-    blr.W15yQC.fnAnalyzeFormControls(blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList, blr.W15yQC.FormControlsDialog.aDocumentsList);
-
-    blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
     if (blr.W15yQC.FormControlsDialog.FirebugO == null || !blr.W15yQC.FormControlsDialog.FirebugO.Inspector) {
       document.getElementById('button-showInFirebug').hidden = true;
     }
+
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    blr.W15yQC.FormControlsDialog.aDocumentsList = oW15yQCReport.aDocuments;
+    //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);
+
+    blr.W15yQC.FormControlsDialog.aFormsList = oW15yQCReport.aForms;
+    blr.W15yQC.FormControlsDialog.aFormControlsList = oW15yQCReport.aFormControls;
+    blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
+
+    blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
   },
 
   cleanup: function () {

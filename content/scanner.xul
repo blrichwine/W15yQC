@@ -7,8 +7,8 @@
       title="Scanner - W15yQC"
       xmlns:html="http://www.w3.org/1999/xhtml"
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-			width="1200"
-			height="600"
+			width="1400"
+			height="650"
 			onkeydown="blr.W15yQC.ScannerWindow.windowOnKeyDown(this,event)"
 			onkeyup="blr.W15yQC.ScannerWindow.windowOnKeyUp(event)"
 			onresize="blr.W15yQC.ScannerWindow.forceMinSize(this)"
@@ -17,67 +17,49 @@
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/ScannerWindow.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/scannerWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
 			<xul:menubar id="sample-menubar">
+				<xul:menu id="project-menu" label="Scanner">
+					<xul:menupopup id="project-popup">
+						<xul:menuitem label="Scanning Project Settings" oncommand="blr.W15yQC.ScannerWindow.setProjectSettings()"/>
+						<xul:menuseparator/>
+						<xul:menuitem label="Exit" oncommand="blr.W15yQC.ScannerWindow.doClose()"/>
+					</xul:menupopup>
+				</xul:menu>
 				<xul:menu id="file-menu" label="File">
 					<xul:menupopup id="file-popup">
-						<xul:menuitem label="New Project"/>
-						<xul:menuitem label="Open Project"/>
-						<xul:menuitem label="Save Project"/>
-						<xul:menuitem label="Save Project As"/>
+						<xul:menuitem label="New Project" oncommand="blr.W15yQC.ScannerWindow.newProject()"/>
+						<xul:menuitem label="Open Project" oncommand="blr.W15yQC.ScannerWindow.openProject()"/>
+						<xul:menuitem label="Save Project" oncommand="blr.W15yQC.ScannerWindow.saveProject()"/>
+						<xul:menuitem label="Save Project As" oncommand="blr.W15yQC.ScannerWindow.saveProjectAs()"/>
 						<xul:menuseparator/>
 						<xul:menuitem label="Import URLs" oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
-						<xul:menuseparator/>
-						<xul:menuitem label="Exit"/>
 					</xul:menupopup>
 				</xul:menu>
 				<xul:menu id="edit-menu" label="Edit">
 					<xul:menupopup id="edit-popup">
-						<xul:menuitem label="Delete"/>
+						<xul:menuitem label="Add URL" oncommand="blr.W15yQC.ScannerWindow.addNewURL()"/>
+						<xul:menuitem label="Edit URL" oncommand="blr.W15yQC.ScannerWindow.editSelectedURL()"/>
+						<xul:menuitem label="Delete URL" oncommand="blr.W15yQC.ScannerWindow.deleteSelectedURL()"/>
 					</xul:menupopup>
 				</xul:menu>
 				<xul:menu id="edit-menu" label="Scan">
 					<xul:menupopup id="edit-popup">
 						<xul:menuitem label="Scan All" oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
 						<xul:menuitem label="Scan New" oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
+						<xul:menuitem label="Scan URL" oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
 					</xul:menupopup>
 				</xul:menu>
 				<xul:menu id="edit-menu" label="View">
 					<xul:menupopup id="edit-popup">
 						<xul:menuitem label="Overall Report"/>
-						<xul:menuitem label="URL Report"/>
-						<xul:menuitem label="View URL"/>
+						<xul:menuitem label="View URL" oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
 					</xul:menupopup>
 				</xul:menu>
 			</xul:menubar>
-			<xul:hbox id="top-toolbar" align="left">
-				 <xul:button id="button-newProject"
-					 label="New Project"
-					 oncommand="blr.W15yQC.ScannerWindow.newProject()"/>
-				 <xul:button id="button-openProject"
-					 label="Open Project"
-					 oncommand="blr.W15yQC.ScannerWindow.openProject()"/>
-				 <xul:button id="button-saveProject"
-					 label="Save Project"
-					 oncommand="blr.W15yQC.ScannerWindow.saveProject()"/>
-				 <xul:button id="button-importLinks"
-					 label="Import Links"
-					 tooltiptext="Import links from a sitemap or text file."
-					 oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
-				 <xul:button id="button-ScanNew"
-					 label="Scan New Links"
-					 oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
-				 <xul:button id="button-ScanAll"
-					 label="Scan All Links"
-					 oncommand="blr.W15yQC.ScannerWindow.scanAllLinks()"/>
-				 <xul:spacer flex="1"/>
-				 <xul:button id="button-close"
-					 label="Close"
-					 oncommand="window.close();"/>
-      </xul:hbox>
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
-      onselect="">
+				 onselect="blr.W15yQC.ScannerWindow.updateNotesField()">
          <xul:treecols>
 						<xul:treecol ordinal="1" id="col-header-number"
 							 label=" # "
@@ -91,46 +73,308 @@
 							 label="URL"
 							 hidden="false"
 							 style="text-align:left"
-				       flex="3"
+				       flex="2"
 							 sortDirection="" 
 							 onclick=""/>
 						<xul:splitter  ordinal="4" class="tree-splitter" />
 						<xul:treecol ordinal="5" id="col-header-priority"
 							 label="Priority"
-							 hidden="false"
+							 hidden="true"
 							 fixed="true"
 							 onclick=""/>
 						<xul:splitter ordinal="6" class="tree-splitter" />
 						<xul:treecol ordinal="7" id="col-header-source"
 							 label="Source"
-							 hidden="false"
+							 hidden="true"
 							 sortDirection="" 
-							 flex="1"
 							 onclick=""/>
-            <xul:splitter ordinal="8" class="tree-splitter" /> 
-						<xul:treecol ordinal="9" id="col-header-dateScanned"
+						<xul:splitter ordinal="8" class="tree-splitter" />
+						<xul:treecol ordinal="9" id="col-header-linkDepth"
+							 label="Depth"
+							 hidden="true"
+							 style="text-align:right"
+							 sortDirection="" 
+							 onclick=""/>
+            <xul:splitter ordinal="10" class="tree-splitter" /> 
+						<xul:treecol ordinal="11" id="col-header-dateScanned"
 							 label="Date"
-							 hidden="false"
+							 hidden="true"
 							 sortDirection="" 
 							 fixed="true"
 							 onclick=""/>
-            <xul:splitter ordinal="10" class="tree-splitter" /> 
-            <xul:treecol ordinal="11" id="col-header-results"
-               label="Results"
-				       style="text-align:left"
+            <xul:splitter ordinal="12" class="tree-splitter" /> 
+						<xul:treecol ordinal="13" id="col-header-MIMEtype"
+							 label="Type"
+							 hidden="true"
+							 sortDirection="" 
+							 fixed="false"
+							 onclick=""/>
+            <xul:splitter ordinal="14" class="tree-splitter" /> 
+						<xul:treecol ordinal="15" id="col-header-title"
+							 label="Title"
+							 hidden="false"
+							 sortDirection="" 
+							 fixed="false"
+							 flex="1"
+							 onclick=""/>
+            <xul:splitter ordinal="16" class="tree-splitter" /> 
+            <xul:treecol ordinal="17" id="col-header-results-items"
+               label="Items"
+							 hidden="false"
+				       style="text-align:right"
                sortDirection=""
-				       flex="3"
+               onclick=""/>
+            <xul:splitter ordinal="18" class="tree-splitter" /> 
+            <xul:treecol ordinal="19" id="col-header-results-warnings"
+               label="Warnings"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="20" class="tree-splitter" /> 
+            <xul:treecol ordinal="21" id="col-header-results-failures"
+               label="Failures"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="22" class="tree-splitter" /> 
+            <xul:treecol ordinal="23" id="col-header-results-score"
+               label="Score"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="24" class="tree-splitter" /> 
+            <xul:treecol ordinal="25" id="col-header-results-text"
+               label="Text"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="26" class="tree-splitter" /> 
+            <xul:treecol ordinal="27" id="col-header-results-d"
+               label="   D" tooltiptext="Downloads"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="28" class="tree-splitter" /> 
+            <xul:treecol ordinal="29" id="col-header-results-F"
+               label="   F" tooltiptext="Frames"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="30" class="tree-splitter" /> 
+            <xul:treecol ordinal="31" id="col-header-results-fw"
+               label="  FW" tooltiptext="Frame Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="32" class="tree-splitter" /> 
+            <xul:treecol ordinal="33" id="col-header-results-ff"
+               label="  FF" tooltiptext="Frame Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="34" class="tree-splitter" /> 
+            <xul:treecol ordinal="35" id="col-header-results-h"
+               label="   H" tooltiptext="Headings"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="36" class="tree-splitter" /> 
+            <xul:treecol ordinal="37" id="col-header-results-hw"
+               label="  HW" tooltiptext="Headings Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="38" class="tree-splitter" /> 
+            <xul:treecol ordinal="39" id="col-header-results-hf"
+               label="  HF" tooltiptext="Headings Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="40" class="tree-splitter" /> 
+            <xul:treecol ordinal="41" id="col-header-results-al"
+               label="  AL" tooltiptext="ARIA Landmarks"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="42" class="tree-splitter" /> 
+            <xul:treecol ordinal="43" id="col-header-results-alw"
+               label="  ALW" tooltiptext="ARIA Landmarks Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="44" class="tree-splitter" /> 
+            <xul:treecol ordinal="45" id="col-header-results-alf"
+               label="  ALF" tooltiptext="ARIA Landmarks Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="46" class="tree-splitter" /> 
+            <xul:treecol ordinal="47" id="col-header-results-a"
+               label="   A" tooltiptext="ARIA Elements"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="48" class="tree-splitter" /> 
+            <xul:treecol ordinal="49" id="col-header-results-aw"
+               label="  AW" tooltiptext="ARIA Elements Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="50" class="tree-splitter" /> 
+            <xul:treecol ordinal="51" id="col-header-results-af"
+               label="  AF" tooltiptext="ARIA Elements Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="52" class="tree-splitter" /> 
+            <xul:treecol ordinal="53" id="col-header-results-l"
+               label="    L" tooltiptext="Links"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="54" class="tree-splitter" /> 
+            <xul:treecol ordinal="55" id="col-header-results-lw"
+               label="  LW" tooltiptext="Link Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="56" class="tree-splitter" /> 
+            <xul:treecol ordinal="57" id="col-header-results-lf"
+               label="  LF" tooltiptext="Link Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="58" class="tree-splitter" /> 
+            <xul:treecol ordinal="59" id="col-header-results-i"
+               label="    I" tooltiptext="Images"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="60" class="tree-splitter" /> 
+            <xul:treecol ordinal="61" id="col-header-results-iw"
+               label="  IW" tooltiptext="Image Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="62" class="tree-splitter" /> 
+            <xul:treecol ordinal="63" id="col-header-results-if"
+               label="  IF" tooltiptext="Image Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="64" class="tree-splitter" /> 
+            <xul:treecol ordinal="65" id="col-header-results-fc"
+               label="  FC" tooltiptext="Form Controls"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="66" class="tree-splitter" /> 
+            <xul:treecol ordinal="67" id="col-header-results-fcw"
+               label="  FCW" tooltiptext="Frorm Control Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="68" class="tree-splitter" /> 
+            <xul:treecol ordinal="69" id="col-header-results-fcf"
+               label="  FCF" tooltiptext="Form Control Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="70" class="tree-splitter" /> 
+            <xul:treecol ordinal="71" id="col-header-results-ak"
+               label="  AK" tooltiptext="Access Keys"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="72" class="tree-splitter" /> 
+            <xul:treecol ordinal="73" id="col-header-results-akw"
+               label="  AKW" tooltiptext="Access Keys Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="74" class="tree-splitter" /> 
+            <xul:treecol ordinal="75" id="col-header-results-akf"
+               label="  AKF" tooltiptext="Access Keys Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="76" class="tree-splitter" /> 
+            <xul:treecol ordinal="77" id="col-header-results-t"
+               label="   T" tooltiptext="Tables"
+							 hidden="false"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="78" class="tree-splitter" /> 
+            <xul:treecol ordinal="79" id="col-header-results-tw"
+               label="  TW" tooltiptext="Tables Warnings"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
+               onclick=""/>
+            <xul:splitter ordinal="80" class="tree-splitter" /> 
+            <xul:treecol ordinal="81" id="col-header-results-tf"
+               label="  TF" tooltiptext="Tables Failures"
+							 hidden="true"
+				       style="text-align:right"
+               sortDirection=""
                onclick=""/>
          </xul:treecols>
 				 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
 			<xul:hbox>
-				 <xul:button id="button-scanURL"
+				 <xul:button id="button-scanSelectedURL"
 					 label="Scan URL"
 					 oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
+				 <xul:button id="button-stopScanning"
+					 label="Stop Scanning"
+					 oncommand="blr.W15yQC.ScannerWindow.stopScanning()"/>
+				 <xul:button id="button-openSelectedURL"
+					 label="Open URL"
+					 oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
+				 <xul:spacer flex="1"/>
+				 <xul:button id="button-addNewURL"
+					 label="Add URL"
+					 oncommand="blr.W15yQC.ScannerWindow.addNewURL()"/>
+				 <xul:button id="button-editSelectedURL"
+					 label="Edit URL"
+					 oncommand="blr.W15yQC.ScannerWindow.editSelectedURL()"/>
+				 <xul:button id="button-deleteSelectedURL"
+					 label="Delete URL"
+					 oncommand="blr.W15yQC.ScannerWindow.deleteSelectedURL()"/>
 			</xul:hbox>
 			<xul:vbox id="iFrameHolder">
-				 <xul:iframe id="pageBeingScannedIFrame" src="about:blank" type="content" flex="1" style="overflow:auto"/>
+				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="8" flex="1" />
+				 <xul:iframe id="pageBeingScannedIFrame" type="content" flex="1" style="overflow:auto"/>
 			</xul:vbox>
    </xul:vbox>
 	 <xul:hbox style="border-top:thin solid black">

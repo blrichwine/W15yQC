@@ -140,18 +140,37 @@ blr.W15yQC.LinksDialog = {
   },
 
   init: function (dialog) {
+    var oW15yQCReport, progressWindow;
+
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.LinksDialog.FirebugO = dialog.arguments[1];
-    blr.W15yQC.LinksDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LinksDialog.aDocumentsList);
-
-    blr.W15yQC.LinksDialog.aLinksList = blr.W15yQC.fnGetLinks(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeLinks(blr.W15yQC.LinksDialog.aLinksList, blr.W15yQC.LinksDialog.aDocumentsList);
-
-    blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList);
     if (blr.W15yQC.LinksDialog.FirebugO == null || !blr.W15yQC.LinksDialog.FirebugO.Inspector) {
       document.getElementById('button-showInFirebug').hidden = true;
     }
+
+    progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
+    blr.W15yQC.fnDoEvents();
+    if(progressWindow != null) {
+      progressWindow.document.getElementById('percent').value=0;
+      progressWindow.document.getElementById('detailText').value='Getting Links...';
+      progressWindow.focus();
+      blr.W15yQC.fnDoEvents();
+    }
+
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+
+    //blr.W15yQC.LinksDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
+    blr.W15yQC.LinksDialog.aDocumentsList=oW15yQCReport.aDocuments;
+    blr.W15yQC.LinksDialog.aLinksList=oW15yQCReport.aLinks;
+    //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LinksDialog.aDocumentsList); // TODO: Does this need to run? Why?
+
+    //blr.W15yQC.LinksDialog.aLinksList = blr.W15yQC.fnGetLinks(window.opener.parent._content.document);
+    blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
+    blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList);
+
+    progressWindow.close();
+    progressWindow = null;
+    dialog.focus();
   },
 
   cleanup: function () {
