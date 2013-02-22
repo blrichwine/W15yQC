@@ -28,7 +28,11 @@
  * TODO:
  *      
  *    - Internationalize?
- *    
+ *    - How is this handling buttons? Buttons with ARIA Labels that override child text?
+ *    - How is this handling links with ARIA Labels?
+ *    - DIV and SPAN elements with title attribute?
+ *    - HTML5 and ARIA state info?
+ *    - FIELDSET+LEGEND text?
  * 
  */
 if (!blr) {
@@ -112,7 +116,7 @@ blr.W15yQC.RemoveStylesWindow = {
 
   fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
-      sLabel, sEnteringLabel, sControlsLabelText,
+      sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
       box, width, height, borderStyle, bSkipElement = false,
       c2;
@@ -346,15 +350,20 @@ blr.W15yQC.RemoveStylesWindow = {
                   bKeepStyle = false;
                 }
                 if(sTagName=='input' && /^(button|checkbox|hidden|image|radio|reset|submit)$/.test(sTagTypeAttr)==false) {
-                    sControlsLabelText=blr.W15yQC.fnGetARIALabelText(c,doc);
-                    if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
-                        sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
-                        if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
-                            sControlsLabelText=c.getAttribute('title');
+                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
+                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
+                    
+                    if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
+                        if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
+                            appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
                         }
-                    }
-                    if(blr.W15yQC.fnStringHasContent(sControlsLabelText)) {
-                      appendNode.appendChild(rd.createTextNode(' '+sControlsLabelText+' '));
+                    } else {
+                        if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
+                            sControlsOtherText=c.getAttribute('title');
+                            if(blr.W15yQC.fnStringHasContent(sControlsOtherText)) {
+                              appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
+                            }
+                        }
                     }
                 }
                 if (sRole == 'listitem' || sRole == 'menuitem' || sRole == 'tab' || sRole == 'treeitem' || sRole == 'tooltip') {
@@ -364,16 +373,22 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
+                
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {
-                    sControlsLabelText=blr.W15yQC.fnGetARIALabelText(c,doc);
-                    if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
-                        sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
-                        if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
-                            sControlsLabelText=c.getAttribute('title');
+                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
+                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
+                    
+                    if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
+                        if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
+                            appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
                         }
-                    }
-                    if(blr.W15yQC.fnStringHasContent(sControlsLabelText)) {
-                      appendNode.appendChild(rd.createTextNode(' '+sControlsLabelText+' '));
+                    } else {
+                        if(blr.W15yQC.fnStringHasContent(sControlsLabelText)==false) {
+                            sControlsOtherText=c.getAttribute('title');
+                            if(blr.W15yQC.fnStringHasContent(sControlsOtherText)) {
+                              appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
+                            }
+                        }
                     }
                 }
               }

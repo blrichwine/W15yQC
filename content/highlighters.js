@@ -130,7 +130,7 @@ blr.W15yQC.Highlighters = {
   },
 
   removeListHighlights: function (aDocumentsList) {
-    var doc, i, styleElement = null;
+    var doc, i, styleElement = null, infoElements;
     if (aDocumentsList != null && aDocumentsList.length > 0) {
       for (i = 0; i < aDocumentsList.length; i++) {
         doc = aDocumentsList[i].doc;
@@ -138,6 +138,10 @@ blr.W15yQC.Highlighters = {
           styleElement = doc.getElementById('W15yQCListsHighlightStyle');
           if (styleElement) {
             styleElement.parentNode.removeChild(styleElement);
+          }
+          infoElements = doc.getElementsByClassName('w15yqcListInsert');
+          while (infoElements != null && infoElements.length > 0) {
+            infoElements[0].parentNode.removeChild(infoElements[0]);
           }
         }
       }
