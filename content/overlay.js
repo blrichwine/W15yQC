@@ -5304,7 +5304,7 @@ ys: 'whys'
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
-                      if(effectiveLabel!=null) {
+                      if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
                         oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
                         if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
                       }
@@ -5331,7 +5331,7 @@ ys: 'whys'
                       blr.W15yQC.fnLog('Image el:'+effectiveLabel);
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, alt, title, sARIALabel));
                       oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
-                      if(effectiveLabel!=null) {
+                      if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
                         oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
                         if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
                       }
@@ -5522,7 +5522,7 @@ ys: 'whys'
                   if(nestingDepth>0) { nestingDepth += -1; }
                 }
               }
-            } else if (node.nodeType == 3 && node.textContent){
+            } else if (node.nodeType == 3 && node.textContent && blr.W15yQC.fnStringHasContent(node.textContent)){
               oW15yResults.iTextSize=oW15yResults.iTextSize+node.textContent.length;
               if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
             }

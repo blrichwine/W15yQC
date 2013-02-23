@@ -215,6 +215,10 @@ blr.W15yQC.Highlighters = {
           while (infoElements != null && infoElements.length > 0) {
             infoElements[0].parentNode.removeChild(infoElements[0]);
           }
+          infoElements = doc.getElementsByClassName('w15yqcHxInsert');
+          while (infoElements != null && infoElements.length > 0) {
+            infoElements[0].parentNode.removeChild(infoElements[0]);
+          }
         }
       }
     }

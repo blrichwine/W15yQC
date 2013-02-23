@@ -153,15 +153,22 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  * Returns:
  */
 blr.W15yQC.ScannerWindow = {
-  sProjectTitle: '',
   urlList: [],
   urlMustMatchList: [],
   urlMustMatchListType: [],
   urlMustNotMatchList: [],
   urlMustNotMatchListType: [],
   parseForLinks: true,
+  sProjectTitle: '',
   projectHasUnsavedChanges: false,
+  projectCreationDate: null,
+  projectLastUpdate: null,
+  projectFileName: null,
   projectSettingsHaveBeenSet: false,
+  maximumURLCount: 5000,
+  maximumURLDepth: 20,
+  pageLoadTimeLimit: 20000,
+  pageLoadFilter: 1000,
   iFrameOnLoadEventTimeOutTimerID: null,
   iFrameOnLoadEventFilterTimerID: null,
   stateScanning: false,
@@ -171,11 +178,7 @@ blr.W15yQC.ScannerWindow = {
   stateCheckingURL: false,
   stateStopScanningRequested: false,
   stateCurrentIndex: 0,
-  pageLoadTimeLimit: 20000,
-  pageLoadFilter: 1000,
   bManualURLAdd: false,
-  maximumURLCount: 5000,
-  maximumURLDepth: 20,
   
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -701,7 +704,351 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
   },
   
+  readDOMEncodedString: function(rootNode, tagName, defaultValue) {
+    return null;
+  },
+  
+  readDOMInt: function(rootNode, tagName, defaultValue) {
+    return null;
+  },
+  
+  readDOMDate: function(rootNode, tagName, defaultValue) {
+    return null;
+  },
+  
+  readDOMBool: function(rootNode, tagName, defaultValue) {
+    return null;
+  },
+  
   openProject: function () {
+    var fp, rv, file, sFileContents, fstream, cstream, str, read, i,
+      properties;
+    if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
+      blr.W15yQC.ScannerWindow.fnUpdatePercentage(0);
+      fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Choose Project File to Open');
+      fp.init(window, "Open Project", nsIFilePicker.modeOpen);
+      fp.appendFilter("W15yQC Project","*.w15yqc");
+      rv = fp.show();
+      if (rv == nsIFilePicker.returnOK) {
+        file = fp.file;
+        if (/\.w15yqc$/.test(file.path) == true) {
+          blr.W15yQC.ScannerWindow.projectFileName = file.path;
+          sFileContents = '';
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Opening project file.');
+          fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+          cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
+          fstream.init(file, -1, 0, 0);
+          cstream.init(fstream, "UTF-8", 0, 0);
+           
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project file.');
+          let (str = {}) {
+            let read = 0;
+            do {
+              read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+              sFileContents += str.value;
+            } while (read != 0);
+          }
+          cstream.close(); // this closes fstream
+          file=null;
+          rv=null;
+          fp=null;
+          
+          xmlParser = new DOMParser(); // https://developer.mozilla.org/en-US/docs/DOM/DOMParser
+          xmlDoc = xmlParser.parseFromString(sFileContents, "text/xml");
+          sFileContents=null;
+          if(xmlDoc && xmlDoc.getElementsByTagName) {
+            // Read Project Properties
+            blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project properties.');
+            properties=xmlDoc.getElementsByTagName('properties');
+
+            blr.W15yQC.ScannerWindow.sProjectTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'title');
+            blr.W15yQC.ScannerWindow.projectCreationDate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'creation_date');
+            blr.W15yQC.ScannerWindow.projectLastUpdate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'last_update');
+            blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'parse_for_links');
+            blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet = blr.W15yQC.ScannerWindow.readDOMBool(properties,'project_settings_have_been_set');
+            blr.W15yQC.ScannerWindow.maximumURLCount = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_count');
+            blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
+            blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
+            blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
+            
+            // Read URLs
+            urls=xmlDoc.getElementsByTagName('url');
+            blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading '+urls.length+' URLs.');
+            for(i=0;i<urls.length;i++) {
+              blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/urls.length);
+            }
+            blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished loading project.');
+            blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
+          }
+          xmlDoc = null;
+
+
+        }
+      }
+      blr.W15yQC.ScannerWindow.updateProjectDisplay();
+      if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0 && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Project loaded.');
+      } else {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('No project loaded.');
+      }
+  
+      blr.W15yQC.ScannerWindow.updateControlStates();
+    }
+  },
+  
+  saveProject: function () { // TODO: Handle errors gracefully. 
+    var bCancel=false,
+      nsIFilePicker, fp, rv, file, foStream, converter, i, url;
+    
+    if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
+      //try
+        nsIFilePicker = Components.interfaces.nsIFilePicker;
+
+        if(blr.W15yQC.ScannerWindow.projectFileName==null) {
+          fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+          fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+          fp.appendFilter("W15yQC Project","*.w15yqc");
+          rv = fp.show();
+          if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+            file = fp.file;
+            if (/\.w15yqc$/.test(file.path) == false) {
+              file.initWithPath(file.path + '.w15yqc');
+            }
+          } else {
+            bCancel=true;
+          }
+        }
+  
+        if(bCancel==false) {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Saving project file.');
+          foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
+          createInstance(Components.interfaces.nsIFileOutputStream);
+  
+          foStream.init(file, 0x2A, 438, 0);
+          converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+          converter.init(foStream, "UTF-8", 0, 0);
+          converter.writeString('<?xml version="1.0" encoding="UTF-8"?>\n');
+          converter.writeString('<w15yqc>\n');
+          converter.writeString('  <project>\n');
+          converter.writeString('    <properties>\n');
+
+          if(blr.W15yQC.fnStringHasContent(blr.W15yQC.ScannerWindow.sProjectTitle)==true) {
+            converter.writeString('      <title>'+blr.W15yQC.ScannerWindow.sProjectTitle+'</title>\n');
+          }
+
+          if(blr.W15yQC.ScannerWindow.projectCreationDate==null || !blr.W15yQC.ScannerWindow.projectCreationDate.toISOString) {
+            blr.W15yQC.ScannerWindow.projectCreationDate=new Date();
+          }
+          converter.writeString('      <creation_date>'+blr.W15yQC.ScannerWindow.projectCreationDate.toISOString()+'</creation_date>\n');
+
+          if(blr.W15yQC.ScannerWindow.projectLastUpdate==null || !blr.W15yQC.ScannerWindow.projectLastUpdate.toISOString) {
+            blr.W15yQC.ScannerWindow.projectLastUpdate=new Date();
+          }
+          converter.writeString('      <last_update>'+blr.W15yQC.ScannerWindow.projectLastUpdate.toISOString()+'</last_update>\n');
+          
+          if(blr.W15yQC.ScannerWindow.parseForLinks!=false) {
+            blr.W15yQC.ScannerWindow.parseForLinks=true;
+          }
+          converter.writeString('      <parse_for_links>'+blr.W15yQC.ScannerWindow.parseForLinks.toString()+'</parse_for_links>\n');
+          
+          if(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet!=true) {
+            blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=false;
+          }
+          converter.writeString('      <project_settings_have_been_set>'+blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet.toString()+'</project_settings_have_been_set>\n');
+          
+          if(blr.W15yQC.ScannerWindow.maximumURLCount==null) {
+            blr.W15yQC.ScannerWindow.maximumURLCount=5000;
+          }
+          converter.writeString('      <maximum_url_count>'+blr.W15yQC.ScannerWindow.maximumURLCount.toString()+'</maximum_url_count>\n');
+          
+          if(blr.W15yQC.ScannerWindow.maximumURLDepth==null) {
+            blr.W15yQC.ScannerWindow.maximumURLDepth=20;
+          }
+          converter.writeString('      <maximum_url_depth>'+blr.W15yQC.ScannerWindow.maximumURLDepth.toString()+'</maximum_url_depth>\n');
+          
+          if(blr.W15yQC.ScannerWindow.pageLoadTimeLimit==null) {
+            blr.W15yQC.ScannerWindow.pageLoadTimeLimit=20000;
+          }
+          converter.writeString('      <page_load_time_limit>'+blr.W15yQC.ScannerWindow.pageLoadTimeLimit.toString()+'</page_load_time_limit>\n');
+          
+          if(blr.W15yQC.ScannerWindow.pageLoadFilter==null) {
+            blr.W15yQC.ScannerWindow.pageLoadFilter=1000;
+          }
+          converter.writeString('      <page_load_filter>'+blr.W15yQC.ScannerWindow.pageLoadFilter.toString()+'</page_load_filter>\n');
+
+          if(blr.W15yQC.ScannerWindow.urlMustMatchList != null && blr.W15yQC.ScannerWindow.urlMustMatchList.length>0) {
+            converter.writeString('      <url_must_match_list>\n');
+            for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
+              converter.writeString('        <match>\n');
+              converter.writeString('          <match_spec>'+encodeURIComponent(blr.W15yQC.ScannerWindow.urlMustMatchList[i])+'</match_spec>\n');
+              converter.writeString('          <match_type>'+(blr.W15yQC.ScannerWindow.urlMustMatchListType[i] ? "RegExp" : "Match")+'</match_type>\n');
+              converter.writeString('        </match>\n');
+            }
+            converter.writeString('      </url_must_match_list>\n');
+          }
+          
+          if(blr.W15yQC.ScannerWindow.urlMustNotMatchList != null && blr.W15yQC.ScannerWindow.urlMustNotMatchList.length>0) {
+            converter.writeString('      <url_must_not_match_list>\n');
+            for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
+              converter.writeString('        <match>\n');
+              converter.writeString('          <match_spec>'+encodeURIComponent(blr.W15yQC.ScannerWindow.urlMustNotMatchList[i])+'</match_spec>\n');
+              converter.writeString('          <match_type>'+(blr.W15yQC.ScannerWindow.urlMustNotMatchListType[i] ? "RegExp" : "Match")+'</match_type>\n');
+              converter.writeString('        </match>\n');
+            }
+            converter.writeString('      </url_must_not_match_list>\n');
+          }
+          
+          converter.writeString('    </properties>\n');
+          
+          if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+            converter.writeString('    <urls>\n');
+            for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+              url=blr.W15yQC.ScannerWindow.urlList[i];
+              if(url!=null) {
+                converter.writeString('      <url>\n');
+
+                if(blr.W15yQC.fnStringHasContent(url.loc)==true) {
+                  converter.writeString('        <loc>'+encodeURIComponent(url.loc)+'</loc>\n');
+                }
+                if(blr.W15yQC.fnStringHasContent(url.windowDescription)==true) {
+                  converter.writeString('        <window_description>'+encodeURIComponent(url.windowDescription)+'</window_description>\n');
+                }
+                if(url.priority!=null) {
+                  converter.writeString('        <priority>'+encodeURIComponent(url.priority)+'</priority>\n');
+                }
+                if(url.source!=null) {
+                  converter.writeString('        <source>'+encodeURIComponent(url.source)+'</source>\n');
+                }
+                if(url.linkDepth!=null) {
+                  converter.writeString('        <link_depth>'+encodeURIComponent(url.linkDepth)+'</link_depth>\n');
+                }
+                if(url.dateScanned!=null) {
+                  converter.writeString('        <link_depth>'+new Date(url.dateScanned).toISOString()+'</link_depth>\n');
+                }
+                if(url.contentType!=null) {
+                  converter.writeString('        <content_type>'+encodeURIComponent(url.contentType)+'</content_type>\n');
+                }
+                if(url.windowTitle!=null) {
+                  converter.writeString('        <window_title>'+encodeURIComponent(url.windowTitle)+'</window_title>\n');
+                }
+                if(url.itemsCount!=null) {
+                  converter.writeString('        <items_count>'+encodeURIComponent(url.itemsCount)+'</items_count>\n');
+                }
+                if(url.warningsCount!=null) {
+                  converter.writeString('        <warnings_count>'+encodeURIComponent(url.warningsCount)+'</warnings_count>\n');
+                }
+                if(url.failuresCount!=null) {
+                  converter.writeString('        <failures_count>'+encodeURIComponent(url.failuresCount)+'</failures_count>\n');
+                }
+                if(url.score!=null) {
+                  converter.writeString('        <score>'+encodeURIComponent(url.score)+'</score>\n');
+                }
+                if(url.textSize!=null) {
+                  converter.writeString('        <text_size>'+encodeURIComponent(url.textSize)+'</text_size>\n');
+                }
+                if(url.downloadsCount!=null) {
+                  converter.writeString('        <downloads_count>'+encodeURIComponent(url.downloadsCount)+'</downloads_count>\n');
+                }
+                if(url.framesCount!=null) {
+                  converter.writeString('        <frames_count>'+encodeURIComponent(url.framesCount)+'</frames_count>\n');
+                }
+                if(url.framesWarnings!=null) {
+                  converter.writeString('        <frames_warnings>'+encodeURIComponent(url.framesWarnings)+'</frames_warnings>\n');
+                }
+                if(url.framesFailures!=null) {
+                  converter.writeString('        <frames_failures>'+encodeURIComponent(url.framesFailures)+'</frames_failures>\n');
+                }
+                if(url.headingsCount!=null) {
+                  converter.writeString('        <headings_count>'+encodeURIComponent(url.headingsCount)+'</headings_count>\n');
+                }
+                if(url.headingsWarnings!=null) {
+                  converter.writeString('        <headings_warnings>'+encodeURIComponent(url.headingsWarnings)+'</headings_warnings>\n');
+                }
+                if(url.headingsFailures!=null) {
+                  converter.writeString('        <headings_failures>'+encodeURIComponent(url.headingsFailures)+'</headings_failures>\n');
+                }
+                if(url.ARIALandmarksCount!=null) {
+                  converter.writeString('        <aria_landmarks_count>'+encodeURIComponent(url.ARIALandmarksCount)+'</aria_landmarks_count>\n');
+                }
+                if(url.ARIALandmarksWarnings!=null) {
+                  converter.writeString('        <aria_landmarks_warnings>'+encodeURIComponent(url.ARIALandmarksWarnings)+'</aria_landmarks_warnings>\n');
+                }
+                if(url.ARIALandmarksFailures!=null) {
+                  converter.writeString('        <aria_landmarks_failures>'+encodeURIComponent(url.ARIALandmarksFailures)+'</aria_landmarks_failures>\n');
+                }
+                if(url.ARIAElementsCount!=null) {
+                  converter.writeString('        <aria_elements_count>'+encodeURIComponent(url.ARIAElementsCount)+'</aria_elements_count>\n');
+                }
+                if(url.ARIAElementsWarnings!=null) {
+                  converter.writeString('        <aria_elements_warnings>'+encodeURIComponent(url.ARIAElementsWarnings)+'</aria_elements_warnings>\n');
+                }
+                if(url.ARIAElementsFailures!=null) {
+                  converter.writeString('        <aria_elements_failures>'+encodeURIComponent(url.ARIAElementsFailures)+'</aria_elements_failures>\n');
+                }
+                if(url.linksCount!=null) {
+                  converter.writeString('        <links_count>'+encodeURIComponent(url.linksCount)+'</links_count>\n');
+                }
+                if(url.linksWarnings!=null) {
+                  converter.writeString('        <links_warnings>'+encodeURIComponent(url.linksWarnings)+'</links_warnings>\n');
+                }
+                if(url.linksFailures!=null) {
+                  converter.writeString('        <links_failures>'+encodeURIComponent(url.linksFailures)+'</links_failures>\n');
+                }
+                if(url.imagesCount!=null) {
+                  converter.writeString('        <images_count>'+encodeURIComponent(url.imagesCount)+'</images_count>\n');
+                }
+                if(url.imagesWarnings!=null) {
+                  converter.writeString('        <images_warnings>'+encodeURIComponent(url.imagesWarnings)+'</images_warnings>\n');
+                }
+                if(url.imagesFailures!=null) {
+                  converter.writeString('        <images_failures>'+encodeURIComponent(url.imagesFailures)+'</images_failures>\n');
+                }
+                if(url.formControlsCount!=null) {
+                  converter.writeString('        <form_controls_count>'+encodeURIComponent(url.formControlsCount)+'</form_controls_count>\n');
+                }
+                if(url.formControlsWarnings!=null) {
+                  converter.writeString('        <form_controls_warnings>'+encodeURIComponent(url.formControlsWarnings)+'</form_controls_warnings>\n');
+                }
+                if(url.formControlsFailures!=null) {
+                  converter.writeString('        <form_controls_failures>'+encodeURIComponent(url.formControlsFailures)+'</form_controls_failures>\n');
+                }
+                if(url.accessKeysCount!=null) {
+                  converter.writeString('        <access_keys_count>'+encodeURIComponent(url.accessKeysCount)+'</access_keys_count>\n');
+                }
+                if(url.accessKeysWarnings!=null) {
+                  converter.writeString('        <access_keys_warnings>'+encodeURIComponent(url.accessKeysWarnings)+'</access_keys_warnings>\n');
+                }
+                if(url.accessKeysFailures!=null) {
+                  converter.writeString('        <access_keys_failures>'+encodeURIComponent(url.accessKeysFailures)+'</access_keys_failures>\n');
+                }
+                if(url.tablesCount!=null) {
+                  converter.writeString('        <tables_count>'+encodeURIComponent(url.tablesCount)+'</tables_count>\n');
+                }
+                if(url.tablesWarnings!=null) {
+                  converter.writeString('        <tables_warnings>'+encodeURIComponent(url.tablesWarnings)+'</tables_warnings>\n');
+                }
+                if(url.tablesFailures!=null) {
+                  converter.writeString('        <tables_failures>'+encodeURIComponent(url.tablesFailures)+'</tables_failures>\n');
+                }
+                converter.writeString('      </url>\n');
+              }
+            }
+            converter.writeString('    </urls>\n');
+          }
+
+          converter.writeString('  </project>');
+          converter.writeString('</w15yqc>');
+          
+          converter.close(); // this closes foStream            
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Project file saved.');
+        } else {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Project file not saved.');
+        }
+      
+      blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=false;
+      //catch
+    }
   },
   
   importLinks: function () {
@@ -746,6 +1093,7 @@ blr.W15yQC.ScannerWindow = {
           fp=null;
           xmlParser = new DOMParser(); // https://developer.mozilla.org/en-US/docs/DOM/DOMParser
           xmlDoc = xmlParser.parseFromString(data, "text/xml");
+          data=null;
           if(xmlDoc && xmlDoc.getElementsByTagName) {
             urls=xmlDoc.getElementsByTagName('url');
             blr.W15yQC.ScannerWindow.fnUpdateStatus('Processing '+urls.length+' URLs.');
