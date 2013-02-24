@@ -605,7 +605,11 @@ blr.W15yQC.ScannerWindow = {
         url.framesFailures=0;
         url.framesWarnings=0;
       }
+      url.itemsCount=url.framesCount;
+      url.failuresCount=url.framesFailures;
+      url.warningsCount=url.framesWarnings;
 
+      
       if(oW15yQCResults.aHeadings && oW15yQCResults.aHeadings.length>0) {
         url.headingsCount=oW15yQCResults.aHeadings.length;
         url.headingsFailures=oW15yQCResults.aHeadings.failedCount;
@@ -615,6 +619,9 @@ blr.W15yQC.ScannerWindow = {
         url.headingsFailures=0;
         url.headingsWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.headingsCount;
+      url.failuresCount=url.failuresCount+url.headingsFailures;
+      url.warningsCount=url.warningsCount+url.headingsWarnings;
 
       if(oW15yQCResults.aARIALandmarks && oW15yQCResults.aARIALandmarks.length>0) {
         url.ARIALandmarksCount=oW15yQCResults.aARIALandmarks.length;
@@ -625,6 +632,9 @@ blr.W15yQC.ScannerWindow = {
         url.ARIALandmarksFailures=0;
         url.ARIALandmarksWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.ARIALandmarksCount;
+      url.failuresCount=url.failuresCount+url.ARIALandmarksFailures;
+      url.warningsCount=url.warningsCount+url.ARIALandmarksWarnings;
 
       if(oW15yQCResults.aARIAElements && oW15yQCResults.aARIAElements.length>0) {
         url.ARIAElementsCount=oW15yQCResults.aARIAElements.length;
@@ -635,6 +645,9 @@ blr.W15yQC.ScannerWindow = {
         url.ARIAElementsFailures=0;
         url.ARIAElementsWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.ARIAElementsCount;
+      url.failuresCount=url.failuresCount+url.ARIAElementsFailures;
+      url.warningsCount=url.warningsCount+url.ARIAElementsWarnings;
 
       if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length>0) {
         url.linksCount=oW15yQCResults.aLinks.length;
@@ -645,6 +658,9 @@ blr.W15yQC.ScannerWindow = {
         url.linksFailures=0;
         url.linksWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.linksCount;
+      url.failuresCount=url.failuresCount+url.linksFailures;
+      url.warningsCount=url.warningsCount+url.linksWarnings;
 
       if(oW15yQCResults.aImages && oW15yQCResults.aImages.length>0) {
         url.imagesCount=oW15yQCResults.aImages.length;
@@ -655,6 +671,9 @@ blr.W15yQC.ScannerWindow = {
         url.imagesFailures=0;
         url.imagesWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.imagesCount;
+      url.failuresCount=url.failuresCount+url.imagesFailures;
+      url.warningsCount=url.warningsCount+url.imagesWarnings;
 
       if(oW15yQCResults.aFormControls && oW15yQCResults.aFormControls.length>0) {
         url.formControlsCount=oW15yQCResults.aFormControls.length;
@@ -665,6 +684,9 @@ blr.W15yQC.ScannerWindow = {
         url.formControlsFailures=0;
         url.formControlsWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.formControlsCount;
+      url.failuresCount=url.failuresCount+url.formControlsFailures;
+      url.warningsCount=url.warningsCount+url.formControlsWarnings;
 
       if(oW15yQCResults.aAccessKeys && oW15yQCResults.aAccessKeys.length>0) {
         url.accessKeysCount=oW15yQCResults.aAccessKeys.length;
@@ -675,6 +697,9 @@ blr.W15yQC.ScannerWindow = {
         url.accessKeysFailures=0;
         url.accessKeysWarnings=0;
       }
+      url.itemsCount=url.itemsCount+url.accessKeysCount;
+      url.failuresCount=url.failuresCount+url.accessKeysFailures;
+      url.warningsCount=url.warningsCount+url.accessKeysWarnings;
 
       if(oW15yQCResults.aTables && oW15yQCResults.aTables.length>0) {
         url.tablesCount=oW15yQCResults.aTables.length;
@@ -685,10 +710,9 @@ blr.W15yQC.ScannerWindow = {
         url.tablesFailures=0;
         url.tablesWarnings=0;
       }
-
-      url.itemsCount=url.accessKeysCount+url.headingsCount+url.framesCount+url.linksCount+url.formControlsCount+url.tablesCount;
-      url.warningsCount= url.accessKeysWarnings+url.headingsWarnings+url.framesWarnings+url.linksWarnings+url.formControlsWarnings+url.tablesWarnings;
-      url.failuresCount= url.accessKeysFailures+url.headingsFailures+url.framesFailures+url.linksFailures+url.formControlsFailures+url.tablesFailures;
+      url.itemsCount=url.itemsCount+url.tablesCount;
+      url.failuresCount=url.failuresCount+url.tablesFailures;
+      url.warningsCount=url.warningsCount+url.tablesWarnings;
 
       url.windowDescription=blr.W15yQC.fnJoin(oW15yQCResults.sWindowDescription, oW15yQCResults.PageScore.sDescription, "\n");
       row=document.getElementById('URL'+urlIndex);
@@ -698,6 +722,11 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
+  spaces: function(count) {
+    count=(count==null) ? 0 : (count>20 ? 20 : count);
+    return count>0 ? "                    ".slice(0,count-1) : "";
+  },
+  
   newProject: function() {
     // blr.W15yQC.fnLog('scanner-newProject');
     blr.W15yQC.ScannerWindow.resetProjectToNew();
@@ -705,24 +734,92 @@ blr.W15yQC.ScannerWindow = {
   },
   
   readDOMEncodedString: function(rootNode, tagName, defaultValue) {
-    return null;
+    var e,s=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        s=decodeURIComponent(e[0].textContent);
+      } else if(defaultValue!==undefined) {
+        s=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      s=defaultValue;
+    }
+    return s;
   },
   
   readDOMInt: function(rootNode, tagName, defaultValue) {
-    return null;
+    var e,i=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        i=parseInt(decodeURIComponent(e[0].textContent));
+      } else if(defaultValue!==undefined) {
+          i=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      i=defaultValue;
+    }
+    return i;
   },
   
   readDOMDate: function(rootNode, tagName, defaultValue) {
-    return null;
+    var e,d=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        d=new Date(decodeURIComponent(e[0].textContent));
+      } else if(defaultValue!==undefined) {
+        d=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      d=defaultValue;
+    }
+    return d;
   },
   
   readDOMBool: function(rootNode, tagName, defaultValue) {
-    return null;
+    var e, b=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        b=(decodeURIComponent(e[0].textContent)).toLowerCase() == "true" ? true : false ;
+      } else if(defaultValue!==undefined) {
+        b=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      b=defaultValue;
+    }
+    return b;
+  },
+  
+  writeXMLEncodedString: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null) {
+      converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+encodeURIComponent(value)+'</'+tagName+'>\n');
+    }
+  },
+  
+  writeXMLInt: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null) {
+      converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+encodeURIComponent(value.toString())+'</'+tagName+'>\n');
+    }
+  },
+  
+  writeXMLDate: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null && value.toISOString) {
+      converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+value.toISOString()+'</'+tagName+'>\n');
+    }
+  },
+  
+  writeXMLBool: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null) {
+      converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+(value ? "true":"false")+'</'+tagName+'>\n');
+    }
   },
   
   openProject: function () {
     var fp, rv, file, sFileContents, fstream, cstream, str, read, i,
-      properties;
+      properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser;
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       blr.W15yQC.ScannerWindow.fnUpdatePercentage(0);
       fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
@@ -761,29 +858,72 @@ blr.W15yQC.ScannerWindow = {
             // Read Project Properties
             blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project properties.');
             properties=xmlDoc.getElementsByTagName('properties');
-
-            blr.W15yQC.ScannerWindow.sProjectTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'title');
-            blr.W15yQC.ScannerWindow.projectCreationDate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'creation_date');
-            blr.W15yQC.ScannerWindow.projectLastUpdate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'last_update');
-            blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'parse_for_links');
-            blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet = blr.W15yQC.ScannerWindow.readDOMBool(properties,'project_settings_have_been_set');
-            blr.W15yQC.ScannerWindow.maximumURLCount = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_count');
-            blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
-            blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
-            blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
-            
-            // Read URLs
-            urls=xmlDoc.getElementsByTagName('url');
-            blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading '+urls.length+' URLs.');
-            for(i=0;i<urls.length;i++) {
-              blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/urls.length);
+            if(properties!=null && properties.length>0) {
+              properties=properties[0];
+              blr.W15yQC.ScannerWindow.sProjectTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'title');
+              blr.W15yQC.ScannerWindow.projectCreationDate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'creation_date');
+              blr.W15yQC.ScannerWindow.projectLastUpdate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'last_update');
+              blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'parse_for_links');
+              blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet = blr.W15yQC.ScannerWindow.readDOMBool(properties,'project_settings_have_been_set');
+              blr.W15yQC.ScannerWindow.maximumURLCount = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_count');
+              blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
+              blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
+              blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
+              
+              // Read URLs
+              urls=xmlDoc.getElementsByTagName('url');
+              blr.W15yQC.ScannerWindow.urlList=[];
+              blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading '+urls.length+' URLs.');
+              for(i=0;i<urls.length;i++) {
+                blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/urls.length);
+                blr.W15yQC.ScannerWindow.urlList.push(new blr.W15yQC.ProjectURL());
+                blr.W15yQC.ScannerWindow.urlList[i].loc = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'loc');
+                blr.W15yQC.ScannerWindow.urlList[i].windowDescription = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_description');
+                blr.W15yQC.ScannerWindow.urlList[i].priority = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'priority');
+                blr.W15yQC.ScannerWindow.urlList[i].source = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'source');
+                blr.W15yQC.ScannerWindow.urlList[i].linkDepth = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'link_depth');
+                blr.W15yQC.ScannerWindow.urlList[i].dateScanned = blr.W15yQC.ScannerWindow.readDOMDate(urls[i],'date_scanned');
+                blr.W15yQC.ScannerWindow.urlList[i].contentType = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'content_type');
+                blr.W15yQC.ScannerWindow.urlList[i].windowTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_title');
+                blr.W15yQC.ScannerWindow.urlList[i].itemsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'items_count');
+                blr.W15yQC.ScannerWindow.urlList[i].warningsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'warnings_count');
+                blr.W15yQC.ScannerWindow.urlList[i].failuresCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'failures_count');
+                blr.W15yQC.ScannerWindow.urlList[i].score = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'score');
+                blr.W15yQC.ScannerWindow.urlList[i].textSize = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'text_size');
+                blr.W15yQC.ScannerWindow.urlList[i].downloadsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'downloads_count');
+                blr.W15yQC.ScannerWindow.urlList[i].framesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_count');
+                blr.W15yQC.ScannerWindow.urlList[i].framesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].framesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].headingsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_count');
+                blr.W15yQC.ScannerWindow.urlList[i].headingsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].headingsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_count');
+                blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_count');
+                blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].linksCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_count');
+                blr.W15yQC.ScannerWindow.urlList[i].linksWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].linksFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].imagesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_count');
+                blr.W15yQC.ScannerWindow.urlList[i].imagesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].imagesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].formControlsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_count');
+                blr.W15yQC.ScannerWindow.urlList[i].formControlsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].formControlsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].accessKeysCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_count');
+                blr.W15yQC.ScannerWindow.urlList[i].accessKeysWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].accessKeysFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_failures');
+                blr.W15yQC.ScannerWindow.urlList[i].tablesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_count');
+                blr.W15yQC.ScannerWindow.urlList[i].tablesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_warnings');
+                blr.W15yQC.ScannerWindow.urlList[i].tablesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_failures');
+              }
             }
             blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished loading project.');
             blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
           }
           xmlDoc = null;
-
-
         }
       }
       blr.W15yQC.ScannerWindow.updateProjectDisplay();
@@ -797,15 +937,17 @@ blr.W15yQC.ScannerWindow = {
     }
   },
   
-  saveProject: function () { // TODO: Handle errors gracefully. 
+  saveProject: function (saveAs) { // TODO: Handle errors gracefully. 
     var bCancel=false,
       nsIFilePicker, fp, rv, file, foStream, converter, i, url;
     
     if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
       //try
+        if(saveAs==null) { saveAs=false; }
+      
         nsIFilePicker = Components.interfaces.nsIFilePicker;
 
-        if(blr.W15yQC.ScannerWindow.projectFileName==null) {
+        if(blr.W15yQC.fnStringHasContent(blr.W15yQC.ScannerWindow.projectFileName)!=true) {
           fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
           fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
           fp.appendFilter("W15yQC Project","*.w15yqc");
@@ -818,6 +960,9 @@ blr.W15yQC.ScannerWindow = {
           } else {
             bCancel=true;
           }
+        } else {
+          file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+          file.initWithPath(blr.W15yQC.ScannerWindow.projectFileName);
         }
   
         if(bCancel==false) {
@@ -833,56 +978,42 @@ blr.W15yQC.ScannerWindow = {
           converter.writeString('  <project>\n');
           converter.writeString('    <properties>\n');
 
-          if(blr.W15yQC.fnStringHasContent(blr.W15yQC.ScannerWindow.sProjectTitle)==true) {
-            converter.writeString('      <title>'+blr.W15yQC.ScannerWindow.sProjectTitle+'</title>\n');
-          }
+          blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.sProjectTitle,'title',converter,6);
 
-          if(blr.W15yQC.ScannerWindow.projectCreationDate==null || !blr.W15yQC.ScannerWindow.projectCreationDate.toISOString) {
-            blr.W15yQC.ScannerWindow.projectCreationDate=new Date();
-          }
-          converter.writeString('      <creation_date>'+blr.W15yQC.ScannerWindow.projectCreationDate.toISOString()+'</creation_date>\n');
+          blr.W15yQC.ScannerWindow.writeXMLDate(blr.W15yQC.ScannerWindow.projectCreationDate,'creation_date',converter,6);
 
-          if(blr.W15yQC.ScannerWindow.projectLastUpdate==null || !blr.W15yQC.ScannerWindow.projectLastUpdate.toISOString) {
-            blr.W15yQC.ScannerWindow.projectLastUpdate=new Date();
-          }
-          converter.writeString('      <last_update>'+blr.W15yQC.ScannerWindow.projectLastUpdate.toISOString()+'</last_update>\n');
+          blr.W15yQC.ScannerWindow.writeXMLDate(blr.W15yQC.ScannerWindow.projectLastUpdate,'last_update',converter,6);
           
-          if(blr.W15yQC.ScannerWindow.parseForLinks!=false) {
-            blr.W15yQC.ScannerWindow.parseForLinks=true;
-          }
-          converter.writeString('      <parse_for_links>'+blr.W15yQC.ScannerWindow.parseForLinks.toString()+'</parse_for_links>\n');
+          blr.W15yQC.ScannerWindow.writeXMLBool(blr.W15yQC.ScannerWindow.parseForLinks ? true : false,'parse_for_links',converter,6);
           
-          if(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet!=true) {
-            blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=false;
-          }
-          converter.writeString('      <project_settings_have_been_set>'+blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet.toString()+'</project_settings_have_been_set>\n');
+          blr.W15yQC.ScannerWindow.writeXMLBool(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet ? true : false,'project_settings_have_been_set',converter,6);
           
           if(blr.W15yQC.ScannerWindow.maximumURLCount==null) {
             blr.W15yQC.ScannerWindow.maximumURLCount=5000;
           }
-          converter.writeString('      <maximum_url_count>'+blr.W15yQC.ScannerWindow.maximumURLCount.toString()+'</maximum_url_count>\n');
+          blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.maximumURLCount,'maximum_url_count',converter,6);
           
           if(blr.W15yQC.ScannerWindow.maximumURLDepth==null) {
             blr.W15yQC.ScannerWindow.maximumURLDepth=20;
           }
-          converter.writeString('      <maximum_url_depth>'+blr.W15yQC.ScannerWindow.maximumURLDepth.toString()+'</maximum_url_depth>\n');
+          blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.maximumURLDepth,'maximum_url_depth',converter,6);
           
           if(blr.W15yQC.ScannerWindow.pageLoadTimeLimit==null) {
             blr.W15yQC.ScannerWindow.pageLoadTimeLimit=20000;
           }
-          converter.writeString('      <page_load_time_limit>'+blr.W15yQC.ScannerWindow.pageLoadTimeLimit.toString()+'</page_load_time_limit>\n');
+          blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.pageLoadTimeLimit,'page_load_time_limit',converter,6);
           
           if(blr.W15yQC.ScannerWindow.pageLoadFilter==null) {
             blr.W15yQC.ScannerWindow.pageLoadFilter=1000;
           }
-          converter.writeString('      <page_load_filter>'+blr.W15yQC.ScannerWindow.pageLoadFilter.toString()+'</page_load_filter>\n');
+          blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.pageLoadFilter,'page_load_filter',converter,6);
 
           if(blr.W15yQC.ScannerWindow.urlMustMatchList != null && blr.W15yQC.ScannerWindow.urlMustMatchList.length>0) {
             converter.writeString('      <url_must_match_list>\n');
             for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
               converter.writeString('        <match>\n');
-              converter.writeString('          <match_spec>'+encodeURIComponent(blr.W15yQC.ScannerWindow.urlMustMatchList[i])+'</match_spec>\n');
-              converter.writeString('          <match_type>'+(blr.W15yQC.ScannerWindow.urlMustMatchListType[i] ? "RegExp" : "Match")+'</match_type>\n');
+              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustMatchList[i],'match_spec',converter,10);
+              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustMatchListType[i],'match_type',converter,10);
               converter.writeString('        </match>\n');
             }
             converter.writeString('      </url_must_match_list>\n');
@@ -892,8 +1023,8 @@ blr.W15yQC.ScannerWindow = {
             converter.writeString('      <url_must_not_match_list>\n');
             for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
               converter.writeString('        <match>\n');
-              converter.writeString('          <match_spec>'+encodeURIComponent(blr.W15yQC.ScannerWindow.urlMustNotMatchList[i])+'</match_spec>\n');
-              converter.writeString('          <match_type>'+(blr.W15yQC.ScannerWindow.urlMustNotMatchListType[i] ? "RegExp" : "Match")+'</match_type>\n');
+              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustNotMatchList[i],'match_spec',converter,10);
+              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustNotMatchListType[i],'match_type',converter,10);
               converter.writeString('        </match>\n');
             }
             converter.writeString('      </url_must_not_match_list>\n');
@@ -908,129 +1039,47 @@ blr.W15yQC.ScannerWindow = {
               if(url!=null) {
                 converter.writeString('      <url>\n');
 
-                if(blr.W15yQC.fnStringHasContent(url.loc)==true) {
-                  converter.writeString('        <loc>'+encodeURIComponent(url.loc)+'</loc>\n');
-                }
-                if(blr.W15yQC.fnStringHasContent(url.windowDescription)==true) {
-                  converter.writeString('        <window_description>'+encodeURIComponent(url.windowDescription)+'</window_description>\n');
-                }
-                if(url.priority!=null) {
-                  converter.writeString('        <priority>'+encodeURIComponent(url.priority)+'</priority>\n');
-                }
-                if(url.source!=null) {
-                  converter.writeString('        <source>'+encodeURIComponent(url.source)+'</source>\n');
-                }
-                if(url.linkDepth!=null) {
-                  converter.writeString('        <link_depth>'+encodeURIComponent(url.linkDepth)+'</link_depth>\n');
-                }
-                if(url.dateScanned!=null) {
-                  converter.writeString('        <link_depth>'+new Date(url.dateScanned).toISOString()+'</link_depth>\n');
-                }
-                if(url.contentType!=null) {
-                  converter.writeString('        <content_type>'+encodeURIComponent(url.contentType)+'</content_type>\n');
-                }
-                if(url.windowTitle!=null) {
-                  converter.writeString('        <window_title>'+encodeURIComponent(url.windowTitle)+'</window_title>\n');
-                }
-                if(url.itemsCount!=null) {
-                  converter.writeString('        <items_count>'+encodeURIComponent(url.itemsCount)+'</items_count>\n');
-                }
-                if(url.warningsCount!=null) {
-                  converter.writeString('        <warnings_count>'+encodeURIComponent(url.warningsCount)+'</warnings_count>\n');
-                }
-                if(url.failuresCount!=null) {
-                  converter.writeString('        <failures_count>'+encodeURIComponent(url.failuresCount)+'</failures_count>\n');
-                }
-                if(url.score!=null) {
-                  converter.writeString('        <score>'+encodeURIComponent(url.score)+'</score>\n');
-                }
-                if(url.textSize!=null) {
-                  converter.writeString('        <text_size>'+encodeURIComponent(url.textSize)+'</text_size>\n');
-                }
-                if(url.downloadsCount!=null) {
-                  converter.writeString('        <downloads_count>'+encodeURIComponent(url.downloadsCount)+'</downloads_count>\n');
-                }
-                if(url.framesCount!=null) {
-                  converter.writeString('        <frames_count>'+encodeURIComponent(url.framesCount)+'</frames_count>\n');
-                }
-                if(url.framesWarnings!=null) {
-                  converter.writeString('        <frames_warnings>'+encodeURIComponent(url.framesWarnings)+'</frames_warnings>\n');
-                }
-                if(url.framesFailures!=null) {
-                  converter.writeString('        <frames_failures>'+encodeURIComponent(url.framesFailures)+'</frames_failures>\n');
-                }
-                if(url.headingsCount!=null) {
-                  converter.writeString('        <headings_count>'+encodeURIComponent(url.headingsCount)+'</headings_count>\n');
-                }
-                if(url.headingsWarnings!=null) {
-                  converter.writeString('        <headings_warnings>'+encodeURIComponent(url.headingsWarnings)+'</headings_warnings>\n');
-                }
-                if(url.headingsFailures!=null) {
-                  converter.writeString('        <headings_failures>'+encodeURIComponent(url.headingsFailures)+'</headings_failures>\n');
-                }
-                if(url.ARIALandmarksCount!=null) {
-                  converter.writeString('        <aria_landmarks_count>'+encodeURIComponent(url.ARIALandmarksCount)+'</aria_landmarks_count>\n');
-                }
-                if(url.ARIALandmarksWarnings!=null) {
-                  converter.writeString('        <aria_landmarks_warnings>'+encodeURIComponent(url.ARIALandmarksWarnings)+'</aria_landmarks_warnings>\n');
-                }
-                if(url.ARIALandmarksFailures!=null) {
-                  converter.writeString('        <aria_landmarks_failures>'+encodeURIComponent(url.ARIALandmarksFailures)+'</aria_landmarks_failures>\n');
-                }
-                if(url.ARIAElementsCount!=null) {
-                  converter.writeString('        <aria_elements_count>'+encodeURIComponent(url.ARIAElementsCount)+'</aria_elements_count>\n');
-                }
-                if(url.ARIAElementsWarnings!=null) {
-                  converter.writeString('        <aria_elements_warnings>'+encodeURIComponent(url.ARIAElementsWarnings)+'</aria_elements_warnings>\n');
-                }
-                if(url.ARIAElementsFailures!=null) {
-                  converter.writeString('        <aria_elements_failures>'+encodeURIComponent(url.ARIAElementsFailures)+'</aria_elements_failures>\n');
-                }
-                if(url.linksCount!=null) {
-                  converter.writeString('        <links_count>'+encodeURIComponent(url.linksCount)+'</links_count>\n');
-                }
-                if(url.linksWarnings!=null) {
-                  converter.writeString('        <links_warnings>'+encodeURIComponent(url.linksWarnings)+'</links_warnings>\n');
-                }
-                if(url.linksFailures!=null) {
-                  converter.writeString('        <links_failures>'+encodeURIComponent(url.linksFailures)+'</links_failures>\n');
-                }
-                if(url.imagesCount!=null) {
-                  converter.writeString('        <images_count>'+encodeURIComponent(url.imagesCount)+'</images_count>\n');
-                }
-                if(url.imagesWarnings!=null) {
-                  converter.writeString('        <images_warnings>'+encodeURIComponent(url.imagesWarnings)+'</images_warnings>\n');
-                }
-                if(url.imagesFailures!=null) {
-                  converter.writeString('        <images_failures>'+encodeURIComponent(url.imagesFailures)+'</images_failures>\n');
-                }
-                if(url.formControlsCount!=null) {
-                  converter.writeString('        <form_controls_count>'+encodeURIComponent(url.formControlsCount)+'</form_controls_count>\n');
-                }
-                if(url.formControlsWarnings!=null) {
-                  converter.writeString('        <form_controls_warnings>'+encodeURIComponent(url.formControlsWarnings)+'</form_controls_warnings>\n');
-                }
-                if(url.formControlsFailures!=null) {
-                  converter.writeString('        <form_controls_failures>'+encodeURIComponent(url.formControlsFailures)+'</form_controls_failures>\n');
-                }
-                if(url.accessKeysCount!=null) {
-                  converter.writeString('        <access_keys_count>'+encodeURIComponent(url.accessKeysCount)+'</access_keys_count>\n');
-                }
-                if(url.accessKeysWarnings!=null) {
-                  converter.writeString('        <access_keys_warnings>'+encodeURIComponent(url.accessKeysWarnings)+'</access_keys_warnings>\n');
-                }
-                if(url.accessKeysFailures!=null) {
-                  converter.writeString('        <access_keys_failures>'+encodeURIComponent(url.accessKeysFailures)+'</access_keys_failures>\n');
-                }
-                if(url.tablesCount!=null) {
-                  converter.writeString('        <tables_count>'+encodeURIComponent(url.tablesCount)+'</tables_count>\n');
-                }
-                if(url.tablesWarnings!=null) {
-                  converter.writeString('        <tables_warnings>'+encodeURIComponent(url.tablesWarnings)+'</tables_warnings>\n');
-                }
-                if(url.tablesFailures!=null) {
-                  converter.writeString('        <tables_failures>'+encodeURIComponent(url.tablesFailures)+'</tables_failures>\n');
-                }
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.loc,'loc',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.windowDescription,'window_description',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.priority,'priority',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.source,'source',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.linkDepth,'link_depth',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLDate(url.dateScanned,'date_scanned',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.contentType,'content_type',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.windowTitle,'window_title',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.itemsCount,'items_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.warningsCount,'warnings_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.failuresCount,'failures_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.score,'score',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.textSize,'text_size',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.downloadsCount,'downloads_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.framesCount,'frames_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.framesWarnings,'frames_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.framesFailures,'frames_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.headingsCount,'headings_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.headingsWarnings,'headings_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.headingsFailures,'headings_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.ARIALandmarksCount,'aria_landmarks_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.ARIALandmarksWarnings,'aria_landmarks_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.ARIALandmarksFailures,'aria_landmarks_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.ARIAElementsCount,'aria_elements_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.ARIAElementsWarnings,'aria_elements_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.ARIAElementsFailures,'aria_elements_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.linksCount,'links_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.linksWarnings,'links_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.linksFailures,'links_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.imagesCount,'images_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.imagesWarnings,'images_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.imagesFailures,'images_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.formControlsCount,'form_controls_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.formControlsWarnings,'form_controls_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.formControlsFailures,'form_controls_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.accessKeysCount,'access_keys_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.accessKeysWarnings,'access_keys_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.accessKeysFailures,'access_keys_failures',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.tablesCount,'tables_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.tablesWarnings,'tables_warnings',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.tablesFailures,'tables_failures',converter,8);
                 converter.writeString('      </url>\n');
               }
             }
@@ -1163,7 +1212,7 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.stateScanning = false;
     blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
     blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
-    blr.W15yQC.ScannerWindow.scan
+    //blr.W15yQC.ScannerWindow.scan
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
   },

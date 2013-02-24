@@ -8421,6 +8421,9 @@ ys: 'whys'
             }
           }
           
+          itemsCount=0;
+          failures=0;
+          warnings=0;
           if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length>0) {
             itemsCount=oW15yQCReport.aFrames.length;
             failures=oW15yQCReport.aFrames.failedCount;
@@ -8479,7 +8482,7 @@ ys: 'whys'
             offset=Math.floor((30.0*(itemsCount-failures)/itemsCount)*((itemsCount-warnings/5)/itemsCount))-30;
             score=score+offset;
             if(offset<0) {
-              sDesc=blr.W15yQC.fnJoin(sDesc,"Penalty for "+failures.toString()+" failures and "+warnings.toString()+" warings ("+offset.toString()+").",' ');
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Penalty for "+failures.toString()+" failures and "+warnings.toString()+" warnings ("+offset.toString()+").",' ');
             }
           }
         }
