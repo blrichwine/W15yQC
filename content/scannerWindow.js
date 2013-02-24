@@ -323,7 +323,8 @@ blr.W15yQC.ScannerWindow = {
     // blr.W15yQC.fnLog('scanner-updateProjectDisplay');
     var tbc, url, i,
         treeitem, treerow, treecell;
-    
+
+    document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC', ' - ');
     tbc = document.getElementById('treeboxChildren');
   
     if (tbc != null) {
@@ -783,7 +784,7 @@ blr.W15yQC.ScannerWindow = {
     if(rootNode!=null) {
       e=rootNode.getElementsByTagName(tagName);
       if(e!=null && e.length>0) {
-        b=(decodeURIComponent(e[0].textContent)).toLowerCase() == "true" ? true : false ;
+        b=((decodeURIComponent(e[0].textContent)).toLowerCase() == "true") ? true : false ;
       } else if(defaultValue!==undefined) {
         b=defaultValue;
       }
@@ -819,7 +820,7 @@ blr.W15yQC.ScannerWindow = {
   
   openProject: function () {
     var fp, rv, file, sFileContents, fstream, cstream, str, read, i,
-      properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser;
+      properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches, urls;
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       blr.W15yQC.ScannerWindow.fnUpdatePercentage(0);
       fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
@@ -863,13 +864,39 @@ blr.W15yQC.ScannerWindow = {
               blr.W15yQC.ScannerWindow.sProjectTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'title');
               blr.W15yQC.ScannerWindow.projectCreationDate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'creation_date');
               blr.W15yQC.ScannerWindow.projectLastUpdate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'last_update');
-              blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'parse_for_links');
+              blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMBool(properties,'parse_for_links');
               blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet = blr.W15yQC.ScannerWindow.readDOMBool(properties,'project_settings_have_been_set');
               blr.W15yQC.ScannerWindow.maximumURLCount = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_count');
               blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
               blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
               blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
               
+              blr.W15yQC.ScannerWindow.urlMustMatchList=[];
+              blr.W15yQC.ScannerWindow.urlMustMatchListType=[];
+              matchList=properties.getElementsByTagName('url_must_match_list');
+              if(matchList!=null && matchList.length>0) {
+                matches=matchList[0].getElementsByTagName('match');
+                if(matches!=null && matches.length>0) {
+                  for(i=0;i<matches.length;i++) {
+                    blr.W15yQC.ScannerWindow.urlMustMatchList.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_spec'));
+                    blr.W15yQC.ScannerWindow.urlMustMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
+                  }
+                }
+              }              
+              
+              blr.W15yQC.ScannerWindow.urlMustNotMatchList=[];
+              blr.W15yQC.ScannerWindow.urlMustNotMatchListType=[];
+              matchList=properties.getElementsByTagName('url_must_not_match_list');
+              if(matchList!=null && matchList.length>0) {
+                matches=matchList[0].getElementsByTagName('match');
+                if(matches!=null && matches.length>0) {
+                  for(i=0;i<matches.length;i++) {
+                    blr.W15yQC.ScannerWindow.urlMustNotMatchList.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_spec'));
+                    blr.W15yQC.ScannerWindow.urlMustNotMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
+                  }
+                }
+              }              
+
               // Read URLs
               urls=xmlDoc.getElementsByTagName('url');
               blr.W15yQC.ScannerWindow.urlList=[];
@@ -984,7 +1011,7 @@ blr.W15yQC.ScannerWindow = {
 
           blr.W15yQC.ScannerWindow.writeXMLDate(blr.W15yQC.ScannerWindow.projectLastUpdate,'last_update',converter,6);
           
-          blr.W15yQC.ScannerWindow.writeXMLBool(blr.W15yQC.ScannerWindow.parseForLinks ? true : false,'parse_for_links',converter,6);
+          blr.W15yQC.ScannerWindow.writeXMLBool((blr.W15yQC.ScannerWindow.parseForLinks==false) ? false : true,'parse_for_links',converter,6);
           
           blr.W15yQC.ScannerWindow.writeXMLBool(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet ? true : false,'project_settings_have_been_set',converter,6);
           
@@ -1013,7 +1040,7 @@ blr.W15yQC.ScannerWindow = {
             for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
               converter.writeString('        <match>\n');
               blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustMatchList[i],'match_spec',converter,10);
-              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustMatchListType[i],'match_type',converter,10);
+              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustMatchListType[i] ? "RegExp" : "Match",'match_type',converter,10);
               converter.writeString('        </match>\n');
             }
             converter.writeString('      </url_must_match_list>\n');
@@ -1024,7 +1051,7 @@ blr.W15yQC.ScannerWindow = {
             for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
               converter.writeString('        <match>\n');
               blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustNotMatchList[i],'match_spec',converter,10);
-              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustNotMatchListType[i],'match_type',converter,10);
+              blr.W15yQC.ScannerWindow.writeXMLEncodedString(blr.W15yQC.ScannerWindow.urlMustNotMatchListType[i] ? "RegExp" : "Match",'match_type',converter,10);
               converter.writeString('        </match>\n');
             }
             converter.writeString('      </url_must_not_match_list>\n');
@@ -1497,6 +1524,7 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       blr.W15yQC.ScannerWindow.bManualURLAdd=true;
       window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+      document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC',' - ');
     }
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
