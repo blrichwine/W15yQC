@@ -118,8 +118,8 @@ blr.W15yQC.RemoveStylesWindow = {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
-      box, width, height, borderStyle, bSkipElement = false,
-      c2;
+      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false,
+      c2, href;
     if (oValues == null) {
       oValues = {
         iNumberOfLinks: 0,
@@ -329,9 +329,13 @@ blr.W15yQC.RemoveStylesWindow = {
                   node.setAttribute('src', 'dont-load-' + node.getAttribute('src'));
                 }
                 if (/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
+                  href=node.getAttribute('href');
+                  bSamePageLink=(blr.W15yQC.fnURLsAreEqual(blr.W15yQC.RemoveStylesWindow.srcDoc.URL, blr.W15yQC.RemoveStylesWindow.srcDoc.URL,blr.W15yQC.RemoveStylesWindow.srcDoc.URL,href)==true ||
+                     /^#[^#]/.test(node.getAttribute('href')));
+                  
                   node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
                   if (blr.W15yQC.fnFirstChildElementIs(c, 'img') == false) {
-                    node.insertBefore(rd.createTextNode('Link: '), node.firstChild);
+                    node.insertBefore(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '), node.firstChild);
                   }
                 }
               }
