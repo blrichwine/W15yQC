@@ -38,6 +38,8 @@
           <menupopup onpopupshowing="">
             <menuitem id="W15yQC_menuEntry_highlightLandmarks" accesskey="a" label="ARIA Landmarks" 
                       oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
+            <menuitem id="W15yQC_menuEntry_hightlightBlockquotes" accesskey="b" label="Blockquotes" 
+                      oncommand="blr.W15yQC.Highlighters.highlightBasicElement('blockquote');"/>
             <menuitem id="W15yQC_menuEntry_hightlightHeadings" accesskey="h" label="Headings" 
                       oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
             <menuitem id="W15yQC_menuEntry_highlightLists" accesskey="l" label="Lists" 
@@ -105,6 +107,7 @@
     <toolbarbutton id="W15yTPB-Highlighters" label="Highlighters" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
           <menuitem id="W15yTPBMI-ARIALandmarksHighlighter" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
+          <menuitem id="W15yTPBMI-BlockquotesHighlighter" accesskey="" label="Blockquotes" oncommand="blr.W15yQC.Highlighters.highlightBasicElement('blockquote');"/>
           <menuitem id="W15yTPBMI-HeadingsHighlighter" accesskey="" label="Headings" oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
           <menuitem id="W15yTPBMI-ListsHighlighter" accesskey="" label="Lists" oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
           <menuitem id="W15yTPBMI-TablesHighlighter" accesskey="" label="Tables" oncommand="blr.W15yQC.Highlighters.highlightTables();"/>

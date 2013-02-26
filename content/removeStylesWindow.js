@@ -484,6 +484,7 @@ blr.W15yQC.RemoveStylesWindow = {
     blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.RemoveStylesWindow.aDocumentsList, blr.W15yQC.RemoveStylesWindow.aHeadingsList);
     blr.W15yQC.Highlighters.highlightLists(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
     blr.W15yQC.Highlighters.highlightTables(blr.W15yQC.RemoveStylesWindow.aDocumentsList);
+    blr.W15yQC.Highlighters.highlightBasicElement('blockquote', blr.W15yQC.RemoveStylesWindow.aDocumentsList);
   },
 
   forceMinSize: function (dialog) {

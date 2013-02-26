@@ -136,6 +136,7 @@
              Drop out certain checks for speed when spidering
             
       *** FIX ASAP***
+      Accessibility quick tips : Abandon your mouse for a few days and see what the exerience is like.
       recent files list for project scanner
       remove styles view - filter out characters that screen readers don't announce
       remove styles view - include page title, counts of key semantic features
