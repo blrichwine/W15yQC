@@ -221,7 +221,7 @@ blr.W15yQC.ScannerWindow = {
     //blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=true;
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
-
+    blr.W15yQC.ScannerWindow.readRecentFileList();
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
@@ -818,140 +818,146 @@ blr.W15yQC.ScannerWindow = {
     }
   },
   
-  openProject: function () {
+  openProject: function (f) {
     var fp, rv, file, sFileContents, fstream, cstream, str, read, i,
       properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches, urls;
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       blr.W15yQC.ScannerWindow.fnUpdatePercentage(0);
-      fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-      blr.W15yQC.ScannerWindow.fnUpdateStatus('Choose Project File to Open');
-      fp.init(window, "Open Project", nsIFilePicker.modeOpen);
-      fp.appendFilter("W15yQC Project","*.w15yqc");
-      rv = fp.show();
-      if (rv == nsIFilePicker.returnOK) {
-        file = fp.file;
-        if (/\.w15yqc$/.test(file.path) == true) {
-          blr.W15yQC.ScannerWindow.projectFileName = file.path;
-          sFileContents = '';
-          blr.W15yQC.ScannerWindow.fnUpdateStatus('Opening project file.');
-          fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
-          cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
-          fstream.init(file, -1, 0, 0);
-          cstream.init(fstream, "UTF-8", 0, 0);
-           
-          blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project file.');
-          let (str = {}) {
-            let read = 0;
-            do {
-              read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
-              sFileContents += str.value;
-            } while (read != 0);
-          }
-          cstream.close(); // this closes fstream
-          file=null;
-          rv=null;
-          fp=null;
-          
-          xmlParser = new DOMParser(); // https://developer.mozilla.org/en-US/docs/DOM/DOMParser
-          xmlDoc = xmlParser.parseFromString(sFileContents, "text/xml");
-          sFileContents=null;
-          if(xmlDoc && xmlDoc.getElementsByTagName) {
-            // Read Project Properties
-            blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project properties.');
-            properties=xmlDoc.getElementsByTagName('properties');
-            if(properties!=null && properties.length>0) {
-              properties=properties[0];
-              blr.W15yQC.ScannerWindow.sProjectTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'title');
-              blr.W15yQC.ScannerWindow.projectCreationDate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'creation_date');
-              blr.W15yQC.ScannerWindow.projectLastUpdate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'last_update');
-              blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMBool(properties,'parse_for_links');
-              blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet = blr.W15yQC.ScannerWindow.readDOMBool(properties,'project_settings_have_been_set');
-              blr.W15yQC.ScannerWindow.maximumURLCount = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_count');
-              blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
-              blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
-              blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
-              
-              blr.W15yQC.ScannerWindow.urlMustMatchList=[];
-              blr.W15yQC.ScannerWindow.urlMustMatchListType=[];
-              matchList=properties.getElementsByTagName('url_must_match_list');
-              if(matchList!=null && matchList.length>0) {
-                matches=matchList[0].getElementsByTagName('match');
-                if(matches!=null && matches.length>0) {
-                  for(i=0;i<matches.length;i++) {
-                    blr.W15yQC.ScannerWindow.urlMustMatchList.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_spec'));
-                    blr.W15yQC.ScannerWindow.urlMustMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
-                  }
-                }
-              }              
-              
-              blr.W15yQC.ScannerWindow.urlMustNotMatchList=[];
-              blr.W15yQC.ScannerWindow.urlMustNotMatchListType=[];
-              matchList=properties.getElementsByTagName('url_must_not_match_list');
-              if(matchList!=null && matchList.length>0) {
-                matches=matchList[0].getElementsByTagName('match');
-                if(matches!=null && matches.length>0) {
-                  for(i=0;i<matches.length;i++) {
-                    blr.W15yQC.ScannerWindow.urlMustNotMatchList.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_spec'));
-                    blr.W15yQC.ScannerWindow.urlMustNotMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
-                  }
-                }
-              }              
-
-              // Read URLs
-              urls=xmlDoc.getElementsByTagName('url');
-              blr.W15yQC.ScannerWindow.urlList=[];
-              blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading '+urls.length+' URLs.');
-              for(i=0;i<urls.length;i++) {
-                blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/urls.length);
-                blr.W15yQC.ScannerWindow.urlList.push(new blr.W15yQC.ProjectURL());
-                blr.W15yQC.ScannerWindow.urlList[i].loc = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'loc');
-                blr.W15yQC.ScannerWindow.urlList[i].windowDescription = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_description');
-                blr.W15yQC.ScannerWindow.urlList[i].priority = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'priority');
-                blr.W15yQC.ScannerWindow.urlList[i].source = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'source');
-                blr.W15yQC.ScannerWindow.urlList[i].linkDepth = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'link_depth');
-                blr.W15yQC.ScannerWindow.urlList[i].dateScanned = blr.W15yQC.ScannerWindow.readDOMDate(urls[i],'date_scanned');
-                blr.W15yQC.ScannerWindow.urlList[i].contentType = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'content_type');
-                blr.W15yQC.ScannerWindow.urlList[i].windowTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_title');
-                blr.W15yQC.ScannerWindow.urlList[i].itemsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'items_count');
-                blr.W15yQC.ScannerWindow.urlList[i].warningsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'warnings_count');
-                blr.W15yQC.ScannerWindow.urlList[i].failuresCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'failures_count');
-                blr.W15yQC.ScannerWindow.urlList[i].score = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'score');
-                blr.W15yQC.ScannerWindow.urlList[i].textSize = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'text_size');
-                blr.W15yQC.ScannerWindow.urlList[i].downloadsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'downloads_count');
-                blr.W15yQC.ScannerWindow.urlList[i].framesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_count');
-                blr.W15yQC.ScannerWindow.urlList[i].framesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].framesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].headingsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_count');
-                blr.W15yQC.ScannerWindow.urlList[i].headingsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].headingsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_count');
-                blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_count');
-                blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].linksCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_count');
-                blr.W15yQC.ScannerWindow.urlList[i].linksWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].linksFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].imagesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_count');
-                blr.W15yQC.ScannerWindow.urlList[i].imagesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].imagesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].formControlsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_count');
-                blr.W15yQC.ScannerWindow.urlList[i].formControlsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].formControlsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].accessKeysCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_count');
-                blr.W15yQC.ScannerWindow.urlList[i].accessKeysWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].accessKeysFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_failures');
-                blr.W15yQC.ScannerWindow.urlList[i].tablesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_count');
-                blr.W15yQC.ScannerWindow.urlList[i].tablesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_warnings');
-                blr.W15yQC.ScannerWindow.urlList[i].tablesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_failures');
-              }
-            }
-            blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished loading project.');
-            blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
-          }
-          xmlDoc = null;
+      if(/.+\.w15yqc$/.test(f) != true) {
+        fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Choose Project File to Open');
+        fp.init(window, "Open Project", nsIFilePicker.modeOpen);
+        fp.appendFilter("W15yQC Project","*.w15yqc");
+        rv = fp.show();
+        if (rv == nsIFilePicker.returnOK) {
+          file=fp.file;
         }
+      } else {
+        file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+        file.initWithPath(f);
+      }
+      if(file!=null && file.path && /.+\.w15yqc$/.test(file.path) == true) {
+        blr.W15yQC.ScannerWindow.projectFileName = file.path;
+        sFileContents = '';
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Opening project file.');
+        fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+        cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
+        fstream.init(file, -1, 0, 0);
+        cstream.init(fstream, "UTF-8", 0, 0);
+         
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project file.');
+        let (str = {}) {
+          let read = 0;
+          do {
+            read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+            sFileContents += str.value;
+          } while (read != 0);
+        }
+        cstream.close(); // this closes fstream
+        blr.W15yQC.ScannerWindow.addFileToRecentList(file.path);
+        file=null;
+        rv=null;
+        fp=null;
+        
+        xmlParser = new DOMParser(); // https://developer.mozilla.org/en-US/docs/DOM/DOMParser
+        xmlDoc = xmlParser.parseFromString(sFileContents, "text/xml");
+        sFileContents=null;
+        if(xmlDoc && xmlDoc.getElementsByTagName) {
+          // Read Project Properties
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project properties.');
+          properties=xmlDoc.getElementsByTagName('properties');
+          if(properties!=null && properties.length>0) {
+            properties=properties[0];
+            blr.W15yQC.ScannerWindow.sProjectTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(properties,'title');
+            blr.W15yQC.ScannerWindow.projectCreationDate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'creation_date');
+            blr.W15yQC.ScannerWindow.projectLastUpdate = blr.W15yQC.ScannerWindow.readDOMDate(properties,'last_update');
+            blr.W15yQC.ScannerWindow.parseForLinks = blr.W15yQC.ScannerWindow.readDOMBool(properties,'parse_for_links');
+            blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet = blr.W15yQC.ScannerWindow.readDOMBool(properties,'project_settings_have_been_set');
+            blr.W15yQC.ScannerWindow.maximumURLCount = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_count');
+            blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
+            blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
+            blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
+            
+            blr.W15yQC.ScannerWindow.urlMustMatchList=[];
+            blr.W15yQC.ScannerWindow.urlMustMatchListType=[];
+            matchList=properties.getElementsByTagName('url_must_match_list');
+            if(matchList!=null && matchList.length>0) {
+              matches=matchList[0].getElementsByTagName('match');
+              if(matches!=null && matches.length>0) {
+                for(i=0;i<matches.length;i++) {
+                  blr.W15yQC.ScannerWindow.urlMustMatchList.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_spec'));
+                  blr.W15yQC.ScannerWindow.urlMustMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
+                }
+              }
+            }              
+            
+            blr.W15yQC.ScannerWindow.urlMustNotMatchList=[];
+            blr.W15yQC.ScannerWindow.urlMustNotMatchListType=[];
+            matchList=properties.getElementsByTagName('url_must_not_match_list');
+            if(matchList!=null && matchList.length>0) {
+              matches=matchList[0].getElementsByTagName('match');
+              if(matches!=null && matches.length>0) {
+                for(i=0;i<matches.length;i++) {
+                  blr.W15yQC.ScannerWindow.urlMustNotMatchList.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_spec'));
+                  blr.W15yQC.ScannerWindow.urlMustNotMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
+                }
+              }
+            }              
+
+            // Read URLs
+            urls=xmlDoc.getElementsByTagName('url');
+            blr.W15yQC.ScannerWindow.urlList=[];
+            blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading '+urls.length+' URLs.');
+            for(i=0;i<urls.length;i++) {
+              blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/urls.length);
+              blr.W15yQC.ScannerWindow.urlList.push(new blr.W15yQC.ProjectURL());
+              blr.W15yQC.ScannerWindow.urlList[i].loc = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'loc');
+              blr.W15yQC.ScannerWindow.urlList[i].windowDescription = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_description');
+              blr.W15yQC.ScannerWindow.urlList[i].priority = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'priority');
+              blr.W15yQC.ScannerWindow.urlList[i].source = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'source');
+              blr.W15yQC.ScannerWindow.urlList[i].linkDepth = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'link_depth');
+              blr.W15yQC.ScannerWindow.urlList[i].dateScanned = blr.W15yQC.ScannerWindow.readDOMDate(urls[i],'date_scanned');
+              blr.W15yQC.ScannerWindow.urlList[i].contentType = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'content_type');
+              blr.W15yQC.ScannerWindow.urlList[i].windowTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_title');
+              blr.W15yQC.ScannerWindow.urlList[i].itemsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'items_count');
+              blr.W15yQC.ScannerWindow.urlList[i].warningsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'warnings_count');
+              blr.W15yQC.ScannerWindow.urlList[i].failuresCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'failures_count');
+              blr.W15yQC.ScannerWindow.urlList[i].score = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'score');
+              blr.W15yQC.ScannerWindow.urlList[i].textSize = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'text_size');
+              blr.W15yQC.ScannerWindow.urlList[i].downloadsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'downloads_count');
+              blr.W15yQC.ScannerWindow.urlList[i].framesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_count');
+              blr.W15yQC.ScannerWindow.urlList[i].framesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].framesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].headingsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_count');
+              blr.W15yQC.ScannerWindow.urlList[i].headingsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].headingsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'headings_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_count');
+              blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].ARIALandmarksFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_landmarks_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_count');
+              blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].ARIAElementsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'aria_elements_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].linksCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_count');
+              blr.W15yQC.ScannerWindow.urlList[i].linksWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].linksFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'links_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].imagesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_count');
+              blr.W15yQC.ScannerWindow.urlList[i].imagesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].imagesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'images_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].formControlsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_count');
+              blr.W15yQC.ScannerWindow.urlList[i].formControlsWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].formControlsFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'form_controls_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].accessKeysCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_count');
+              blr.W15yQC.ScannerWindow.urlList[i].accessKeysWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].accessKeysFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'access_keys_failures');
+              blr.W15yQC.ScannerWindow.urlList[i].tablesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_count');
+              blr.W15yQC.ScannerWindow.urlList[i].tablesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_warnings');
+              blr.W15yQC.ScannerWindow.urlList[i].tablesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_failures');
+            }
+          }
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished loading project.');
+          blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
+        }
+        xmlDoc = null;
       }
       blr.W15yQC.ScannerWindow.updateProjectDisplay();
       if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0 && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
@@ -964,6 +970,10 @@ blr.W15yQC.ScannerWindow = {
     }
   },
   
+  saveProjectAs: function() {
+    blr.W15yQC.ScannerWindow.saveProject(true);
+  },
+  
   saveProject: function (saveAs) { // TODO: Handle errors gracefully. 
     var bCancel=false,
       nsIFilePicker, fp, rv, file, foStream, converter, i, url;
@@ -973,8 +983,7 @@ blr.W15yQC.ScannerWindow = {
         if(saveAs==null) { saveAs=false; }
       
         nsIFilePicker = Components.interfaces.nsIFilePicker;
-
-        if(blr.W15yQC.fnStringHasContent(blr.W15yQC.ScannerWindow.projectFileName)!=true) {
+        if(blr.W15yQC.fnStringHasContent(blr.W15yQC.ScannerWindow.projectFileName)!=true  || saveAs==true) {
           fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
           fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
           fp.appendFilter("W15yQC Project","*.w15yqc");
@@ -998,6 +1007,7 @@ blr.W15yQC.ScannerWindow = {
           createInstance(Components.interfaces.nsIFileOutputStream);
   
           foStream.init(file, 0x2A, 438, 0);
+          blr.W15yQC.ScannerWindow.addFileToRecentList(file.path);
           converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
           converter.init(foStream, "UTF-8", 0, 0);
           converter.writeString('<?xml version="1.0" encoding="UTF-8"?>\n');
@@ -1476,6 +1486,48 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=true;
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Stop scanning requested.');
     blr.W15yQC.ScannerWindow.updateControlStates();
+  },
+  
+  parseRecentFiles: function() {
+    var srf=Application.prefs.getValue("extensions.W15yQC.Scanner.RecentFiles",null);
+    if(srf !=null && srf.length && srf.length>0) {
+      return srf.split('|');
+    }
+    return null;
+  },
+  
+  addFileToRecentList: function(fileName) {
+    var rf=blr.W15yQC.ScannerWindow.parseRecentFiles(),i;
+    if(rf==null) {
+      Application.prefs.setValue("extensions.W15yQC.Scanner.RecentFiles",fileName);
+    } else if(rf && rf.length && rf.length>0) {
+      if(rf.length>10) {
+        rf=rf.slice(1);
+      }
+      for(i=0;i<rf.length;i++) {
+        if(rf[i]==fileName) { rf.splice(i,1); }
+      }
+      rf.push(fileName);
+      Application.prefs.setValue("extensions.W15yQC.Scanner.RecentFiles",rf.join('|'));
+    }
+  },
+  
+  readRecentFileList: function() {
+    var recentFilesMenu=document.getElementById('recentFiles-menupopup'),
+      rf=blr.W15yQC.ScannerWindow.parseRecentFiles(), menuItem, i;
+    if(recentFilesMenu) {
+      while (recentFilesMenu.firstChild) {
+        recentFilesMenu.removeChild(recentFilesMenu.firstChild);
+      }
+      if(rf && rf.length) {
+        for(i=0;i<rf.length;i++) {
+          menuItem=document.createElement('menuitem');
+          menuItem.setAttribute('label',rf[i]);
+          menuItem.setAttribute('oncommand','blr.W15yQC.ScannerWindow.openProject(\''+rf[i]+'\')');
+          if(recentFilesMenu) recentFilesMenu.insertBefore(menuItem, recentFilesMenu.firstChild);
+        }
+      }
+    }
   },
   
   openSelectedURL: function() {
