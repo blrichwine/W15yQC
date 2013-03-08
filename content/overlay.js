@@ -8492,7 +8492,7 @@ ys: 'whys'
       oW15yQCReport.iScore=score;
     },
     
-    fnDescribeWindow: function (oW15yQCReport) {
+    fnDescribeWindow: function (oW15yQCReport) { // TODO: QA This
       /*
        * all content contained in landmark. main landmrk missing.
        * has skip navigation link(s)
@@ -8508,8 +8508,8 @@ ys: 'whys'
        * doc types used: xxxx, and x unrecognized doc types
        * 
        */
-      var i, sDesc='', documentsCount=0, wordProcCount=0, slidesCount=0, pdfsCount=0, spreadSheetCount=0,
-        audioFileCount=0, avFileCount=0, bHasSkipNav=false;
+      var i, sDesc='', sLinksTo='', documentsCount=0, wordProcCount=0, slidesCount=0, pdfsCount=0, spreadSheetCount=0,
+        audioFileCount=0, avFileCount=0, ebookFileCount=0, pageLayoutFileCount=0, bHasSkipNav=false;
 //      oW15yQCReport = new blr.W15yQC.W15yResults();
       if(oW15yQCReport != null) {
         oW15yQCReport.PageScore.bHasSkipNavLinks=false;
@@ -8529,21 +8529,65 @@ ys: 'whys'
             oW15yQCReport.PageScore.bHasSkipNavLinks=true;
           }
           for(i=0;i<oW15yQCReport.aLinks.length;i++) {
-            if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(doc|docx)$/i.test(oW15yQCReport.aLinks[i].href)) { // TODO: hasNotHTMLExtension
+            if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(docx?|odt|pages|rtf|sdw|wpd|wri|wps)$/i.test(oW15yQCReport.aLinks[i].href)) {
               wordProcCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(pdf)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              pdfsCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(eps2?|indd?|pm[0-9]|ps|pub)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              pageLayoutFileCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(aeh|apk|azw|cbr|cbz|cb7|cbt|cba|ceb|djvu|epub|fb2|ibooks|kf8|lit|lrf|lrx|mobi|pdb|prc|tebr|tr2|tr3|xeb)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              ebookFileCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(pptx?|key|pps|sdd)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              slidesCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(xlr|xlsx?|sdc)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              spreadSheetCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(aif|cda|iff|m3u|m4a|mid|mp3|mpa|ogg|ra|wav|wma)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              audioFileCount++;
+            } else if(/^([a-z]+\/\/.+\.[a-z]+\/.+|.+)\.(3gt|3gp|asf|asx|avi|fla|flv|mov|mp4|mpe?g|rm|srt|swf|vob|wmv|smil?)$/i.test(oW15yQCReport.aLinks[i].href)) {
+              avFileCount++;
             }
           }
+          documentsCount=wordProcCount + pdfsCount + pageLayoutFileCount + ebookFileCount + slidesCount + spreadSheetCount;
         }
         if(oW15yQCReport.aFormControls && oW15yQCReport.aFormControls.length && oW15yQCReport.aFormControls.length>0) {
-          sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aFormControls.length, 'form control', 'form controls'), ', ');
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(oW15yQCReport.aFormControls.length, 'form control', 'form controls'), ', ');
         }
+        if(wordProcCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(wordProcCount, 'word processor file', 'word processor files'), ', ');
+        }
+        if(pdfsCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(pdfsCount, 'PDF file', 'PDF files'), ', ');
+        }
+        if(pageLayoutFileCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(pageLayoutFileCount, 'non-PDF page layout file', 'non-PDF page layout files'), ', ');
+        }
+        if(ebookFileCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(ebookFileCount, 'eBook file', 'eBook files'), ', ');
+        }
+        if(slidesCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(slidesCount, 'slide presentation file', 'slide presentation files'), ', ');
+        }
+        if(spreadSheetCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(spreadSheetCount, 'spreadsheet file', 'spreadsheet files'), ', ');
+        }
+        if(audioFileCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(audioFileCount, 'audio file', 'audio files'), ', ');
+        }
+        if(avFileCount>0) {
+          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(avFileCount, 'audio-video file', 'audio-video files'), ', ');
+        }
+        
         if(sDesc.length>2) {
           sDesc='Page contains: '+sDesc+".\n";
+        }
+        if(sLinksTo.length>2) {
+          sDesc='Page links to: '+sLinksTo+".\n";
         }
         if(bHasSkipNav) {
           sDesc=blr.W15yQC.fnJoin(sDesc,'Appears to have skip navigation link(s).',"\n");
         }
       }
+      oW15yQCReport.iDocumentCount=documentsCount;
       oW15yQCReport.sWindowDescription=sDesc;
     },
 
@@ -8809,6 +8853,7 @@ ys: 'whys'
 
   blr.W15yQC.PageScore = function () {
     this.iScore=0;
+    this.iDocumentCount=0;
     this.sDescription=null;
     this.bHasSkipNavLinks=null;
     this.bAllDocumentsHaveTitles=true;
@@ -8851,6 +8896,7 @@ ys: 'whys'
   blr.W15yQC.PageScore.prototype = {
     iScore: null,
     sDescription: null,
+    iDocumentCount: null,
     bHasSkipNavLinks: null,
     bAllDocumentsHaveTitles: null,
     bAllDocumentsHaveDefaultHumanLanguage: null,

@@ -595,7 +595,7 @@ blr.W15yQC.ScannerWindow = {
       url.dateScanned = oW15yQCResults.dDateChecked;
       url.score= oW15yQCResults.iScore;
       url.textSize= oW15yQCResults.iTextSize;
-      url.downloadsCount= null;
+      url.downloadsCount= oW15yQCResults.iDocumentCount;
 
       if(oW15yQCResults.aFrames && oW15yQCResults.aFrames.length>0) {
         url.framesCount=oW15yQCResults.aFrames.length;
