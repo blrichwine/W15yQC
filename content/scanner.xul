@@ -68,287 +68,328 @@
 						<xul:treecol ordinal="1" id="col-header-number"
 							 label=" # "
 							 hidden="false"
+							 crop="none"
 							 style="text-align:center"
 							 fixed="true"
 							 sortDirection="" 
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter ordinal="2" class="tree-splitter" />
 						<xul:treecol  ordinal="3" id="col-header-url"
-							 label="URL"
+							 label="URL  "
 							 hidden="false"
+							 crop="none"
 							 style="text-align:left"
 				       flex="2"
 							 sortDirection="" 
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter  ordinal="4" class="tree-splitter" />
 						<xul:treecol ordinal="5" id="col-header-priority"
-							 label="Priority"
+							 label="Priority  "
 							 hidden="true"
+							 crop="none"
 							 fixed="true"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter ordinal="6" class="tree-splitter" />
 						<xul:treecol ordinal="7" id="col-header-source"
-							 label="Source"
+							 label="Source  "
 							 hidden="true"
+							 crop="none"
 							 sortDirection="" 
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter ordinal="8" class="tree-splitter" />
 						<xul:treecol ordinal="9" id="col-header-linkDepth"
-							 label="Depth"
+							 label="Depth  "
 							 hidden="true"
+							 crop="none"
 							 style="text-align:right"
 							 sortDirection="" 
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="10" class="tree-splitter" /> 
 						<xul:treecol ordinal="11" id="col-header-dateScanned"
-							 label="Date"
+							 label="Date  "
 							 hidden="true"
+							 crop="none"
 							 sortDirection="" 
 							 fixed="true"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="12" class="tree-splitter" /> 
 						<xul:treecol ordinal="13" id="col-header-MIMEtype"
-							 label="Type"
+							 label="Type  "
 							 hidden="true"
+							 crop="none"
 							 sortDirection="" 
 							 fixed="false"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="14" class="tree-splitter" /> 
 						<xul:treecol ordinal="15" id="col-header-title"
-							 label="Title"
+							 label="Title  "
 							 hidden="false"
+							 crop="none"
 							 sortDirection="" 
 							 fixed="false"
 							 flex="1"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="16" class="tree-splitter" /> 
             <xul:treecol ordinal="17" id="col-header-results-items"
-               label="Items"
+               label="Items   "
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="18" class="tree-splitter" /> 
             <xul:treecol ordinal="19" id="col-header-results-warnings"
-               label="Warnings"
+               label="Warnings   "
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="20" class="tree-splitter" /> 
             <xul:treecol ordinal="21" id="col-header-results-failures"
-               label="Failures"
+               label="Failures   "
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="22" class="tree-splitter" /> 
             <xul:treecol ordinal="23" id="col-header-results-score"
-               label="Score"
+               label="Score   "
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="24" class="tree-splitter" /> 
             <xul:treecol ordinal="25" id="col-header-results-text"
-               label="Text"
+               label="Text   "
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="26" class="tree-splitter" /> 
             <xul:treecol ordinal="27" id="col-header-results-d"
-               label="   D" tooltiptext="Downloads"
+               label="D   " tooltiptext="Downloads"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="28" class="tree-splitter" /> 
             <xul:treecol ordinal="29" id="col-header-results-F"
-               label="   F" tooltiptext="Frames"
+               label="F   " tooltiptext="Frames"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="30" class="tree-splitter" /> 
             <xul:treecol ordinal="31" id="col-header-results-fw"
-               label="  FW" tooltiptext="Frame Warnings"
+               label="FW   " tooltiptext="Frame Warnings"
+							 crop="none"
 							 hidden="true"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="32" class="tree-splitter" /> 
             <xul:treecol ordinal="33" id="col-header-results-ff"
-               label="  FF" tooltiptext="Frame Failures"
+               label="FF   " tooltiptext="Frame Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="34" class="tree-splitter" /> 
             <xul:treecol ordinal="35" id="col-header-results-h"
-               label="   H" tooltiptext="Headings"
+               label="H   " tooltiptext="Headings"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="36" class="tree-splitter" /> 
             <xul:treecol ordinal="37" id="col-header-results-hw"
-               label="  HW" tooltiptext="Headings Warnings"
+               label="HW   " tooltiptext="Headings Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="38" class="tree-splitter" /> 
             <xul:treecol ordinal="39" id="col-header-results-hf"
-               label="  HF" tooltiptext="Headings Failures"
+               label="HF   " tooltiptext="Headings Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="40" class="tree-splitter" /> 
             <xul:treecol ordinal="41" id="col-header-results-al"
-               label="  AL" tooltiptext="ARIA Landmarks"
+               label="AL   " tooltiptext="ARIA Landmarks"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="42" class="tree-splitter" /> 
             <xul:treecol ordinal="43" id="col-header-results-alw"
-               label="  ALW" tooltiptext="ARIA Landmarks Warnings"
+               label="ALW  " tooltiptext="ARIA Landmarks Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="44" class="tree-splitter" /> 
             <xul:treecol ordinal="45" id="col-header-results-alf"
-               label="  ALF" tooltiptext="ARIA Landmarks Failures"
+               label="ALF  " tooltiptext="ARIA Landmarks Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="46" class="tree-splitter" /> 
             <xul:treecol ordinal="47" id="col-header-results-a"
-               label="   A" tooltiptext="ARIA Elements"
+               label="A   " tooltiptext="ARIA Elements"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="48" class="tree-splitter" /> 
             <xul:treecol ordinal="49" id="col-header-results-aw"
-               label="  AW" tooltiptext="ARIA Elements Warnings"
+               label="AW   " tooltiptext="ARIA Elements Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="50" class="tree-splitter" /> 
             <xul:treecol ordinal="51" id="col-header-results-af"
-               label="  AF" tooltiptext="ARIA Elements Failures"
+               label="AF   " tooltiptext="ARIA Elements Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="52" class="tree-splitter" /> 
             <xul:treecol ordinal="53" id="col-header-results-l"
-               label="    L" tooltiptext="Links"
+               label="L    " tooltiptext="Links"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="54" class="tree-splitter" /> 
             <xul:treecol ordinal="55" id="col-header-results-lw"
-               label="  LW" tooltiptext="Link Warnings"
+               label="LW   " tooltiptext="Link Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="56" class="tree-splitter" /> 
             <xul:treecol ordinal="57" id="col-header-results-lf"
-               label="  LF" tooltiptext="Link Failures"
+               label="LF   " tooltiptext="Link Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="58" class="tree-splitter" /> 
             <xul:treecol ordinal="59" id="col-header-results-i"
-               label="    I" tooltiptext="Images"
+               label=" I   " tooltiptext="Images"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="60" class="tree-splitter" /> 
             <xul:treecol ordinal="61" id="col-header-results-iw"
-               label="  IW" tooltiptext="Image Warnings"
+               label="IW   " tooltiptext="Image Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="62" class="tree-splitter" /> 
             <xul:treecol ordinal="63" id="col-header-results-if"
-               label="  IF" tooltiptext="Image Failures"
+               label="IF   " tooltiptext="Image Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="64" class="tree-splitter" /> 
             <xul:treecol ordinal="65" id="col-header-results-fc"
-               label="  FC" tooltiptext="Form Controls"
+               label="FC   " tooltiptext="Form Controls"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="66" class="tree-splitter" /> 
             <xul:treecol ordinal="67" id="col-header-results-fcw"
-               label="  FCW" tooltiptext="Frorm Control Warnings"
+               label="FCW  " tooltiptext="Frorm Control Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="68" class="tree-splitter" /> 
             <xul:treecol ordinal="69" id="col-header-results-fcf"
-               label="  FCF" tooltiptext="Form Control Failures"
+               label="FCF  " tooltiptext="Form Control Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="70" class="tree-splitter" /> 
             <xul:treecol ordinal="71" id="col-header-results-ak"
-               label="  AK" tooltiptext="Access Keys"
+               label="AK   " tooltiptext="Access Keys"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="72" class="tree-splitter" /> 
             <xul:treecol ordinal="73" id="col-header-results-akw"
-               label="  AKW" tooltiptext="Access Keys Warnings"
+               label="AKW  " tooltiptext="Access Keys Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="74" class="tree-splitter" /> 
             <xul:treecol ordinal="75" id="col-header-results-akf"
-               label="  AKF" tooltiptext="Access Keys Failures"
+               label="AKF  " tooltiptext="Access Keys Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="76" class="tree-splitter" /> 
             <xul:treecol ordinal="77" id="col-header-results-t"
-               label="   T" tooltiptext="Tables"
+               label="T   " tooltiptext="Tables"
 							 hidden="false"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="78" class="tree-splitter" /> 
             <xul:treecol ordinal="79" id="col-header-results-tw"
-               label="  TW" tooltiptext="Tables Warnings"
+               label="TW   " tooltiptext="Tables Warnings"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
             <xul:splitter ordinal="80" class="tree-splitter" /> 
             <xul:treecol ordinal="81" id="col-header-results-tf"
-               label="  TF" tooltiptext="Tables Failures"
+               label="TF   " tooltiptext="Tables Failures"
 							 hidden="true"
+							 crop="none"
 				       style="text-align:right"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />

@@ -1551,7 +1551,7 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
     selectedRow = treebox.currentIndex;
     if (selectedRow >= 0) {
-      window.open(blr.W15yQC.ScannerWindow.urlList[selectedRow].loc);
+      window.open(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].loc);
     }
   },
   
@@ -1575,8 +1575,8 @@ blr.W15yQC.ScannerWindow = {
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && iframeHolder != null &&
           (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
-        if (blr.W15yQC.ScannerWindow.urlList[selectedRow].windowDescription != null) {
-          textbox.value = blr.W15yQC.ScannerWindow.urlList[selectedRow].windowDescription;
+        if (blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].windowDescription != null) {
+          textbox.value = blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].windowDescription;
         } else {
           textbox.value = '';
         }
@@ -1715,7 +1715,7 @@ blr.W15yQC.ScannerWindow = {
     return false;
   },
 
-  sortTreeAsIntegerOn: function(index, ascending) {
+  sortTreeAsNumberOn: function(index, ascending) {
     var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
     if(ascending==true) {
       for(i=0;i<list.length;i++) {
@@ -1739,104 +1739,167 @@ blr.W15yQC.ScannerWindow = {
       }
     }
   },
+
+  sortTreeAsStringOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || ((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) && order[i]>order[j])) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || ((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) && order[i]>order[j])) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
   
   sortTree: function(col) {
-    var sortDir=/ascending/i.test(col.getAttribute('sortDirection')); 
+    var sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
     blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
-    switch(col.getAttribute('id').toLowerCase()) {
+    switch(colID) {
       case 'col-header-number':
         blr.W15yQC.ScannerWindow.urlDisplayOrder=[];
         blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
         break;
+      case 'col-header-url':
+        blr.W15yQC.ScannerWindow.sortTreeAsStringOn('loc',sortDir);
+        break;
+      case 'col-header-title':
+        blr.W15yQC.ScannerWindow.sortTreeAsStringOn('windowTitle',sortDir);
+        break;
+      case 'col-header-priority':
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('priority',sortDir);
+        break;
+      case 'col-header-source':
+        blr.W15yQC.ScannerWindow.sortTreeAsStringOn('source',sortDir);
+        break;
+      case 'col-header-linkDepth':
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('linkDepth',sortDir);
+        break;
+      case 'col-header-dateScanned':
+        blr.W15yQC.ScannerWindow.sortTreeAsDateOn('dateScanned',sortDir);
+        break;
+      case 'col-header-MIMEtype':
+        blr.W15yQC.ScannerWindow.sortTreeAsStringOn('contentType',sortDir);
+        break;
+      case 'col-header-results-items':
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('itemsCount',sortDir);
+        break;
+      case 'col-header-results-warnings':
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('warningsCount',sortDir);
+        break;
+      case 'col-header-results-failures':
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('failuresCount',sortDir);
+        break;
       case 'col-header-results-score':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('score',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('score',sortDir);
         break;
       case 'col-header-results-text':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('textSize',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('textSize',sortDir);
         break;
       case 'col-header-results-d':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('downloadsCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('downloadsCount',sortDir);
         break;
       case 'col-header-results-F':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('framesCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('framesCount',sortDir);
         break;
       case 'col-header-results-fw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('framesWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('framesWarnings',sortDir);
         break;
       case 'col-header-results-ff':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('framesFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('framesFailures',sortDir);
         break;
       case 'col-header-results-h':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('headingsCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('headingsCount',sortDir);
         break;
       case 'col-header-results-hw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('headingsWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('headingsWarnings',sortDir);
         break;
       case 'col-header-results-hf':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('headingsFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('headingsFailures',sortDir);
         break;
       case 'col-header-results-al':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('ARIALandmarksCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('ARIALandmarksCount',sortDir);
         break;
       case 'col-header-results-alw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('ARIALandmarksWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('ARIALandmarksWarnings',sortDir);
         break;
       case 'col-header-results-alf':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('ARIALandmarksFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('ARIALandmarksFailures',sortDir);
         break;
       case 'col-header-results-a':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('ARIAElementsCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('ARIAElementsCount',sortDir);
         break;
       case 'col-header-results-aw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('ARIAElementsWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('ARIAElementsWarnings',sortDir);
         break;
       case 'col-header-results-af':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('ARIAElementsFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('ARIAElementsFailures',sortDir);
         break;
       case 'col-header-results-l':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('linksCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('linksCount',sortDir);
         break;
       case 'col-header-results-lw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('linksWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('linksWarnings',sortDir);
         break;
       case 'col-header-results-lf':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('linksFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('linksFailures',sortDir);
         break;
       case 'col-header-results-i':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('imagesCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('imagesCount',sortDir);
         break;
       case 'col-header-results-iw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('imagesWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('imagesWarnings',sortDir);
         break;
       case 'col-header-results-if':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('imagesFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('imagesFailures',sortDir);
         break;
       case 'col-header-results-fc':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('formControlsCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('formControlsCount',sortDir);
         break;
       case 'col-header-results-fcw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('formControlsWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('formControlsWarnings',sortDir);
         break;
       case 'col-header-results-fcf':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('formControlsFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('formControlsFailures',sortDir);
         break;
       case 'col-header-results-ak':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('accessKeysCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('accessKeysCount',sortDir);
         break;
       case 'col-header-results-akw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('accessKeysWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('accessKeysWarnings',sortDir);
         break;
       case 'col-header-results-akf':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('accessKeysFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('accessKeysFailures',sortDir);
         break;
       case 'col-header-results-t':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('tablesCount',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('tablesCount',sortDir);
         break;
       case 'col-header-results-tw':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('tablesWarnings',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('tablesWarnings',sortDir);
         break;
       case 'col-header-results-tf':
-        blr.W15yQC.ScannerWindow.sortTreeAsIntegerOn('tablesFailures',sortDir);
+        blr.W15yQC.ScannerWindow.sortTreeAsNumberOn('tablesFailures',sortDir);
         break;
       default:
         alert('unhandled sort column');
