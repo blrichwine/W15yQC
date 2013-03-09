@@ -4557,6 +4557,102 @@ ys: 'whys'
       return no;
     },
     
+    fnIsValidARIARole: function(sRole) {
+      if(sRole!=null) {
+        switch (sRole.toLowerCase()) {
+            // landmarks
+          case 'application':
+          case 'banner':
+          case 'complementary':
+          case 'contentinfo':
+          case 'form':
+          case 'main':
+          case 'navigation':
+          case 'search':
+            // Document Structure
+          case 'article':
+          case 'columnheader':
+          case 'definition':
+          case 'directory':
+          case 'document':
+          case 'group':
+          case 'heading':
+          case 'img':
+          case 'list':
+          case 'listitem':
+          case 'math':
+          case 'note':
+          case 'presentation':
+          case 'region':
+          case 'row':
+          case 'rowheader':
+          case 'separator':
+          case 'toolbar':
+            // Widgets
+          case 'alert':
+          case 'alertdialog':
+          case 'button':
+          case 'checkbox':
+          case 'dialog':
+          case 'gridcell':
+          case 'link':
+          case 'log':
+          case 'marquee':
+          case 'menuitem':
+          case 'menuitemcheckbox':
+          case 'menuitemradio':
+          case 'option':
+          case 'progressbar':
+          case 'radio':
+          case 'scrollbar':
+          case 'slider':
+          case 'spinbutton':
+          case 'status':
+          case 'tab':
+          case 'tabpanel':
+          case 'textbox':
+          case 'timer':
+          case 'tooltip':
+          case 'treeitem':
+            // Composite user interface widgets
+          case 'combobox':
+          case 'grid':
+          case 'listbox':
+          case 'menu':
+          case 'menubar':
+          case 'radiogroup':
+          case 'tablist':
+          case 'tree':
+          case 'treegrid':
+            return true;
+            break;
+        }
+      }
+      return false;
+    },
+    
+    fnIsAbstractARIARole: function(sRole) {
+      if(sRole!=null) {
+        switch (sRole.toLowerCase()) {
+          case 'command':
+          case 'composite':
+          case 'input':
+          case 'landmark':
+          case 'range':
+          case 'roletype':
+          case 'section':
+          case 'sectionhead':
+          case 'select':
+          case 'structure':
+          case 'widget':
+          case 'window':
+            return true;
+            break;
+        }
+      }
+      return false;
+    },
+    
     fnAnalyzeARIAMarkupOnNode: function (node, doc, no) {
       var sRole, sMissingIDs, sIDs, i;
       blr.W15yQC.fnLog('analyze aria markup-starts:no:'+no+'--'+no.toString());
@@ -4569,89 +4665,12 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(no, 'ariaMultipleRoleValues'); // TODO: QA This
               sRole=sRole.replace(/^[a-z]+/,'$&');
             }
-            switch (sRole.toLowerCase()) {
-              // landmarks
-            case 'application':
-            case 'banner':
-            case 'complementary':
-            case 'contentinfo':
-            case 'form':
-            case 'main':
-            case 'navigation':
-            case 'search':
-              // Document Structure
-            case 'article':
-            case 'columnheader':
-            case 'definition':
-            case 'directory':
-            case 'document':
-            case 'group':
-            case 'heading':
-            case 'img':
-            case 'list':
-            case 'listitem':
-            case 'math':
-            case 'note':
-            case 'presentation':
-            case 'region':
-            case 'row':
-            case 'rowheader':
-            case 'separator':
-            case 'toolbar':
-              // Widgets
-            case 'alert':
-            case 'alertdialog':
-            case 'button':
-            case 'checkbox':
-            case 'dialog':
-            case 'gridcell':
-            case 'link':
-            case 'log':
-            case 'marquee':
-            case 'menuitem':
-            case 'menuitemcheckbox':
-            case 'menuitemradio':
-            case 'option':
-            case 'progressbar':
-            case 'radio':
-            case 'scrollbar':
-            case 'slider':
-            case 'spinbutton':
-            case 'status':
-            case 'tab':
-            case 'tabpanel':
-            case 'textbox':
-            case 'timer':
-            case 'tooltip':
-            case 'treeitem':
-              // Composite user interface widgets
-            case 'combobox':
-            case 'grid':
-            case 'listbox':
-            case 'menu':
-            case 'menubar':
-            case 'radiogroup':
-            case 'tablist':
-            case 'tree':
-            case 'treegrid':
-              no = blr.W15yQC.fnCheckARIARole(no, node, sRole);
-              break;
-            case 'command':
-            case 'composite':
-            case 'input':
-            case 'landmark':
-            case 'range':
-            case 'roletype':
-            case 'section':
-            case 'sectionhead':
-            case 'select':
-            case 'structure':
-            case 'widget':
-            case 'window':
-              blr.W15yQC.fnAddNote(no, 'ariaAbstractRole',[sRole]);
-              break;
-            default:
-              blr.W15yQC.fnAddNote(no, 'ariaUnknownRole');
+            if(blr.W15yQC.fnIsValidARIARole(sRole)==true) {
+              no = blr.W15yQC.fnCheckARIARole(no, node, sRole); // TODO: QA This
+            } else if(blr.W15yQC.fnIsAbstractARIARole(sRole)==true) {
+              blr.W15yQC.fnAddNote(no, 'ariaAbstractRole',[sRole]); // TODO: QA This
+            } else {
+              blr.W15yQC.fnAddNote(no, 'ariaUnknownRole'); // TODO: QA This
             }
           }
         }
@@ -8509,8 +8528,10 @@ ys: 'whys'
        * 
        */
       var i, sDesc='', sLinksTo='', documentsCount=0, wordProcCount=0, slidesCount=0, pdfsCount=0, spreadSheetCount=0,
-        audioFileCount=0, avFileCount=0, ebookFileCount=0, pageLayoutFileCount=0, bHasSkipNav=false;
-//      oW15yQCReport = new blr.W15yQC.W15yResults();
+        audioFileCount=0, avFileCount=0, ebookFileCount=0, pageLayoutFileCount=0, bHasSkipNav=false, sRole,
+        ariaLanmarks=new blr.W15yQC.HashTable(), ariaRoles=new blr.W15yQC.HashTable(), invalidAriaRoles=new blr.W15yQC.HashTable();
+        
+      oW15yQCReport = new blr.W15yQC.W15yResults();
       if(oW15yQCReport != null) {
         oW15yQCReport.PageScore.bHasSkipNavLinks=false;
         if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length && oW15yQCReport.aFrames.length>0) {
@@ -8521,6 +8542,20 @@ ys: 'whys'
         }
         if(oW15yQCReport.aARIALandmarks && oW15yQCReport.aARIALandmarks.length && oW15yQCReport.aARIALandmarks.length>0) {
           sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aARIALandmarks.length, 'landmark', 'landmarks'), ', ');
+        }
+        if(oW15yQCReport.aARIAElements && oW15yQCReport.aARIAElements.length && oW15yQCReport.aARIAElements.length>0) {
+          for(i=0; i<oW15yQCReport.aARIAElements.length; i++) {
+            sRole=oW15yQCReport.aARIAElements[i].role;
+            if(/[a-z]/i.test(sRole)==true) {
+              if(blr.W15yQC.fnIsARIALandmark(oW15yQCReport.aARIAElements[i].node)==true) {
+                ariaLanmarks.setItem(sRole,true);
+              } else if(blr.W15yQC.fnIsValidARIARole(sRole)==true) {
+                ariaRoles.setItem(sRole,true);
+              } else {
+                invalidAriaRoles.setItem(sRole,true);
+              }
+            }
+          }
         }
         if(oW15yQCReport.aLinks && oW15yQCReport.aLinks.length && oW15yQCReport.aLinks.length>0) {
           sDesc=blr.W15yQC.fnJoin(sDesc, blr.W15yQC.fnQuantify(oW15yQCReport.aLinks.length, 'link', 'links'), ', ');
@@ -8549,9 +8584,6 @@ ys: 'whys'
           }
           documentsCount=wordProcCount + pdfsCount + pageLayoutFileCount + ebookFileCount + slidesCount + spreadSheetCount;
         }
-        if(oW15yQCReport.aFormControls && oW15yQCReport.aFormControls.length && oW15yQCReport.aFormControls.length>0) {
-          sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(oW15yQCReport.aFormControls.length, 'form control', 'form controls'), ', ');
-        }
         if(wordProcCount>0) {
           sLinksTo=blr.W15yQC.fnJoin(sLinksTo, blr.W15yQC.fnQuantify(wordProcCount, 'word processor file', 'word processor files'), ', ');
         }
@@ -8578,13 +8610,22 @@ ys: 'whys'
         }
         
         if(sDesc.length>2) {
-          sDesc='Page contains: '+sDesc+".\n";
+          sDesc='Page contains: '+sDesc+".";
         }
         if(sLinksTo.length>2) {
-          sDesc='Page links to: '+sLinksTo+".\n";
+          sDesc=blr.W15yQC.fnJoin(sDesc,'Page links to: '+sLinksTo+'.',"\n");
         }
         if(bHasSkipNav) {
           sDesc=blr.W15yQC.fnJoin(sDesc,'Appears to have skip navigation link(s).',"\n");
+        }
+        if(ariaLandmarks.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following ARIA Landmarks: '+ariaLandmarks.keys().toString()+'.', "\n")
+        }
+        if(ariaRoles.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following ARIA Roles: '+ariaRoles.keys().toString()+'.', "\n")
+        }
+        if(invalidAriaRoles.length>0) {
+          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following invalid ARIA Roles: '+invalidAriaRoles.keys().toString()+'.', "\n")
         }
       }
       oW15yQCReport.iDocumentCount=documentsCount;
@@ -9482,7 +9523,8 @@ ys: 'whys'
             this.length++;
         }
     }
-
+    obj=null;
+    
     this.setItem = function(key, value)
     {
         var previous;

@@ -574,6 +574,7 @@ blr.W15yQC.ScannerWindow = {
           }
           url.dontParseForLinks=dontParseForLinks;
           blr.W15yQC.ScannerWindow.urlList.push(url);
+          blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
           blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
           
         }
@@ -974,6 +975,7 @@ blr.W15yQC.ScannerWindow = {
         }
         xmlDoc = null;
       }
+      blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
       blr.W15yQC.ScannerWindow.updateProjectDisplay();
       if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0 && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Project loaded.');
