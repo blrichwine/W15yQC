@@ -135,7 +135,25 @@
              Spider delay
              Drop out certain checks for speed when spidering
             
+            
       *** FIX ASAP***
+      Add Turn On All Highlighters Feature -- need a force parameter for the highlighter routines
+      Store previous scan results in the site scanner in the URL object for each URL.
+        -- Limit previous result depth?
+        -- How to display?
+      Page Score: Count off much more if most form controls don't have labels (i.e. form on the page doesn't label controls, but page template search features do)
+        -- Many controls don't have labels
+        -- Most controls don't have labels
+        -- All controls don't have labels
+      Compute overall site score
+        -- How? Histogram of the page scores? 
+      Handle page timeouts in site scanner
+        -- leave error message and move on to the next link
+      IUADAPTS Kurzweil 3000 FAQ page, same page links are producing errors. Is this a real concern?
+        -- W15yQC is not seeing the <a id="sdfsd">fasdfasdf</a> as a "named" anchor.
+        -- Test the page with JAWS and see if the anchors are showing up in the links list. If so, that is probably a problem.
+      HTML5 allows rich IDs. Do we need to update the Valid ID routines? Do we need to be sensitive to doctype when testing IDs?
+      Apparently name attribute values can be "rich", what ever that means, and include entities. If so, we need to look at the valid name routines.
       Accessibility quick tips : Abandon your mouse for a few days and see what the exerience is like.
       recent files list for project scanner
       remove styles view - filter out characters that screen readers don't announce
@@ -320,7 +338,8 @@
       - Allow configurable values that are listed as not meaningful
       
 FIXED:
-
+        - Add Turn Off All Highlighters Feature [3/9/2013]
+        - Before creating the remove styles view, turn off all highlighting so that text does not get injected into the remove styles view. [3/9/2013]
         - remove styles view - denote "same page links"
         - Remove Styles view is not displaying aria-label values on landmarks [Fixed]
         - What about definition lists / highlighting? [done]

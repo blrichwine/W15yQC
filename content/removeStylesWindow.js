@@ -60,6 +60,7 @@ blr.W15yQC.RemoveStylesWindow = {
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.RemoveStylesWindow.FirebugO = dialog.arguments[1];
     blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[2];
+    blr.W15yQC.Highlighters.removeAllHighlights(blr.W15yQC.fnGetDocuments(blr.W15yQC.RemoveStylesWindow.srcDoc));
     if1 = document.getElementById("HTMLReportIFrame");
     blr.W15yQC.RemoveStylesWindow.rd = if1.contentDocument;
     rd = blr.W15yQC.RemoveStylesWindow.rd;

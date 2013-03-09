@@ -1379,6 +1379,7 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
       } else {
         blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished Scanning.');
       }
     } else {
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();

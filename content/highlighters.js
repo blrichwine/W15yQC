@@ -622,6 +622,17 @@ blr.W15yQC.Highlighters = {
         }
       }
     }
+  },
+  
+  removeAllHighlights: function(aDocumentsList) {
+    if (aDocumentsList == null) {
+        aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+    }
+    blr.W15yQC.Highlighters.removeListHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.removeHeadingHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.removeARIALandmarkHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.removeTableHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.removeBasicElementHighlights('blockquote', aDocumentsList);
   }
 
 };

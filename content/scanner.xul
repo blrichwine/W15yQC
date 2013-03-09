@@ -86,6 +86,7 @@
 						<xul:treecol ordinal="5" id="col-header-priority"
 							 label="Priority  "
 							 hidden="true"
+							 style="text-align:right;min-width:30px"
 							 crop="none"
 							 fixed="true"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
@@ -93,6 +94,7 @@
 						<xul:treecol ordinal="7" id="col-header-source"
 							 label="Source  "
 							 hidden="true"
+							 style="text-align:left;min-width:50px"
 							 crop="none"
 							 sortDirection="" 
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
@@ -109,6 +111,7 @@
 							 label="Date  "
 							 hidden="true"
 							 crop="none"
+							 style="text-align:left;min-width:30px"
 							 sortDirection="" 
 							 fixed="true"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
@@ -117,6 +120,7 @@
 							 label="Type  "
 							 hidden="true"
 							 crop="none"
+							 style="text-align:left;min-width:30px"
 							 sortDirection="" 
 							 fixed="false"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
@@ -124,6 +128,7 @@
 						<xul:treecol ordinal="15" id="col-header-title"
 							 label="Title  "
 							 hidden="false"
+							 style="text-align:left;min-width:30px"
 							 crop="none"
 							 sortDirection="" 
 							 fixed="false"

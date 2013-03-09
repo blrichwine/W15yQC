@@ -8501,7 +8501,7 @@ ys: 'whys'
             offset=Math.floor((30.0*(itemsCount-failures)/itemsCount)*((itemsCount-warnings/5)/itemsCount))-30;
             score=score+offset;
             if(offset<0) {
-              sDesc=blr.W15yQC.fnJoin(sDesc,"Penalty for "+failures.toString()+" failures and "+warnings.toString()+" warnings ("+offset.toString()+").",' ');
+              sDesc=blr.W15yQC.fnJoin(sDesc,"Penalty for "+failures.toString()+" failures and "+warnings.toString()+" warnings on "+itemsCount.toString()+" items ("+offset.toString()+").",' ');
             }
           }
         }
@@ -8529,9 +8529,8 @@ ys: 'whys'
        */
       var i, sDesc='', sLinksTo='', documentsCount=0, wordProcCount=0, slidesCount=0, pdfsCount=0, spreadSheetCount=0,
         audioFileCount=0, avFileCount=0, ebookFileCount=0, pageLayoutFileCount=0, bHasSkipNav=false, sRole,
-        ariaLanmarks=new blr.W15yQC.HashTable(), ariaRoles=new blr.W15yQC.HashTable(), invalidAriaRoles=new blr.W15yQC.HashTable();
-        
-      oW15yQCReport = new blr.W15yQC.W15yResults();
+        ariaLandmarks=new blr.W15yQC.HashTable(), ariaRoles=new blr.W15yQC.HashTable(), invalidAriaRoles=new blr.W15yQC.HashTable();
+      //oW15yQCReport = new blr.W15yQC.W15yResults();
       if(oW15yQCReport != null) {
         oW15yQCReport.PageScore.bHasSkipNavLinks=false;
         if(oW15yQCReport.aFrames && oW15yQCReport.aFrames.length && oW15yQCReport.aFrames.length>0) {
@@ -8548,7 +8547,7 @@ ys: 'whys'
             sRole=oW15yQCReport.aARIAElements[i].role;
             if(/[a-z]/i.test(sRole)==true) {
               if(blr.W15yQC.fnIsARIALandmark(oW15yQCReport.aARIAElements[i].node)==true) {
-                ariaLanmarks.setItem(sRole,true);
+                ariaLandmarks.setItem(sRole,true);
               } else if(blr.W15yQC.fnIsValidARIARole(sRole)==true) {
                 ariaRoles.setItem(sRole,true);
               } else {
