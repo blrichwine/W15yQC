@@ -411,6 +411,7 @@
 				 <xul:button id="button-openSelectedURL"
 					 label="Open URL"
 					 oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
+				 <xul:checkbox id="cbHideURLsNotYetScanned" label="Hide Unscanned URLs" checked="false" oncommand="blr.W15yQC.ScannerWindow.hideUnscannedURLsCheckboxToggle()"/>
 				 <xul:spacer flex="1"/>
 				 <xul:button id="button-addNewURL"
 					 label="Add URL"

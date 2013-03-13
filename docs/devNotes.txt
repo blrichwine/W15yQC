@@ -156,7 +156,6 @@
            - ???
       Hide unscanned URLs checkbox
       Delete URLs that don't meet current URL criteria
-      When sorting, update status bar as to performing sort and what the sort columns and order are.
       For score column, add in "error" and "skipped" results.
       Add flash object detection to window description
       Verify ARIA Landmark detection is complete and current
@@ -363,6 +362,7 @@
       - Allow configurable values that are listed as not meaningful
       
 FIXED:
+        - When sorting, update status bar as to performing sort and what the sort columns and order are. [3/12/2013]
         - do we need a fixup URL routine to deal with \ used in place of / ? [ANSWER: No. using backslashes in FF on Mac does not work 3/9/2013]
         - Add Turn Off All Highlighters Feature [3/9/2013]
         - Before creating the remove styles view, turn off all highlighting so that text does not get injected into the remove styles view. [3/9/2013]

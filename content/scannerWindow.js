@@ -159,7 +159,7 @@ blr.W15yQC.ScannerWindow = {
   urlMustMatchListType: [],
   urlMustNotMatchList: [],
   urlMustNotMatchListType: [],
-  sortColumns: [' URL Number'],
+  sortColumns: [' URL Number (asc)'],
   parseForLinks: true,
   sProjectTitle: '',
   projectHasUnsavedChanges: false,
@@ -336,12 +336,11 @@ blr.W15yQC.ScannerWindow = {
   
   updateProjectDisplay: function() {
     // blr.W15yQC.fnLog('scanner-updateProjectDisplay');
-    var tbc, url, i,
+    var tbc, url, i, bHideUnscannedURLs=document.getElementById('cbHideURLsNotYetScanned').checked,
         treeitem, treerow, treecell;
 
     document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC', ' - ');
     tbc = document.getElementById('treeboxChildren');
-  
     if (tbc != null) {
       while (tbc.firstChild) {
         tbc.removeChild(tbc.firstChild);
@@ -349,7 +348,14 @@ blr.W15yQC.ScannerWindow = {
       if(blr.W15yQC.ScannerWindow.urlList != null) {
         blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
         for (i = 0; i < blr.W15yQC.ScannerWindow.urlList.length; i++) {
-          blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
+          if(bHideUnscannedURLs==false) {
+            blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
+          } else {
+            url=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[i]];
+            if(url.dateScanned || url.itemsCount || url.windowTitle || url.textSize) {
+              blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
+            }
+          }
         }
         blr.W15yQC.ScannerWindow.selectRow(0);
       }
@@ -575,7 +581,7 @@ blr.W15yQC.ScannerWindow = {
           }
           url.dontParseForLinks=dontParseForLinks;
           blr.W15yQC.ScannerWindow.urlList.push(url);
-          blr.W15yQC.ScannerWindow.sortColumns=[' URL Number'];
+          blr.W15yQC.ScannerWindow.sortColumns=[' URL Number (asc)'];
           blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
           blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
           
@@ -971,7 +977,7 @@ blr.W15yQC.ScannerWindow = {
               blr.W15yQC.ScannerWindow.urlList[i].tablesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_warnings');
               blr.W15yQC.ScannerWindow.urlList[i].tablesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'tables_failures');
             }
-            blr.W15yQC.ScannerWindow.sortColumns=[' URL Number'];
+            blr.W15yQC.ScannerWindow.sortColumns=[' URL Number (asc)'];
           }
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished loading project.');
           blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
@@ -1462,6 +1468,7 @@ blr.W15yQC.ScannerWindow = {
         try {
           oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
           blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
+          blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned=Date.now();
           blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Results for:'+oW15yQCResults.sWindowTitle);
           blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = true;
@@ -1721,11 +1728,23 @@ blr.W15yQC.ScannerWindow = {
     return false;
   },
 
+  addSortColumn: function(index, ascending) {
+    var i;
+    while(blr.W15yQC.ScannerWindow.sortColumns.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.ScannerWindow.sortColumns.splice(blr.W15yQC.ScannerWindow.sortColumns.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.ScannerWindow.sortColumns.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.ScannerWindow.sortColumns.splice(blr.W15yQC.ScannerWindow.sortColumns.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.ScannerWindow.sortColumns.length>3) { blr.W15yQC.ScannerWindow.sortColumns.pop(); }
+    blr.W15yQC.ScannerWindow.sortColumns.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+  
   sortTreeAsNumberOn: function(index, ascending) {
     var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
-    blr.W15yQC.ScannerWindow.sortColumns.unshift(' '+index);
+    blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorting on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
-    if(ascending==true) {
+    if(ascending==false) {
       for(i=0;i<list.length;i++) {
         for(j=i+1;j<list.length;j++) {
           if(list[order[i]][index]>list[order[j]][index] || (list[order[i]][index]==list[order[j]][index] && order[i]>order[j])) {
@@ -1750,7 +1769,7 @@ blr.W15yQC.ScannerWindow = {
 
   sortTreeAsStringOn: function(index, ascending) {
     var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
-    blr.W15yQC.ScannerWindow.sortColumns.unshift(' '+index);
+    blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorting on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
     if(ascending!=true) {
       for(i=0;i<list.length;i++) {
@@ -1789,7 +1808,7 @@ blr.W15yQC.ScannerWindow = {
     switch(colID) {
       case 'col-header-number':
         blr.W15yQC.ScannerWindow.urlDisplayOrder=[];
-        blr.W15yQC.ScannerWindow.sortColumns=[' URL Number'];
+        blr.W15yQC.ScannerWindow.sortColumns=[' URL Number (asc)'];
         blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
         break;
       case 'col-header-url':
@@ -1919,6 +1938,11 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.updateControlStates();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorted on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
+  },
+  
+  hideUnscannedURLsCheckboxToggle: function() {
+    blr.W15yQC.ScannerWindow.updateProjectDisplay();
+    blr.W15yQC.ScannerWindow.updateControlStates();
   },
   
   windowOnKeyDown: function() {
