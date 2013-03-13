@@ -44,6 +44,11 @@
    2. Update version text in aboutDialog.xul
    3. Update <em:version> in install.rdf
  
+ HOW TO INFO:
+       Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
+      https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
+      - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
+
  
  *
  * QA Tasks
@@ -137,6 +142,30 @@
             
             
       *** FIX ASAP***
+      BUG: accesskeys on select boxes were reported as unlabeled in the accessible discussion tool example Hadi presented.
+        - URL: https://dl.dropbox.com/u/137779786/discussion_module_mockup/discussion_board-listview.html
+        - Fixed part of it. There was a missing parameter in the call to fnGetEffectiveLabel.
+        - Need to determine what JAWS does to announce accessiey labels for various elements.
+           - list items
+           - overall list
+           - div, span
+           - paragraph
+           - ???
+      Hide unscanned URLs checkbox
+      Delete URLs that don't meet current URL criteria
+      When sorting, update status bar as to performing sort and what the sort columns and order are.
+      For score column, add in "error" and "skipped" results.
+      Add flash object detection to window description
+      Verify ARIA Landmark detection is complete and current
+      Verify ARIA Role appropriateness (valid place to use a particular role)
+        -- Correct ancestors
+        -- Correct children
+        -- correct path between ancestors and children... both in roles that should be between and that presentation role is present on other elements.
+        -- Correct element to place role on (don't put heading role on a button element, etc.)
+      For form controls, add a note that describes where the effective label came from.
+      Restate failures appropriately:
+        bAllFormControlsHaveMeaningfulLabels >> bNoFormControlsAppearToHaveNonMeaningfulLabels
+      Same page links... fix target link detection by following this algo: http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
       Add Turn On All Highlighters Feature -- need a force parameter for the highlighter routines
       Store previous scan results in the site scanner in the URL object for each URL.
         -- Limit previous result depth?
@@ -166,21 +195,15 @@
       Moan about keyboard accessibility issues
         - A elements without HREF attributes that have onclick handlers
         
-      do we need a fixup URL routine to deal with \ used in place of / ?
       warn when link title text is different than the effective link text and the aria-descriptions
-      Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
-      https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       Audit all objects and verify each property has a value set in the contructor. Test that objects are doing what we think they are doing.
       Hints on how to detect listeners? https://developer.mozilla.org/en-US/docs/DOM/element.removeEventListener
       Ratio of text that is structured vs. unstructure (contained in an ARIA Landmark vs. Not, etc.)
-      Add treat domains as the same list (iuadapts.indiana.edu and indiana.edu/~iuadapts)
       Option to ask what domain to consider documents with file:// as their URL as (so local files can be treated as on a server somewhere)
       Back to back links do not have a space between them (Sakai 2.9 skip nav links are an example)
       In form control list, highlight label elements with a different background color. Place a title attribute on the element that says "label" or "form control"
       If a link has a role of presentation on it, and is in a list (current tool in tools list of sakai 2.9 portal, does JAWS announce it when moving through the list?
         Currently it is not listed in the remove styles view.)
-      Ability to submit sitemaps for scanning in a project. (http://support.google.com/webmasters/bin/answer.py?hl=en&answer=183668)
-        -- Parse xml: https://developer.mozilla.org/en-US/docs/Parsing_and_serializing_XML
       Detect alt text for Flash objects, other embedded objects, canvas, etc.
       Add effective label columns to the appropriate HTML Report sections and inspector dialogs
       Add blr.W15yQC.bQuick = false; to each inspector dialog -- maybe not, added it to the open dialog routine.
@@ -251,7 +274,6 @@
         - Indicate which notes a label applies to.
         - validate the extension in mozilla extension validator, run security checks, perform jslint
         - clean up the try/catch blocks
-        - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
         - ****What about HTML5 Hidden attribute?
            - What values for the hidden attribute work in FF, IE, and Safari? Which don't (if any)
         - Update options dialog with new features
@@ -338,8 +360,12 @@
       - Allow configurable values that are listed as not meaningful
       
 FIXED:
+        - do we need a fixup URL routine to deal with \ used in place of / ? [ANSWER: No. using backslashes in FF on Mac does not work 3/9/2013]
         - Add Turn Off All Highlighters Feature [3/9/2013]
         - Before creating the remove styles view, turn off all highlighting so that text does not get injected into the remove styles view. [3/9/2013]
+        - Ability to submit sitemaps for scanning in a project. (http://support.google.com/webmasters/bin/answer.py?hl=en&answer=183668)
+          -- Parse xml: https://developer.mozilla.org/en-US/docs/Parsing_and_serializing_XML
+        - Add treat domains as the same list (iuadapts.indiana.edu and indiana.edu/~iuadapts)
         - remove styles view - denote "same page links"
         - Remove Styles view is not displaying aria-label values on landmarks [Fixed]
         - What about definition lists / highlighting? [done]
