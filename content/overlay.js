@@ -7434,7 +7434,8 @@ ys: 'whys'
           }
           blr.W15yQC.fnDoEvents();
         }
-
+        if(aLinksList[i]==null || aLinksList[i].node==null || !aLinksList[i].node.hasAttribute) continue;
+        
         aChildImages=aLinksList[i].node.getElementsByTagName('img');
         if(aChildImages != null && aChildImages.length>0) {
           for(j=0; j< aChildImages.length; j++) { 
@@ -7536,15 +7537,13 @@ ys: 'whys'
           }
 
         } else {
-          if (aLinksList[i].node && aLinksList[i].node.hasAttribute && aLinksList[i].node.hasAttribute('href') == true) {
+          if (aLinksList[i].node.hasAttribute('href') == true) {
             oW15yResults.PageScore.bAllLinksHaveText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtEmpty'); //
-          } else if (aLinksList[i].node && aLinksList[i].node.getAttribute && ((aLinksList[i].node.getAttribute('name') != null && aLinksList[i].node.getAttribute('name').length > 0) || (aLinksList[i].node.getAttribute('id') != null && aLinksList[i].node.getAttribute('id').length > 0))) {
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
           }
         }
 
-        if (aLinksList[i].node && aLinksList[i].node.hasAttribute && aLinksList[i].node.hasAttribute('href') == true) {
+        if (aLinksList[i].node.hasAttribute('href') == true) {
           // TODO: Check for ambiguious targets - duplicate IDs or Names
           blr.W15yQC.fnLog('Check for ambiguious targets - duplicate IDs or Names');
           sHref = aLinksList[i].node.getAttribute('href');
@@ -7627,6 +7626,8 @@ ys: 'whys'
 
             }
           }
+        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
         }
 
         if(aLinksList[i].node != null && aLinksList[i].node.hasAttribute('onclick') == true && aLinksList[i].node.hasAttribute('onkeypress') == true &&
