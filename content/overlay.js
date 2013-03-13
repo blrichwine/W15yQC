@@ -7400,7 +7400,7 @@ ys: 'whys'
 
 
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
-      var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual,
+      var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
@@ -7489,30 +7489,34 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
-          for (j = i+1; j < aLinksList.length; j++) {
-            bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href);
-            bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text);
-            if (aLinksList[j].text && aLinksList[j].text.length > 0) {
-              if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || bHrefsAreEqual == false || aLinksList[i].href.length < 1)) {
-                aLinksList[i].aSameLinkText.push(j+1);
-                aLinksList[j].aSameLinkText.push(i+1);
-              } else if (aLinksList[i].soundex == aLinksList[j].soundex && bHrefsAreEqual == false) {
-                aLinksList[i].aSoundsTheSame.push(j+1);
-                aLinksList[j].aSoundsTheSame.push(i+1);
-              }
-            }
-
-            if (aLinksList[i].href != null && bHrefsAreEqual == true && bLinkTextsAreDifferent == true) {
-              bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
-              if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
-                if(bOnclickValuesAreDifferent == false) {
-                  aLinksList[i].aSameHrefAndOnclick.push(j+1);
-                  aLinksList[j].aSameHrefAndOnclick.push(i+1);
+          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) {
+            for (j = i+1; j < aLinksList.length; j++) {
+              if(aLinksList[j].node.hasAttribute('href') || aLinksList[j].node.hasAttribute('onclick')) {
+                bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href);
+                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text);
+                if (aLinksList[j].text && aLinksList[j].text.length > 0) {
+                  if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || bHrefsAreEqual == false || aLinksList[i].href.length < 1)) {
+                    aLinksList[i].aSameLinkText.push(j+1);
+                    aLinksList[j].aSameLinkText.push(i+1);
+                  } else if (aLinksList[i].soundex == aLinksList[j].soundex && bHrefsAreEqual == false) {
+                    aLinksList[i].aSoundsTheSame.push(j+1);
+                    aLinksList[j].aSoundsTheSame.push(i+1);
+                  }
                 }
-              } else { // unless javascript:;, #, javascript:void(0)
-                if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) {
-                  aLinksList[i].aDiffTextSameHref.push(j+1);
-                  aLinksList[j].aDiffTextSameHref.push(i+1);
+    
+                if (aLinksList[i].href != null && bHrefsAreEqual == true && bLinkTextsAreDifferent == true) {
+                  bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
+                  if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
+                    if(bOnclickValuesAreDifferent == false) {
+                      aLinksList[i].aSameHrefAndOnclick.push(j+1);
+                      aLinksList[j].aSameHrefAndOnclick.push(i+1);
+                    }
+                  } else { // unless javascript:;, #, javascript:void(0)
+                    if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) {
+                      aLinksList[i].aDiffTextSameHref.push(j+1);
+                      aLinksList[j].aDiffTextSameHref.push(i+1);
+                    }
+                  }
                 }
               }
             }

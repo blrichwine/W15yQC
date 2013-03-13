@@ -142,6 +142,9 @@
             
             
       *** FIX ASAP***
+      Sounds the same CNN vs. CNNi
+        -- for all cap tokens, should they be separated into individual letters?
+        -- How should mixed case words be treated? CNNi, for instance? TEST WITH JAWS
       BUG: accesskeys on select boxes were reported as unlabeled in the accessible discussion tool example Hadi presented.
         - URL: https://dl.dropbox.com/u/137779786/discussion_module_mockup/discussion_board-listview.html
         - Fixed part of it. There was a missing parameter in the call to fnGetEffectiveLabel.
