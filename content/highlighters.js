@@ -623,6 +623,23 @@ blr.W15yQC.Highlighters = {
       }
     }
   },
+
+  installAllHighlights: function (aDocumentsList, aHeadingsList) {
+    // Headings
+    // Tables
+    // Landmarks
+    // ARIA Labels
+    // Language markup
+    if (aDocumentsList == null) {
+      aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+      aHeadingsList = blr.W15yQC.fnGetHeadings(window.top.content.document);
+    }
+    blr.W15yQC.Highlighters.removeAllHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightHeadings(aDocumentsList, aHeadingsList);
+    blr.W15yQC.Highlighters.highlightLists(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightBasicElement('blockquote', aDocumentsList);
+  },
   
   removeAllHighlights: function(aDocumentsList) {
     if (aDocumentsList == null) {

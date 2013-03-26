@@ -46,6 +46,10 @@
                       oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
             <menuitem id="W15yQC_menuEntry_highlightTables" accesskey="t" label="Tables" 
                       oncommand="blr.W15yQC.Highlighters.highlightTables();"/>
+            <menuitem id="W15yQC_menuEntry_installAllHighlighters" label="Install All" 
+                      oncommand="blr.W15yQC.Highlighters.installAllHighlights();"/>
+            <menuitem id="W15yQC_menuEntry_removeAllHighlighters" label="Remove All" 
+                      oncommand="blr.W15yQC.Highlighters.removeAllHighlights();"/>
           </menupopup>
         </menu>
         <menu id="W15yQC_menuEntry_toolsMenu" accesskey="o" label="Tools">
@@ -111,6 +115,8 @@
           <menuitem id="W15yTPBMI-HeadingsHighlighter" accesskey="" label="Headings" oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
           <menuitem id="W15yTPBMI-ListsHighlighter" accesskey="" label="Lists" oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
           <menuitem id="W15yTPBMI-TablesHighlighter" accesskey="" label="Tables" oncommand="blr.W15yQC.Highlighters.highlightTables();"/>
+          <menuitem id="W15yTPBMI-InstallAllHighlighters" label="Install All" oncommand="blr.W15yQC.Highlighters.installAllHighlights();"/>
+          <menuitem id="W15yTPBMI-RemoveAllHighlighters" label="Remove All" oncommand="blr.W15yQC.Highlighters.removeAllHighlights();"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Tools" label="Tools" type="menu" onmouseover="" class="toolbarbutton">
