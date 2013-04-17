@@ -1,0 +1,194 @@
+parseNowPlayingJSON_964001([
+   {
+      "description" : "Fears grow that North Korea could fire a mobile ballistic missile at any time. CNN's Anna Coren reports.",
+      "url" : "http://www.cnn.com/video/?/video/world/2013/04/10/lklv-coren-north-korea-missile-test.cnn",
+      "headline" : "Is a North Korea missile test imminent?",
+      "id" : "world/2013/04/10/lklv-coren-north-korea-missile-test.cnn",
+      "trt" : "262",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409212103-northkorea-missiel-search-tease.jpg"
+   },
+   {
+      "description" : "A mother in Canada says her daughter killed herself after she was raped and then teased about it by classmates. http://www.ctvnews.ca/canada/n-s-teen-took-her-own-life-after-rape-bullying-mother-says-1.1230708",
+      "url" : "http://www.cnn.com/video/?/video/crime/2013/04/10/pkg-teen-commits-suicide-after-alleged-rape-photos-online.ctv-network",
+      "headline" : "Mom: Teen killed herself after rape",
+      "id" : "crime/2013/04/10/pkg-teen-commits-suicide-after-alleged-rape-photos-online.ctv-network",
+      "trt" : "156",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409210534-pkg-teen-commits-suicide-after-alleged-rape-photos-online-00000106-search-tease.jpg"
+   },
+   {
+      "description" : "A man in China climbed three stories up a burning apartment building to save a little girl from the flames.",
+      "url" : "http://www.cnn.com/video/?/video/world/2013/04/10/early-china-apartment-fire-rescue.cnn",
+      "headline" : "See man brave apartment fire for girl",
+      "id" : "world/2013/04/10/early-china-apartment-fire-rescue.cnn",
+      "trt" : "51",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410065222-early-china-apartment-fire-rescue-00000503-search-tease.jpg"
+   },
+   {
+      "description" : "Actress Lindsay Lohan discussed her scheduled rehab session with David Letterman.",
+      "url" : "http://www.cnn.com/video/?/video/showbiz/2013/04/10/mxp-letterman-lohan-rehab.hln",
+      "headline" : "Lohan: Upcoming rehab is a 'blessing'",
+      "id" : "showbiz/2013/04/10/mxp-letterman-lohan-rehab.hln",
+      "trt" : "40",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410075310-mxp-letterman-lohan-rehab-00002227-search-tease.jpg"
+   },
+   {
+      "description" : "TED Senior Fellow Skylar Tibbits on his new technology that could revolutionize 3-D printing.",
+      "url" : "http://www.cnn.com/video/?/video/tech/2013/04/09/orig-ideas-4d-printing.cnn",
+      "headline" : "Think 3-D printing is cool? Try 4-D",
+      "id" : "tech/2013/04/09/orig-ideas-4d-printing.cnn",
+      "trt" : "125",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409163452-orig-ideas-4d-printing-00012024-search-tease.jpg"
+   },
+   {
+      "description" : "Defense Secretary Chuck Hagel addresses the situation in North Korea, saying the U.S. is prepared to act if necessary.",
+      "url" : "http://www.cnn.com/video/?/video/politics/2013/04/10/sot-dc-hagel-north-korea.cnn",
+      "headline" : "Hagel: N. Korea close to dangerous line",
+      "id" : "politics/2013/04/10/sot-dc-hagel-north-korea.cnn",
+      "trt" : "48",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410141814-sot-dc-hagel-north-korea-00000813-search-tease.jpg"
+   },
+   {
+      "description" : "CNN's Jake Tapper talks to a blogger about the controversial song \"Accidental Racist\" by Brad Paisley and LL Cool J. ",
+      "url" : "http://www.cnn.com/video/?/video/showbiz/2013/04/09/lead-farley-accidental-racist-song.cnn",
+      "headline" : "'Accidental Racist' a 'total strikeout'?",
+      "id" : "showbiz/2013/04/09/lead-farley-accidental-racist-song.cnn",
+      "trt" : "208",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130408163040-brad-paisley-ll-cool-j-split-search-tease.jpg"
+   },
+   {
+      "description" : "Two Massachusetts inventors show off their 3-D product to affiliate WBZ. And their designs really jump off the page.",
+      "url" : "http://www.cnn.com/video/?/video/tech/2013/04/09/dnt-3d-pen-invention.wbz",
+      "headline" : "This pen writes in 3-D",
+      "id" : "tech/2013/04/09/dnt-3d-pen-invention.wbz",
+      "trt" : "85",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409170210-dnt-3d-pen-invention-00000414-search-tease.jpg"
+   },
+   {
+      "description" : "Testimony got heated during the Jodi Arias trial as the prosecutor grilled a domestic violence expert on April 8.",
+      "url" : "http://www.cnn.com/video/?/video/crime/2013/04/09/mxp-jodi-arias-testimony-recap.hln",
+      "headline" : "Arias prosecutor: Expert is biased",
+      "id" : "crime/2013/04/09/mxp-jodi-arias-testimony-recap.hln",
+      "trt" : "61",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130225215948-ac-toobin-geragos-jodi-arias-00041530-search-tease.jpg"
+   },
+   {
+      "description" : "A Georgia high school baseball team visited South Florida and reeled in a nearly 1,000-pound shark. WSVN reports. ",
+      "url" : "http://www.cnn.com/video/?/video/us/2013/04/10/dnt-georgia-hs-baseball-team-catches-shark.wsvn",
+      "headline" : "HS baseball team nabs great white shark ",
+      "id" : "us/2013/04/10/dnt-georgia-hs-baseball-team-catches-shark.wsvn",
+      "trt" : "96",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410125337-dnt-georgia-hs-baseball-team-catches-shark-00000519-search-tease.jpg"
+   },
+   {
+      "description" : "Archeologists uncover thousands of ancient Roman artifacts in London. CNN's Erin McLaughlin reports.",
+      "url" : "http://www.cnn.com/video/?/video/world/2013/04/10/pkg-mclaughlin-uk-roman-ruins.cnn",
+      "headline" : "Roman ruins found in the heart of London",
+      "id" : "world/2013/04/10/pkg-mclaughlin-uk-roman-ruins.cnn",
+      "trt" : "100",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410170807-pkg-mclaughlin-uk-roman-ruins-00010827-search-tease.jpg"
+   },
+   {
+      "description" : "A Toronto woman thought she won $40,000, but her daughter discovered it was really $40 million. CTV has more.",
+      "url" : "http://www.cnn.com/video/?/video/world/2013/04/10/can-40-million-dollar-lottery-winner.ctv-network",
+      "headline" : "She thought she won 40K, but it's 40M!",
+      "id" : "world/2013/04/10/can-40-million-dollar-lottery-winner.ctv-network",
+      "trt" : "45",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409220819-can-40-million-dollar-lottery-winner-00002218-search-tease.jpg"
+   },
+   {
+      "description" : "Triplets enlisted in the Arizona Air National Guard on the same day.",
+      "url" : "http://www.cnn.com/video/?/video/us/2013/04/09/dnt-triplets-enlist-in-air-national-guard.kold",
+      "headline" : "Triplets enlist on the same day",
+      "id" : "us/2013/04/09/dnt-triplets-enlist-in-air-national-guard.kold",
+      "trt" : "89",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409130859-dnt-triplets-enlist-in-air-national-guard-00000021-search-tease.jpg"
+   },
+   {
+      "description" : "Two teen girls came to the rescue and lifted a 3,000-pound tractor off their father. KGW has more.",
+      "url" : "http://www.cnn.com/video/?/video/us/2013/04/10/dnt-or-daughter-lift-tractor-off-dad.kgw",
+      "headline" : "Daughters lift tractor off father",
+      "id" : "us/2013/04/10/dnt-or-daughter-lift-tractor-off-dad.kgw",
+      "trt" : "115",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409231134-dnt-or-daughter-lift-tractor-off-dad-00014124-search-tease.jpg"
+   },
+   {
+      "description" : "Raccoon goes rogue, walks upright across telephone wire tightrope. CNN's Jeanne Moos reports on the \"Flying Raccoona.\"",
+      "url" : "http://www.cnn.com/video/?/video/bestoftv/2013/04/09/tsr-moos-raccoon-on-tightrope.mavis-knight",
+      "headline" : "Watch daredevil 'Flying Raccoon'",
+      "id" : "bestoftv/2013/04/09/tsr-moos-raccoon-on-tightrope.mavis-knight",
+      "trt" : "118",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409201046-tsr-moos-raccoon-on-tightrope-00001505-search-tease.jpg"
+   },
+   {
+      "description" : "Conan doesn't think North Korea's new propaganda video is very threatening.",
+      "url" : "http://www.cnn.com/video/?/video/showbiz/2013/04/10/conan-north-korea-propaganda.team-coco",
+      "headline" : "Conan: N. Korea fights with hippo, tiger",
+      "id" : "showbiz/2013/04/10/conan-north-korea-propaganda.team-coco",
+      "trt" : "63",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410064127-conan-north-korea-propaganda-00004410-search-tease.jpg"
+   },
+   {
+      "description" : "Former commander of U.S. troops in Korea, says North Korea's nuclear weapons \"could be hidden anywhere in that country.\"",
+      "url" : "http://www.cnn.com/video/?/video/world/2013/04/10/lead-north-korea-general-walter-sharp.cnn",
+      "headline" : "Many of North Korea's nukes are 'hidden' ",
+      "id" : "world/2013/04/10/lead-north-korea-general-walter-sharp.cnn",
+      "trt" : "212",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130405135033-north-korea-military-parade-search-tease.jpg"
+   },
+   {
+      "description" : "Officials say a man in northern China climbed a utility pole, hung on for 15 minutes and then fell without injury. ",
+      "url" : "http://www.cnn.com/video/?/video/world/2013/04/02/vo-man-on-wire-china.cctv",
+      "headline" : "Man hangs from power line, then ...",
+      "id" : "world/2013/04/02/vo-man-on-wire-china.cctv",
+      "trt" : "64",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130402145909-vo-man-on-wire-china-00002403-search-tease.jpg"
+   },
+   {
+      "description" : "Is Jodi guilty or not guilty of planning Travis Alexander's killing? The HLN After Dark jury looks at both sides.",
+      "url" : "http://www.cnn.com/video/?/video/crime/2013/04/10/hln-after-dark-did-arias-plan-killing.hln",
+      "headline" : "Did Jodi Arias plan the killing?",
+      "id" : "crime/2013/04/10/hln-after-dark-did-arias-plan-killing.hln",
+      "trt" : "317",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130309004650-ac-jodi-arias-special-killer-defense-abuse-claims-00062814-search-tease.jpg"
+   },
+   {
+      "description" : "A Ringling Brothers elephant is recovering after being shot in the shoulder in an apparent drive-by.",
+      "url" : "http://www.cnn.com/video/?/video/us/2013/04/10/dnt-ms-elephant-shot-in-drive-by.wreg",
+      "headline" : "Elephant shot in apparent drive-by ",
+      "id" : "us/2013/04/10/dnt-ms-elephant-shot-in-drive-by.wreg",
+      "trt" : "96",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410075616-dnt-ms-elephant-shot-in-drive-by-00003427-search-tease.jpg"
+   },
+   {
+      "description" : "CNN's Richard Quest talks to Slovenian Prime Minister Alenka Bratusek about stabilizing her country's financial health.",
+      "url" : "http://www.cnn.com/video/?/video/business/2013/04/10/qmb-intv-slovenian-prime-minister.cnn",
+      "headline" : "Slovenian PM: We'll fix our own problems",
+      "id" : "business/2013/04/10/qmb-intv-slovenian-prime-minister.cnn",
+      "trt" : "243",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410150853-qmb-intv-slovenian-prime-minister-00040219-search-tease.jpg"
+   },
+   {
+      "description" : "CNN's John Zarrella reports on a family that fled by sailboat to Cuba.",
+      "url" : "http://www.cnn.com/video/?/video/us/2013/04/10/ac-zarrella-family-turns-up-in-cuba.cnn",
+      "headline" : "Family that fled to Cuba found",
+      "id" : "us/2013/04/10/ac-zarrella-family-turns-up-in-cuba.cnn",
+      "trt" : "192",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130409212746-ac-zarrella-family-turns-up-in-cuba-00002330-search-tease.jpg"
+   },
+   {
+      "description" : "A Virginia relic hunter uses a metal detector on a construction site and discovers a ring from the Civil War.",
+      "url" : "http://www.cnn.com/video/?/video/us/2013/04/10/dnt-man-finds-and-returns-civil-war-ring.wusa",
+      "headline" : "Man finds 150-year-old Civil War ring ",
+      "id" : "us/2013/04/10/dnt-man-finds-and-returns-civil-war-ring.wusa",
+      "trt" : "98",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/130410105854-dnt-man-finds-and-returns-civil-war-ring-00013527-search-tease.jpg"
+   },
+   {
+      "description" : "U.S. Army Specialist Daniel Riendeau surprised his daugher at school after being away in Afghanistan for almost a year.",
+      "url" : "http://www.cnn.com/video/?/video/us/2012/09/21/soldier-surprises-daughter-maine.wabi",
+      "headline" : "See soldier surprise daughter at school",
+      "id" : "us/2012/09/21/soldier-surprises-daughter-maine.wabi",
+      "trt" : "112",
+      "thumbnail" : "http://i2.cdn.turner.com/cnn/dam/assets/120921115949-soldier-surprises-daughter-maine-00005512-search-tease.jpg"
+   }
+]);

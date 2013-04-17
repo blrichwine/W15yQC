@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US"><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Language" content="en_US">
+
+<script type="text/javascript" language="JavaScript">
+	        	var portal = { 
+		"loggedIn": true,
+		"portalPath": "http://nightly2.sakaiproject.org:8087/portal",
+		"loggedOutUrl": "http://nightly2.sakaiproject.org:8087/portal",
+        "siteId": "",
+        "locale": "en_US",
+		"user": {
+			"id": "admin",
+			"eid": "admin"
+		},
+		"timeoutDialog" : {
+			"enabled": true,
+			"seconds": 600
+		},
+		"toggle" : {
+			"allowauto": true,
+			"tools": true,
+			"sitenav": false
+		}
+	};
+</script>
+
+<!-- this causes problems for layout needs investigating -->
+    <link href="home_files/portalstyles.css" type="text/css" rel="stylesheet" media="all">
+<!--[if gte IE 5]><![if lt IE 7]>
+    <link href="/portal/styles/portalstyles-ie5.css" type="text/css" rel="stylesheet" media="all" />
+<![endif]><![endif]-->
+<link href="home_files/portal.css" type="text/css" rel="stylesheet" media="all">
+
+
+    <title>2.9.x on HSQLDB : Administration Workspace : Home</title>
+<link href="home_files/tool_base.css" type="text/css" rel="stylesheet" media="all">
+<link href="home_files/tool.css" type="text/css" rel="stylesheet" media="all">
+
+<script type="text/javascript" language="JavaScript" src="home_files/headscripts.js"></script>
+<script type="text/javascript" language="JavaScript">var sakai = sakai || {}; sakai.editor = sakai.editor || {};  sakai.locale = sakai.locale || {};
+sakai.locale.userCountry = 'US';
+sakai.locale.userLanguage = 'en';
+sakai.locale.userLocale = 'en_US';
+sakai.editor.collectionId = '/user/admin/';
+sakai.editor.enableResourceSearch = false;</script>
+<script type="text/javascript" language="JavaScript">var CKEDITOR_BASEPATH='/library/editor/ckeditor/';
+</script>
+<script type="text/javascript" language="JavaScript" src="home_files/ckeditor_002.js"></script>
+<script type="text/javascript" language="JavaScript" src="home_files/ckeditor.js"></script>
+
+     <script type="text/javascript" language="JavaScript" src="home_files/jquery-1.js"></script>
+     <script type="text/javascript" language="JavaScript" src="home_files/trimpath-template-latest.js"></script>
+
+<script type="text/javascript" language="JavaScript" src="home_files/neoscripts.js"></script>
+<script type="text/javascript" language="JavaScript" src="home_files/jquery_002.js"></script>
+<script type="text/javascript" language="JavaScript" src="home_files/tutorial.js"></script>
+<script type="text/javascript" language="JavaScript" src="home_files/jquery.js"></script>
+
+<link href="home_files/jquery.css" type="text/css" rel="stylesheet" media="all">
+
+
+</head>
+<body onpageshow='event.persisted &amp;&amp; (function(){var allInstances = CKEDITOR.instances, editor, doc;for ( var i in allInstances ){	editor = allInstances[ i ];	doc = editor.document;	if ( doc )	{		doc.$.designMode = "off";		doc.$.designMode = "on";	}}})();' class="portalBody">
+  <noscript><div id="portal_js_warn">Sakai works much better when JavaScript is enabled. Please enable JavaScript in your Browser.</div></noscript>
+  <script type="text/javascript" language="JavaScript">
+	var sakaiPortalWindow = "";
+  $(document).ready(function() {
+			setupSkipNav();
+    });
+	</script>
+<!-- END Header -->
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        var toggleClass=""
+                    toggleClass="toggleTools"
+                				setupToolToggle(toggleClass);
+    });
+</script>
+<!-- site.vm -->
+
+<!-- start includeSiteNav -->
+<div id="portalOuterContainer">
+        <div id="portalContainer">
+				<div id="headerMax">
+			<div id="skipNav">
+			
+				<a href="#tocontent" class="skip internalSkip" title="jump to content" accesskey="c">
+				jump to content
+				</a>
+				<a href="#totoolmenu" class="skip internalSkip" title="jump to tools list" accesskey="l">
+					jump to tools list
+				</a>
+				<a href="#sitetabs" class="skip internalSkip" title="jump to site list" accesskey="w">
+					jump to site list
+				</a>
+			</div>
+
+			<div id="siteNavWrapper" class="workspace">
+				<div id="mastHead" role="banner">
+					<div id="mastLogo">
+						<img title="Logo" alt="Logo" src="home_files/logo_inst.gif">
+					</div>
+					<div id="mastBanner">
+						<img title="Banner" alt="Banner" src="home_files/banner_inst.gif">
+					</div>
+				</div>
+                        <!-- START from NEO includeTabs.vm -->
+			<!-- start includeTabs -->
+			<div class="siteNavWrap workspace"><div id="maxToolsInt" style="display:none">10</div><div id="maxToolsAnchor" style="display:none">View All ...</div>
+				<div id="siteNav">
+					<!-- login component -->
+					<div id="mastLogin">
+										
+										
+						<div id="loginLinks">
+<span class="topnav">
+<span class="nav-menu" aria-haspopup="true">
+<ul class="nav-submenu subnav" role="menu">
+											<li class="submenuitem" role="menuitem"><span>Sakai Administrator (admin)</span></li>
+																			<li class="submenuitem"><span><a id="addNewSiteLink" role="menuitem" href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-360?sakai_nav_minimized=true&amp;panel=Shortcut&amp;sakai_action=doNew_site&amp;sakai.state.reset=true" class="submenuitem-new-site">+ Add New Site</a></span></li>
+						<li class="submenuitem lastMenuItem"><span><a id="tutorialLink" role="menuitem" href="#" onclick="startTutorial({});" class="submenuitem-tutorial">Tutorial</a></span></li>
+			
+</ul>
+
+<span class="drop" tabindex="-1"></span>
+</span>
+</span>
+
+													<a href="http://nightly2.sakaiproject.org:8087/portal/logout" title="Logout" id="loginLink1">Logout</a>
+																		</div>
+										</div>
+					<!-- end login component -->
+					<div id="linkNav" role="navigation" aria-labelledby="sitetabs">
+
+<!-- this allows us to reliably detect if the browser is internet explorer, depends on these elements ul#topnav h1#sitetabs -->
+<script type="text/javascript">var sakai_portal_ie_detected=false;</script>
+<!--[if IE]><script type="text/javascript">sakai_portal_ie_detected=true;</script><![endif]-->
+							<h1 class="skip" id="sitetabs">Sites list begins here</h1>
+<ul class="topnav" id="topnav" role="menubar" aria-label="Sites list begins here">
+																					<li class="nav-selected nav-menu"><a href="#" role="menuitem" aria-haspopup="true"><span>My Workspace</span></a>
+															
+
+<span class="drop" tabindex="-1" data="~admin"></span>
+</li>
+																					<li class="nav-menu"><a href="http://nightly2.sakaiproject.org:8087/portal/site/%21admin" title="Administration Workspace: Administration Workspace" role="menuitem" aria-haspopup="true"><span>Administration Workspace</span></a>
+															
+
+<span class="drop" tabindex="-1" data="!admin"></span>
+</li>
+																					<li class="nav-menu"><a href="http://nightly2.sakaiproject.org:8087/portal/site/citationsAdmin" title="Citations Admin: Citations Admin" role="menuitem" aria-haspopup="true"><span>Citations Admin</span></a>
+															
+
+<span class="drop" tabindex="-1" data="citationsAdmin"></span>
+</li>
+																					<li class="nav-menu"><a href="http://nightly2.sakaiproject.org:8087/portal/site/PortfolioAdmin" title="Portfolio Admin: Portfolio Admin" role="menuitem" aria-haspopup="true"><span>Portfolio Admin</span></a>
+															
+
+<span class="drop" tabindex="-1" data="PortfolioAdmin"></span>
+</li>
+																					<li class="nav-menu"><a href="http://nightly2.sakaiproject.org:8087/portal/site/1b89ada7-30e2-471d-a9c6-fdedcf267d21" title="asdf: asdf" role="menuitem" aria-haspopup="true"><span>asdf</span></a>
+															
+
+<span class="drop" tabindex="-1" data="1b89ada7-30e2-471d-a9c6-fdedcf267d21"></span>
+</li>
+						
+<li class="more-tab"><a href="javascript:;" onclick="return dhtml_view_sites();" title="More Sites" aria-haspopup="true"><span>More Sites</span></a></li>
+						</ul>
+					</div> <!-- /linkNav -->
+
+									</div>
+				<div class="divColor" id="tabBottom">
+				</div>
+					
+	<div id="selectSite" style="display:none">
+		<div id="otherSiteSearch"> 
+							<h4>Sites in drawer</h4>
+					</div>
+                            <ul id="otherSitesMenu">
+                    <li><a id="allSites" href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-360?sakai_nav_minimized=true&amp;sakai.state.reset=true"><span>View All Sites</span></a></li>
+                    <li><a id="newSite" href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-360?sakai_nav_minimized=true&amp;panel=Shortcut&amp;sakai_action=doNew_site&amp;sakai.state.reset=true"><span>+ Add New Site</span></a></li>
+                                         <li id="otherSiteCloseW">
+                        <a href="#" onclick="closeDrawer()" title="Close this drawer"><span>X</span><span class="skip">Close this drawer</span></a>
+                    </li>
+                </ul>
+            					<div id="otherSiteMenuWrap">
+     			<ul id="otherSiteList" role="navigation">
+											<li><a href="http://nightly2.sakaiproject.org:8087/portal/site/mercury" title="mercury site" id="mercury" class="moreSitesLink"><span class="fullTitle">mercury site</span></a><a href="javascript:;" id="mercury" class="toolMenus" tabindex="-1">&nbsp;<span class="skip">Tools</span></a></li>
+											<li><a href="http://nightly2.sakaiproject.org:8087/portal/site/a189e80f-cec2-4c14-b6a7-bef31e1b96b0" title="site test" id="a189e80f-cec2-4c14-b6a7-bef31e1b96b0" class="moreSitesLink"><span class="fullTitle">site test</span></a><a href="javascript:;" id="a189e80f-cec2-4c14-b6a7-bef31e1b96b0" class="toolMenus" tabindex="-1">&nbsp;<span class="skip">Tools</span></a></li>
+					      			</ul>
+			</div>
+			</div>
+
+<script language="javascript" type="text/javascript">
+    jQuery(document).ready(function() {
+        setupSiteNav();
+        // sakai_portal_ie_detected should have been set above
+        if (sakai_portal_ie_detected) {
+            // SAK-22308
+            //if (jQuery.browser.msie && jQuery('ul#topnav[role="navigation"]') && jQuery('h1#sitetabs')) {
+            var $ul_topnav = jQuery('ul#topnav');
+            var aria_label_val = $ul_topnav.attr('aria-label');
+            jQuery('h1#sitetabs').attr('role','navigation').attr('aria-label', aria_label_val);
+            jQuery('div#linkNav').removeAttr('role').removeAttr('aria-labelledby');
+            $ul_topnav.removeAttr('aria-label');
+        }
+    });
+</script>
+			</div>
+			 <!-- /tabsCssClass -->
+
+<!-- end includeTabs -->
+<!-- END from includeTabs.vm -->
+      </div>
+			
+
+		</div>
+		
+<!-- START from includePageWithNav.vm -->
+
+<div id="container" class="workspace">
+
+
+	<!-- START from includePageNav.vm -->
+		<!-- start includePageNav -->
+			<div class="divColor" id="toolMenuWrap">
+				<div id="worksiteLogo">
+													</div>
+                        				<h1 class="skip" id="totoolmenu">Tools list begins here</h1>
+				<div id="toolMenu" role="navigation" aria-label="Tools list begins here">
+					<ul>
+					  								<li class="selectedTool">
+							<a class="toolMenuLink " title="Home" role="presentation" aria-disabled="true">
+							<span class="toolMenuIcon icon-sakai-motd ">Home</span>
+							</a>
+						</li>
+		  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-200" title="An administration tool to edit Users">
+							<span class="toolMenuIcon icon-sakai-users ">Users</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-250" title="An administration tool to edit Aliases.">
+							<span class="toolMenuIcon icon-sakai-aliases ">Aliases</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-300" title="An administration tool to edit Sites">
+							<span class="toolMenuIcon icon-sakai-sites ">Sites</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-350" title="An administration tool to edit Realms">
+							<span class="toolMenuIcon icon-sakai-realms ">Realms</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-360" title="Modify your sites and create new ones">
+							<span class="toolMenuIcon icon-sakai-sitesetup ">Worksite Setup</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-400" title="For posting current, time-critical information">
+							<span class="toolMenuIcon icon-sakai-announcements ">MOTD</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-500" title="For posting documents, URLs to other websites, etc.">
+							<span class="toolMenuIcon icon-sakai-resources ">Resources</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-600" title="See who's on-line and where they are">
+							<span class="toolMenuIcon icon-sakai-online ">Online</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-700" title="An administration tool to view the JVM memory and reset the system caches">
+							<span class="toolMenuIcon icon-sakai-memory ">Memory</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-900" title="An administration tool to Archive and Import Sites.">
+							<span class="toolMenuIcon icon-sakai-archive ">Site Archive</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-1000" title="Job Scheduler Based on Quartz">
+							<span class="toolMenuIcon icon-sakai-scheduler ">Job Scheduler</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-1100" title="Tool for logging in as another user">
+							<span class="toolMenuIcon icon-sakai-su ">Become User</span>
+							</a>
+						</li>
+		   					  							  				  			 						<li>
+							<a class="toolMenuLink " href="http://nightly2.sakaiproject.org:8087/portal/site/%7Eadmin/page/%7Eadmin-1200" title="Admin tool to retrieve site membership information for users.">
+							<span class="toolMenuIcon icon-sakai-usermembership ">User Membership</span>
+							</a>
+						</li>
+		   					  																	 <li>
+								<a class="toolMenuLink" accesskey="6" href="http://nightly2.sakaiproject.org:8087/portal/help/main" target="_blank" onclick="openWindow('http://nightly2.sakaiproject.org:8087/portal/help/main', 
+									'Help', 'resizable=yes,toolbar=no,scrollbars=yes,menubar=yes,width=800,height=600'); 
+									return false" title="Help">
+								<span class="toolMenuIcon icon-sakai-help">Help</span>
+								<span class="skip">Opens in a new window</span> </a>
+								
+						 </li>
+								</ul>
+				</div>
+				
+			<!-- Add subsite lists -->
+			
+
+			</div>
+			<div id="togglebar">
+	<a id="toggleToolMenu" onmouseup="blur()" href="#" title="Minimize tool navigation ">
+		<span id="toggleToolMax"><em class="skip">Minimize tool navigation</em>&nbsp;</span>
+		<span id="toggleNormal" "="" style="display:none"><em class="skip">Expand tool navigation</em>&nbsp;</span>
+	</a>
+			</div>
+			<h1 class="skip" id="tocontent">Content begins here</h1>
+		<!-- end includePageNav -->
+		<!-- end page nav -->
+<!-- END from includePageNav.vm -->
+
+
+<!-- START from includePageBody.vm -->
+					<div id="content" role="main"><div id="innercontent">
+		
+
+				<div id="col1">
+												<!-- start Tool -->
+                                            													<div class="portletTitleWrap">
+								<div class="portletTitle">
+									<div class="title">
+																<h2><span class="siteTitle">My Workspace:</span> Message Of The Day</h2>
+									</div>
+									<div class="action">
+																																	<a href="http://nightly2.sakaiproject.org:8087/portal/help/main?help=sakai.announcements" title="Help for Message Of The Day" target="_blank" onclick="openWindow('http://nightly2.sakaiproject.org:8087/portal/help/main?help=sakai.announcements', 'Help',
+								  'resizable=yes,toolbar=no,scrollbars=yes,menubar=yes,width=800,height=600'); return false">
+								
+																<img src="home_files/transparent.gif" alt="Help for Message Of The Day" border="0">
+									<span class="skip">Opens in a new window</span> </a>
+															</div>
+								</div>
+							</div>
+																<!-- end Tool -->
+					<!-- start Tool Body -->						
+													<div class="portletMainWrap">
+							    <iframe style="height: 116px;" name="Mainxadminx110" id="Mainxadminx110" title="Message Of The Day " class="portletMainIframe" marginwidth="0" marginheight="0" src="home_files/admin-110.htm" frameborder="0" height="475" scrolling="auto" width="100%">
+</iframe>
+							</div>
+											<!-- end Tool Body -->												
+																<!-- start Tool -->
+                                            													<div class="portletTitleWrap">
+								<div class="portletTitle">
+									<div class="title">
+																<h2><span class="siteTitle">My Workspace:</span> My Workspace Information</h2>
+									</div>
+									<div class="action">
+												            <a accesskey="e" id="jsr-edit" href="http://nightly2.sakaiproject.org:8087/portal?org.sakaiproject.portal.pluto.PORTLET_STATE=I1Nha2FpIFBvcnRsZXQgU3RhdGUKI1dlZCBBcHIgMTAgMTg6NTM6MzIgRURUIDIwMTMKby5zLnAuci5zLkFDVElPTj1mYWxzZQpvLnMucC5yLnMuSUQ9fmFkbWluLTEyMApvLnMucC5yLnMuV0lORE9XX1NUQVRFPW5vcm1hbApvLnMucC5yLnMuU0VDVVJFPWZhbHNlCm8ucy5wLnIucy5QT1JUTEVUX01PREU9ZWRpdAo_" title="Edit"><img src="home_files/transparent.gif" alt="Edit" border="0"></a>
+																															             <a accesskey="h" href="http://nightly2.sakaiproject.org:8087/portal?org.sakaiproject.portal.pluto.PORTLET_STATE=I1Nha2FpIFBvcnRsZXQgU3RhdGUKI1dlZCBBcHIgMTAgMTg6NTM6MzIgRURUIDIwMTMKby5zLnAuci5zLkFDVElPTj1mYWxzZQpvLnMucC5yLnMuSUQ9fmFkbWluLTEyMApvLnMucC5yLnMuV0lORE9XX1NUQVRFPW5vcm1hbApvLnMucC5yLnMuU0VDVVJFPWZhbHNlCm8ucy5wLnIucy5QT1JUTEVUX01PREU9aGVscAo_" title="Help">
+																<img src="home_files/transparent.gif" alt="Help for My Workspace Information" border="0">
+									<span class="skip">Opens in a new window</span> </a>
+															</div>
+								</div>
+							</div>
+																<!-- end Tool -->
+					<!-- start Tool Body -->						
+													<div class="portletMainWrap">
+							    <div class="portletBody">
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+$('.closeMe a').click(function(e){
+    e.preventDefault();
+    $(this).closest('.alertMessage').fadeOut('slow')
+});
+})
+
+if ( '/library/content/myworkspace_info.html'.indexOf('http://') == 0 || '/library/content/myworkspace_info.html'.indexOf('https://') == 0 ) {
+
+    function timeout_admin_120() { 
+        var myframe = $("#id_admin_120");
+        var loaded = false;
+        window.console && console.log("/library/content/myworkspace_info.html timeout check...");
+        try {
+            var iframeLoc = myframe.get(0).contentWindow.location;
+            iframeLoc = String(iframeLoc);
+            var windowLoc = String(window.location);
+            window.console && console.log("iframe.location="+windowLoc);
+            var ipos = -1;
+            var slashcount = 0;
+            for (var i=0; i<windowLoc.length; i++ ) {
+                if ( windowLoc[i] == '/' ) slashcount++;
+                if ( slashcount == 3 ) {
+                    ipos = i;
+                    break;
+                }
+            }
+            if ( ipos == -1 ) {
+                loaded = false;
+            } else { 
+                var prefix = windowLoc.substring(0, ipos);
+                window.console && console.log("iframe.prefix="+prefix);
+                loaded = iframeLoc.indexOf(prefix) == 0;
+            }
+        } catch(ex) {  // This is an expected/normal/hoped for occurance
+            loaded = true;
+        }
+        if ( ! loaded ) {
+            $('#alert_admin_120').show();
+        } else {
+            window.console && console.log('/library/content/myworkspace_info.html load success');
+        }
+
+    }
+
+    var timer_admin_120 = false;
+    $(document).ready(function() {
+        timer_admin_120 = window.setTimeout("timeout_admin_120()",8000);
+    });
+} else {
+    window.console && console.log('/library/content/myworkspace_info.html does not start with http:// or https://');
+}
+</script>
+<div class="alertMessage specialLink" style="display:none" id="alert_admin_120">Alert: 
+This page seems to have trouble loading.
+<a href="http://nightly2.sakaiproject.org:8087/library/content/myworkspace_info.html" onclick="window.open('/library/content/myworkspace_info.html','_blank'); return false;" target="_blank">Re-launch page in a new window.</a>
+<p class="closeMe"><a href="#" style="text-decoration:none !important;font-size:110%;color:#c00 !important" title="Click to dismiss ">x <span class="skip">Click to dismiss </span></a></p> 
+</div>
+<div class="wcwomenu"> <iframe id="id_admin_120" title="My Workspace Information Message" style="width:100%;padding:0 !important; height:600px" marginwidth="0" marginheight="0" src="home_files/myworkspace_info.htm" frameborder="0" scrolling="auto" width="100%">
+</iframe>
+</div>
+</div>
+
+							</div>
+											<!-- end Tool Body -->												
+											</div>
+						</div>
+        </div>
+			<div>
+			<!-- include bottom -->
+						<div id="footer" role="contentinfo">
+				<div class="footerExtNav">
+					<ul id="footerLinks"><li><span><a href="http://nightly2.sakaiproject.org:8087/portal/site/%21gateway">Gateway</a></span></li><li><span><a href="http://nightly2.sakaiproject.org:8087/portal/pda">Mobile View</a></span></li><li><span><a href="http://www.sakaiproject.org/" target="_blank">The Sakai Project</a></span></li></ul>
+				</div>
+				<div id="footerInfo">
+								<a href="http://sakaiproject.org/" target="_blank">
+					 <img src="home_files/sakai_powered.gif" alt="Powered by Sakai" border="0">
+					 <span class="skip"> (Opens in a new window)</span>
+					</a>
+						<!-- end include Bottom -->
+				</div>
+				<div class="sakaiCopyrightInfo">Copyright 2003-2011 The Sakai 
+Foundation. All rights reserved. Portions of Sakai are copyrighted by 
+other parties as described in the Acknowledgments screen. 
+					2.9.x on HSQLDB - Built: 04/10/13 01:00 - Sakai sakai-2.9.x-all 
+(Kernel 1.3-SNAPSHOT)- Server localhost
+				</div>
+
+				<div id="footerAppTray">
+				</div>
+			</div>
+
+
+
+					</div>
+					<!-- end includePageBody -->
+<!-- END from includePageBody.vm -->
+<div id="tutorial"></div>	</div>
+<!-- END from includePageWithNav.vm -->
+
+	</div>
+</div>
+<!-- end includeSiteNav -->
+<!-- end site.vm -->
+	
+
+<div style="position: absolute; display: none;" id="cluetip-waitimage"></div><div style="position: absolute; display: none;" id="cluetip"><div style="position: relative; z-index: 97;" class="cluetip-outer"><h3 class="cluetip-title ui-widget-header ui-cluetip-header"></h3><div class="cluetip-inner ui-widget-content ui-cluetip-content"></div></div><div class="cluetip-extra"></div><div class="cluetip-arrows ui-state-default"></div></div></body></html>

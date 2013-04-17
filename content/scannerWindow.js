@@ -35,8 +35,8 @@
  *   - .html, .htm
  *   - .shtml, .shtm
  *   - .asp, .pl
- *   - 
- *    
+ *   -
+ *
  *  Consider whether to use OS routines: https://developer.mozilla.org/en-US/docs/JavaScript_OS.File/OS.File_for_the_main_thread
  * https://addons.mozilla.org/en-US/developers/docs/sdk/1.12/modules/sdk/core/promise.html
  *
@@ -80,19 +80,19 @@
  *      If no ARIA Landmarks has more than 1 heading
  *      Has enough headings for the amount of content
  *      If has Main Landmark, Main Landmark contains a Heading
- *    Uses ARIA Landmarks 
+ *    Uses ARIA Landmarks
  *      Has a MAIN Landmark
  *      All content contained in a landmark
  *      All landmarks+lables are unique
  *    Has Frames
  *      All Frames have titles
- *      
+ *
  *    Has Tables
  *      No layout tables that aren't marked as presentation
  *      All content in datatables are covered by headers
  *      Datatables are not complex
  *      Datatables larger than x columns have captions or summary attributes
- *      
+ *
  *    Form controls
  *      All form controls are labeled
  *      radio buttons have legends
@@ -104,7 +104,7 @@
  *      No links have different titles
  *    Uses Images
  *      All images have alt text or are labeled presentational
- *      
+ *
  *    Uses ARIA
  *      All Roles are valid
  *    IDs
@@ -115,16 +115,16 @@
  *      Has Access keys
  *        All accesskeys are unique
  *        No accesskeys have conflicts
- *      
- *      
  *
  *
- *    
+ *
+ *
+ *
  *  Scanner: addURL
  *    URL
  *    Priority
  *    Don't scan for URLs
- *    
+ *
  *
  *
  * Project definition:
@@ -140,10 +140,10 @@
  *   Don't Match List:
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 Components.utils.import("resource://gre/modules/osfile.jsm");
 
@@ -173,6 +173,7 @@ blr.W15yQC.ScannerWindow = {
   pageLoadFilter: 1000,
   iFrameOnLoadEventTimeOutTimerID: null,
   iFrameOnLoadEventFilterTimerID: null,
+  scannerScanNextLinkTimerID: null,
   stateScanning: false,
   stateScanningAllLinks: false,
   stateScanningOneLink: false,
@@ -181,17 +182,17 @@ blr.W15yQC.ScannerWindow = {
   stateStopScanningRequested: false,
   stateCurrentIndex: 0,
   bManualURLAdd: false,
-  
+
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
     blr.W15yQC.fnDoEvents();
   },
-  
+
   fnUpdatePercentage: function(p) {
     document.getElementById('progressMeter').value=p;
     blr.W15yQC.fnDoEvents();
   },
-  
+
   fnUpdateProgress: function(sLabel, fPercentage) {
     if(sLabel != null) {
       blr.W15yQC.ScannerWindow.fnUpdateStatus(sLabel);
@@ -214,26 +215,13 @@ blr.W15yQC.ScannerWindow = {
       blr.W15yQC.ScannerWindow.urlDisplayOrder=[];
     }
   },
-  
+
   init: function (dialog) {
-    var treebox = document.getElementById('treebox'),
-      iframeHolder = document.getElementById('iFrameHolder'),
-      textbox = document.getElementById('note-text'),
-      scannerIFrame = document.getElementById('pageBeingScannedIFrame');
-      
     if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
-    blr.W15yQC.fnReadUserPrefs(); // TODO: Move this to the scanner window init
+    blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
-    //blr.W15yQC.ScannerWindow.urlMustMatchList.push('iuadapts.+(/[a-z]*|\.(s?html?))$');
-    //blr.W15yQC.ScannerWindow.urlMustMatchListType.push(true);
-    //blr.W15yQC.ScannerWindow.urlMustMatchList.push('http://www.indiana.edu/~iuadapts.+(\.(s?html?))$');
-    //blr.W15yQC.ScannerWindow.urlMustMatchListType.push(true);
-    //blr.W15yQC.ScannerWindow.urlMustNotMatchList.push('people/index.shtml');
-    //blr.W15yQC.ScannerWindow.urlMustNotMatchListType.push(false);
-    //blr.W15yQC.ScannerWindow.addUrlToProject('http://iuadapts.indiana.edu/','http://iuadapts.indiana.edu/','origin',1.0);
-    //blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=true;
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('No Project');
     blr.W15yQC.ScannerWindow.readRecentFileList();
@@ -244,27 +232,28 @@ blr.W15yQC.ScannerWindow = {
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
       clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
+      clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
     }
   },
-  
+
   selectRow: function(row, override) {
     var treeview=document.getElementById('treebox');
     if(override==null) { override=false; }
-    if(treeview != null && (treeview.currentIndex && treeview.currentIndex<0 || override==true)) {
+    if(treeview != null && ((treeview.currentIndex && treeview.currentIndex<0) || override==true)) {
       if(blr.W15yQC.ScannerWindow.urlList != null && row!=null && row<blr.W15yQC.ScannerWindow.urlList.length) {
         try {
-          if(treeview.focus) treeview.focus();
-          if(treeview.view) treeview.view.selection.select(row);
+          if(treeview.focus) { treeview.focus(); }
+          if(treeview.view) { treeview.view.selection.select(row); }
           if(treeview.boxObject && treeview.boxObject.ensureRowIsVisible) {treeview.boxObject.ensureRowIsVisible(row);}
         } catch(ex) {}
       }
     }
   },
-  
+
   updateUrlInTree: function(urlIndex) {
     var tbc = document.getElementById('treeboxChildren'),
-      treeitem, row, treecell, i, url, bNew=false, sPriority;
-    
+      treeitem, row, i, url, bNew=false, sPriority;
+
     row=document.getElementById('URL'+urlIndex);
     if(row==null) {
       treeitem=document.createElement('treeitem');
@@ -280,7 +269,7 @@ blr.W15yQC.ScannerWindow = {
     row.children[1].setAttribute('label',url.loc);
     if(url.priority && url.priority.toString) {
       sPriority=url.priority.toString();
-      if(!/\./.test(sPriority)) { sPriority=sPriority+'.0'};
+      if(!/\./.test(sPriority)) { sPriority=sPriority+'.0'; }
     } else {
       sPriority='';
     }
@@ -325,7 +314,7 @@ blr.W15yQC.ScannerWindow = {
     row.children[40].setAttribute('label',url.tablesFailures);
 
     if (url.windowTitleNotUnique==true) {
-      treerow.setAttribute('properties', 'failed');
+      row.setAttribute('properties', 'failed');
     }
 
     if(bNew) {
@@ -333,11 +322,10 @@ blr.W15yQC.ScannerWindow = {
       tbc.appendChild(treeitem);
     }
   },
-  
+
   updateProjectDisplay: function() {
     // blr.W15yQC.fnLog('scanner-updateProjectDisplay');
-    var tbc, url, i, bHideUnscannedURLs=document.getElementById('cbHideURLsNotYetScanned').checked,
-        treeitem, treerow, treecell;
+    var tbc, url, i, bHideUnscannedURLs=document.getElementById('cbHideURLsNotYetScanned').checked;
 
     document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC', ' - ');
     tbc = document.getElementById('treeboxChildren');
@@ -363,15 +351,15 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   urlMatchesProjectMustMatchList: function (sURL) {
     var i,sMatchSpec,regex;
     if(blr.W15yQC.ScannerWindow.urlMustMatchList!=null && blr.W15yQC.ScannerWindow.urlMustMatchList.length>0) {
-      if(sURL!=null) { 
+      if(sURL!=null) {
         for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
           sMatchSpec=blr.W15yQC.ScannerWindow.urlMustMatchList[i];
           if(blr.W15yQC.ScannerWindow.urlMustMatchListType[i]==true) {
-            regex=new RegExp(sMatchSpec,'i'); 
+            regex=new RegExp(sMatchSpec,'i');
             if(regex.test(sURL)) {
               return true;
             }
@@ -396,7 +384,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return true;
   },
-  
+
   urlMatchesProjectMustNotMatchList: function (sURL) {
     var i,sMatchSpec,regex;
     if(blr.W15yQC.ScannerWindow.urlMustNotMatchList!=null && blr.W15yQC.ScannerWindow.urlMustNotMatchList.length>0) {
@@ -404,7 +392,7 @@ blr.W15yQC.ScannerWindow = {
         for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
           sMatchSpec=blr.W15yQC.ScannerWindow.urlMustNotMatchList[i];
           if(blr.W15yQC.ScannerWindow.urlMustMatchListType[i]==true) {
-            regex=new RegExp(sMatchSpec,'i'); 
+            regex=new RegExp(sMatchSpec,'i');
             if(regex.test(sURL)) {
               return true;
             }
@@ -421,7 +409,7 @@ blr.W15yQC.ScannerWindow = {
   fnUrlAppearsScannable: function (sURL) {
     return blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL);
   },
-    
+
   // http://regexlib.com/REDetails.aspx?regexp_id=96
   fnAppearsToBeURL: function (sURL) { // TODO: QA THIS!!!
     if (sURL != null && sURL.match(/(https?:\/\/)?[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
@@ -443,48 +431,13 @@ blr.W15yQC.ScannerWindow = {
     return sUrl;
   },
 
-  //normalizeURL: function(docURL, sUrl) {
-  //  var firstPart;
-  //  if(docURL != null && sUrl != null && sUrl.length>0) {
-  //    docURL = blr.W15yQC.fnTrim(docURL);
-  //    sUrl = blr.W15yQC.fnTrim(sUrl);
-  //    if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
-  //      firstPart = docURL.match(/^([a-z-]+:)\/\//);
-  //        if(firstPart != null) {
-  //          sUrl=firstPart[1]+sUrl;
-  //        }
-  //    }
-  //    if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
-  //      firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
-  //      if(firstPart != null) {
-  //        sUrl = firstPart[1]+firstPart[2]+sUrl;
-  //      } else {
-  //        firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
-  //        if(firstPart != null) {
-  //          if(sUrl.match(/^[\/\\]/) != null) {
-  //            sUrl = firstPart[1]+firstPart[2]+sUrl;
-  //          } else {
-  //            sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
-  //          }
-  //        }
-  //      }
-  //    }
-  //  }
-  //  if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
-  //
-  //  sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
-  //  sUrl = sUrl.replace(/\/\.\//, '/','g');
-  //
-  //  return sUrl;
-  //},
-  //
   fnRemoveNamedAnchor: function(sURL) {
     if(sURL !=null && sURL.replace) {
       sURL=sURL.replace(/#.+$/, '');
     }
     return sURL;
   },
-  
+
   fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
     var i,r;
     if(url1 != null) {
@@ -507,14 +460,14 @@ blr.W15yQC.ScannerWindow = {
       //url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
       //url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
     }
-    
+
     if(url1!=url2 && url1!=null && url2!=null) {
       url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
       url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
     }
     return (url1 == url2);
   },
-  
+
   resetProjectToNew: function(bAskBeforeResettingIfUnsavedChanges) {
     // blr.W15yQC.fnLog('scanner-resetProjectToNew');
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result,
@@ -543,7 +496,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return bCancel;
   },
-  
+
   urlAlreadInList: function(sURL) {
     var i;
     if(blr.W15yQC.ScannerWindow.urlList!=null) {
@@ -556,7 +509,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return false;
   },
-  
+
   addUrlToProject: function (sURL, sDocURL, source, priority, dontParseForLinks) {
     // blr.W15yQC.fnLog('scanner-addUrlToProject');
     var url;
@@ -571,7 +524,7 @@ blr.W15yQC.ScannerWindow = {
            (blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
             (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
            !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
-          
+
           url=new blr.W15yQC.ProjectURL(sURL, source, priority);
           if(blr.W15yQC.ScannerWindow.stateScanning==true) {
             url.linkDepth=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth + 1;
@@ -584,14 +537,14 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.sortColumns=[' URL Number (asc)'];
           blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
           blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
-          
+
         }
       } else {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
       }
     }
   },
-  
+
   scanResultsForURLs: function(oW15yQCResults) {
     var i;
     if(oW15yQCResults != null) {
@@ -599,14 +552,14 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Scanning page for URLs to add. '+oW15yQCResults.sWindowTitle);
         for(i=0;i<oW15yQCResults.aLinks.length;i++) {
           if(oW15yQCResults.aLinks[i].href!=null) {
-            blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href,oW15yQCResults.sWindowURL,oW15yQCResults.sWindowURL,1.0); 
+            blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href,oW15yQCResults.sWindowURL,oW15yQCResults.sWindowURL,1.0);
             blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
           }
         }
       }
     }
   },
-  
+
   updateURL: function (urlIndex, oW15yQCResults) {
     var row, url;
     blr.W15yQC.ScannerWindow.fnUpdateStatus('');
@@ -634,7 +587,7 @@ blr.W15yQC.ScannerWindow = {
       url.failuresCount=url.framesFailures;
       url.warningsCount=url.framesWarnings;
 
-      
+
       if(oW15yQCResults.aHeadings && oW15yQCResults.aHeadings.length>0) {
         url.headingsCount=oW15yQCResults.aHeadings.length;
         url.headingsFailures=oW15yQCResults.aHeadings.failedCount;
@@ -746,18 +699,18 @@ blr.W15yQC.ScannerWindow = {
     }
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   spaces: function(count) {
     count=(count==null) ? 0 : (count>20 ? 20 : count);
     return count>0 ? "                    ".slice(0,count-1) : "";
   },
-  
+
   newProject: function() {
     // blr.W15yQC.fnLog('scanner-newProject');
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
   },
-  
+
   readDOMEncodedString: function(rootNode, tagName, defaultValue) {
     var e,s=null;
     if(rootNode!=null) {
@@ -772,13 +725,13 @@ blr.W15yQC.ScannerWindow = {
     }
     return s;
   },
-  
+
   readDOMInt: function(rootNode, tagName, defaultValue) {
     var e,i=null;
     if(rootNode!=null) {
       e=rootNode.getElementsByTagName(tagName);
       if(e!=null && e.length>0) {
-        i=parseInt(decodeURIComponent(e[0].textContent));
+        i=parseInt(decodeURIComponent(e[0].textContent),10);
       } else if(defaultValue!==undefined) {
           i=defaultValue;
       }
@@ -787,7 +740,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return i;
   },
-  
+
   readDOMDate: function(rootNode, tagName, defaultValue) {
     var e,d=null;
     if(rootNode!=null) {
@@ -802,7 +755,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return d;
   },
-  
+
   readDOMBool: function(rootNode, tagName, defaultValue) {
     var e, b=null;
     if(rootNode!=null) {
@@ -817,31 +770,31 @@ blr.W15yQC.ScannerWindow = {
     }
     return b;
   },
-  
+
   writeXMLEncodedString: function(value, tagName, converter, indent) {
     if(value!=null && converter!=null) {
       converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+encodeURIComponent(value)+'</'+tagName+'>\n');
     }
   },
-  
+
   writeXMLInt: function(value, tagName, converter, indent) {
     if(value!=null && converter!=null) {
       converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+encodeURIComponent(value.toString())+'</'+tagName+'>\n');
     }
   },
-  
+
   writeXMLDate: function(value, tagName, converter, indent) {
     if(value!=null && converter!=null && value.toISOString) {
       converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+value.toISOString()+'</'+tagName+'>\n');
     }
   },
-  
+
   writeXMLBool: function(value, tagName, converter, indent) {
     if(value!=null && converter!=null) {
       converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+(value ? "true":"false")+'</'+tagName+'>\n');
     }
   },
-  
+
   openProject: function (f) {
     var fp, rv, file, sFileContents, fstream, cstream, str, read, i,
       properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches, urls;
@@ -868,21 +821,20 @@ blr.W15yQC.ScannerWindow = {
         cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
         fstream.init(file, -1, 0, 0);
         cstream.init(fstream, "UTF-8", 0, 0);
-         
+
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Reading project file.');
-        let (str = {}) {
-          let read = 0;
-          do {
-            read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
-            sFileContents += str.value;
-          } while (read != 0);
-        }
+        read = 0;
+        str={};
+        do {
+          read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+          sFileContents += str.value;
+        } while (read != 0);
         cstream.close(); // this closes fstream
         blr.W15yQC.ScannerWindow.addFileToRecentList(file.path);
         file=null;
         rv=null;
         fp=null;
-        
+
         xmlParser = new DOMParser(); // https://developer.mozilla.org/en-US/docs/DOM/DOMParser
         xmlDoc = xmlParser.parseFromString(sFileContents, "text/xml");
         sFileContents=null;
@@ -901,7 +853,7 @@ blr.W15yQC.ScannerWindow = {
             blr.W15yQC.ScannerWindow.maximumURLDepth = blr.W15yQC.ScannerWindow.readDOMInt(properties,'maximum_url_depth');
             blr.W15yQC.ScannerWindow.pageLoadTimeLimit = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_time_limit');
             blr.W15yQC.ScannerWindow.pageLoadFilter = blr.W15yQC.ScannerWindow.readDOMInt(properties,'page_load_filter');
-            
+
             blr.W15yQC.ScannerWindow.urlMustMatchList=[];
             blr.W15yQC.ScannerWindow.urlMustMatchListType=[];
             matchList=properties.getElementsByTagName('url_must_match_list');
@@ -913,8 +865,8 @@ blr.W15yQC.ScannerWindow = {
                   blr.W15yQC.ScannerWindow.urlMustMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
                 }
               }
-            }              
-            
+            }
+
             blr.W15yQC.ScannerWindow.urlMustNotMatchList=[];
             blr.W15yQC.ScannerWindow.urlMustNotMatchListType=[];
             matchList=properties.getElementsByTagName('url_must_not_match_list');
@@ -926,7 +878,7 @@ blr.W15yQC.ScannerWindow = {
                   blr.W15yQC.ScannerWindow.urlMustNotMatchListType.push(blr.W15yQC.ScannerWindow.readDOMEncodedString(matches[i],'match_type') == "RegExp" ? true : false);
                 }
               }
-            }              
+            }
 
             // Read URLs
             urls=xmlDoc.getElementsByTagName('url');
@@ -991,23 +943,23 @@ blr.W15yQC.ScannerWindow = {
       } else {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('No project loaded.');
       }
-  
+
       blr.W15yQC.ScannerWindow.updateControlStates();
     }
   },
-  
+
   saveProjectAs: function() {
     blr.W15yQC.ScannerWindow.saveProject(true);
   },
-  
-  saveProject: function (saveAs) { // TODO: Handle errors gracefully. 
+
+  saveProject: function (saveAs) { // TODO: Handle errors gracefully.
     var bCancel=false,
       nsIFilePicker, fp, rv, file, foStream, converter, i, url;
-    
+
     if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
       //try
         if(saveAs==null) { saveAs=false; }
-      
+
         nsIFilePicker = Components.interfaces.nsIFilePicker;
         if(blr.W15yQC.fnStringHasContent(blr.W15yQC.ScannerWindow.projectFileName)!=true  || saveAs==true) {
           fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
@@ -1026,12 +978,12 @@ blr.W15yQC.ScannerWindow = {
           file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
           file.initWithPath(blr.W15yQC.ScannerWindow.projectFileName);
         }
-  
+
         if(bCancel==false) {
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Saving project file.');
           foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
           createInstance(Components.interfaces.nsIFileOutputStream);
-  
+
           foStream.init(file, 0x2A, 438, 0);
           blr.W15yQC.ScannerWindow.addFileToRecentList(file.path);
           converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
@@ -1046,26 +998,26 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.writeXMLDate(blr.W15yQC.ScannerWindow.projectCreationDate,'creation_date',converter,6);
 
           blr.W15yQC.ScannerWindow.writeXMLDate(blr.W15yQC.ScannerWindow.projectLastUpdate,'last_update',converter,6);
-          
+
           blr.W15yQC.ScannerWindow.writeXMLBool((blr.W15yQC.ScannerWindow.parseForLinks==false) ? false : true,'parse_for_links',converter,6);
-          
+
           blr.W15yQC.ScannerWindow.writeXMLBool(blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet ? true : false,'project_settings_have_been_set',converter,6);
-          
+
           if(blr.W15yQC.ScannerWindow.maximumURLCount==null) {
             blr.W15yQC.ScannerWindow.maximumURLCount=5000;
           }
           blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.maximumURLCount,'maximum_url_count',converter,6);
-          
+
           if(blr.W15yQC.ScannerWindow.maximumURLDepth==null) {
             blr.W15yQC.ScannerWindow.maximumURLDepth=20;
           }
           blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.maximumURLDepth,'maximum_url_depth',converter,6);
-          
+
           if(blr.W15yQC.ScannerWindow.pageLoadTimeLimit==null) {
             blr.W15yQC.ScannerWindow.pageLoadTimeLimit=20000;
           }
           blr.W15yQC.ScannerWindow.writeXMLInt(blr.W15yQC.ScannerWindow.pageLoadTimeLimit,'page_load_time_limit',converter,6);
-          
+
           if(blr.W15yQC.ScannerWindow.pageLoadFilter==null) {
             blr.W15yQC.ScannerWindow.pageLoadFilter=1000;
           }
@@ -1081,7 +1033,7 @@ blr.W15yQC.ScannerWindow = {
             }
             converter.writeString('      </url_must_match_list>\n');
           }
-          
+
           if(blr.W15yQC.ScannerWindow.urlMustNotMatchList != null && blr.W15yQC.ScannerWindow.urlMustNotMatchList.length>0) {
             converter.writeString('      <url_must_not_match_list>\n');
             for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
@@ -1092,9 +1044,9 @@ blr.W15yQC.ScannerWindow = {
             }
             converter.writeString('      </url_must_not_match_list>\n');
           }
-          
+
           converter.writeString('    </properties>\n');
-          
+
           if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
             converter.writeString('    <urls>\n');
             for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
@@ -1151,25 +1103,25 @@ blr.W15yQC.ScannerWindow = {
 
           converter.writeString('  </project>');
           converter.writeString('</w15yqc>');
-          
-          converter.close(); // this closes foStream            
+
+          converter.close(); // this closes foStream
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Project file saved.');
         } else {
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Project file not saved.');
         }
-      
+
       blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=false;
       //catch
     }
   },
-  
+
   importLinks: function () {
     // blr.W15yQC.fnLog('scanner-importLinks');
-    var fp, rv, file, data, fstream, cstream, cancel=false,
-        nsIFilePicker = Components.interfaces.nsIFilePicker,
+    var fp, rv, file, data, fstream, cstream,
+        nsIFilePicker = Components.interfaces.nsIFilePicker, str, read,
         xmlParser, xmlDoc, urls, i, sURL, priority, sourceFileName;
-    
-    if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {      
+
+    if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       blr.W15yQC.ScannerWindow.fnUpdatePercentage(0);
       fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Choose File to Import From');
@@ -1180,7 +1132,7 @@ blr.W15yQC.ScannerWindow = {
         file = fp.file;
         if (/\.xml$/.test(file.path) == false) { // Assume text
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Opening text file.');
-          
+
         } else { //https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O
           // |file| is nsIFile
           sourceFileName = file.path;
@@ -1190,15 +1142,15 @@ blr.W15yQC.ScannerWindow = {
           cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
           fstream.init(file, -1, 0, 0);
           cstream.init(fstream, "UTF-8", 0, 0);
-           
+
           blr.W15yQC.ScannerWindow.fnUpdateStatus('Processing sitemap.');
-          let (str = {}) {
-            let read = 0;
-            do {
-              read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
-              data += str.value;
-            } while (read != 0);
-          }
+          str = {};
+          read = 0;
+          do {
+            read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+            data += str.value;
+          } while (read != 0);
+
           cstream.close(); // this closes fstream
           file=null;
           rv=null;
@@ -1233,33 +1185,33 @@ blr.W15yQC.ScannerWindow = {
   },
 
   inspectPageTitle: function(pti) {
-    var i, sPageTitle;
-    if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
-      sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
-      for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
-        if(i!=pti) {
-          if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
-            
-          } 
-        }
-      }
-    }
+    //var i, sPageTitle;
+    //if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
+    //  sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
+    //  for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+    //    if(i!=pti) {
+    //      if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
+    //
+    //      }
+    //    }
+    //  }
+    //}
   },
-  
+
   inspectPageTitles: function() {
-    var i, j, sPageTitle;
-    if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
-      sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
-      for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
-        if(i!=pti) {
-          if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
-            
-          } 
-        }
-      }
-    }
+    //var i, j, sPageTitle;
+    //if(blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
+    //  sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
+    //  for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+    //    if(i) {
+    //      if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
+    //
+    //      }
+    //    }
+    //  }
+    //}
   },
-  
+
   setStateAsScanning: function() {
     // blr.W15yQC.fnLog('scanner-setStateAsScanning');
     blr.W15yQC.ScannerWindow.stateScanning = true;
@@ -1267,7 +1219,7 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   setStateAsNotScanning: function() {
     // blr.W15yQC.fnLog('scanner-setStateAsNotScanning');
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
@@ -1279,7 +1231,7 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   updateControlStates: function() {
     var treebox = document.getElementById('treebox'),
       selectedRow = treebox.currentIndex,
@@ -1291,10 +1243,10 @@ blr.W15yQC.ScannerWindow = {
       buttonOpenSelectedURL=document.getElementById('button-openSelectedURL'),
       buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
       buttonAddNewURL=document.getElementById('button-addNewURL'),
-      buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');      
-    
+      buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');
+
     if(selectedRow==null) { selectedRow=-1;}
-    
+
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
 			buttonScanSelectedURL.disabled=true;
       buttonStopScanning.disabled=false;
@@ -1325,8 +1277,9 @@ blr.W15yQC.ScannerWindow = {
         iframeHolder.removeChild(scannerIFrame);
       }
     }
+    Components.utils.forceShrinkingGC();
   },
-  
+
   scanAllLinks: function() {
     // blr.W15yQC.fnLog('scanner-scanAllLinks');
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService),
@@ -1346,7 +1299,7 @@ blr.W15yQC.ScannerWindow = {
       }
     }
   },
-  
+
   scanNewLinks: function() {
     // blr.W15yQC.fnLog('scanner-scanNewLinks');
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService),
@@ -1366,23 +1319,25 @@ blr.W15yQC.ScannerWindow = {
       }
     }
   },
-  
+
   scanNextLink: function() {
     // blr.W15yQC.fnLog('scanner-scanNextLink');
     var treeview=document.getElementById('treebox');
-    
+    clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
+    Components.utils.forceShrinkingGC();
+
     if(blr.W15yQC.ScannerWindow.stateStopScanningRequested!=true) {
       blr.W15yQC.ScannerWindow.updateControlStates();
-      
+
       blr.W15yQC.ScannerWindow.stateCurrentIndex++;
-      
+
       if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true) {
         while(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned!=null &&
            blr.W15yQC.ScannerWindow.stateCurrentIndex < blr.W15yQC.ScannerWindow.urlList.length) {
           blr.W15yQC.ScannerWindow.stateCurrentIndex++;
         }
       }
-      
+
       if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.selectRow(blr.W15yQC.ScannerWindow.stateCurrentIndex,true);
         blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
@@ -1396,7 +1351,7 @@ blr.W15yQC.ScannerWindow = {
       alert('Scanning stopped due to user request.');
     }
   },
-  
+
   scanURL: function(oURL) {
     // blr.W15yQC.fnLog('scanner-scanURL');
     blr.W15yQC.ScannerWindow.scanLoadUrlInIFrame(oURL.loc);
@@ -1406,16 +1361,25 @@ blr.W15yQC.ScannerWindow = {
     // blr.W15yQC.fnLog('scanner-scanLoadUrlInIFrame');
     var iFrameHolder, iFrame;
 
+    Components.utils.forceShrinkingGC();
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
+    clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
 
     if(sURL != null && !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && blr.W15yQC.ScannerWindow.fnUrlAppearsScannable(sURL)) {
       iFrameHolder = document.getElementById('iFrameHolder');
       iFrame = document.getElementById('pageBeingScannedIFrame');
       if(iFrame != null) {
         // remove iFrame
+        if(iFrame.contentDocument && iFrame.contentDocument.documentElement) {
+          iFrame.contentDocument.removeChild(iFrame.contentDocument.documentElement);
+          Components.utils.forceShrinkingGC();
+        }
         iFrame.parentNode.removeChild(iFrame);
+        Components.utils.forceShrinkingGC();
       }
+      iFrame=null;
+      Components.utils.forceShrinkingGC();
       // create new iFrame so we can get onload event notification
       // research blocking pop-ups from iframe
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting for page to load: '+sURL);
@@ -1435,12 +1399,12 @@ blr.W15yQC.ScannerWindow = {
       iFrameHolder.appendChild(iFrame);
     }
   },
-    
+
   iFrameTimedOut: function() {
     // blr.W15yQC.fnLog('scanner-iFrameTimedOut');
     if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
       blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
-      
+
       blr.W15yQC.ScannerWindow.fnUpdateStatus('URL timed out.');
       if(blr.W15yQC.ScannerWindow.stateScanningOneLink==false) {
         blr.W15yQC.ScannerWindow.scanNextLink();
@@ -1449,11 +1413,11 @@ blr.W15yQC.ScannerWindow = {
       }
     }
   },
-  
+
   iFrameLoaded: function() {
     // blr.W15yQC.fnLog('scanner-iFrameLoaded');
     // Check iFrame Contents
-    var oW15yQCResults, iFrame, iFrameDoc, treerow;
+    var oW15yQCResults, iFrame, iFrameDoc;
 
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
@@ -1467,6 +1431,7 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
         try {
           oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
+          iFrame.setAttribute('src','about:blank');
           blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
           blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned=Date.now();
           blr.W15yQC.ScannerWindow.updateURL(blr.W15yQC.ScannerWindow.stateCurrentIndex,oW15yQCResults);
@@ -1482,18 +1447,28 @@ blr.W15yQC.ScannerWindow = {
         } catch(ex) {
           blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].windowDescription="An error occurred while checking this URL:\n"+ex.toString()+
           "\nFile:"+ex.fileName+"\nLineNumber:"+ex.lineNumber+"\nStack:"+ex.stack;
+          oW15yQCResults = null;
         }
-      } else alert('iFrameDoc is null');
+      } else {
+        alert('iFrameDoc is null');
+      }
     }
 
     if(blr.W15yQC.ScannerWindow.stateScanningOneLink==false) {
-      blr.W15yQC.ScannerWindow.scanNextLink();
+      //blr.W15yQC.ScannerWindow.scanNextLink();
+
+      blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID=setTimeout(function () {
+        blr.W15yQC.ScannerWindow.scanNextLink();
+      }, 1000);
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting to load next URL');
     } else {
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();
     }
+    oW15yQCResults = null;
+    Components.utils.forceShrinkingGC();
   },
 
-  iFrameOnLoadEventFired: function(currentURLIndex) {
+  iFrameOnLoadEventFired: function() { // TODO: Debug this and decide on how the filter should work. iFrameOnLoadEventFilterTimerID is not being used
     // blr.W15yQC.fnLog('scanner-iFrameOnLoadEventFired');
     var iFrame=document.getElementById('pageBeingScannedIFrame');
     if(iFrame!=null) {
@@ -1504,18 +1479,18 @@ blr.W15yQC.ScannerWindow = {
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
 
-    if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) { 
-      blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false; 
+    if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
+      blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
       setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 500);
     }
   },
-  
+
   stopScanning: function() {
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=true;
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Stop scanning requested.');
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   parseRecentFiles: function() {
     var srf=Application.prefs.getValue("extensions.W15yQC.Scanner.RecentFiles",null);
     if(srf !=null && srf.length && srf.length>0) {
@@ -1523,7 +1498,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return null;
   },
-  
+
   addFileToRecentList: function(fileName) {
     var rf=blr.W15yQC.ScannerWindow.parseRecentFiles(),i;
     if(rf==null) {
@@ -1539,7 +1514,7 @@ blr.W15yQC.ScannerWindow = {
       Application.prefs.setValue("extensions.W15yQC.Scanner.RecentFiles",rf.join('|'));
     }
   },
-  
+
   readRecentFileList: function() {
     var recentFilesMenu=document.getElementById('recentFiles-menupopup'),
       rf=blr.W15yQC.ScannerWindow.parseRecentFiles(), menuItem, i;
@@ -1552,28 +1527,30 @@ blr.W15yQC.ScannerWindow = {
           menuItem=document.createElement('menuitem');
           menuItem.setAttribute('label',rf[i]);
           menuItem.setAttribute('oncommand','blr.W15yQC.ScannerWindow.openProject(\''+rf[i]+'\')');
-          if(recentFilesMenu) recentFilesMenu.insertBefore(menuItem, recentFilesMenu.firstChild);
+          if(recentFilesMenu) {
+            recentFilesMenu.insertBefore(menuItem, recentFilesMenu.firstChild);
+          }
         }
       }
     }
   },
-  
+
   openSelectedURL: function() {
     var treebox = document.getElementById('treebox'), selectedRow;
-    
+
     blr.W15yQC.ScannerWindow.updateControlStates();
     selectedRow = treebox.currentIndex;
     if (selectedRow >= 0) {
       window.open(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].loc);
     }
   },
-  
+
   updateNotesField: function () {
     var treebox = document.getElementById('treebox'),
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow, rows;
+      selectedRow;
 
     blr.W15yQC.ScannerWindow.updateControlStates();
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
@@ -1584,7 +1561,7 @@ blr.W15yQC.ScannerWindow = {
       if(scannerIFrame!=null && scannerIFrame.parentNode) {
         scannerIFrame.parentNode.removeChild(scannerIFrame);
       }
-      
+
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && iframeHolder != null &&
           (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
@@ -1596,19 +1573,17 @@ blr.W15yQC.ScannerWindow = {
       }
     }
   },
-  
+
   setProjectSettings: function() {
-    var newURL = new blr.W15yQC.ProjectURL(),
-      dialogID = 'scannerProjectSettingsDialog',
-      dialogPath = 'chrome://W15yQC/content/scannerProjectSettingsDialog.xul';
+    var dialogID = 'scannerProjectSettingsDialog', dialogPath = 'chrome://W15yQC/content/scannerProjectSettingsDialog.xul';
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       blr.W15yQC.ScannerWindow.bManualURLAdd=true;
-      window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+      window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal', blr);
       document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC',' - ');
     }
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   addNewURL: function () {
     var newURL = new blr.W15yQC.ProjectURL(),
       dialogID = 'addScannerURLDialog',
@@ -1626,18 +1601,11 @@ blr.W15yQC.ScannerWindow = {
 },
 
   scanSelectedURL: function() {
-    var treebox = document.getElementById('treebox'),
-      iframeHolder = document.getElementById('iFrameHolder'),
-      textbox = document.getElementById('note-text'),
-      scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow, rows,
-      editURL = new blr.W15yQC.ProjectURL(),
-      dialogID = 'addScannerURLDialog',
-      dialogPath = 'chrome://W15yQC/content/addScannerURLDialog.xul';
+    var selectedRow;
 
-    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
-      selectedRow = treebox.currentIndex;
-      if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
+    if(blr.W15yQC.ScannerWindow.stateScanning==false && blr.W15yQC.ScannerWindow.urlList != null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+      selectedRow = document.getElementById('treebox').currentIndex;
+      if (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.setStateAsScanning();
         blr.W15yQC.ScannerWindow.stateCurrentIndex=selectedRow-1;
         blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
@@ -1645,7 +1613,6 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.scanNextLink();
       }
     }
-    
   },
 
   editSelectedURL: function() {
@@ -1653,7 +1620,7 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow, rows,
+      selectedRow,
       editURL = new blr.W15yQC.ProjectURL(),
       dialogID = 'addScannerURLDialog',
       dialogPath = 'chrome://W15yQC/content/addScannerURLDialog.xul';
@@ -1667,7 +1634,7 @@ blr.W15yQC.ScannerWindow = {
       if(scannerIFrame!=null) {
         iframeHolder.removeChild(scannerIFrame);
       }
-      
+
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         editURL.loc=blr.W15yQC.ScannerWindow.urlList[selectedRow].loc;
@@ -1686,13 +1653,13 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.bManualURLAdd=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   deleteSelectedURL: function() {
     var treebox = document.getElementById('treebox'),
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow, rows;
+      selectedRow;
 
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       if(textbox==null) {
@@ -1702,7 +1669,7 @@ blr.W15yQC.ScannerWindow = {
       if(scannerIFrame!=null) {
         iframeHolder.removeChild(scannerIFrame);
       }
-      
+
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.urlList.splice(selectedRow,1);
@@ -1714,7 +1681,7 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.bManualURLAdd=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   doClose: function() {
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
@@ -1723,13 +1690,14 @@ blr.W15yQC.ScannerWindow = {
         return false;
       }
       window.close();
+      Components.utils.forceShrinkingGC();
       return true;
     }
+    Components.utils.forceShrinkingGC();
     return false;
   },
 
   addSortColumn: function(index, ascending) {
-    var i;
     while(blr.W15yQC.ScannerWindow.sortColumns.indexOf(' '+index+' (dsc)')>=0) {
       blr.W15yQC.ScannerWindow.sortColumns.splice(blr.W15yQC.ScannerWindow.sortColumns.indexOf(' '+index+' (dsc)'),1);
     }
@@ -1739,7 +1707,7 @@ blr.W15yQC.ScannerWindow = {
     while(blr.W15yQC.ScannerWindow.sortColumns.length>3) { blr.W15yQC.ScannerWindow.sortColumns.pop(); }
     blr.W15yQC.ScannerWindow.sortColumns.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
   },
-  
+
   sortTreeAsNumberOn: function(index, ascending) {
     var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
     blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
@@ -1793,7 +1761,7 @@ blr.W15yQC.ScannerWindow = {
       }
     }
   },
-  
+
   sortTree: function(col) {
     var sortDir=/^a/i.test(col.getAttribute('sortDirection')),
       colID=col.getAttribute('id'), i, tree=document.getElementById('treebox');
@@ -1939,24 +1907,24 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorted on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
   },
-  
+
   hideUnscannedURLsCheckboxToggle: function() {
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   windowOnKeyDown: function() {
-    
+
   },
-  
+
   windowOnKeyUp: function() {
-    
+
   },
-  
+
   forceMinSize: function() {
-    
+
   }
-  
+
 };
 
 blr.W15yQC.ProjectURL = function (loc, source, priority) {

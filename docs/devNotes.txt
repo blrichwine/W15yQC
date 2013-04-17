@@ -142,6 +142,34 @@
             
             
       *** FIX ASAP***
+      Color luminosity tool: calculate nearest color that is accessible in each direction of a slider and place a color swatch at the end of each slider of the next
+        a11y color (if no a11y color, then indicate with an X graphic)
+      label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything.
+      Unify inspectors to have effective label field and a description of where the label came from
+      Add page score and page description to HTML results pages
+      Compare list inspector results against challenging websites, make sure page description makes sense
+        Challenging website list:
+          cnn.com
+          google search home page
+          google search results
+          google news
+          google groups various pages
+          google mail
+          google drive
+          google spreadsheet
+          sakai
+          blackboard
+          canvas
+          desire2learn
+          oncourse
+          open accessibility examples
+          thecn
+          courseload
+          coursesmart
+          etext.illinois
+          iu news
+        
+        
       Sounds the same CNN vs. CNNi
         -- for all cap tokens, should they be separated into individual letters?
         -- How should mixed case words be treated? CNNi, for instance? TEST WITH JAWS
