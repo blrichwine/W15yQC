@@ -47,6 +47,7 @@ blr.W15yQC.ContrastDialog = {
   fgc3: 0,
   bgc: 0,
   color2enabled: false,
+  computeClosestColorsFilter: null,
 
   init: function (dialog) {
     blr.W15yQC.fnReadUserPrefs();
@@ -208,9 +209,10 @@ blr.W15yQC.ContrastDialog = {
   },
   
   fnFindClosestPassingColor1: function(minLR) {
-    var r, g, b,
+    var r, g, b, d, dr, db, dg, drll, drhl, dgll, dghl, dbll, dbhl,
     r1, g1, b1, r2, g2, b2, rbg, gbr, bbg,
-    c, lr1, lr2;
+    c, lr1, lr2,
+    colors=[[0,0,0],[255,255,255],[255,0,0],[0,255,255]];
 
     r1 = parseInt(document.getElementById('sRed1').value, 10);
     g1 = parseInt(document.getElementById('sGreen1').value, 10);
@@ -234,40 +236,118 @@ blr.W15yQC.ContrastDialog = {
     bestG=null;
     bestB=null;
     bestColorDistance=1000000;
-    for(dr=0;dr<100;dr+=2)
-     for(dg=0;dg<100;dg+=2)
-      for(db=0;db<100;db+=2) {
-        if(r1-dr>=0 && g1-dg>=0 && b1-db>=0) {
-            lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1-dr, g1-dg, b1-db, rbg, gbg, bbg);
-            if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
-                lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1-dr, g1-dg, b1-db, r2, g2, b2);
-                if(lr2>=minLR) {
-                    cd=blr.W15yQC.fnComputeColorDistance(r1-dr,g1-dr,b1-dr,r1,r2,r3);
-                    if(cd<bestColorDistance) {
-                        cd=bestColorDistance;
-                        bestR=r1-dr;
-                        bestG=g1-dg;
-                        bestB=b1-db;
-                    }
-                }
-            } else if(lr1>=minLR) {
-                cd=blr.W15yQC.fnComputeColorDistance(r1-dr,g1-dr,b1-dr,r1,r2,r3);
-                if(cd<bestColorDistance) {
-                    cd=bestColorDistance;
-                    bestR=r1-dr;
-                    bestG=g1-dg;
-                    bestB=b1-db;
+    if(blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, g1, b1, rbg, gbg, bbg)<minLR) {
+        for(d=2; d<100; d+=2) {
+            drll = r1-d >= 0 ? r1-d : 0;
+            drhl = r1+d <= 255 ? r1+d : 255;
+            dgll = g1-d >= 0 ? g1-d : 0;
+            dghl = g1+d <= 255 ? g1+d : 255;
+            dbll = b1-d >= 0 ? b1-d : 0;
+            dbhl = b1+d <= 255 ? b1+d : 255;
+            if(bestR!=null) { // check if we are done looking for closer passing color
+                if(blr.W15yQC.ContrastDialog.fnComputeColorDistance(drll,g1,b1, r1,g1,b1) >= bestColorDistance &&
+                   blr.W15yQC.ContrastDialog.fnComputeColorDistance(drhl,g1,b1, r1,g1,b1) >= bestColorDistance &&
+                   blr.W15yQC.ContrastDialog.fnComputeColorDistance(r1,dgll,b1, r1,g1,b1) >= bestColorDistance &&
+                   blr.W15yQC.ContrastDialog.fnComputeColorDistance(r1,dghl,b1, r1,g1,b1) >= bestColorDistance &&
+                   blr.W15yQC.ContrastDialog.fnComputeColorDistance(r1,g1,dbll, r1,g1,b1) >= bestColorDistance &&
+                   blr.W15yQC.ContrastDialog.fnComputeColorDistance(r1,g1,dbhl, r1,g1,b1) >= bestColorDistance ) {
+                    break; // Won't be finding anything closer
                 }
             }
-            
+            for(dr=drll; dr<=drhl; dr=dr+d+d)  {
+                for(dg=dgll; dg<=dghl; dg++) 
+                  for(db=dbll; db<=dbhl; db+=2) {
+                    lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(dr, dg, db, rbg, gbg, bbg);
+                    if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+                        lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(dr, dg, db, r2, g2, b2);
+                        if(lr2>=minLR) {
+                            cd=blr.W15yQC.ContrastDialog.fnComputeColorDistance(dr,dg,db,r1,g1,b1);
+                            if(cd<bestColorDistance) {
+                                cd=bestColorDistance;
+                                bestR=dr;
+                                bestG=dg;
+                                bestB=db;
+                            }
+                        }
+                    } else if(lr1>=minLR) {
+                        cd=blr.W15yQC.ContrastDialog.fnComputeColorDistance(dr,dg,db,r1,g1,b1);
+                        if(cd<bestColorDistance) {
+                            cd=bestColorDistance;
+                            bestR=dr;
+                            bestG=dg;
+                            bestB=db;
+                        }
+                    }
+                  }
+            }
+            for(dg=dgll; dg<=dghl; dg=dg+d+d)  {
+                for(dr=drll; dr<=drhl; dr++) 
+                  for(db=dbll; db<=dbhl; db+=2) {
+                    lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(dr, dg, db, rbg, gbg, bbg);
+                    if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+                        lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(dr, dg, db, r2, g2, b2);
+                        if(lr2>=minLR) {
+                            cd=blr.W15yQC.ContrastDialog.fnComputeColorDistance(dr,dg,db,r1,g1,b1);
+                            if(cd<bestColorDistance) {
+                                cd=bestColorDistance;
+                                bestR=dr;
+                                bestG=dg;
+                                bestB=db;
+                            }
+                        }
+                    } else if(lr1>=minLR) {
+                        cd=blr.W15yQC.ContrastDialog.fnComputeColorDistance(dr,dg,db,r1,g1,b1);
+                        if(cd<bestColorDistance) {
+                            cd=bestColorDistance;
+                            bestR=dr;
+                            bestG=dg;
+                            bestB=db;
+                        }
+                    }
+                  }
+            }
+            for(db=dbll; db<=dbhl; db=db+d+d)  {
+                for(dr=drll; dr<=drhl; dr++) 
+                  for(dg=dgll; dg<=dghl; dg+=2) {
+                    lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(dr, dg, db, rbg, gbg, bbg);
+                    if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+                        lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(dr, dg, db, r2, g2, b2);
+                        if(lr2>=minLR) {
+                            cd=blr.W15yQC.ContrastDialog.fnComputeColorDistance(dr,dg,db,r1,g1,b1);
+                            if(cd<bestColorDistance) {
+                                cd=bestColorDistance;
+                                bestR=dr;
+                                bestG=dg;
+                                bestB=db;
+                            }
+                        }
+                    } else if(lr1>=minLR) {
+                        cd=blr.W15yQC.ContrastDialog.fnComputeColorDistance(dr,dg,db,r1,g1,b1);
+                        if(cd<bestColorDistance) {
+                            cd=bestColorDistance;
+                            bestR=dr;
+                            bestG=dg;
+                            bestB=db;
+                        }
+                    }
+                  }
+            }
         }
-        if(bestR != null) {
-            // setup button with best color
-            return;
-        }
-      }
-      // setup button as x
-      return;
+    }
+
+    if(bestR != null) {
+        // setup button with best color  button-C1Closest
+        document.getElementById('button-C1Closest').label=blr.W15yQC.ContrastDialog.fnGetColorString(bestR*65536+bestG*256+bestB);
+        document.getElementById('button-C1Closest').style.backgroundColor='rgb('+bestR.toString()+','+bestG.toString()+','+bestB.toString()+')';
+        document.getElementById('button-C1Closest').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(bestR, bestG, bestB, colors);        
+        document.getElementById('button-C1Closest').disabled=false;
+    } else {
+        document.getElementById('button-C1Closest').label='X';
+        document.getElementById('button-C1Closest').style.backgroundColor='inherit';
+        document.getElementById('button-C1Closest').style.color='#000000';
+        document.getElementById('button-C1Closest').disabled=true;
+    }
+    return;
   },
   
   fnPickHighestContrastColor: function(r,g,b,colors) {
@@ -275,7 +355,7 @@ blr.W15yQC.ContrastDialog = {
     
     for(i=0;i<colors.length;i++) {
         lr=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r,g,b, colors[i][0], colors[i][1], colors[i][2]);
-        if(colors[i][0]==0 && colors[i][1]==0 && colors[i][2]==0) { lr=lr*0.8; }
+        if(colors[i][0]==0 && colors[i][1]==0 && colors[i][2]==0) { lr=lr*0.8; } 
         if(lr>bestLR) {
             bestLR=lr;
             bestIndex=i;
@@ -286,7 +366,8 @@ blr.W15yQC.ContrastDialog = {
   
   fnComputePassingRGBValues: function(minLR) {
     var rLeft=null, rRight=null, gLeft=null, gRight=null, bLeft=null, bRight=null,
-    r1, g1, b1, r2, g2, b2, rbg, gbr, bbg,
+    r1, g1, b1, r2, g2, b2, rbg, gbr, bbg, hue, saturation, brightness, h, s, v, cr, cg, cb, rbg,
+    satLeft, satRight, vLeft, vRight, hueLeft, hueRight,
     c, lr1, lr2,
     colors=[[0,0,0],[255,255,255],[255,0,0],[0,255,255]];
 
@@ -294,14 +375,18 @@ blr.W15yQC.ContrastDialog = {
     g1 = parseInt(document.getElementById('sGreen1').value, 10);
     b1 = parseInt(document.getElementById('sBlue1').value, 10);
     
+    hue = parseInt(document.getElementById('sHue1').value, 10);
+    saturation = parseInt(document.getElementById('sSat1').value, 10);
+    brightness = parseInt(document.getElementById('sBrightness1').value, 10);
+
     if(blr.W15yQC.ContrastDialog.color2enabled==true) {
         r2 = parseInt(document.getElementById('sRed2').value, 10);
         g2 = parseInt(document.getElementById('sGreen2').value, 10);
         b2 = parseInt(document.getElementById('sBlue2').value, 10);
     } else {
-        r2 = 0;
-        g2 = 0;
-        b2 = 0;
+        r2 = null;
+        g2 = null;
+        b2 = null;
     }
     
     rbg = parseInt(document.getElementById('sRedBG').value, 10);
@@ -310,7 +395,6 @@ blr.W15yQC.ContrastDialog = {
     
     for(c=r1-1;c>=0;c--) {
         lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(c, g1, b1, rbg, gbg, bbg);
-        //alert('loop 1: c='+c.toString()+' lr1='+lr1.toString()+' minLR='+minLR.toString());
         if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
             lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(c, g1, b1, r2, g2, b2);
             if(lr2>=minLR) {
@@ -390,6 +474,127 @@ blr.W15yQC.ContrastDialog = {
             break;
         }
     }
+
+    h=hue-1;
+    if(h<0) { h=359; }
+    while(h!=hue) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(h, saturation, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, r2, g2, b2);
+            if(lr2>=minLR) {
+                hueLeft=h;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            hueLeft=h;
+            break;
+        }
+        
+        h--;
+        if(h<0) { h=359; }
+    }
+    h=hue+1;
+    if(h>359) { h=0; }
+    while(h!=hue) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(h, saturation, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, r2, g2, b2);
+            if(lr2>=minLR) {
+                hueRight=h;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            hueRight=h;
+            break;
+        }
+        
+        h++;
+        if(h>359) { h=0; }
+    }
+    
+    if(hueRight!=null && hueLeft!=null && hueRight<hue && hueLeft>hue) {
+        hueRight=h;
+        hueRight=hueLeft;
+        hueLeft=h;
+    }
+    
+    for(s=saturation-1; s>=0; s--) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, s, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, r2, g2, b2);
+            if(lr2>=minLR) {
+                satLeft=s;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            satLeft=s;
+            break;
+        }
+    }
+    for(s=saturation+1; s<=100; s++) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, s, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, r2, g2, b2);
+            if(lr2>=minLR) {
+                satRight=s;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            satRight=s;
+            break;
+        }
+    }
+    
+    for(v=brightness-1; v>=0; v--) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, saturation, v);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, r2, g2, b2);
+            if(lr2>=minLR) {
+                vLeft=v;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            vLeft=v;
+            break;
+        }
+    }
+    for(v=brightness+1; v<=100; v++) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, saturation, v);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(cr, cg, cb, r2, g2, b2);
+            if(lr2>=minLR) {
+                vRight=v;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            vRight=v;
+            break;
+        }
+    }
     
     if(rLeft!=null) {
         document.getElementById('button-C1RedLeft').label=rLeft;
@@ -445,9 +650,105 @@ blr.W15yQC.ContrastDialog = {
         document.getElementById('button-C1BlueRight').style.backgroundColor='inherit';
         document.getElementById('button-C1BlueRight').style.color='#000000';
     }
+
+    
+    if(hueLeft!=null) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hueLeft, saturation, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        document.getElementById('button-C1HueLeft').label=hueLeft;
+        document.getElementById('button-C1HueLeft').style.backgroundColor='rgb('+cr.toString()+','+cg.toString()+','+cb.toString()+')';
+        document.getElementById('button-C1HueLeft').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(cr, cg, cb, colors);
+    } else {
+        document.getElementById('button-C1HueLeft').label='X';
+        document.getElementById('button-C1HueLeft').style.backgroundColor='inherit';
+        document.getElementById('button-C1HueLeft').style.color='#000000';
+    }
+    if(hueRight!=null) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hueRight, saturation, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        document.getElementById('button-C1HueRight').label=hueRight;
+        document.getElementById('button-C1HueRight').style.backgroundColor='rgb('+cr.toString()+','+cg.toString()+','+cb.toString()+')';
+        document.getElementById('button-C1HueRight').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(cr, cg, cb, colors);
+    } else {
+        document.getElementById('button-C1HueRight').label='X';
+        document.getElementById('button-C1HueRight').style.backgroundColor='inherit';
+        document.getElementById('button-C1HueRight').style.color='#000000';
+    }
+    
+    
+    if(vLeft!=null) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, saturation, vLeft);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        document.getElementById('button-C1VLeft').label=vLeft;
+        document.getElementById('button-C1VLeft').style.backgroundColor='rgb('+cr.toString()+','+cg.toString()+','+cb.toString()+')';
+        document.getElementById('button-C1VLeft').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(cr, cg, cb, colors);
+    } else {
+        document.getElementById('button-C1VLeft').label='X';
+        document.getElementById('button-C1VLeft').style.backgroundColor='inherit';
+        document.getElementById('button-C1VLeft').style.color='#000000';
+    }
+    if(vRight!=null) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, saturation, vRight);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        document.getElementById('button-C1VRight').label=vRight;
+        document.getElementById('button-C1VRight').style.backgroundColor='rgb('+cr.toString()+','+cg.toString()+','+cb.toString()+')';
+        document.getElementById('button-C1VRight').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(cr, cg, cb, colors);
+    } else {
+        document.getElementById('button-C1VRight').label='X';
+        document.getElementById('button-C1VRight').style.backgroundColor='inherit';
+        document.getElementById('button-C1VRight').style.color='#000000';
+    }
+    
+    if(satLeft!=null) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, satLeft, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        document.getElementById('button-C1SatLeft').label=satLeft;
+        document.getElementById('button-C1SatLeft').style.backgroundColor='rgb('+cr.toString()+','+cg.toString()+','+cb.toString()+')';
+        document.getElementById('button-C1SatLeft').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(cr, cg, cb, colors);
+    } else {
+        document.getElementById('button-C1SatLeft').label='X';
+        document.getElementById('button-C1SatLeft').style.backgroundColor='inherit';
+        document.getElementById('button-C1SatLeft').style.color='#000000';
+    }
+    if(satRight!=null) {
+        rgb=blr.W15yQC.ContrastDialog.fnHSV2RGB(hue, satRight, brightness);
+        cr=rgb[0];
+        cg=rgb[1];
+        cb=rgb[2];
+        document.getElementById('button-C1SatRight').label=satRight;
+        document.getElementById('button-C1SatRight').style.backgroundColor='rgb('+cr.toString()+','+cg.toString()+','+cb.toString()+')';
+        document.getElementById('button-C1SatRight').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(cr, cg, cb, colors);
+    } else {
+        document.getElementById('button-C1SatRight').label='X';
+        document.getElementById('button-C1SatRight').style.backgroundColor='inherit';
+        document.getElementById('button-C1SatRight').style.color='#000000';
+    }
     
   },
 
+  selectC1Closest: function(c) {
+    switch(c) {
+        case 'X':
+            return;
+            break;
+        case 'Find':
+            blr.W15yQC.ContrastDialog.fnFindClosestPassingColor1(4.5);
+            break;
+        default:
+            blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(c);
+    }
+  },
+  
   selectC1Red: function(c) {
     var r,g,b, cNew;
       r = parseInt(c,10);
@@ -473,6 +774,27 @@ blr.W15yQC.ContrastDialog = {
       b = parseInt(c,10);
       cNew = r * 65536 + g * 256 + b;
       blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.ContrastDialog.fnGetColorString(cNew));
+  },
+  
+  
+  selectC1Hue: function(c) {
+    c = parseInt(c,10);
+    document.getElementById('sHue1').value=c;
+    blr.W15yQC.ContrastDialog.fnColor1HSBChange();
+  },
+  
+  
+  selectC1Saturation: function(c) {
+    c = parseInt(c,10);
+    document.getElementById('sSat1').value=c;
+    blr.W15yQC.ContrastDialog.fnColor1HSBChange();
+  },
+  
+  
+  selectC1Brightness: function(c) {
+    c = parseInt(c,10);
+    document.getElementById('sBrightness1').value=c;
+    blr.W15yQC.ContrastDialog.fnColor1HSBChange();
   },
   
   // ----- Color 1
@@ -798,6 +1120,18 @@ blr.W15yQC.ContrastDialog = {
     if3.contentDocument.body.appendChild(el1);
     
     blr.W15yQC.ContrastDialog.fnComputePassingRGBValues(4.5);
+    
+    //if(lrc1bg<4.5) {
+    //    document.getElementById('button-C1Closest').label='Find';
+    //    document.getElementById('button-C1Closest').style.backgroundColor='inherit';
+    //    document.getElementById('button-C1Closest').style.color='#000000';
+    //    document.getElementById('button-C1Closest').disabled=false;
+    //} else {
+    //    document.getElementById('button-C1Closest').label='X';
+    //    document.getElementById('button-C1Closest').style.backgroundColor='inherit';
+    //    document.getElementById('button-C1Closest').style.color='#000000';
+    //    document.getElementById('button-C1Closest').disabled=true;
+    //}
   },
 
   setResults: function (lRatio, id1, id2, id3, id4) {
@@ -820,6 +1154,8 @@ blr.W15yQC.ContrastDialog = {
     resultsC1C2.hidden = false;
     resultsC2BG.hidden = false;
     buttonaddColor.hidden = true;
+    blr.W15yQC.ContrastDialog.color2enabled=true;
+    blr.W15yQC.ContrastDialog.fnComputePassingRGBValues(4.5);
   },
 
   cleanup: function () {}
