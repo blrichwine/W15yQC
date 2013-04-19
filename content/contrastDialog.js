@@ -199,7 +199,282 @@ blr.W15yQC.ContrastDialog = {
     return Math.round(((l1 >= l2) ? (l1 + .05) / (l2 + .05) : (l2 + .05) / (l1 + .05)) * 100) / 100;
   },
 
+  fnComputeColorDistance: function (r1, g1, b1, r2, g2, b2) {
+  var   rmean = (r1 + r2) / 2,
+        dr = r1 - r2,
+        dg = g1 - g2,
+        db = b1 - b2;
+  return ((((512+rmean)*dr*dr)>>8) + 4*dg*dg + (((767-rmean)*db*db)>>8));    
+  },
+  
+  fnFindClosestPassingColor1: function(minLR) {
+    var r, g, b,
+    r1, g1, b1, r2, g2, b2, rbg, gbr, bbg,
+    c, lr1, lr2;
 
+    r1 = parseInt(document.getElementById('sRed1').value, 10);
+    g1 = parseInt(document.getElementById('sGreen1').value, 10);
+    b1 = parseInt(document.getElementById('sBlue1').value, 10);
+    
+    if(blr.W15yQC.ContrastDialog.color2enabled==true) {
+        r2 = parseInt(document.getElementById('sRed2').value, 10);
+        g2 = parseInt(document.getElementById('sGreen2').value, 10);
+        b2 = parseInt(document.getElementById('sBlue2').value, 10);
+    } else {
+        r2 = 0;
+        g2 = 0;
+        b2 = 0;
+    }
+    
+    rbg = parseInt(document.getElementById('sRedBG').value, 10);
+    gbg = parseInt(document.getElementById('sGreenBG').value, 10);
+    bbg = parseInt(document.getElementById('sBlueBG').value, 10);
+    
+    bestR=null;
+    bestG=null;
+    bestB=null;
+    bestColorDistance=1000000;
+    for(dr=0;dr<100;dr+=2)
+     for(dg=0;dg<100;dg+=2)
+      for(db=0;db<100;db+=2) {
+        if(r1-dr>=0 && g1-dg>=0 && b1-db>=0) {
+            lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1-dr, g1-dg, b1-db, rbg, gbg, bbg);
+            if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+                lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1-dr, g1-dg, b1-db, r2, g2, b2);
+                if(lr2>=minLR) {
+                    cd=blr.W15yQC.fnComputeColorDistance(r1-dr,g1-dr,b1-dr,r1,r2,r3);
+                    if(cd<bestColorDistance) {
+                        cd=bestColorDistance;
+                        bestR=r1-dr;
+                        bestG=g1-dg;
+                        bestB=b1-db;
+                    }
+                }
+            } else if(lr1>=minLR) {
+                cd=blr.W15yQC.fnComputeColorDistance(r1-dr,g1-dr,b1-dr,r1,r2,r3);
+                if(cd<bestColorDistance) {
+                    cd=bestColorDistance;
+                    bestR=r1-dr;
+                    bestG=g1-dg;
+                    bestB=b1-db;
+                }
+            }
+            
+        }
+        if(bestR != null) {
+            // setup button with best color
+            return;
+        }
+      }
+      // setup button as x
+      return;
+  },
+  
+  fnPickHighestContrastColor: function(r,g,b,colors) {
+    var i, lr, bestLR=0, bestIndex;
+    
+    for(i=0;i<colors.length;i++) {
+        lr=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r,g,b, colors[i][0], colors[i][1], colors[i][2]);
+        if(colors[i][0]==0 && colors[i][1]==0 && colors[i][2]==0) { lr=lr*0.8; }
+        if(lr>bestLR) {
+            bestLR=lr;
+            bestIndex=i;
+        }
+    }
+    return 'rgb('+colors[bestIndex][0]+','+colors[bestIndex][1]+','+colors[bestIndex][2]+')';
+  },
+  
+  fnComputePassingRGBValues: function(minLR) {
+    var rLeft=null, rRight=null, gLeft=null, gRight=null, bLeft=null, bRight=null,
+    r1, g1, b1, r2, g2, b2, rbg, gbr, bbg,
+    c, lr1, lr2,
+    colors=[[0,0,0],[255,255,255],[255,0,0],[0,255,255]];
+
+    r1 = parseInt(document.getElementById('sRed1').value, 10);
+    g1 = parseInt(document.getElementById('sGreen1').value, 10);
+    b1 = parseInt(document.getElementById('sBlue1').value, 10);
+    
+    if(blr.W15yQC.ContrastDialog.color2enabled==true) {
+        r2 = parseInt(document.getElementById('sRed2').value, 10);
+        g2 = parseInt(document.getElementById('sGreen2').value, 10);
+        b2 = parseInt(document.getElementById('sBlue2').value, 10);
+    } else {
+        r2 = 0;
+        g2 = 0;
+        b2 = 0;
+    }
+    
+    rbg = parseInt(document.getElementById('sRedBG').value, 10);
+    gbg = parseInt(document.getElementById('sGreenBG').value, 10);
+    bbg = parseInt(document.getElementById('sBlueBG').value, 10);
+    
+    for(c=r1-1;c>=0;c--) {
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(c, g1, b1, rbg, gbg, bbg);
+        //alert('loop 1: c='+c.toString()+' lr1='+lr1.toString()+' minLR='+minLR.toString());
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(c, g1, b1, r2, g2, b2);
+            if(lr2>=minLR) {
+                rLeft=c;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            rLeft=c;
+            break;
+        }
+    }
+    for(c=r1+1;c<=255;c++) {
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(c, g1, b1, rbg, gbg, bbg);
+        //alert('loop 2: c='+c.toString()+' lr1='+lr1.toString()+' minLR='+minLR.toString());
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(c, g1, b1, r2, g2, b2);
+            if(lr2>=minLR) {
+                rRight=c;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            rRight=c;
+            break;
+        }
+    }
+    
+    for(c=g1-1;c>=0;c--) {
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, c, b1, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, c, b1, r2, g2, b2);
+            if(lr2>=minLR) {
+                gLeft=c;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            gLeft=c;
+            break;
+        }
+    }
+    for(c=g1+1;c<=255;c++) {
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, c, b1, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, c, b1, r2, g2, b2);
+            if(lr2>=minLR) {
+                gRight=c;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            gRight=c;
+            break;
+        }
+    }
+    
+    for(c=b1-1;c>=0;c--) {
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, g1, c, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, g1, c, r2, g2, b2);
+            if(lr2>=minLR) {
+                bLeft=c;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            bLeft=c;
+            break;
+        }
+    }
+    for(c=b1+1;c<=255;c++) {
+        lr1=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, g1, c, rbg, gbg, bbg);
+        if(blr.W15yQC.ContrastDialog.color2enabled==true && lr1>=minLR) {
+            lr2=blr.W15yQC.ContrastDialog.fnComputeWCAG2LuminosityRatio(r1, g1, c, r2, g2, b2);
+            if(lr2>=minLR) {
+                bRight=c;
+                break;
+            }
+        } else if(lr1>=minLR) {
+            bRight=c;
+            break;
+        }
+    }
+    
+    if(rLeft!=null) {
+        document.getElementById('button-C1RedLeft').label=rLeft;
+        document.getElementById('button-C1RedLeft').style.backgroundColor='rgb('+rLeft.toString()+','+g1.toString()+','+b1.toString()+')';
+        document.getElementById('button-C1RedLeft').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(rLeft, g1, b1, colors);
+    } else {
+        document.getElementById('button-C1RedLeft').label='X';
+        document.getElementById('button-C1RedLeft').style.backgroundColor='inherit';
+        document.getElementById('button-C1RedLeft').style.color='black';
+    }
+    if(rRight!=null) {
+        document.getElementById('button-C1RedRight').label=rRight;
+        document.getElementById('button-C1RedRight').style.backgroundColor='rgb('+rRight.toString()+','+g1.toString()+','+b1.toString()+')';
+        document.getElementById('button-C1RedRight').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(rRight, g1, b1, colors);
+    } else {
+        document.getElementById('button-C1RedRight').label='X';
+        document.getElementById('button-C1RedRight').style.backgroundColor='inherit';
+        document.getElementById('button-C1RedRight').style.color='#000000';
+    }
+    if(gLeft!=null) {
+        document.getElementById('button-C1GreenLeft').label=gLeft;
+        document.getElementById('button-C1GreenLeft').style.backgroundColor='rgb('+r1.toString()+','+gLeft.toString()+','+b1.toString()+')';
+        document.getElementById('button-C1GreenLeft').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(r1, gLeft, b1, colors);
+    } else {
+        document.getElementById('button-C1GreenLeft').label='X';
+        document.getElementById('button-C1GreenLeft').style.backgroundColor='inherit';
+        document.getElementById('button-C1GreenLeft').style.color='#000000';
+    }
+    if(gRight!=null) {
+        document.getElementById('button-C1GreenRight').label=gRight;
+        document.getElementById('button-C1GreenRight').style.backgroundColor='rgb('+r1.toString()+','+gRight.toString()+','+b1.toString()+')';
+        document.getElementById('button-C1GreenRight').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(r1, gRight, b1, colors);
+    } else {
+        document.getElementById('button-C1GreenRight').label='X';
+        document.getElementById('button-C1GreenRight').style.backgroundColor='inherit';
+        document.getElementById('button-C1GreenRight').style.color='#000000';
+    }
+    if(bLeft!=null) {
+        document.getElementById('button-C1BlueLeft').label=bLeft;
+        document.getElementById('button-C1BlueLeft').style.backgroundColor='rgb('+r1.toString()+','+g1.toString()+','+bLeft.toString()+')';
+        document.getElementById('button-C1BlueLeft').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(r1, g1, bLeft, colors);
+    } else {
+        document.getElementById('button-C1BlueLeft').label='X';
+        document.getElementById('button-C1BlueLeft').style.backgroundColor='inherit';
+        document.getElementById('button-C1BlueLeft').style.color='#000000';
+    }
+    if(bRight!=null) {
+        document.getElementById('button-C1BlueRight').label=bRight;
+        document.getElementById('button-C1BlueRight').style.backgroundColor='rgb('+r1.toString()+','+g1.toString()+','+bRight.toString()+')';
+        document.getElementById('button-C1BlueRight').style.color=blr.W15yQC.ContrastDialog.fnPickHighestContrastColor(r1, g1, bRight, colors);
+    } else {
+        document.getElementById('button-C1BlueRight').label='X';
+        document.getElementById('button-C1BlueRight').style.backgroundColor='inherit';
+        document.getElementById('button-C1BlueRight').style.color='#000000';
+    }
+    
+  },
+
+  selectC1Red: function(c) {
+    var r,g,b, cNew;
+      r = parseInt(c,10);
+      g = parseInt(document.getElementById('sGreen1').value, 10);
+      b = parseInt(document.getElementById('sBlue1').value, 10);
+      cNew = r * 65536 + g * 256 + b;
+      blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.ContrastDialog.fnGetColorString(cNew));
+  },
+  
+  selectC1Green: function(c) {
+    var r,g,b, cNew;
+      r = parseInt(document.getElementById('sRed1').value, 10);
+      g = parseInt(c,10);
+      b = parseInt(document.getElementById('sBlue1').value, 10);
+      cNew = r * 65536 + g * 256 + b;
+      blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.ContrastDialog.fnGetColorString(cNew));
+  },
+  
+  selectC1Blue: function(c) {
+    var r,g,b, cNew;
+      r = parseInt(document.getElementById('sRed1').value, 10);
+      g = parseInt(document.getElementById('sGreen1').value, 10);
+      b = parseInt(c,10);
+      cNew = r * 65536 + g * 256 + b;
+      blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.ContrastDialog.fnGetColorString(cNew));
+  },
+  
   // ----- Color 1
 
   fnColor1HTMLColorChange: function (newColor) {
@@ -521,6 +796,8 @@ blr.W15yQC.ContrastDialog = {
     el1.appendChild(el2);
     el1.appendChild(if3.contentDocument.createTextNode(' colors in it.'));
     if3.contentDocument.body.appendChild(el1);
+    
+    blr.W15yQC.ContrastDialog.fnComputePassingRGBValues(4.5);
   },
 
   setResults: function (lRatio, id1, id2, id3, id4) {
