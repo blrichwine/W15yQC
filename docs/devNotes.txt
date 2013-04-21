@@ -143,7 +143,7 @@
             
       *** FIX ASAP***
       Color luminosity tool: calculate nearest color that is accessible in each direction of a slider and place a color swatch at the end of each slider of the next
-        a11y color (if no a11y color, then indicate with an X graphic), d2 = (30*(r1-r2))**2 + (59*(g1-g2))**2 + (11*(b1-b2))**2;
+        a11y color (if no a11y color, then indicate with an X graphic), http://www.compuphase.com/cmetric.htm
       label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything.
       Unify inspectors to have effective label field and a description of where the label came from
       Add page score and page description to HTML results pages

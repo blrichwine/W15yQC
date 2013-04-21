@@ -685,7 +685,7 @@ ys: 'whys'
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);
-        if(/Port/.test(sMsg)) {consoleServ.logStringMessage(sMsg); }
+        if(/lt/.test(sMsg)) {consoleServ.logStringMessage(sMsg); }
       } catch (ex) {}
     },
 
