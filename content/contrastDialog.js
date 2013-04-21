@@ -61,6 +61,7 @@ blr.W15yQC.ContrastDialog = {
                       ],
   colors: [[0,0,0],[255,255,255],[255,0,0],[0,255,255]],
   colorSetHistory: [],
+  storedColors: [],
 
   init: function (dialog) {
     blr.W15yQC.fnReadUserPrefs();
@@ -109,12 +110,14 @@ blr.W15yQC.ContrastDialog = {
   },
 
   forceMinSize: function (dialog) {
-    if (dialog.outerWidth > 100 && dialog.outerHeight > 100 && (dialog.outerWidth < 940 || dialog.outerHeight != 610)) {
-      dialog.resizeTo(Math.max(940, dialog.outerWidth), 610);
+    var maxH = (blr.W15yQC.ContrastDialog.storedColors != null && blr.W15yQC.ContrastDialog.storedColors.length>0) ? 710 : 610;
+    if(dialog == null) { dialog=window; }
+    if (dialog.outerWidth > 100 && dialog.outerHeight > 100 && (dialog.outerWidth < 940 || dialog.outerHeight != maxH)) {
+      dialog.resizeTo(Math.max(940, dialog.outerWidth), maxH);
     }
     var rect, width,
     gbc1 = document.getElementById('gbColor1'),
-      resultsC1BG = document.getElementById('resultsC1BG');
+    resultsC1BG = document.getElementById('resultsC1BG');
     if (gbc1 != null && resultsC1BG != null) {
       rect = gbc1.getBoundingClientRect();
       if (rect != null) {
@@ -763,11 +766,8 @@ blr.W15yQC.ContrastDialog = {
   fnColor1HTMLColorChange: function (newColor) {
     var RGB, r, g, b;
     if (blr.W15yQC.ContrastDialog.updatingValues == false) {
-    blr.W15yQC.fnLog('lt:fnColor1HTMLColorChange(starts)');
       if (newColor != null) {
         document.getElementById('tbHTMLColor1').value = newColor;
-      } else {
-        newColor='null';
       }
       blr.W15yQC.ContrastDialog.updatingValues = true;
       RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor1').value);
@@ -782,15 +782,12 @@ blr.W15yQC.ContrastDialog = {
       document.getElementById('sBrightness1').value = blr.W15yQC.ContrastDialog.fnComputeBrightnessFromRGB(r, g, b);
       blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
       blr.W15yQC.ContrastDialog.updatingValues = false;
-      blr.W15yQC.fnLog('lt:fnColor1HTMLColorChange'+newColor.toString()+' '+r.toString()+'-'+g.toString()+'-'+b.toString()+' '+document.getElementById('tbHTMLColor1').value);
-    blr.W15yQC.fnLog('lt:fnColor1HTMLColorChange(ENDS)');
     }
   },
 
   fnColor1ColorPickerChange: function () {
     var RGB, r, g, b;
     if (blr.W15yQC.ContrastDialog.updatingValues == false) {
-    blr.W15yQC.fnLog('lt:fnColor1ColorPickerChange(Start)');
       blr.W15yQC.ContrastDialog.updatingValues = true;
       RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('cp1').color);
       r = document.getElementById('sRed1').value = RGB[0];
@@ -804,14 +801,12 @@ blr.W15yQC.ContrastDialog = {
       document.getElementById('sBrightness1').value = blr.W15yQC.ContrastDialog.fnComputeBrightnessFromRGB(r, g, b);
       blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
       blr.W15yQC.ContrastDialog.updatingValues = false;
-    blr.W15yQC.fnLog('lt:fnColor1ColorPickerChange(ENDS)');
     }
   },
 
   fnColor1SliderChange: function () {
     var r, g, b;
     if (blr.W15yQC.ContrastDialog.updatingValues == false) {
-    blr.W15yQC.fnLog('lt:fnColor1SliderChange(Start)');
       blr.W15yQC.ContrastDialog.updatingValues = true;
       r = parseInt(document.getElementById('sRed1').value, 10);
       g = parseInt(document.getElementById('sGreen1').value, 10);
@@ -825,14 +820,12 @@ blr.W15yQC.ContrastDialog = {
       document.getElementById('sBrightness1').value = blr.W15yQC.ContrastDialog.fnComputeBrightnessFromRGB(r, g, b);
       blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
       blr.W15yQC.ContrastDialog.updatingValues = false;
-    blr.W15yQC.fnLog('lt:fnColor1SliderChange(ENDS)');
     }
   },
 
   fnColor1HSBChange: function () {
     var RGB;
     if (blr.W15yQC.ContrastDialog.updatingValues == false) {
-    blr.W15yQC.fnLog('lt:fnColor1HSBChange(Start)');
       blr.W15yQC.ContrastDialog.updatingValues = true;
       RGB = blr.W15yQC.ContrastDialog.fnHSV2RGB(document.getElementById('sHue1').value, document.getElementById('sSat1').value, document.getElementById('sBrightness1').value);
       document.getElementById('sRed1').value = RGB[0];
@@ -843,16 +836,18 @@ blr.W15yQC.ContrastDialog = {
       document.getElementById('cp1').color = document.getElementById('tbHTMLColor1').value;
       blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
       blr.W15yQC.ContrastDialog.updatingValues = false;
-    blr.W15yQC.fnLog('lt:fnColor1HSBChange(ENDS)');
     }
   },
 
   // ------ Color 2
 
-  fnColor2HTMLColorChange: function () {
+  fnColor2HTMLColorChange: function (newColor) {
     var RGB, r, g, b;
     if (blr.W15yQC.ContrastDialog.updatingValues == false) {
       blr.W15yQC.ContrastDialog.updatingValues = true;
+      if (newColor != null) {
+        document.getElementById('tbHTMLColor2').value = newColor;
+      }
       RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColor2').value);
       r = document.getElementById('sRed2').value = RGB[0];
       g = document.getElementById('sGreen2').value = RGB[1];
@@ -926,8 +921,10 @@ blr.W15yQC.ContrastDialog = {
   fnBGHTMLColorChange: function (newColor) {
     var RGB, r, g, b;
     if (blr.W15yQC.ContrastDialog.updatingValues == false) {
-      if (newColor != null) document.getElementById('tbHTMLColorBG').value = newColor;
       blr.W15yQC.ContrastDialog.updatingValues = true;
+      if (newColor != null) {
+        document.getElementById('tbHTMLColorBG').value = newColor;
+      }
       RGB = blr.W15yQC.ContrastDialog.fnRGBFromHTMLColor(document.getElementById('tbHTMLColorBG').value);
       r = document.getElementById('sRedBG').value = RGB[0];
       g = document.getElementById('sGreenBG').value = RGB[1];
@@ -1011,14 +1008,17 @@ blr.W15yQC.ContrastDialog = {
             if(blr.W15yQC.ContrastDialog.colorSetHistory[i][0]!=c1 || blr.W15yQC.ContrastDialog.colorSetHistory[i][1]!=c2 || blr.W15yQC.ContrastDialog.colorSetHistory[i][2]!=cbg) {
                 blr.W15yQC.ContrastDialog.colorSetHistory.push([c1,c2,cbg]);
             }
+            if(blr.W15yQC.ContrastDialog.colorSetHistory.length>500) {
+                blr.W15yQC.ContrastDialog.colorSetHistory.unshift();
+                blr.W15yQC.ContrastDialog.colorSetHistory.unshift();
+                blr.W15yQC.ContrastDialog.colorSetHistory.unshift();
+            }
         }
     }
-    blr.W15yQC.fnLog('lt:fnUpdateColorHistory:'+blr.W15yQC.ContrastDialog.colorSetHistory.toString());
     
   },
 
   fnUndoColorChange: function() {
-    blr.W15yQC.fnLog('lt:fnUndoColorChange(start)');
     var c1, c2, cbg, cs=null;
 
     c1=document.getElementById('tbHTMLColor1').value;
@@ -1026,9 +1026,7 @@ blr.W15yQC.ContrastDialog = {
     cbg=document.getElementById('tbHTMLColorBG').value;
 
     while(blr.W15yQC.ContrastDialog.colorSetHistory!= null && blr.W15yQC.ContrastDialog.colorSetHistory.length>0) {
-            blr.W15yQC.fnLog('lt:fnUndoColorChange(before pop):'+blr.W15yQC.ContrastDialog.colorSetHistory.toString());
         cs=blr.W15yQC.ContrastDialog.colorSetHistory.pop();
-            blr.W15yQC.fnLog('lt:fnUndoColorChange(post pop):'+blr.W15yQC.ContrastDialog.colorSetHistory.toString());
         if(c1!=cs[0] || c2!=cs[1] || cbg!=cs[2]) {
             blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(cs[0]);
             blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange(cs[1]);
@@ -1036,18 +1034,15 @@ blr.W15yQC.ContrastDialog = {
             blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
 
             blr.W15yQC.ContrastDialog.colorSetHistory.push([cs[0],cs[1],cs[2]]);
-            blr.W15yQC.fnLog('lt:fnUndoColorChange(c):'+blr.W15yQC.ContrastDialog.colorSetHistory.toString());
             return;
         }
     }
     if(cs!=null && blr.W15yQC.ContrastDialog.colorSetHistory.length<1) {
         blr.W15yQC.ContrastDialog.colorSetHistory.push([cs[0],cs[1],cs[2]]);
     }
-    blr.W15yQC.fnLog('lt:fnUndoColorChange(nc):'+blr.W15yQC.ContrastDialog.colorSetHistory.toString());
   },
 
   fnUpdateContrastValuesDisplay: function () {
-    blr.W15yQC.fnLog('lt:fnUpdateContrastValuesDisplay(start)');
     var el1, el2, r1, g1, b1, r2, g2, b2, rBG, gBG, bBG, lrc1bg, lrc2bg, lrc1rc2, c1, c2, bg, if1, if2, if3;
 
     r1 = parseInt(document.getElementById('sRed1').value, 10);
@@ -1148,7 +1143,6 @@ blr.W15yQC.ContrastDialog = {
     blr.W15yQC.ContrastDialog.fnComputePassingRGBValues(4.5);
     window.clearTimeout(blr.W15yQC.ContrastDialog.updateColorHistoryChangeFilterTimerID);
     blr.W15yQC.ContrastDialog.updateColorHistoryChangeFilterTimerID=window.setTimeout(function(){blr.W15yQC.ContrastDialog.fnUpdateColorHistory();},100);
-    blr.W15yQC.fnLog('lt:fnUpdateContrastValuesDisplay(END)');
   },
 
   setResults: function (lRatio, id1, id2, id3, id4) {
@@ -1162,19 +1156,131 @@ blr.W15yQC.ContrastDialog = {
     document.getElementById(id4).style.backgroundColor = (lRatio >= 4.5) ? '#FDFDFD' : '#FFA6A6';
   },
 
-  addSecondColor: function () {
+  addSecondColor: function (force) {
     var gbColor2 = document.getElementById('gbColor2'),
       resultsC1C2 = document.getElementById('resultsC1C2'),
       resultsC2BG = document.getElementById('resultsC2BG'),
       buttonaddColor = document.getElementById('button-addColor');
-    gbColor2.hidden = false;
-    resultsC1C2.hidden = false;
-    resultsC2BG.hidden = false;
-    buttonaddColor.hidden = true;
-    blr.W15yQC.ContrastDialog.color2enabled=true;
+    if((force==null && blr.W15yQC.ContrastDialog.color2enabled ==  false) || (force != null && force==true)) {
+        gbColor2.hidden = false;
+        resultsC1C2.hidden = false;
+        resultsC2BG.hidden = false;
+        blr.W15yQC.ContrastDialog.color2enabled = true;
+        buttonaddColor.label = 'Remove Second Color';
+    } else {
+        gbColor2.hidden = true;
+        resultsC1C2.hidden = true;
+        resultsC2BG.hidden = true;
+        blr.W15yQC.ContrastDialog.color2enabled=false;
+        buttonaddColor.label = 'Add Second Color';
+    }
     blr.W15yQC.ContrastDialog.fnComputePassingRGBValues(4.5);
   },
 
+  fnStoreColorValues: function() {
+    var c1=document.getElementById('tbHTMLColor1').value,
+        c2=document.getElementById('tbHTMLColor2').value,
+        bgc=document.getElementById('tbHTMLColorBG').value, i,
+        treeitem, treerow, treecell, tbc;
+        
+    if(blr.W15yQC.ContrastDialog.storedColors==null) {
+        blr.W15yQC.ContrastDialog.storedColors=[];
+    }
+    for(i=0;i<blr.W15yQC.ContrastDialog.storedColors.length; i++) {
+        if(blr.W15yQC.ContrastDialog.storedColors[i][0]==c1 &&
+           blr.W15yQC.ContrastDialog.storedColors[i][1]==c2 &&
+           blr.W15yQC.ContrastDialog.storedColors[i][2]==bgc &&
+           blr.W15yQC.ContrastDialog.storedColors[i][3]==blr.W15yQC.ContrastDialog.color2enabled) {
+            return;
+        }
+    }
+    blr.W15yQC.ContrastDialog.storedColors.push([c1, c2, bgc,
+                                                 blr.W15yQC.ContrastDialog.color2enabled,
+                                                 document.getElementById('resultsC1BGContrast').value,
+                                                 document.getElementById('resultsC2BGContrast').value,
+                                                 document.getElementById('resultsC1C2Contrast').value
+                                               ]);
+
+    treeitem = document.createElement('treeitem');
+    treerow = document.createElement('treerow');
+    treecell = document.createElement('treecell');
+    tbc = document.getElementById('treeboxChildren');
+
+    treecell.setAttribute('label', i + 1);
+    treerow.appendChild(treecell);
+
+    treecell = document.createElement('treecell');
+    treecell.setAttribute('label', c1);
+    treerow.appendChild(treecell);
+    
+    treecell = document.createElement('treecell');
+    treecell.setAttribute('label', blr.W15yQC.ContrastDialog.color2enabled ? c2 : '-' );
+    treerow.appendChild(treecell);
+    
+    treecell = document.createElement('treecell');
+    treecell.setAttribute('label', bgc);
+    treerow.appendChild(treecell);
+    
+    treecell = document.createElement('treecell');
+    treecell.setAttribute('label', document.getElementById('resultsC1BGContrast').value);
+    treerow.appendChild(treecell);
+    
+    treecell = document.createElement('treecell');
+    treecell.setAttribute('label', blr.W15yQC.ContrastDialog.color2enabled ? document.getElementById('resultsC2BGContrast').value : '-');
+    treerow.appendChild(treecell);
+    
+    treecell = document.createElement('treecell');
+    treecell.setAttribute('label', blr.W15yQC.ContrastDialog.color2enabled ? document.getElementById('resultsC1C2Contrast').value : '-');
+    treerow.appendChild(treecell);
+
+    treeitem.appendChild(treerow);
+    tbc.appendChild(treeitem);
+    document.getElementById('savedColors').hidden=false;
+    document.getElementById('vb').height=594;
+    blr.W15yQC.ContrastDialog.forceMinSize();
+    document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.ContrastDialog.storedColors.length);
+    if(blr.W15yQC.ContrastDialog.storedColors.length>2) {
+        document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.ContrastDialog.storedColors.length-3);
+    }
+    document.getElementById('treebox').view.selection.select(blr.W15yQC.ContrastDialog.storedColors.length);
+    if(blr.W15yQC.ContrastDialog.color2enabled) {
+        document.getElementById('col-header-c2').setAttribute('hidden','false');
+        document.getElementById('col-header-lcc2bg').setAttribute('hidden','false');
+        document.getElementById('col-header-lcc1c2').setAttribute('hidden','false');
+    }
+  },
+  
+  fnSetColorsToSelectedStoredColors: function() {
+    var treebox = document.getElementById('treebox'), selectedRow = treebox.currentIndex;
+    
+    if (isNaN(selectedRow) == false && selectedRow >= 0 && selectedRow<blr.W15yQC.ContrastDialog.storedColors.length) {
+        blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.ContrastDialog.storedColors[selectedRow][0]);
+        blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange(blr.W15yQC.ContrastDialog.storedColors[selectedRow][1]);
+        blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(blr.W15yQC.ContrastDialog.storedColors[selectedRow][2]);
+        blr.W15yQC.ContrastDialog.addSecondColor(blr.W15yQC.ContrastDialog.storedColors[selectedRow][3]);
+        blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
+    }
+    
+  },
+
+  fnDeleteSelectedStoredColor: function() {
+    var treebox=document.getElementById('treebox'),
+      selectedRow = treebox.currentIndex,
+      row;
+
+    if(selectedRow>=0) {
+      blr.W15yQC.ContrastDialog.storedColors.splice(selectedRow,1);
+      row=treebox.getElementsByTagName('treeitem')[selectedRow];
+      if(row!=null) {
+        row.parentNode.removeChild(row);
+      }
+    }
+  },  
+  
+  fnSaveStoredColors: function() {
+    
+  },
+  
   cleanup: function () {}
 
 };
