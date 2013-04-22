@@ -1002,11 +1002,12 @@ blr.W15yQC.ContrastDialog = {
 
     if(c1 != null && c2 != null && cbg != null) {
         if(blr.W15yQC.ContrastDialog.colorSetHistory==null || blr.W15yQC.ContrastDialog.colorSetHistory.length<1) {
-            blr.W15yQC.ContrastDialog.colorSetHistory = [[c1, c2, cbg]];
+            blr.W15yQC.ContrastDialog.colorSetHistory = [[c1, c2, cbg, blr.W15yQC.ContrastDialog.color2enabled]];
         } else {
             i=blr.W15yQC.ContrastDialog.colorSetHistory.length-1;
-            if(blr.W15yQC.ContrastDialog.colorSetHistory[i][0]!=c1 || blr.W15yQC.ContrastDialog.colorSetHistory[i][1]!=c2 || blr.W15yQC.ContrastDialog.colorSetHistory[i][2]!=cbg) {
-                blr.W15yQC.ContrastDialog.colorSetHistory.push([c1,c2,cbg]);
+            if(blr.W15yQC.ContrastDialog.colorSetHistory[i][0]!=c1 || blr.W15yQC.ContrastDialog.colorSetHistory[i][1]!=c2 || blr.W15yQC.ContrastDialog.colorSetHistory[i][2]!=cbg ||
+               blr.W15yQC.ContrastDialog.colorSetHistory[i][3]!=blr.W15yQC.ContrastDialog.color2enabled) {
+                blr.W15yQC.ContrastDialog.colorSetHistory.push([c1,c2,cbg,blr.W15yQC.ContrastDialog.color2enabled]);
             }
             if(blr.W15yQC.ContrastDialog.colorSetHistory.length>500) {
                 blr.W15yQC.ContrastDialog.colorSetHistory.unshift();
@@ -1031,14 +1032,15 @@ blr.W15yQC.ContrastDialog = {
             blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(cs[0]);
             blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange(cs[1]);
             blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(cs[2]);
+            blr.W15yQC.ContrastDialog.addSecondColor(cs[3]);
             blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
 
-            blr.W15yQC.ContrastDialog.colorSetHistory.push([cs[0],cs[1],cs[2]]);
+            blr.W15yQC.ContrastDialog.colorSetHistory.push([cs[0],cs[1],cs[2],cs[3]]);
             return;
         }
     }
     if(cs!=null && blr.W15yQC.ContrastDialog.colorSetHistory.length<1) {
-        blr.W15yQC.ContrastDialog.colorSetHistory.push([cs[0],cs[1],cs[2]]);
+        blr.W15yQC.ContrastDialog.colorSetHistory.push([cs[0],cs[1],cs[2],cs[3]]);
     }
   },
 
