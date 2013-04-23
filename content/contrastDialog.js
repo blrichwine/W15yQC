@@ -1016,7 +1016,6 @@ blr.W15yQC.ContrastDialog = {
             }
         }
     }
-    
   },
 
   fnUndoColorChange: function() {
@@ -1280,7 +1279,9 @@ blr.W15yQC.ContrastDialog = {
   },  
   
   fnSaveStoredColors: function() {
-    
+    var dialogID = 'SavedColorsWindow',
+        dialogPath = 'chrome://W15yQC/content/SavedColorsWindow.xul';
+    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr,blr.W15yQC.ContrastDialog.storedColors);
   },
   
   cleanup: function () {}
