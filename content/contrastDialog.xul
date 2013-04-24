@@ -329,6 +329,9 @@
 										label="Delete Selected Stored Colors"
 										oncommand="blr.W15yQC.ContrastDialog.fnDeleteSelectedStoredColor();"/>
 									<xul:spacer flex="1"/>
+									<xul:button id="button-clearAllSelectedStoredColors"
+										label="Clear All Stored Colors"
+										oncommand="blr.W15yQC.ContrastDialog.fnClearAllStoredColors();"/>
 									<xul:button id="button-saveStoredColors"
 										label="Save Stored Colors"
 										oncommand="blr.W15yQC.ContrastDialog.fnSaveStoredColors();"/>

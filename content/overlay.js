@@ -51,6 +51,7 @@ if (!blr.W15yQC) {
     bAutoScrollToSelectedElementInInspectorDialogs: true,
     domainEq1: [],
     domainEq2: [],
+    storedColors: [],
 
     // Homophones object for sounds like routine
     // TODO: add 20 most mispelled words

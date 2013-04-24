@@ -61,7 +61,6 @@ blr.W15yQC.ContrastDialog = {
                       ],
   colors: [[0,0,0],[255,255,255],[255,0,0],[0,255,255]],
   colorSetHistory: [],
-  storedColors: [],
 
   init: function (dialog) {
     blr.W15yQC.fnReadUserPrefs();
@@ -74,6 +73,9 @@ blr.W15yQC.ContrastDialog = {
     blr.W15yQC.ContrastDialog.fnBGSliderChange();
     blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
     blr.W15yQC.ContrastDialog.fnUpdateColorHistory();
+    if(blr.W15yQC.storedColors != null && blr.W15yQC.storedColors.length>0) {
+        blr.W15yQC.ContrastDialog.fnUpdateStoredColorsDisplay();
+    }
   },
 
   windowOnKeyDown: function (dialog, evt) {
@@ -110,7 +112,7 @@ blr.W15yQC.ContrastDialog = {
   },
 
   forceMinSize: function (dialog) {
-    var maxH = (blr.W15yQC.ContrastDialog.storedColors != null && blr.W15yQC.ContrastDialog.storedColors.length>0) ? 710 : 610;
+    var maxH = (blr.W15yQC.storedColors != null && blr.W15yQC.storedColors.length>0) ? 710 : 610;
     if(dialog == null) { dialog=window; }
     if (dialog.outerWidth > 100 && dialog.outerHeight > 100 && (dialog.outerWidth < 940 || dialog.outerHeight != maxH)) {
       dialog.resizeTo(Math.max(940, dialog.outerWidth), maxH);
@@ -1178,24 +1180,94 @@ blr.W15yQC.ContrastDialog = {
     blr.W15yQC.ContrastDialog.fnComputePassingRGBValues(4.5);
   },
 
+  fnUpdateStoredColorsDisplay: function() {
+    var i, treeitem, treerow, treecell, tbc, tbcp, hasThreeColors=false;
+
+    if(blr.W15yQC.storedColors==null) {
+        blr.W15yQC.storedColors=[];
+    }
+
+    tbc=document.getElementById('treeboxChildren');
+    tbcp=tbc.parentNode;
+    tbcp.removeChild(tbc);
+    tbc=document.createElement('treechildren');
+    tbc.setAttribute('id','treeboxChildren');
+    tbcp.appendChild(tbc);
+    for(i=0;i<blr.W15yQC.storedColors.length; i++) {
+        if(blr.W15yQC.storedColors[i][3]) {
+            hasThreeColors=true;
+        }
+
+        treeitem = document.createElement('treeitem');
+        treerow = document.createElement('treerow');
+        treecell = document.createElement('treecell');
+        tbc = document.getElementById('treeboxChildren');
+    
+        treecell.setAttribute('label', i + 1);
+        treerow.appendChild(treecell);
+    
+        treecell = document.createElement('treecell');
+        treecell.setAttribute('label', blr.W15yQC.storedColors[i][0]);
+        treerow.appendChild(treecell);
+        
+        treecell = document.createElement('treecell');
+        treecell.setAttribute('label', blr.W15yQC.storedColors[i][3] ? blr.W15yQC.storedColors[i][1] : '-' );
+        treerow.appendChild(treecell);
+        
+        treecell = document.createElement('treecell');
+        treecell.setAttribute('label', blr.W15yQC.storedColors[i][2]);
+        treerow.appendChild(treecell);
+        
+        treecell = document.createElement('treecell');
+        treecell.setAttribute('label', blr.W15yQC.storedColors[i][4]);
+        treerow.appendChild(treecell);
+        
+        treecell = document.createElement('treecell');
+        treecell.setAttribute('label', blr.W15yQC.storedColors[i][3] ? blr.W15yQC.storedColors[i][5] : '-');
+        treerow.appendChild(treecell);
+        
+        treecell = document.createElement('treecell');
+        treecell.setAttribute('label', blr.W15yQC.storedColors[i][3] ? blr.W15yQC.storedColors[i][6] : '-');
+        treerow.appendChild(treecell);
+    
+        treeitem.appendChild(treerow);
+        tbc.appendChild(treeitem);
+    }
+    if(blr.W15yQC.storedColors.length>0) {
+        document.getElementById('savedColors').hidden=false;
+        document.getElementById('vb').height=594;
+        blr.W15yQC.ContrastDialog.forceMinSize();
+        document.getElementById('treebox').view.selection.select(blr.W15yQC.storedColors.length);
+        document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.storedColors.length);
+        if(blr.W15yQC.storedColors.length>2) {
+            document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.storedColors.length-3);
+        }
+        if(hasThreeColors) {
+            document.getElementById('col-header-c2').setAttribute('hidden','false');
+            document.getElementById('col-header-lcc2bg').setAttribute('hidden','false');
+            document.getElementById('col-header-lcc1c2').setAttribute('hidden','false');
+        }
+    }
+  },
+  
   fnStoreColorValues: function() {
     var c1=document.getElementById('tbHTMLColor1').value,
         c2=document.getElementById('tbHTMLColor2').value,
         bgc=document.getElementById('tbHTMLColorBG').value, i,
         treeitem, treerow, treecell, tbc;
         
-    if(blr.W15yQC.ContrastDialog.storedColors==null) {
-        blr.W15yQC.ContrastDialog.storedColors=[];
+    if(blr.W15yQC.storedColors==null) {
+        blr.W15yQC.storedColors=[];
     }
-    for(i=0;i<blr.W15yQC.ContrastDialog.storedColors.length; i++) {
-        if(blr.W15yQC.ContrastDialog.storedColors[i][0]==c1 &&
-           blr.W15yQC.ContrastDialog.storedColors[i][1]==c2 &&
-           blr.W15yQC.ContrastDialog.storedColors[i][2]==bgc &&
-           blr.W15yQC.ContrastDialog.storedColors[i][3]==blr.W15yQC.ContrastDialog.color2enabled) {
+    for(i=0;i<blr.W15yQC.storedColors.length; i++) {
+        if(blr.W15yQC.storedColors[i][0]==c1 &&
+           blr.W15yQC.storedColors[i][1]==c2 &&
+           blr.W15yQC.storedColors[i][2]==bgc &&
+           blr.W15yQC.storedColors[i][3]==blr.W15yQC.ContrastDialog.color2enabled) {
             return;
         }
     }
-    blr.W15yQC.ContrastDialog.storedColors.push([c1, c2, bgc,
+    blr.W15yQC.storedColors.push([c1, c2, bgc,
                                                  blr.W15yQC.ContrastDialog.color2enabled,
                                                  document.getElementById('resultsC1BGContrast').value,
                                                  document.getElementById('resultsC2BGContrast').value,
@@ -1239,11 +1311,11 @@ blr.W15yQC.ContrastDialog = {
     document.getElementById('savedColors').hidden=false;
     document.getElementById('vb').height=594;
     blr.W15yQC.ContrastDialog.forceMinSize();
-    document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.ContrastDialog.storedColors.length);
-    if(blr.W15yQC.ContrastDialog.storedColors.length>2) {
-        document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.ContrastDialog.storedColors.length-3);
+    document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.storedColors.length);
+    if(blr.W15yQC.storedColors.length>2) {
+        document.getElementById('treebox').treeBoxObject.ensureRowIsVisible(blr.W15yQC.storedColors.length-3);
     }
-    document.getElementById('treebox').view.selection.select(blr.W15yQC.ContrastDialog.storedColors.length);
+    document.getElementById('treebox').view.selection.select(blr.W15yQC.storedColors.length);
     if(blr.W15yQC.ContrastDialog.color2enabled) {
         document.getElementById('col-header-c2').setAttribute('hidden','false');
         document.getElementById('col-header-lcc2bg').setAttribute('hidden','false');
@@ -1254,23 +1326,42 @@ blr.W15yQC.ContrastDialog = {
   fnSetColorsToSelectedStoredColors: function() {
     var treebox = document.getElementById('treebox'), selectedRow = treebox.currentIndex;
     
-    if (isNaN(selectedRow) == false && selectedRow >= 0 && selectedRow<blr.W15yQC.ContrastDialog.storedColors.length) {
-        blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.ContrastDialog.storedColors[selectedRow][0]);
-        blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange(blr.W15yQC.ContrastDialog.storedColors[selectedRow][1]);
-        blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(blr.W15yQC.ContrastDialog.storedColors[selectedRow][2]);
-        blr.W15yQC.ContrastDialog.addSecondColor(blr.W15yQC.ContrastDialog.storedColors[selectedRow][3]);
+    if (isNaN(selectedRow) == false && selectedRow >= 0 && selectedRow<blr.W15yQC.storedColors.length) {
+        blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.storedColors[selectedRow][0]);
+        blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange(blr.W15yQC.storedColors[selectedRow][1]);
+        blr.W15yQC.ContrastDialog.fnBGHTMLColorChange(blr.W15yQC.storedColors[selectedRow][2]);
+        blr.W15yQC.ContrastDialog.addSecondColor(blr.W15yQC.storedColors[selectedRow][3]);
         blr.W15yQC.ContrastDialog.fnUpdateContrastValuesDisplay();
     }
-    
   },
 
+  fnClearAllStoredColors: function() {
+    var tbc, tbcp,
+        prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
+   
+    if(blr.W15yQC.storedColors!=null && blr.W15yQC.storedColors.length>0) {
+
+        result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Reset project to new without saving?");
+        if(result) {
+
+            blr.W15yQC.storedColors=[];
+            tbc=document.getElementById('treeboxChildren');
+            tbcp=tbc.parentNode;
+            tbcp.removeChild(tbc);
+            tbc=document.createElement('treechildren');
+            tbc.setAttribute('id','treeboxChildren');
+            tbcp.appendChild(tbc);
+        }
+    }
+  },
+  
   fnDeleteSelectedStoredColor: function() {
     var treebox=document.getElementById('treebox'),
       selectedRow = treebox.currentIndex,
       row;
 
     if(selectedRow>=0) {
-      blr.W15yQC.ContrastDialog.storedColors.splice(selectedRow,1);
+      blr.W15yQC.storedColors.splice(selectedRow,1);
       row=treebox.getElementsByTagName('treeitem')[selectedRow];
       if(row!=null) {
         row.parentNode.removeChild(row);
@@ -1281,7 +1372,7 @@ blr.W15yQC.ContrastDialog = {
   fnSaveStoredColors: function() {
     var dialogID = 'SavedColorsWindow',
         dialogPath = 'chrome://W15yQC/content/SavedColorsWindow.xul';
-    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,blr.W15yQC.ContrastDialog.storedColors);
+    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,blr.W15yQC.storedColors);
   },
   
   cleanup: function () {}

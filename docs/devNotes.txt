@@ -142,8 +142,20 @@
             
             
       *** FIX ASAP***
-      Color luminosity tool: calculate nearest color that is accessible in each direction of a slider and place a color swatch at the end of each slider of the next
-        a11y color (if no a11y color, then indicate with an X graphic), http://www.compuphase.com/cmetric.htm
+	  HTML title on stored color page
+	  finish save as text option for the stored colors window
+	  keep stored colors in the overlay.js file so they can be referrenced from invocation to invocation.
+	  Add a clear stored colors button
+	  video and support page for the color chooser tool
+	  video and support page for the contrast inspect tool
+	  video and support page for the problem ID tool
+	  video and support page for the focus tracker tool
+	  video and support page for the remove styles / semantic view, document how you can disable CSS in the browser to see how that looks
+	  video and support page for keyboard accessibility checks
+	  video and support page for inspectors
+	  video and support page for site inspector
+	  video and support page for full inspection
+	  video and support page for the 
       label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything.
       Unify inspectors to have effective label field and a description of where the label came from
       Add page score and page description to HTML results pages
@@ -390,6 +402,8 @@
       - Allow configurable values that are listed as not meaningful
       
 FIXED:
+		-Color luminosity tool: calculate nearest color that is accessible in each direction of a slider and place a color swatch at the end of each slider of the next
+          a11y color (if no a11y color, then indicate with an X graphic), http://www.compuphase.com/cmetric.htm [4/23/2013]
         - When sorting, update status bar as to performing sort and what the sort columns and order are. [3/12/2013]
         - do we need a fixup URL routine to deal with \ used in place of / ? [ANSWER: No. using backslashes in FF on Mac does not work 3/9/2013]
         - Add Turn Off All Highlighters Feature [3/9/2013]
