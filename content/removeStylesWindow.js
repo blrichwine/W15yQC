@@ -81,6 +81,7 @@ blr.W15yQC.RemoveStylesWindow = {
     rd.head.insertBefore(styleElement, rd.head.firstChild);
     blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
     blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(rd);
+    blr.W15yQC.RemoveStylesWindow.fnInstallFocusHighlighter();
   },
 
   cleanup: function () {
@@ -426,6 +427,62 @@ blr.W15yQC.RemoveStylesWindow = {
     return appendNode.parentNode || appendNode;
   },
 
+  fnInstallFocusHighlighter: function() {
+    var doc=blr.W15yQC.RemoveStylesWindow.rd;
+    
+      function w15yqcHighlightElementWithFocus(e) { 
+        if(e.target && e.target.tagName && e.target.tagName.toLowerCase() !='a') { 
+            try {
+              if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+                w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+              }
+            } catch(ex)
+            {
+            }
+    
+            w15yqcPrevElWithFocus = e.target;
+    
+              var origNode = w15yqcPrevElWithFocus, box = w15yqcPrevElWithFocus.getBoundingClientRect();
+              while(box != null && box.width == 0 && box.height==0 && w15yqcPrevElWithFocus.firstChild && w15yqcPrevElWithFocus.firstChild != null) {
+                w15yqcPrevElWithFocus = w15yqcPrevElWithFocus.firstChild;
+                if(w15yqcPrevElWithFocus.getBoundingClientRect) {
+                  box = w15yqcPrevElWithFocus.getBoundingClientRect();
+                }
+              }
+              if(box == null || box.width == 0 || box.height==0) {
+                w15yqcPrevElWithFocus=origNode;
+              }
+    
+              if (w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+                w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("outline");
+                //w15yqcPrevElWithFocus.style.outline = "solid 2px red";
+                w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("position");
+                w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
+                if(w15yqcOriginalItemPosition=="static") {
+                  //w15yqcPrevElWithFocus.style.position = "relative";
+                }
+                //w15yqcPrevElWithFocus.style.zIndex = "199999";
+                blr.W15yQC.fnHighlightFormElement(e.target, true);
+              }
+        }
+      }
+
+      function w15yqcRemoveFocusIndication(e) {
+        if(e != null && e.target && e.target.ownerDocument) {
+          blr.W15yQC.resetHighlightElement(e.target.ownerDocument);
+        }
+      }
+      
+      if (doc!=null && doc.addEventListener) {
+        doc.addEventListener( 'focus', w15yqcHighlightElementWithFocus, true);
+        doc.addEventListener( 'blur', w15yqcRemoveFocusIndication, true);
+        for (i = 0; i < doc.defaultView.frames.length; i++) { // QA this on deeply nested frames
+          doc.defaultView.frames[i].document.addEventListener( 'focus', w15yqcHighlightElementWithFocus, true);
+          doc.defaultView.frames[i].document.addEventListener( 'blur', w15yqcRemoveFocusIndication, true);
+        }
+      }
+  },
+  
   fnLinearizeTables: function (doc, rootNode) {
     var c, i, j, firstMoved, div, frameDocument;
     if (doc != null && doc.body) {

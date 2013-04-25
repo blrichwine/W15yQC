@@ -142,6 +142,7 @@
             
             
       *** FIX ASAP***
+	  ARIA Landmarks outlining does not appear when selecting install all
 	  HTML title on stored color page
 	  finish save as text option for the stored colors window
 	  keep stored colors in the overlay.js file so they can be referrenced from invocation to invocation.
