@@ -78,20 +78,20 @@
 						<xul:caption label="Color 2:" style="margin-top:0;padding-top:0"/>
 						<xul:label control="tbHTMLColor2" value="HTML Color:" style="margin: 0px 0 0 0px"/>
 						<xul:hbox style="margin:0">
-							 <xul:textbox id="tbHTMLColor2" value="#0000FF" onchange="blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange()" style="margin-right:10px" flex="1"/>
-							 <xul:colorpicker id="cp2" type="button" value="#0000FF" style="text-align:right;max-width:40px;min-width:39px;margin-right:5px" onchange="blr.W15yQC.ContrastDialog.fnColor2ColorPickerChange()"/>
+							 <xul:textbox id="tbHTMLColor2" value="#036DFF" onchange="blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange()" style="margin-right:10px" flex="1"/>
+							 <xul:colorpicker id="cp2" type="button" value="#036DFF" style="text-align:right;max-width:40px;min-width:39px;margin-right:5px" onchange="blr.W15yQC.ContrastDialog.fnColor2ColorPickerChange()"/>
 						</xul:hbox>
 						<xul:label control="sRed2" value="Red:" style="margin: 0px 0 0 0px"/>		
 						<xul:hbox style="margin:0">
 							 <xul:button hidden="true" id="button-C2RedLeft"	label="0" oncommand="blr.W15yQC.ContrastDialog.setSlider(this.label,'sRed2');" style="-moz-appearance:none;color:#000;padding:0;margin:1px 1px 1px 4px;min-width:0px;width:30px;border:thin solid black"/>
-							 <xul:scale value="0" min="0" max="255" increment="1" id="sRed2" flex="1" onchange="blr.W15yQC.ContrastDialog.fnColor2SliderChange()"/>
+							 <xul:scale value="3" min="0" max="255" increment="1" id="sRed2" flex="1" onchange="blr.W15yQC.ContrastDialog.fnColor2SliderChange()"/>
 							 <xul:button hidden="true" id="button-C2RedRight"	label="255" oncommand="blr.W15yQC.ContrastDialog.setSlider(this.label,'sRed2');" style="-moz-appearance:none;color:#000;padding:0;margin:1px 1px 1px 4px;min-width:0px;width:30px;border:thin solid black"/>
 							 <xul:textbox value="0" observes="sRed2" readonly="true" disabled="true" size="3" style="-moz-appearance: none;border:none;padding:1px;text-align:right;max-width:40px;min-width:35px"/>
 						</xul:hbox>
 						<xul:label control="sGreen2" value="Green:" style="margin: 0px 0 0 0px"/>		
 						<xul:hbox style="margin:0">
 							 <xul:button hidden="true" id="button-C2GreenLeft"	label="0" oncommand="blr.W15yQC.ContrastDialog.setSlider(this.label,'sGreen2');" style="-moz-appearance:none;color:#000;padding:0;margin:1px 1px 1px 4px;min-width:0px;width:30px;border:thin solid black"/>
-							 <xul:scale value="0" id="sGreen2" min="0" max="255" increment="1" flex="1" onchange="blr.W15yQC.ContrastDialog.fnColor2SliderChange()"/>
+							 <xul:scale value="109" id="sGreen2" min="0" max="255" increment="1" flex="1" onchange="blr.W15yQC.ContrastDialog.fnColor2SliderChange()"/>
 							 <xul:button hidden="true" id="button-C2GreenRight"	label="255" oncommand="blr.W15yQC.ContrastDialog.setSlider(this.label,'sGreen2');" style="-moz-appearance:none;color:#000;padding:0;margin:1px 1px 1px 4px;min-width:0px;width:30px;border:thin solid black"/>
 							 <xul:textbox value="0" observes="sGreen2" readonly="true" disabled="true" size="3" style="-moz-appearance: none;border:none;padding:1px;text-align:right;max-width:40px;min-width:35px"/>
 						</xul:hbox>

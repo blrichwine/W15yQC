@@ -1088,7 +1088,7 @@ blr.W15yQC.ContrastDialog = {
     el1.setAttribute('style', 'margin:0;padding:4px;font-size:12pt');
     el1.appendChild(if1.contentDocument.createTextNode('Example text at 12 points. ')); // TODO: i18n this!
     el2 = if1.contentDocument.createElement('i');
-    el1.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
+    el2.appendChild(if1.contentDocument.createTextNode('Example text in italic. '));
     el1.appendChild(el2);
     el2 = if1.contentDocument.createElement('b');
     el2.appendChild(if1.contentDocument.createTextNode('Example text in bold.'));
@@ -1108,7 +1108,7 @@ blr.W15yQC.ContrastDialog = {
     el1.setAttribute('style', 'margin:0;padding:4px;font-size:12pt');
     el1.appendChild(if2.contentDocument.createTextNode('Example text at 12 points. ')); // TODO: i18n this!
     el2 = if2.contentDocument.createElement('i');
-    el1.appendChild(if2.contentDocument.createTextNode('Example text in italic. '));
+    el2.appendChild(if2.contentDocument.createTextNode('Example text in italic. '));
     el1.appendChild(el2);
     el2 = if2.contentDocument.createElement('b');
     el2.appendChild(if2.contentDocument.createTextNode('Example text in bold.'));
