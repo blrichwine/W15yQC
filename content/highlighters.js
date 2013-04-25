@@ -81,7 +81,7 @@ blr.W15yQC.Highlighters = {
         doc = aDocumentsList[i].doc;
         if (doc != null && doc.body && doc.head && doc.head.firstChild) {
           styleElement = doc.createElement('style');
-          styleElement.innerHTML = 'div.w15yqcListBorder {border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
+          styleElement.innerHTML = 'div.w15yqcListBorder {text-align:left !important;border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{text-align:left !important;text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
           styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
           doc.head.insertBefore(styleElement, doc.head.firstChild);
           lists = doc.getElementsByTagName('ul');
@@ -179,7 +179,7 @@ blr.W15yQC.Highlighters = {
         doc = aDocumentsList[i].doc;
         if (doc != null) {
           styleElement = doc.createElement('style');
-          styleElement.innerHTML = '.w15yqcHeadingInsert{text-indent:0px !important; float:none !important}.w15yqcH1{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH2{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH3{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH4{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH5{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH6{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}span.w15yqcHxInsert{text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}.w15yqcH1 span.w15yqcHxInsert{text-indent:0px !important; font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{text-indent:0px !important; font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{text-indent:0px !important; font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{text-indent:0px !important; font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{text-indent:0px !important; font-size:13px;line-height:15px}';
+          styleElement.innerHTML = '.w15yqcHeadingInsert{text-align:left !important;text-indent:0px !important; float:none !important}.w15yqcH1{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH2{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH3{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH4{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH5{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}.w15yqcH6{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}span.w15yqcHxInsert{text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}.w15yqcH1 span.w15yqcHxInsert{text-indent:0px !important; font-size:18px;line-height:20px}.w15yqcH2 span.w15yqcHxInsert{font-size:17px;line-height:19px}.w15yqcH3 span.w15yqcHxInsert{text-indent:0px !important; font-size:16px;line-height:18px}.w15yqcH4 span.w15yqcHxInsert{text-indent:0px !important; font-size:15px;line-height:17px}.w15yqcH5 span.w15yqcHxInsert{text-indent:0px !important; font-size:14px;line-height:16px}.w15yqcH6 span.w15yqcHxInsert{text-indent:0px !important; font-size:13px;line-height:15px}';
           styleElement.setAttribute('id', 'W15yQCHeadingsHighlightStyle');
           doc.head.insertBefore(styleElement, doc.head.firstChild);
         }
@@ -188,7 +188,7 @@ blr.W15yQC.Highlighters = {
         aHeadingsList[j].node.className = 'w15yqcH' + aHeadingsList[j].level.toString() + ' ' + aHeadingsList[j].node.className;
         doc = aHeadingsList[j].doc;
         span1 = doc.createElement('span');
-        span1.setAttribute('style', 'position:static;clear:both');
+        span1.setAttribute('style', 'position:static;clear:both;text-align:left !important');
         span1.className = 'w15yqcHeadingInsert';
         insert = doc.createElement('span');
         insert.className = 'w15yqcHxInsert';
@@ -255,7 +255,7 @@ blr.W15yQC.Highlighters = {
         doc = aDocumentsList[i].doc;
         if (doc != null) {
           styleElement = doc.createElement('style');
-          styleElement.innerHTML = '.w15yqcARIALandmarkInsert{text-indent:0px !important; float:none !important}.w15yqcARIALandmark{border:2px solid red !important}.w15yqcALInsert{text-indent:0px !important; float:none !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
+          styleElement.innerHTML = '.w15yqcARIALandmarkInsert{text-indent:0px !important; float:none !important}.w15yqcARIALandmark{border:2px solid red !important}.w15yqcALInsert{text-indent:0px !important; display:box !important;float:left !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
           styleElement.setAttribute('id', 'W15yQCARIALandmarksHighlightStyle');
           doc.head.insertBefore(styleElement, doc.head.firstChild);
         }
@@ -264,9 +264,10 @@ blr.W15yQC.Highlighters = {
         aARIALandmarksList[j].node.className = 'w15yqcARIALandmark' + ' ' + aARIALandmarksList[j].node.className;
         doc = aARIALandmarksList[j].doc;
         span1 = doc.createElement('span');
-        span1.setAttribute('style', 'position:static;clear:both');
+        span1.setAttribute('style', 'position:static !important;clear:both !important;z-index:2140000000 !important');
         span1.className = 'w15yqcARIALandmarkInsert';
         insert = doc.createElement('span');
+        insert.setAttribute('style', 'z-index:2140000000 !important');
         insert.className = 'w15yqcALInsert';
         //insert.setAttribute('title',aARIALandmarksList[j].text);
         sInsertText = aARIALandmarksList[j].role.toString();
@@ -625,6 +626,7 @@ blr.W15yQC.Highlighters = {
   },
 
   installAllHighlights: function (aDocumentsList, aHeadingsList) {
+    var aARIALandmarksList
     // Headings
     // Tables
     // Landmarks
@@ -634,7 +636,9 @@ blr.W15yQC.Highlighters = {
       aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
       aHeadingsList = blr.W15yQC.fnGetHeadings(window.top.content.document);
     }
+    aARIALandmarksList = blr.W15yQC.fnGetARIALandmarks(aDocumentsList[0].doc);
     blr.W15yQC.Highlighters.removeAllHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightARIALandmarks(aDocumentsList, aARIALandmarksList);
     blr.W15yQC.Highlighters.highlightHeadings(aDocumentsList, aHeadingsList);
     blr.W15yQC.Highlighters.highlightLists(aDocumentsList);
     blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
