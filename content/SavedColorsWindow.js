@@ -64,7 +64,7 @@ blr.W15yQC.SavedColorsWindow = {
 
   fnGenerateHTMLViewOfStoredColors: function() {
     var i, sc=blr.W15yQC.SavedColorsWindow.storedColors, hasThreeColors=false,
-        table, thead, tbody, tr, th, td, span, el, el2, rd=blr.W15yQC.SavedColorsWindow.rd;
+        table, thead, tbody, tr, th, td, span, el, el2, rd=blr.W15yQC.SavedColorsWindow.rd, rightNow=new Date();
 
     for(i=0;i<sc.length;i++) {
         if(sc[i][3]) {
@@ -191,6 +191,7 @@ blr.W15yQC.SavedColorsWindow = {
     }
     table.appendChild(tbody);
     rd.body.appendChild(table);
+    rd.title="W15yQC Saved Color Set - " + rightNow.toLocaleDateString()+' '+ rightNow.toLocaleTimeString();
   },
   
   windowOnKeyDown: function (win, evt) {
@@ -302,7 +303,7 @@ blr.W15yQC.SavedColorsWindow = {
 
         foStream.init(file, 0x2A, 438, 0);
         converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
-        converter.init(foStream, "UTF-8", 0, 0);
+        converter.init(foStream, "UTF-8", 0, 0); alert(blr.W15yQC.SavedColorsWindow.rd.title);
         converter.writeString('<html>' + blr.W15yQC.SavedColorsWindow.rd.documentElement.innerHTML + '</html>');
         converter.close(); // this closes foStream            
       }
