@@ -66,7 +66,7 @@ blr.W15yQC.SavedColorsWindow = {
     var i, sc=blr.W15yQC.SavedColorsWindow.storedColors, hasThreeColors=false,
         table, thead, tbody, tr, th, td, span, el, el2, rd=blr.W15yQC.SavedColorsWindow.rd;
 
-    for(i=0;i<blr.W15yQC.SavedColorsWindow.storedColors.length;i++) {
+    for(i=0;i<sc.length;i++) {
         if(sc[i][3]) {
             hasThreeColors=true;
             break;
@@ -229,10 +229,52 @@ blr.W15yQC.SavedColorsWindow = {
     if (blr.W15yQC.SavedColorsWindow.rd != null && blr.W15yQC.SavedColorsWindow.rd.documentElement && blr.W15yQC.SavedColorsWindow.rd.documentElement.innerHTML && blr.W15yQC.SavedColorsWindow.rd.body && blr.W15yQC.SavedColorsWindow.rd.body.children && blr.W15yQC.SavedColorsWindow.rd.body.children.length && blr.W15yQC.SavedColorsWindow.rd.defaultView && blr.W15yQC.SavedColorsWindow.rd.defaultView.print) {
       blr.W15yQC.SavedColorsWindow.rd.defaultView.print();
     } else {
-      if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to print!");
+      if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC Alert", "Nothing to print!");
     }
   },
 
+  saveStoredColorsAsText: function () {
+    var converter,
+    file,
+    foStream,
+    fp,
+    nsIFilePicker,
+    rv, sc=blr.W15yQC.SavedColorsWindow.storedColors, i;
+
+    if (sc != null && sc.length && sc.length>0) {
+      nsIFilePicker = Components.interfaces.nsIFilePicker;
+
+      fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+      fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+      fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
+      rv = fp.show();
+      if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+
+        file = fp.file;
+        if (/\.txt$/.test(file.path) == false) {
+          file.initWithPath(file.path + '.txt');
+        }
+
+        foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
+        createInstance(Components.interfaces.nsIFileOutputStream);
+
+        foStream.init(file, 0x2A, 438, 0);
+        converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+        converter.init(foStream, "UTF-8", 0, 0);
+        for(i=0;i<sc.length;i++) {
+            converter.writeString('#'+(i+1).toString() +"\t C1: " + sc[i][0] + (sc[i][3] ? "\t C2: " + sc[i][1] : "") + "\t BG: " + sc[i][2] + "\t C1-BG: "+ sc[i][4]);
+            if(sc[i][3]) {
+                converter.writeString("\t C2-BG: "+ sc[i][5]+"\t C1-C2: "+ sc[i][6]);
+            }
+            converter.writeString("\n");
+        }
+        converter.close(); // this closes foStream            
+      }
+    } else {
+      if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC Alert", "Nothing to save!");
+    }
+  },
+  
   saveStoredColorsAsHTML: function () {
     var converter,
     file,
@@ -265,7 +307,7 @@ blr.W15yQC.SavedColorsWindow = {
         converter.close(); // this closes foStream            
       }
     } else {
-      if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
+      if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC Alert", "Nothing to save!");
     }
   }
 
