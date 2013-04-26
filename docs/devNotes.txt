@@ -142,11 +142,11 @@
             
             
       *** FIX ASAP***
-	  ARIA Landmarks outlining does not appear when selecting install all
-	  HTML title on stored color page
-	  finish save as text option for the stored colors window
-	  keep stored colors in the overlay.js file so they can be referrenced from invocation to invocation.
-	  Add a clear stored colors button
+    Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
+    Begin major QA sequence.
+    Add Quick View that gives page summary features as reported by JAWS
+       - Info that JAWS reads when page loads
+       - Lists of the same info reported from the List Dialogs
 	  video and support page for the color chooser tool
 	  video and support page for the contrast inspect tool
 	  video and support page for the problem ID tool
@@ -158,7 +158,26 @@
 	  video and support page for full inspection
 	  video and support page for the 
       label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything.
+      Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
       Unify inspectors to have effective label field and a description of where the label came from
+          - Access keys
+              Where does the label for an access key come from? Do tests to determine. Verify against QA pages.
+              Add label source.
+          - ARIA Landmarks
+              Determine how ARIA Landmark Labels are determined. Verify against QA pages.
+              Add label source. Warn if non-generated to spec.
+          - Documents
+              Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
+          - Forms
+              Move Effective Label column to the left
+              Add form control type
+              Add Label Source
+                input[type=button], button, ARIA button, etc.
+          - Frames OK
+          - Headings
+             Add label source
+             Add heading type
+                h1, h2, ..., h6, ARIA heading
       Add page score and page description to HTML results pages
       Compare list inspector results against challenging websites, make sure page description makes sense
         Challenging website list:
@@ -403,6 +422,11 @@
       - Allow configurable values that are listed as not meaningful
       
 FIXED:
+	  -HTML title on stored color page [4/26/2013]
+	  -finish save as text option for the stored colors window [4/26/2013]
+	  -keep stored colors in the overlay.js file so they can be referrenced from invocation to invocation. [4/25/2013]
+	  -Add a clear stored colors button [4/25/2013]
+	  - ARIA Landmarks outlining does not appear when selecting install all [4/25/2013]
 		-Color luminosity tool: calculate nearest color that is accessible in each direction of a slider and place a color swatch at the end of each slider of the next
           a11y color (if no a11y color, then indicate with an X graphic), http://www.compuphase.com/cmetric.htm [4/23/2013]
         - When sorting, update status bar as to performing sort and what the sort columns and order are. [3/12/2013]
