@@ -925,7 +925,8 @@ ys: 'whys'
       frmCtrlForValIDNotUnique: [false,2,0,false,null],
       frmCtrlForForValueIsHidden: [false,1,1,false,null],
       frmCtrlForValueEmpty: [false,2,0,false,null],
-      frmCtrlImplicitLabel: [false,2,0,false,null],
+      frmCtrlImplicitLabel: [false,1,0,false,null],
+      frmCtrlEmptyLabel: [false,1,0,false,null],
       frmCtrlLegendWOFieldset: [false,2,0,false,null],
       frmCtrlFieldsetWOLegend: [false,2,0,false,null],
       frmCtrlRadioButtonWOLegendText: [false,1,0,false,null],
@@ -7157,7 +7158,11 @@ ys: 'whys'
 
         for (i = 0; i < aFormControlsList.length; i++) {
           bIsFormControl=!blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node);
-          if (aFormControlsList[i].labelTagText == null && aFormControlsList[i].legendText == null && aFormControlsList[i].title == null && (aFormControlsList[i].effectiveLabelText == null || aFormControlsList[i].effectiveLabelText.length < 1)) {
+          if(bIsFormControl==true && blr.W15yQC.fnFindImplicitLabelNode(aFormControlsList[i].node) != null) {
+            blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); //
+          }
+          if (aFormControlsList[i].labelTagText == null && aFormControlsList[i].legendText == null && aFormControlsList[i].title == null &&
+             (aFormControlsList[i].effectiveLabelText == null || aFormControlsList[i].effectiveLabelText.length < 1)) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); //
               if(bIsFormControl) {
                 oW15yResults.PageScore.bAllFormControlsAreLabeled=false;
@@ -7287,7 +7292,11 @@ ys: 'whys'
                 blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlForValueEmpty'); //
               }
             } else {
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); //
+              if(aFormControlsList[i].node.getElementsByTagName('input').length>0 || aFormControlsList[i].node.getElementsByTagName('button').length>0) {
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); //
+              } else {
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlEmptyLabel'); //
+              }
             }
           } else if(nodeTagName == 'legend') {
             if(blr.W15yQC.fnElementIsChildOf(aFormControlsList[i].node,'fieldset')==false) {

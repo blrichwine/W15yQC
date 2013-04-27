@@ -38,18 +38,18 @@
  * 2012.06.19 - Working on i18n of HTML reports -- need to pick up again at display headings
  * 2012.06.25 - Working on user prefs, added common misspellings from three sources to word list
  * Dev notes are now stored in git commits...
- 
+
  How to update the version number
    1. Update blr.W15yQC.version in overlay.js
    2. Update version text in aboutDialog.xul
    3. Update <em:version> in install.rdf
- 
+
  HOW TO INFO:
        Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
       https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
 
- 
+
  *
  * QA Tasks
  *   - Review text in HTML report for consistency
@@ -60,7 +60,7 @@
         - each note entry is also in the overlay.js object of note entries and the [] values are correct
         - review each note for consistency.
         - separate statements from explanations
-        
+
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
       Documentation:
@@ -77,13 +77,13 @@
             Tips and Tricks
           Screencasts to make:
             Installing: http://screencast.com/t/vQWcAIoU3YB
-            
+
             Configuring icons
             Setting options
             Uninstalling
             Using contrast tools
             Using an inspector dialog
-            
+
       ** New spider checks:
         - symbols [done]
         - table summaries [done]
@@ -139,9 +139,10 @@
              Ignore robots.txt, no index.file
              Spider delay
              Drop out certain checks for speed when spidering
-            
-            
+
+
       *** FIX ASAP***
+    Finish inherited role detection
     Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
     Begin major QA sequence.
     Add Quick View that gives page summary features as reported by JAWS
@@ -156,7 +157,7 @@
 	  video and support page for inspectors
 	  video and support page for site inspector
 	  video and support page for full inspection
-	  video and support page for the 
+	  video and support page for the
       label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything.
       Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
       Unify inspectors to have effective label field and a description of where the label came from
@@ -200,8 +201,8 @@
           coursesmart
           etext.illinois
           iu news
-        
-        
+
+
       Sounds the same CNN vs. CNNi
         -- for all cap tokens, should they be separated into individual letters?
         -- How should mixed case words be treated? CNNi, for instance? TEST WITH JAWS
@@ -237,7 +238,7 @@
         -- Most controls don't have labels
         -- All controls don't have labels
       Compute overall site score
-        -- How? Histogram of the page scores? 
+        -- How? Histogram of the page scores?
       Handle page timeouts in site scanner
         -- leave error message and move on to the next link
       IUADAPTS Kurzweil 3000 FAQ page, same page links are producing errors. Is this a real concern?
@@ -256,7 +257,7 @@
       Look for inappropriate role="application" use.
       Moan about keyboard accessibility issues
         - A elements without HREF attributes that have onclick handlers
-        
+
       warn when link title text is different than the effective link text and the aria-descriptions
       Audit all objects and verify each property has a value set in the contructor. Test that objects are doing what we think they are doing.
       Hints on how to detect listeners? https://developer.mozilla.org/en-US/docs/DOM/element.removeEventListener
@@ -284,10 +285,10 @@
                  accesskey="&inspectContextMenu.accesskey;"
                  oncommand="gContextMenu.inspectNode();"/>
        Context menu what was clicked: https://developer.mozilla.org/en-US/docs/XUL/PopupGuide/Extensions
-       
+
         - Validate: https://addons.mozilla.org/en-US/developers/
         - Check for replys on : https://forums.mozilla.org/addons/viewtopic.php?f=31&t=11767
-        
+
         - Should all images have alt attribute? Decide if images with ARIA labels and no alt attribute should be flagged for not having alternative text.
           Currently they are called out for not having an alt attribute.
         - JAWS TESTS
@@ -399,7 +400,7 @@
  *      - Length of alt text OA
  *      - Data tables must:
  *         - use the summary attribute OA7 *
- *         - use th cells OA8 
+ *         - use th cells OA8
  *         - summary content must be unique to summary and caption content on other tables
  *         - caption content shoould not be "layout", "layout table", "table for layout"
  *         - summary content should not be "layout", "layout table", "table for layout"
@@ -420,7 +421,7 @@
  *       - Use BBC Languages www.bbc.co.uk/worldservice/languages/index.shtml to generate stats on distinguishing words, UTF-8 chars
  *    - Allow configurable values that can be added to not meaningful exceptions (i.e. 'IU', etc.)
       - Allow configurable values that are listed as not meaningful
-      
+
 FIXED:
 	  -HTML title on stored color page [4/26/2013]
 	  -finish save as text option for the stored colors window [4/26/2013]
@@ -457,7 +458,7 @@ FIXED:
         - **** Invalid table summaries [done]:
         - ****validate role values - warn if multiple values, check validity. [done]
         - ****Add warning for radio buttons that don't have fieldsets [DONE -- Needs QA]
-        - **** Frames analysis does not list frame with duplicate titles [DONE -- Needs QA] 
+        - **** Frames analysis does not list frame with duplicate titles [DONE -- Needs QA]
         - **** Check for full justification of text SC 1.4.8, F88, G172 [Done -- needs QA]
         - **** Add ARIA State attributes to state description [done]
         - **** Data table should not have caption content that is exactly the same as summary content [done]
@@ -488,8 +489,8 @@ FIXED:
         - Links that have link text, no name give warning that the link won't show up as a link in AT because it doesn't have a HREF value. [done, needs QA]
 
  DoD
- 
- 
+
+
  *    - Determine phased developement / roadmap
  *      - Rules
  *      - Features
@@ -580,7 +581,7 @@ FIXED:
  *          - contains th
  *          - contains headers attribute
  *          - contains thead element
- *        
+ *
  *        - must use a caption element or summary attribute
  *        - must use TH elements in either all columns or all rows that are non-empty
  *        - all non-empty cells must have header text available to describe them.
@@ -603,8 +604,8 @@ FIXED:
  *         - with colspan and rowspan attributes taken into consideration the number of cells per row or column don't add up
  *       - Warn about
  *         - th not in the first column or row that is missing a scope attribute
- *         
- *    
+ *
+ *
  *    - List of triggered manual checks to suggest:
  *      - Alt text must describe content or purpose of an image OA
  *      - audio without any video needs a transcript with speak information
@@ -616,7 +617,7 @@ FIXED:
  *      - Verify multimedia does not begin automatically when the page loads
  *      - luminosity contrast > minimum of 3 for large text, 4.5 for other text
  *      - verify images aren't being used to stylize text
- *      
+ *
  *    - Redundant links were not being flagged when href="#". Put in a check for this, what other
  *      similar checks need to be performed? Anything with href and onclick? Check for attached
  *      event handlers?
@@ -644,7 +645,7 @@ FIXED:
  *      - Add form control type (input[type=text], textarea, etc.)
  *      - Add JAWS label (combobox, etc.) and add to effective label
  *      - What are the ARIA form control roles? What should be listed there?
- *      - What about non-landmark ARIA List? 
+ *      - What about non-landmark ARIA List?
  *
  *    - Detect links, references to WCAG techniques, etc in warning/error messages and make them active when displayed.
  *    - Make effective label routine that:
@@ -675,11 +676,11 @@ FIXED:
  *    - Make table headings unique so the sort links are unique and indicate current sort status in text
  *      If a input element has an implicit label, how does the child text work for the label if the input element has a title attribute or other text on it?
  *      Child text for various tags, child images, child input elements (including type=image, buttons, etc.), child text with hidden elements
- *      
+ *
  *    - Internationalize?
  */
- 
- 
+
+
  QA Steps to perform before releases
    1) Check version info is correct
        - Examine 'version' variable in blr.W15yQC
@@ -696,20 +697,20 @@ FIXED:
        - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
        - compare results on running against FAE on several pages (link text, form control text, headings)
     4) Run through the Mozilla extension validator
-       
+
  Steps to perform to issue release
     1) Upload to download section on github
     2) Update download links on the website
     2) Upload to Mozilla
- 
+
  Steps to perform after a release
     1) Search google for new release by file name, by description text, on multiple computers
     2) Download new release from web site and install in multiple firefox versions
         - Verify basic functionality (sanity checks)
         - Verify version number is correct
-        
-        
-        
+
+
+
 Simple protocol development:
       Accessibility Quick Checks:
          Page title
@@ -718,7 +719,7 @@ Simple protocol development:
          Page Headings
          Links
          Form Labels
-         
+
       According to Penn State:
         Image ALT Tag Tips
         Page or Document Title
@@ -731,8 +732,8 @@ Simple protocol development:
         Fonts and Text Layout
         Text Reading Order
         Charts & Accessibility
-		
-		
+
+
 Background for Phase II features:
 
 Are there any decent enterprise accessibility testing tools?
@@ -875,6 +876,3 @@ Follow Jeff
 
 Jeff Orchard • Wes, can the WorldSpace tool match errors across reports, even after a line number shift? A commercial tool that matches errors from a fresh report to errors that have already been analyzed, and via them to the work ticket number, is an expense worth considering. It’s a complete waste of time to wade through issues that have already been ticketed but not yet fixed!
 1 day ago • Like
-
-
-
