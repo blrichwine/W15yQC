@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-  
+
     <em:id>W15yQuickCheck@blrichwine.gmail.com</em:id>
     <em:name>W15y Quick Check</em:name>
     <em:type>2</em:type>
-    <em:version>1.0b22</em:version>
+    <em:version>1.0b23</em:version>
     <em:optionsURL>chrome://W15yQC/content/options.xul</em:optionsURL>
     <em:optionsType>1</em:optionsType>
     <em:description>Basic web accessibility checker extension for Firefox.</em:description>
