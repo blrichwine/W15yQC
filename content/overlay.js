@@ -3266,7 +3266,118 @@ ys: 'whys'
       return sLabelText;
     },
 
-    fnGetEffectiveLabelText: function (node, doc) {
+
+    fnBuildLabel: function(node, aConfig) {
+      var sLabelText='',
+          sLabelSource='',
+          bFirst=false,
+          bFieldsetHandled=false,
+          bSkipToFieldset=false,
+          implicitLabelNode,
+          explictLabelsList,
+          sTagName,
+          l,
+          doc,
+          i,j;
+
+      if(node !=null && node.hasAttribute && aConfig!=null && aConfig.length) {
+        sTagName=node.tagName.toLowerCase();
+        doc=node.ownerDocument;
+        for(i=0; i<aConfig.length; i++) {
+          aConfig[i]=aConfig[i].toLowerCase();
+          l=(sLabelText==null ? 0 : sLabelText.length);
+
+          if(aConfig[i]=='fieldset' && bFieldsetHandled==false) {
+            bFieldsetHandled=true;
+            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' '));
+            if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin('fieldset legend', sLabelSource, ', '); }
+          } else if(bSkipToFieldset!=true) {
+            switch(aConfig[i]) {
+              case 'first':
+                bFirst=true;
+                break;
+
+              case 'check':
+                break;
+
+              case 'aria':
+                sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute('aria-label'), ' '));
+                if(sLabelText.length>l) {
+                  sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-label attribute', ', ');
+                } else if (node.hasAttribute('aria-labelledby')) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
+                  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
+                }
+                break;
+
+              case 'aria-labelledby':
+                if (node.hasAttribute('aria-labelledby')) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
+                  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
+                }
+                break;
+
+              case 'implicit label':
+                implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
+                if (implicitLabelNode != null) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode),' '));
+                  if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'implicit label', ', '); }
+                }
+                break;
+
+              case 'explicit label':
+                explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+                for (j = 0; j < explictLabelsList.length; j++) {
+                  sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[j]), ' ');
+                }
+                sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
+                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'explicit label', ', '); }
+                break;
+
+              case 'child text':
+                if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(node,0,['ul','ol','dl','li','dt','dl','dd']),' '));
+                } else {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText,blr.W15yQC.fnGetDisplayableTextRecursively(node),' '));
+                }
+                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', '); }
+                break;
+
+              case 'default':
+                if(aConfig.length>i+1) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, aConfig[i+1], ' '));
+                  i++;
+                }
+                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', '); }
+                break;
+
+              case 'alt':
+              case 'aria-label':
+              case 'title':
+              case 'value':
+              case 'name':
+              case 'id':
+              case 'src':
+                if (node.hasAttribute(aConfig[i])) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute(aConfig[i]), ' '));
+                  if (sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, aConfig[i]+' attribute', ', '); }
+                }
+                break;
+
+              default:
+                alert("BAD aConfig value passed to fnBuildLabel!!: "+aConfig[i]);
+            }
+          }
+
+          if((bFirst==true || aConfig[i]=='check') && sLabelText.length>0) {
+            bSkipToFieldset=true;
+          }
+        }
+       }
+      return [sLabelText, sLabelSource];
+    },
+
+    fnGetEffectiveLabel: function (node) {
       // TODO: pick up role="button", etc? JAWS does...
       // TODO: return an effective Label Object that contains the text and a property that tells the text source
       // textarea, select, button, input
@@ -3274,339 +3385,91 @@ ys: 'whys'
        * A: Empty aria-label and elements pointed to by aria-labelledby are the same as not having an aria-label or aria-labelled by (JAWS 13 + IE9 - Windows 7 32 bit)
        */
       var sLabelText = '',
-          nTagName,
+          sLabelSource ='',
+          aLabel=[null,''],
+          sTagName,
           inputType,
           implicitLabelNode,
           explictLabelsList,
-          i;
+          doc,
+          i,
+          l;
 
       if (node != null && node.tagName) {
-        nTagName = node.tagName.toLowerCase();
+        sTagName = node.tagName.toLowerCase();
+        doc=node.ownerDocument;
 
-        if (nTagName == 'input') {
-          inputType = '';
-          if (node.hasAttribute('type')) { inputType = blr.W15yQC.fnCleanSpaces(node.getAttribute('type').toLowerCase()); }
-          if (inputType == '') { inputType = 'text'; } // default type
-          switch (inputType) {
-          case 'submit':
-            // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            if (node.hasAttribute('aria-label')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('value')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('value'));
-            }
-            if (sLabelText.length < 1) {
-              sLabelText = 'Submit Query';
-            }
-            break;
+          if (sTagName == 'input') {
+            inputType = '';
+            if (node.hasAttribute('type')) { inputType = blr.W15yQC.fnCleanSpaces(node.getAttribute('type').toLowerCase()); }
+            if (inputType == '') { inputType = 'text'; } // default type
+            switch (inputType) {
+              case 'submit':
+                // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','value', 'default', 'Submit Query', 'fieldset']);
+                break;
 
-          case 'reset':
-            // Vet this
-            if (node.hasAttribute('aria-label')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('value')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('value'));
-            }
-            if (sLabelText.length < 1) {
-              sLabelText = 'Reset Query';
-            }
-            break;
+              case 'reset':
+                // Vet this
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','value', 'default', 'Reset Query', 'fieldset']);
+                break;
 
-          case 'image':
-            // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            if (node.hasAttribute('aria-label')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('title')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('value')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('value'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('src')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('src'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('name')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('name'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('id')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('id'));
-            }
-            break;
+              case 'image':
+                // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','value','alt','src','name','id', 'fieldset']);
+                break;
 
-          case 'button':
-            // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            if (node.hasAttribute('aria-label')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('value')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('value'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('title')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-            }
-            if (sLabelText.length < 1 && node.hasAttribute('name')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('name'));
-            }
-            break;
+              case 'button':
+                // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','value','title','alt','name', 'fieldset']);
+                break;
 
-          case 'radio':
-            // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-          case 'checkbox':
-            // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            if (node.hasAttribute('aria-label')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-            }
+              case 'radio':
+                // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+              case 'checkbox':
+                // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+                // TODO: Does an implicit label really preempt any explicit labels?
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset']);
+                break;
 
-            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
+              default:
+                // type='text' and unrecognized types
+                // type='text'  -- Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+                // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset']);
             }
+            // end tagName == input
+          } else if (sTagName == 'button') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','alt','title','value','name', 'fieldset']);
 
-            if (sLabelText.length < 1) {
-              implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
-              if (implicitLabelNode != null) {
-                sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
-              }
-            }
+          } else if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title']);
 
-            if (sLabelText.length < 1 && node.hasAttribute('id')) {
-              explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-              for (i = 0; i < explictLabelsList.length; i++) {
-                sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
-              }
-              sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
-            }
+          } else if (sTagName == 'h1' || sTagName == 'h2' || sTagName == 'h3' || sTagName == 'h4' || sTagName == 'h5' || sTagName == 'h6') { // TODO: Vet this with JAWS!!!
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title']);
 
-            if (sLabelText.length < 1 && node.hasAttribute('title')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-            }
+          } else if (sTagName == 'select') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset']);
 
-            if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-            }
-            break;
+          } else if (sTagName == 'textarea') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset']);
 
-          default:
-            // type='text' and unrecognized types
-            // type='text'  -- Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            if (node.hasAttribute('aria-label')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-            }
+          } else if (sTagName == 'img' || sTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','alt','title','aria-labelledby']);
 
-            if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-            }
+          } else if (node.hasAttribute('role')) { // TODO: Vet this, not checked with JAWS
+            if(node.getAttribute('role').toLowerCase()=='radio') {
+              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','fieldset']);
 
-            if (sLabelText.length < 1) { // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-              implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
-              if (implicitLabelNode != null) {
-                sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
-              }
-            }
-
-            if (sLabelText.length < 1 && node.hasAttribute('id')) {
-              explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-              for (i = 0; i < explictLabelsList.length; i++) {
-                sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
-              }
-              sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
-            }
-
-            if (sLabelText.length < 1 && node.hasAttribute('title')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-            }
-
-            if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
+            } else {
+              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt']);
             }
           }
-          sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' ');
-          // end tagName == input
-        } else if (nTagName == 'button') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-          if (sLabelText.length < 1) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('value')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('value'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('name')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('name'));
-          }
-          sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' ');
-        } else if (nTagName == 'a' || nTagName=='li' || nTagName=='dt' || nTagName=='dd') { // TODO: Vet this with JAWS!!!
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-          if (sLabelText.length < 1) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node,0,['ul','ol','dl','li','dt','dl','dd']));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-        } else if (nTagName == 'h1' || nTagName == 'h2' || nTagName == 'h3' || nTagName == 'h4' || nTagName == 'h5' || nTagName == 'h6') { // TODO: Vet this with JAWS!!!
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-          if (sLabelText.length < 1) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-        } else if (nTagName == 'select') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-
-          if (sLabelText.length < 1) {
-            implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
-            if (implicitLabelNode != null) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
-            }
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('id')) {
-            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-            for (i = 0; i < explictLabelsList.length; i++) {
-              sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
-            }
-            sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-          }
-          sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' ');
-
-        } else if (nTagName == 'textarea') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-          if (sLabelText.length < 1) { // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-            implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
-            if (implicitLabelNode != null) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
-            }
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('id')) {
-            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-            for (i = 0; i < explictLabelsList.length; i++) {
-              sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
-            }
-            sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-          }
-
-          sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node), sLabelText, ' ');
-        } else if (nTagName == 'img' || nTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-        } else if (node.hasAttribute('role')) { // TODO: Vet this, not checked with JAWS
-          if (node.hasAttribute('aria-label')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('aria-labelledby')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
-          }
-
-          if (sLabelText.length < 1) { // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-            implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
-            if (implicitLabelNode != null) {
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(implicitLabelNode));
-            }
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('id')) {
-            explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
-            for (i = 0; i < explictLabelsList.length; i++) {
-              sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursively(explictLabelsList[i]), ' ');
-            }
-            sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('title')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('title'));
-          }
-
-          if (sLabelText.length < 1 && node.hasAttribute('alt')) {
-            sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('alt'));
-          }
-
-          if(node.getAttribute('role').toLowerCase()=='radio') {
-            if (sLabelText.length < 1) { // TODO: Make sure this is correct
-              sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
-            }
-            sLabelText = blr.W15yQC.fnJoin(blr.W15yQC.fnGetLegendText(node,true), sLabelText, ' '); // ARIA Radiogroups only apply to role='radio'
-          }
-        }
       }
-      return sLabelText;
+      return aLabel;
     },
+
+
 
     fnGetARIADescriptionText: function (node, doc) {
       var sDescription = '';
@@ -5245,7 +5108,7 @@ ys: 'whys'
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
         text, title, target, href, sState, effectiveLabel, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
-        frameSrc, frameId, frameName, tableSummary, i, accessKey,
+        frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel,
         bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false);
 
       if (doc != null) {
@@ -5394,7 +5257,8 @@ ys: 'whys'
                     case 'area':
                       xPath = blr.W15yQC.fnGetElementXPath(node);
                       nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                      effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
+                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                      effectiveLabel=aLabel[0];
                       box = node.getBoundingClientRect();
                       if (box != null) {
                         width = box.width;
@@ -5420,7 +5284,8 @@ ys: 'whys'
                       // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
                       xPath = blr.W15yQC.fnGetElementXPath(node);
                       nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                      effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
+                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                      effectiveLabel=aLabel[0];
                       box = node.getBoundingClientRect();
                       if (box != null) {
                         width = box.width;
@@ -5445,7 +5310,8 @@ ys: 'whys'
                         // Document image: node, nodeDescription, doc, orderNumber, src, alt, title, ariaLabel
                         xPath = blr.W15yQC.fnGetElementXPath(node);
                         nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                        effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
+                        aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                        effectiveLabel=aLabel[0];
                         box = node.getBoundingClientRect();
                         if (box != null) {
                           width = box.width;
@@ -5466,7 +5332,8 @@ ys: 'whys'
                     accessKey = node.getAttribute('accesskey');
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(node,doc);
+                    aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                    effectiveLabel=aLabel[0];
                     oW15yResults.aAccessKeys.push(new blr.W15yQC.accessKey(node, xPath, nodeDescription, doc, oW15yResults.aAccessKeys.length, sRole, accessKey, effectiveLabel));
                     oW15yResults.aAccessKeys[oW15yResults.aAccessKeys.length-1].ownerDocumentNumber=docNumber+1;
                   }
@@ -5525,7 +5392,8 @@ ys: 'whys'
                     if(blr.W15yQC.fnIsFormControlNode(node)) {
                       sLegendText = blr.W15yQC.fnGetLegendText(node);
                       sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node, doc);
-                      sEffectiveLabelText = blr.W15yQC.fnGetEffectiveLabelText(node, doc);
+                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                      sEffectiveLabelText=aLabel[0];
                     } else {
                       blr.W15yQC.fnLog("---In front of switch:"+sTagName);
                       switch(sTagName) {
@@ -5562,7 +5430,8 @@ ys: 'whys'
                   } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    text = blr.W15yQC.fnGetEffectiveLabelText(node, doc); // TODO: Vet this with JAWS!
+                    aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                    text=aLabel[0];  // TODO: Vet this with JAWS!
                     title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
                     target = blr.W15yQC.fnGetNodeAttribute(node, 'target', null);
                     href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
@@ -6411,7 +6280,7 @@ ys: 'whys'
     },
 
     fnGetImages: function (doc, rootNode, aImagesList) {
-      var c, frameDocument, tagName, xPath, nodeDescription, effectiveLabel, role, box, width=null, height=null, title, alt, src, sARIALabel;
+      var c, frameDocument, tagName, xPath, nodeDescription, effectiveLabel, role, box, width=null, height=null, title, alt, src, aLabel, sARIALabel;
       if (aImagesList == null) { aImagesList = []; }
 
       if (doc != null) {
@@ -6429,7 +6298,8 @@ ys: 'whys'
                   case 'area':
                     xPath = blr.W15yQC.fnGetElementXPath(c);
                     nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                    effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                    aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
+                    effectiveLabel=aLabel[0];
                     role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                     box = c.getBoundingClientRect();
                     if (box != null) {
@@ -6457,7 +6327,8 @@ ys: 'whys'
                   // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
                   xPath = blr.W15yQC.fnGetElementXPath(c);
                   nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                  aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
+                  effectiveLabel=aLabel[0];
                   role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                   box = c.getBoundingClientRect();
                   if (box != null) {
@@ -6485,7 +6356,8 @@ ys: 'whys'
                     xPath = blr.W15yQC.fnGetElementXPath(c);
                     nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                     title = null;
-                    effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                    aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
+                    effectiveLabel=aLabel[0];
                     box = c.getBoundingClientRect();
                     if (box != null) {
                       width = box.width;
@@ -6676,7 +6548,8 @@ ys: 'whys'
                   accessKey = c.getAttribute('accesskey');
                   xPath = blr.W15yQC.fnGetElementXPath(c);
                   nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  effectiveLabel = blr.W15yQC.fnGetEffectiveLabelText(c,doc);
+                  aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
+                  effectiveLabel=aLabel[0];
                   role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                   aAccessKeysList.push(new blr.W15yQC.accessKey(c, xPath, nodeDescription, doc, aAccessKeysList.length, role, accessKey, effectiveLabel));
                 }
@@ -7062,7 +6935,8 @@ ys: 'whys'
                 if(blr.W15yQC.fnIsFormControlNode(c)) {
                   sLegendText = blr.W15yQC.fnGetLegendText(c);
                   sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c, doc);
-                  sEffectiveLabelText = blr.W15yQC.fnGetEffectiveLabelText(c, doc);
+                  aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
+                  sEffectiveLabelText=aLabel[0];
                 } else {
                   blr.W15yQC.fnLog("---In front of switch:"+c.tagName.toLowerCase());
                   switch(c.tagName.toLowerCase()) {
@@ -7465,7 +7339,7 @@ ys: 'whys'
 
 
     fnGetLinks: function (doc, rootNode, aLinksList) {
-      var c, frameDocument, xPath, nodeDescription, role, text, title, target, href, sState;
+      var c, frameDocument, xPath, nodeDescription, role, text, title, target, href, sState, aLabel;
       if (aLinksList == null) { aLinksList = []; }
 
       if (doc != null) {
@@ -7492,7 +7366,8 @@ ys: 'whys'
                   xPath = blr.W15yQC.fnGetElementXPath(c);
                   nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
                   role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-                  text = blr.W15yQC.fnGetEffectiveLabelText(c, doc); // TODO: Vet this with JAWS!
+                  aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
+                  text=aLabel[0]; // TODO: Vet this with JAWS!
                   title = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
                   target = blr.W15yQC.fnGetNodeAttribute(c, 'target', null);
                   href = blr.W15yQC.fnGetNodeAttribute(c, 'href', null);

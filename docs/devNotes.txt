@@ -143,6 +143,9 @@
 
       *** FIX ASAP***
     Finish inherited role detection
+    Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
+    Make a QA file for elements that we don't think should get their label from a fieldset legend and verify against JAWS
+    MAJOR: Make a QA file for ARIA elements (on divs), and determine how they get their label (role=...)
     Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
     Begin major QA sequence.
     Add Quick View that gives page summary features as reported by JAWS
@@ -158,7 +161,6 @@
 	  video and support page for site inspector
 	  video and support page for full inspection
 	  video and support page for the
-      label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything.
       Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
       Unify inspectors to have effective label field and a description of where the label came from
           - Access keys
@@ -169,6 +171,8 @@
               Add label source. Warn if non-generated to spec.
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
+          - Links
+              Distinguish between link text and the effective label
           - Forms
               Move Effective Label column to the left
               Add form control type
@@ -423,6 +427,7 @@
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+    -label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything. [4/27/2013]
 	  -HTML title on stored color page [4/26/2013]
 	  -finish save as text option for the stored colors window [4/26/2013]
 	  -keep stored colors in the overlay.js file so they can be referrenced from invocation to invocation. [4/25/2013]
