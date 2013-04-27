@@ -1395,7 +1395,7 @@ ys: 'whys'
       if(doc==null) {
         doc=window.top.content.document;
       }
-      
+
       function w15yqcHighlightElementWithFocus(e) {
         try {
           if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
@@ -1450,7 +1450,7 @@ ys: 'whys'
         {
         }
       }
-      
+
       if (doc!=null && doc.addEventListener) {
         doc.addEventListener( 'focus', w15yqcHighlightElementWithFocus, true);
         doc.addEventListener( 'blur', w15yqcRemoveFocusIndication, true);
@@ -1868,11 +1868,11 @@ ys: 'whys'
         } while(failureCount<5);
       }
     },
-    
-    
+
+
     fnHighlightFormElement: function (node, skipHighlightingFocusedElement) {
       var idCounter, aIDs, i, el, aLabels, nodeID;
-      
+
         if(skipHighlightingFocusedElement!=true) {
           idCounter = blr.W15yQC.highlightElement(node, node.ownerDocument, 'yellow');
         } else {
@@ -1927,7 +1927,7 @@ ys: 'whys'
             }
           }
         }
-      
+
     },
 
     fnRemoveWWWAndEndingSlash: function(sUrl) {
@@ -5866,11 +5866,11 @@ ys: 'whys'
       }
       return false;
     },
-    
+
     fnHasInheritableRole: function(tagName, sRole) {
       return (blr.W15yQC.fnIsInheritableARIARole(sRole));
     },
-    
+
     fnIsARIALandmarkRole: function(sRole) {
       if(blr.W15yQC.fnStringHasContent(sRole)) {
         switch (sRole.toLowerCase()) {
