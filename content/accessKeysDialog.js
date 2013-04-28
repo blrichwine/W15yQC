@@ -26,10 +26,10 @@
  * 2011.12.10 - Created! First Xul project!!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -97,6 +97,10 @@ blr.W15yQC.AccessKeyDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.effectiveLabelSource);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.role);
           treerow.appendChild(treecell);
 
@@ -139,7 +143,7 @@ blr.W15yQC.AccessKeyDialog = {
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
     blr.W15yQC.AccessKeyDialog.aDocumentsList = oW15yQCReport.aDocuments;
     blr.W15yQC.AccessKeyDialog.aAccessKeysList = oW15yQCReport.aAccessKeys;
-    
+
     blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
 
     blr.W15yQC.AccessKeyDialog.fnPopulateTree(blr.W15yQC.AccessKeyDialog.aDocumentsList, blr.W15yQC.AccessKeyDialog.aAccessKeysList);

@@ -9,71 +9,81 @@
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
       ondialogaccept="blr.W15yQC.HeadingsDialog.cleanup();return true"
       ondialogcancel="blr.W15yQC.HeadingsDialog.cleanup();return true"
-      buttons="" 
+      buttons=""
       onload="blr.W15yQC.HeadingsDialog.init(this)">
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/headingsDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
-      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
-      onselect="blr.W15yQC.HeadingsDialog.updateNotesField()">
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" onselect="blr.W15yQC.HeadingsDialog.updateNotesField()">
          <xul:treecols>
-	    <xul:treecol ordinal="1" id="col-header-sourceOrder"
-	       label=" # "
-	       style="text-align:center"
-	       fixed="true"
-	       sortDirection="" 
-	       onclick=""/>
-	    <xul:splitter ordinal="2" class="tree-splitter" />
-	    <xul:treecol  ordinal="3" id="col-header-documentNumber"
-	       label="Doc. #"
-	       style="text-align:center"
-	       fixed="true"
-	       sortDirection="" 
-	       onclick=""/>
-	    <xul:splitter  ordinal="4" class="tree-splitter" />
-            <xul:treecol ordinal="5" id="col-header-baseURI"
-	       label="Base URI"
-	       flex="3"
-	       hidden="true"
-	       onclick=""/>
-            <xul:splitter ordinal="6" class="tree-splitter" />
-	    <xul:treecol ordinal="7" id="col-header-elementDescription"
-	       label="Element Description"
-	       sortDirection=""
-	       hidden="true"
-	       flex="3"
-	       onclick=""/>
-            <xul:splitter ordinal="8" class="tree-splitter" />
-	    <xul:treecol ordinal="9" id="col-header-role"
-	       label="Role"
-	       sortDirection=""
-	       onclick=""/>
-            <xul:splitter ordinal="10" class="tree-splitter" />
-	    <xul:treecol ordinal="11" id="col-header-level"
-	       label="Level"
-	       style="text-align:center"
-	       fixed="true"
-	       sortDirection="" 
-	       onclick=""/>
-            <xul:splitter ordinal="12" class="tree-splitter" />
-	    <xul:treecol ordinal="13" id="col-header-text"
-	       label="Text"
-	       flex="3"
-	       sortDirection="" 
-	       onclick=""/>
-            <xul:splitter ordinal="14" class="tree-splitter" />
-            <xul:treecol ordinal="15" id="col-header-state"
-               label="State"
-               sortDirection=""
-               flex="2"
-               onclick=""/>
-         </xul:treecols>
-	 <xul:treechildren id="treeboxChildren"/>
+						<xul:treecol ordinal="1" id="col-header-sourceOrder"
+							 label=" # "
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-documentNumber"
+							 label="Doc. #"
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter  ordinal="4" class="tree-splitter" />
+						<xul:treecol ordinal="5" id="col-header-baseURI"
+							 label="Base URI"
+							 flex="3"
+							 hidden="true"
+							 onclick=""/>
+						<xul:splitter ordinal="6" class="tree-splitter" />
+						<xul:treecol ordinal="7" id="col-header-elementDescription"
+							 label="Element Description"
+							 sortDirection=""
+							 hidden="true"
+							 flex="3"
+							 onclick=""/>
+						<xul:splitter ordinal="8" class="tree-splitter" />
+						<xul:treecol ordinal="9" id="col-header-level"
+							 label="Level"
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="10" class="tree-splitter" />
+						<xul:treecol ordinal="11" id="col-header-effectiveLabel"
+							 label="Effective Label"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="12" class="tree-splitter" />
+						<xul:treecol ordinal="13" id="col-header-effectiveLabelSource"
+							 label="Label Source"
+							 hidden="true"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="14" class="tree-splitter" />
+						<xul:treecol ordinal="15" id="col-header-text"
+							 label="Text"
+							 flex="3"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="16" class="tree-splitter" />
+						<xul:treecol ordinal="17" id="col-header-role"
+							 label="Role"
+							 sortDirection=""
+							 onclick=""/>
+						<xul:splitter ordinal="18" class="tree-splitter" />
+						<xul:treecol ordinal="19" id="col-header-state"
+							 label="State"
+							 sortDirection=""
+							 flex="2"
+							 onclick=""/>
+				 </xul:treecols>
+				 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
-				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
+				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
 				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="5" flex="1" />
       </xul:vbox>
       <xul:hbox id="box-button" align="right">

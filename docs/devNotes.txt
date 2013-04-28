@@ -142,6 +142,9 @@
 
 
       *** FIX ASAP***
+    Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
+    Add flag to force empty columns to appear in inspector dialogs
+    Add flag to force empty columns to appear in HTML reports
     Finish inherited role detection
     Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
     Make a QA file for elements that we don't think should get their label from a fieldset legend and verify against JAWS
@@ -162,25 +165,30 @@
 	  video and support page for full inspection
 	  video and support page for the
       Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
+      FIX INSPECTOR DIALOGS: set the border drag values appropriately on the columns.
+      Store which columns are visible and which are hidden
+      Add sort option for the inspectors
       Unify inspectors to have effective label field and a description of where the label came from
           - Access keys
               Where does the label for an access key come from? Do tests to determine. Verify against QA pages.
-              Add label source.
+              Add label source. [Done: 4/28/2013]
           - ARIA Landmarks
               Determine how ARIA Landmark Labels are determined. Verify against QA pages.
               Add label source. Warn if non-generated to spec.
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
+          - Images
+
           - Links
               Distinguish between link text and the effective label [Done: 4/28/2013]
           - Forms
-              Move Effective Label column to the left
+              Move Effective Label column to the left [Done: 4/28/2013]
               Add form control type
-              Add Label Source
                 input[type=button], button, ARIA button, etc.
+              Add Label Source [Done: 4/28/2013]
           - Frames OK
           - Headings
-             Add label source
+             Add label source [Done: 4/28/2013]
              Add heading type
                 h1, h2, ..., h6, ARIA heading
       Add page score and page description to HTML results pages

@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2011.12.17 - Created! 
+ * 2011.12.17 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -91,17 +91,26 @@ blr.W15yQC.HeadingsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.role);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.level);
           treerow.appendChild(treecell);
 
           sIndent = '';
           for (j = 0; j < ak.level - 1; j++) sIndent += '   ';
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', sIndent + ak.effectiveLabel);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.effectiveLabelSource);
+          treerow.appendChild(treecell);
+
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', sIndent + ak.text);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.role);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
