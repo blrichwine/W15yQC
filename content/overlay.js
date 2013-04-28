@@ -999,8 +999,6 @@ ys: 'whys'
 
     fnAddNote: function(no, sMsgKey, aParameters) {
       var sl=blr.W15yQC.fnGetNoteSeverityLevel(sMsgKey);
-      blr.W15yQC.fnLog("fnAddNote-begin:"+sMsgKey+' '+aParameters);
-      blr.W15yQC.fnLog(no.toString());
       if(no.notes == null) { no.notes = []; }
       if(blr.W15yQC.fnOkToIncludeNote(sMsgKey)==true) {
         if(sl==1) {
@@ -1711,7 +1709,6 @@ ys: 'whys'
         if(idCounter==null && Array.isArray( blr.W15yQC.highlightTimeoutID )) {
           bSetTimeouts=true;
           for(i=0;i<blr.W15yQC.highlightTimeoutID.length;i++) {
-            blr.W15yQC.fnLog('clearTimeout:'+i.toString()+' '+blr.W15yQC.highlightTimeoutID[i].toString());
             clearTimeout(blr.W15yQC.highlightTimeoutID[i]);
             blr.W15yQC.highlightTimeoutID = [];
           }
@@ -2044,7 +2041,6 @@ ys: 'whys'
           iMagnitude,
           sThisPart;
 
-      blr.W15yQC.fnLog('fnSpellOutNumber IN:'+sString);
       sString = blr.W15yQC.fnTrim(sString);
       sString = sString.replace(/\$\s+/, '$');
       if (sString != null && sString.length && sString.length > 0) {
@@ -2095,7 +2091,6 @@ ys: 'whys'
           if (bCurrency == true) { sResult += " dollars"; }
         }
       }
-      blr.W15yQC.fnLog('fnSpellOutNumber OUT:'+sResult);
 
       return blr.W15yQC.fnCleanSpaces(sResult);
     },
@@ -2362,8 +2357,6 @@ ys: 'whys'
           sTokens += blr.W15yQC.fnSoundEx(tokens[i]) + ' ';
         }
       }
-      blr.W15yQC.fnLog("SoundEX:IN:" + sText);
-      blr.W15yQC.fnLog("SoundEX:OUT:" + sTokens);
       return blr.W15yQC.fnCleanSpaces(sTokens);
     },
 
@@ -2903,7 +2896,6 @@ ys: 'whys'
             w1 = box1.width;
             h1 = box1.height;
           }
-          blr.W15yQC.fnLog("***x1 y1 w1 h1:"+x1+' '+y1+' '+w1+' '+h1);
 
           scrollLeft2 = n2.ownerDocument.documentElement.scrollLeft || n2.ownerDocument.body.scrollLeft;
           scrollTop2 = n2.ownerDocument.documentElement.scrollTop || n2.ownerDocument.body.scrollTop;
@@ -2918,7 +2910,6 @@ ys: 'whys'
             w2 = box2.width;
             h2 = box2.height;
           }
-          blr.W15yQC.fnLog("***x1 y1 w1 h1:"+x2+' '+y2+' '+w2+' '+h2);
         }
 
         dx=100000;
@@ -2934,7 +2925,6 @@ ys: 'whys'
         } else { // find closest x point
           dy=Math.min(Math.abs(y1-y2),Math.abs((y1+h1)-(y2+h2)),Math.abs(y1-(y2+h2)),Math.abs((y1+h1)-y2));
         }
-        blr.W15yQC.fnLog("******dx dy d:"+dx+' '+dy+' '+Math.floor(Math.sqrt(dx*dx+dy*dy)));
         return Math.floor(Math.sqrt(dx*dx+dy*dy));
       }
       return 100000;
@@ -4586,7 +4576,6 @@ ys: 'whys'
 
     fnAnalyzeARIAMarkupOnNode: function (node, doc, no) {
       var sRole, sMissingIDs, sIDs, i;
-      blr.W15yQC.fnLog('analyze aria markup-starts:no:'+no+'--'+no.toString());
       if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('role')) {
           // TODO: check role values, check for multiple role values
@@ -4611,7 +4600,6 @@ ys: 'whys'
         }
         blr.W15yQC.fnGetARIAAttributeValueWarnings(no,node);
       }
-      blr.W15yQC.fnLog('analyze aria markup:no:'+no+'--'+no.toString());
       return no;
     },
 
@@ -5302,7 +5290,6 @@ ys: 'whys'
                       if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
                       src = null;
                       if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
-                      blr.W15yQC.fnLog('Image el:'+effectiveLabel);
                       oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
                       oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
                       if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
@@ -5406,7 +5393,6 @@ ys: 'whys'
                       effectiveLabel=aLabel[0];
                       effectiveLabelSource=aLabel[1];
                     } else {
-                      blr.W15yQC.fnLog("---In front of switch:"+sTagName);
                       switch(sTagName) {
                         case 'fieldset':
                           sLabelTagText = blr.W15yQC.fnGetLegendText(node);
@@ -5562,7 +5548,6 @@ ys: 'whys'
                         aDocumentsList[docNumber].nonUniqueIDs.push(sID);
                       }
                       aDocumentsList[docNumber].nonUniqueIDsCount++;
-                      blr.W15yQC.fnLog('non unique id found');
                     }
                   }
                   aDocumentsList[docNumber].idHashTable.setItem(sID, idCount);
@@ -6180,7 +6165,6 @@ ys: 'whys'
             style2 = window.getComputedStyle(el2, null);
             if(style2!=null && style2.getPropertyValue('background-image').toLowerCase() !=='none' && bgTransparent==true) {
               bBgImage=true;
-              blr.W15yQC.fnLog('gcv-newspulse-foundImage:'+el.tagName+' -- '+el2.tagName+' '+style2.getPropertyValue('background-image'));
               break;
             } else {
               bgTransparent = style2.getPropertyValue('background-color').toLowerCase()=='transparent';
@@ -6363,7 +6347,6 @@ ys: 'whys'
                   } else if (c.hasAttribute('aria-labelledby') == true) {
                     sARIALabel = blr.W15yQC.fnGetTextFromIdList(c.getAttribute('aria-labelledby'));
                   }
-                  blr.W15yQC.fnLog('Image el:'+effectiveLabel);
                   aImagesList.push(new blr.W15yQC.image(c, xPath, nodeDescription, doc, aImagesList.length, role, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
                   break;
                 case 'input': // TODO: QA This!
@@ -6961,7 +6944,6 @@ ys: 'whys'
                   effectiveLabel=aLabel[0];
                   effectiveLabelSource=aLabel[1];
                 } else {
-                  blr.W15yQC.fnLog("---In front of switch:"+c.tagName.toLowerCase());
                   switch(c.tagName.toLowerCase()) {
                     case 'fieldset':
                       sLabelTagText = blr.W15yQC.fnGetLegendText(c);
@@ -7429,7 +7411,6 @@ ys: 'whys'
         aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
-          blr.W15yQC.fnLog('i='+i+' aLinksList[i].odn='+aLinksList[i].ownerDocumentNumber);
           aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
         } else {
           aLinksList[i].soundex = '';
@@ -7563,7 +7544,6 @@ ys: 'whys'
 
         if (aLinksList[i].node.hasAttribute('href') == true) {
           // TODO: Check for ambiguious targets - duplicate IDs or Names
-          blr.W15yQC.fnLog('Check for ambiguious targets - duplicate IDs or Names');
           sHref = aLinksList[i].node.getAttribute('href');
           if (sHref != null) {
             sHref = blr.W15yQC.fnTrim(sHref);
@@ -7581,8 +7561,6 @@ ys: 'whys'
 
               aTargetLinksList=[];
               iTargetedLink=null;
-              blr.W15yQC.fnLog('sTargetId:');
-              blr.W15yQC.fnLog(sTargetId);
               targetNode = aLinksList[i].doc.getElementById(sTargetId);
               if (targetNode != null) {
                 for (j = 0; j < aLinksList.length; j++) {
@@ -7912,7 +7890,6 @@ ys: 'whys'
                       bInTbody = true;
                       break;
                     case 'tr':
-                      blr.W15yQC.fnLog(aTablesList[i].caption+' tr found:columnRowSpans:'+columnRowSpans.toString());
                       bRowHasHeader = false;
                       if(bInTableRow == true) {
                         blr.W15yQC.fnAddNote(aTablesList[i], 'tblNestedTR'); //
@@ -7934,10 +7911,8 @@ ys: 'whys'
                       //  columnRowSpans.push(0);
                       //  columnHasHeader.push(false);
                       //}
-                      blr.W15yQC.fnLog(aTablesList[i].caption+' just before while:columnsInThisRow:'+columnsInThisRow+' columnRowSpans:'+columnRowSpans.toString());
                       if(columnRowSpans.length>0) {
                         while(columnRowSpans[columnsInThisRow]>0) {
-                          blr.W15yQC.fnLog(aTablesList[i].caption+' in while');
                           columnsInThisRow++;
                           if(columnRowSpans.length<columnsInThisRow+1) {
                             columnRowSpans.push(0);
@@ -8045,7 +8020,6 @@ ys: 'whys'
                         if(node.hasAttribute('colspan') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('colspan'))) {
                           colSpanValue = parseInt(node.getAttribute('colspan'),10);
                           // TODO: What happens is colspan is < 0?
-                          blr.W15yQC.fnLog(aTablesList[i].caption+' colspan value:'+colSpanValue);
                           // Detect any colspan into rowspan colisions
                           for(colOffset=0;colOffset<colSpanValue;colOffset++) {
                             if(columnRowSpans.length>=columnsInThisRow+colOffset-1 && columnRowSpans[columnsInThisRow+colOffset]>0) {
@@ -8066,7 +8040,6 @@ ys: 'whys'
                             blr.W15yQC.fnAddNote(aTablesList[i], 'tblRowspanRowspanColision', [rowCount,columnsInThisRow]); //
                           }
                           if(columnRowSpans[columnsInThisRow] < rowSpanValue) { columnRowSpans[columnsInThisRow] = rowSpanValue; }
-                          blr.W15yQC.fnLog(aTablesList[i].caption+' rc:'+rowCount+' col:'+columnsInThisRow+' rowspan:'+rowSpanValue);
                           columnsInThisRow++;
                           colSpanValue--;
                         }
@@ -8097,7 +8070,6 @@ ys: 'whys'
                     stackedTagName = node.tagName.toLowerCase();
                     switch(stackedTagName) {
                       case 'tr':
-                        blr.W15yQC.fnLog('leaving tr:columnRowSpans:'+columnRowSpans.toString());
                         while(columnRowSpans[columnsInThisRow]>0) { // TODO: This is generating reference to undefined property columnRowSpans[columnsInThisRow] warnings
                           columnsInThisRow++;
                           if(columnRowSpans.length<columnsInThisRow+1) {

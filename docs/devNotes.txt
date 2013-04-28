@@ -178,7 +178,7 @@
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
           - Images
-
+            Added support for effective label and effective label source to the inspector dialog [Done: 4/28/2013]
           - Links
               Distinguish between link text and the effective label [Done: 4/28/2013]
           - Forms
