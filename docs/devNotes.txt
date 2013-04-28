@@ -172,7 +172,7 @@
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
           - Links
-              Distinguish between link text and the effective label
+              Distinguish between link text and the effective label [Done: 4/28/2013]
           - Forms
               Move Effective Label column to the left
               Add form control type

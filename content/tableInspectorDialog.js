@@ -208,7 +208,7 @@ blr.W15yQC.TableInspectorDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.effectiveLabelText);
+          treecell.setAttribute('label', ak.effectiveLabel);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
