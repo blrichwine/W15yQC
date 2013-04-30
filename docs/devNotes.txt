@@ -142,6 +142,7 @@
 
 
       *** FIX ASAP***
+    Update about dialog to use date and version number from overlay.js. Let overlay.js be the only place the version number comes from.
     Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
     Add flag to force empty columns to appear in inspector dialogs
     Add flag to force empty columns to appear in HTML reports

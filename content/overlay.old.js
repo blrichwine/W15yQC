@@ -34,7 +34,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    version: '1.0-B23',
+    releaseVersion: '1.0 - Beta 24',
+    releaseDate: 'May 29, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -4769,7 +4770,7 @@ ys: 'whys'
       div.setAttribute('role', 'contentinfo');
       div.setAttribute('aria-label', 'Footer');
       p = rd.createElement('p');
-      p.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsFooter',[blr.W15yQC.version])));
+      p.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsFooter',[blr.W15yQC.releaseVersion])));
       div.appendChild(p);
       rd.body.appendChild(div);
 
