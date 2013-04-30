@@ -49,7 +49,6 @@
       https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
 
-
  *
  * QA Tasks
  *   - Review text in HTML report for consistency
@@ -141,8 +140,7 @@
              Drop out certain checks for speed when spidering
 
 
-      *** FIX ASAP***
-    Update about dialog to use date and version number from overlay.js. Let overlay.js be the only place the version number comes from.
+    *** FIX ASAP***
     Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
     Add flag to force empty columns to appear in inspector dialogs
     Add flag to force empty columns to appear in HTML reports
@@ -175,7 +173,8 @@
               Add label source. [Done: 4/28/2013]
           - ARIA Landmarks
               Determine how ARIA Landmark Labels are determined. Verify against QA pages.
-              Add label source. Warn if non-generated to spec.
+              Add label source. [Done]
+              Warn if non-generated to spec.
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
           - Images
@@ -436,6 +435,8 @@
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+
+    - Update about dialog to use date and version number from overlay.js. Let overlay.js be the only place the version number comes from. [4/29/2013]
     -label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything. [4/27/2013]
 	  -HTML title on stored color page [4/26/2013]
 	  -finish save as text option for the stored colors window [4/26/2013]

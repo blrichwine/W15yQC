@@ -187,6 +187,10 @@ blr.W15yQC.FormControlsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.controlType);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.effectiveLabel);
           treerow.appendChild(treecell);
 

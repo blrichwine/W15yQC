@@ -110,67 +110,74 @@
 							 flex="3"
 							 onclick=""/>
 						<xul:splitter ordinal="8" class="tree-splitter" />
-						<xul:treecol ordinal="9" id="col-header-effectiveLabel2"
+						<xul:treecol ordinal="9" id="col-header-elementType2"
+							 label="Type"
+							 sortDirection=""
+							 flex="1"
+							 onclick=""/>
+						<xul:splitter ordinal="10" class="tree-splitter" />
+						<xul:treecol ordinal="11" id="col-header-effectiveLabel2"
 							 label="Effective Label"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
-						<xul:splitter ordinal="10" class="tree-splitter" />
-						<xul:treecol ordinal="11" id="col-header-effectiveLabelSource2"
+						<xul:splitter ordinal="12" class="tree-splitter" />
+						<xul:treecol ordinal="13" id="col-header-effectiveLabelSource2"
 							 label="Label Source"
+							 hidden="true"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
-						<xul:splitter ordinal="12" class="tree-splitter" />
-						<xul:treecol ordinal="13" id="col-header-legend2"
+						<xul:splitter ordinal="14" class="tree-splitter" />
+						<xul:treecol ordinal="15" id="col-header-legend2"
 							 label="Legend"
 							 sortDirection=""
 							 flex="1"
 							 onclick=""/>
-						<xul:splitter ordinal="14" class="tree-splitter" />
-	 				  <xul:treecol ordinal="15" id="col-header-labelTagText2"
+						<xul:splitter ordinal="16" class="tree-splitter" />
+	 				  <xul:treecol ordinal="17" id="col-header-labelTagText2"
 							 label="Label Tag Text"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
-						<xul:splitter ordinal="16" class="tree-splitter" />
-						<xul:treecol ordinal="17" id="col-header-ariaLabel2"
+						<xul:splitter ordinal="18" class="tree-splitter" />
+						<xul:treecol ordinal="19" id="col-header-ariaLabel2"
 							 label="ARIA Label"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
-						<xul:splitter ordinal="18" class="tree-splitter" />
-						<xul:treecol ordinal="19" id="col-header-ariaDescription2"
+						<xul:splitter ordinal="20" class="tree-splitter" />
+						<xul:treecol ordinal="21" id="col-header-ariaDescription2"
 							 label="ARIA Description"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
-						<xul:splitter ordinal="20" class="tree-splitter" />
-						<xul:treecol ordinal="21" id="col-header-title2"
+						<xul:splitter ordinal="22" class="tree-splitter" />
+						<xul:treecol ordinal="23" id="col-header-title2"
 							 label="Title"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
-						<xul:splitter ordinal="22" class="tree-splitter" />
-						<xul:treecol ordinal="23" id="col-header-name2"
+						<xul:splitter ordinal="24" class="tree-splitter" />
+						<xul:treecol ordinal="25" id="col-header-name2"
 							 label="Name"
 							 sortDirection=""
 							 flex="2"
 							 onclick=""/>
-						<xul:splitter ordinal="24" class="tree-splitter" />
-						<xul:treecol ordinal="25" id="col-header-value2"
+						<xul:splitter ordinal="26" class="tree-splitter" />
+						<xul:treecol ordinal="27" id="col-header-value2"
 							 label="Value"
 							 sortDirection=""
 							 flex="2"
 							 onclick=""/>
-						<xul:splitter ordinal="26" class="tree-splitter" />
-						<xul:treecol ordinal="27" id="col-header-role2"
+						<xul:splitter ordinal="28" class="tree-splitter" />
+						<xul:treecol ordinal="29" id="col-header-role2"
 							 label="Role"
 							 sortDirection=""
 							 flex="2"
 							 onclick=""/>
-						<xul:splitter ordinal="28" class="tree-splitter" />
-						<xul:treecol ordinal="29" id="col-header-state2"
+						<xul:splitter ordinal="30" class="tree-splitter" />
+						<xul:treecol ordinal="31" id="col-header-state2"
 							 label="State"
 							 sortDirection=""
 							 flex="2"
