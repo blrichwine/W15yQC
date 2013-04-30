@@ -5236,7 +5236,7 @@ ys: 'whys'
                         }
                         aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
                         effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sRole.replace(/contentinfo/,'content info')+' landmark',' '));
-                        effectiveLabelSource=aLabel[1];
+                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
                         oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
                         oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                         break;
