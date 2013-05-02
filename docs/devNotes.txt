@@ -141,6 +141,8 @@
 
 
     *** FIX ASAP***
+	Generate a set of QA pages for quick sanity check testing. Use pages and a protocol to exercise the program an inspect for errors, unexpected results, and warnings.
+	Do a code search for calls to .W15yQC.fnGetEffectivelabelText (line 288 removeStylesWindow.js), since we removed it!!!
     Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
     Add flag to force empty columns to appear in inspector dialogs
     Add flag to force empty columns to appear in HTML reports

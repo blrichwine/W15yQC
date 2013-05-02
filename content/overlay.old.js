@@ -34,7 +34,7 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 24',
+    releaseVersion: '1.0 - Beta 25',
     releaseDate: 'May 29, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
@@ -5097,7 +5097,7 @@ ys: 'whys'
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
-        frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel,
+        frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel, controlType,
         bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false);
 
       if (doc != null) {
@@ -5236,7 +5236,7 @@ ys: 'whys'
                         }
                         aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
                         effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sRole.replace(/contentinfo/,'content info')+' landmark',' '));
-                        effectiveLabelSource=aLabel[1];
+                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
                         oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
                         oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                         break;
@@ -5407,12 +5407,20 @@ ys: 'whys'
                       effectiveLabel = sLabelTagText;
                       effectiveLabelSource = 'Label';
                     }
+                    if(sTagName=='input' && node.hasAttribute('type')) {
+                      controlType='type='+node.getAttribute('type');
+                    } else {
+                      controlType='';
+                    }
+                    if(blr.W15yQC.fnStringHasContent(sRole)) { controlType=blr.W15yQC.fnJoin(controlType,'role='+sRole,', '); }
+                    if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
+                    controlType=sTagName+controlType;
                     sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(node, doc);
                     sStateDescription = blr.W15yQC.fnGetNodeState(node);
                     sName = node.getAttribute('name');
                     sValue = node.getAttribute('value');
 
-                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
+                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, controlType, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
                     oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
                   }
 
@@ -6904,7 +6912,7 @@ ys: 'whys'
 
     fnGetFormControls: function (doc, rootNode, aDocumentsList, aFormsList, aFormControlsList) {
       var bIncludeLabelControls, c, frameDocument, sXPath, sFormDescription, ownerDocumentNumber, sRole, sName, sAction, sMethod, xPath, sFormElementDescription, parentFormNode,
-          role, sTitle, sLegendText, sLabelTagText, effectiveLabel, effectiveLabelSource, sARIALabelText, sARIADescriptionText, sStateDescription, sValue;
+          controlType, sTitle, sLegendText, sLabelTagText, effectiveLabel, effectiveLabelSource, sARIALabelText, sARIADescriptionText, sStateDescription, sValue;
 
       bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false);
       if (aFormControlsList == null) { aFormControlsList = []; }
@@ -6933,7 +6941,7 @@ ys: 'whys'
                 sFormElementDescription = blr.W15yQC.fnDescribeElement(c, 400);
                 parentFormNode = blr.W15yQC.fnGetParentFormElement(c);
                 sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
-                role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
                 sTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
                 sLegendText = '';
                 sLabelTagText = '';
@@ -6958,13 +6966,23 @@ ys: 'whys'
                 effectiveLabel = sLabelTagText;
                 effectiveLabelSource = 'Label';
               }
+
+                if(c.tagName.toLowerCase()=='input' && node.hasAttribute('type')) {
+                  controlType='type='+node.getAttribute('type');
+                } else {
+                  controlType='';
+                }
+                if(blr.W15yQC.fnStringHasContent(sRole)) { controlType=blr.W15yQC.fnJoin(controlType,'role='+sRole,', '); }
+                if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
+                controlType=c.tagName.toLowerCase()+controlType;
+
                 sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
                 sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
                 sStateDescription = blr.W15yQC.fnGetNodeState(c);
                 sName = c.getAttribute('name');
                 sValue = c.getAttribute('value');
 
-                aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, role, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
+                aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, controlType, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
               }
               blr.W15yQC.fnGetFormControls(doc, c, aDocumentsList, aFormsList, aFormControlsList);
             }
@@ -9303,7 +9321,7 @@ ys: 'whys'
     stateDescription: null
   };
 
-  blr.W15yQC.formControlElement = function (node, xpath, nodeDescription, parentFormNode, parentFormDescription, doc, orderNumber, role, name, title, legendText, labelText, ARIALabelText, ARIADescriptionText, effectiveLabel, effectiveLabelSource, stateDescription, value) {
+  blr.W15yQC.formControlElement = function (node, xpath, nodeDescription, parentFormNode, parentFormDescription, doc, orderNumber, controlType, role, name, title, legendText, labelText, ARIALabelText, ARIADescriptionText, effectiveLabel, effectiveLabelSource, stateDescription, value) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
@@ -9311,6 +9329,7 @@ ys: 'whys'
     this.parentFormDescription = parentFormDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
+    this.controlType = controlType;
     this.role = role;
     this.name = name;
     this.value = value;
@@ -9328,6 +9347,7 @@ ys: 'whys'
     node: null,
     xpath: null,
     nodeDescription: null,
+    controlType: null,
     parentFormNode: null,
     parentFormDescription: null,
     parentFormNumber: null,
