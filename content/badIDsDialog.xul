@@ -9,43 +9,48 @@
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
       ondialogaccept="blr.W15yQC.badIDsDialog.cleanup()"
       ondialogcancel="blr.W15yQC.badIDsDialog.cleanup()"
-      buttons="" 
+      buttons=""
       onload="blr.W15yQC.badIDsDialog.init(this)">
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/badIDsDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
-      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"
       onselect="blr.W15yQC.badIDsDialog.updateNotesField()">
          <xul:treecols>
 						<xul:treecol ordinal="1" id="col-header-sourceOrder"
+							 crop="none"
 							 label=" # "
 							 style="text-align:center"
 							 fixed="true"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol  ordinal="3" id="col-header-documentNumber"
+							 crop="none"
 							 label="Doc. #"
 							 style="text-align:center"
 							 fixed="true"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter  ordinal="4" class="tree-splitter" />
+						<xul:splitter  ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="5" id="col-header-baseURI"
+							 crop="none"
 							 label="Base URI"
 							 hidden="true"
 							 onclick=""/>
-						<xul:splitter ordinal="6" class="tree-splitter" />
+						<xul:splitter ordinal="6" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="7" id="col-header-elementDescription"
+							 crop="none"
 							 label="Element Description"
 							 hidden="false"
-							 sortDirection="" 
+							 sortDirection=""
 							 flex="1"
 							 onclick=""/>
-            <xul:splitter ordinal="8" class="tree-splitter" /> 
+            <xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="9" id="col-header-accessKey"
+							 crop="none"
                label="ID"
 				       style="text-align:left"
                sortDirection=""
@@ -55,7 +60,7 @@
 				 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
-				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>		
+				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
 				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="7" flex="1" />
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
