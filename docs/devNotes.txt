@@ -228,7 +228,6 @@
            - div, span
            - paragraph
            - ???
-      Hide unscanned URLs checkbox
       Delete URLs that don't meet current URL criteria
       For score column, add in "error" and "skipped" results.
       Add flash object detection to window description
@@ -260,7 +259,6 @@
       HTML5 allows rich IDs. Do we need to update the Valid ID routines? Do we need to be sensitive to doctype when testing IDs?
       Apparently name attribute values can be "rich", what ever that means, and include entities. If so, we need to look at the valid name routines.
       Accessibility quick tips : Abandon your mouse for a few days and see what the exerience is like.
-      recent files list for project scanner
       remove styles view - filter out characters that screen readers don't announce
       remove styles view - include page title, counts of key semantic features
       audit each of the remove highlights routines to see if they really clean everything up.
@@ -330,6 +328,7 @@
            -- Test for useless fallback content
         - Semantic view should include any fallback content from applicable tags (canvas)
         - Create misc section?
+
         - Make HTML table reports rows tabable with a tabindex and accessible with N and shift N.
         - Make HTML table report enhanced line item view dialog.
         - Make HTML table report each section have a page level note regardless of any issues. (to allow editing)
@@ -340,13 +339,12 @@
            - Manually add a note
            - Add comments on over all line item
            - Add comments on a note.
+
         - Remove styles
            - Options?
               -Remove silent punctuation / symbols?
               -Linearize tables? [layout, data tables, both, none]
-           - Show ARIA info (labels, descriptions, landmarks, etc.)
         - cancel button on theCN.com create assignment page shows up as unlabeled when the type is reset and the value is cancel. What does it show up as to JAWS?
-        - Note how a form control is labeled (label element, fieldset+legend, group, aria-, etc. and include in notes.)
         - Indicate which notes a label applies to.
         - validate the extension in mozilla extension validator, run security checks, perform jslint
         - clean up the try/catch blocks
@@ -437,11 +435,14 @@
 
 FIXED:
 
+    - recent files list for project scanner
+    - Hide unscanned URLs checkbox
     - Do a code search for calls to .W15yQC.fnGetEffectivelabelText (line 288 removeStylesWindow.js), since we removed it!!! [5/4/2013]
     - Update about dialog to use date and version number from overlay.js. Let overlay.js be the only place the version number comes from. [4/29/2013]
     -label elements w/o for attributes and without contained form controls that they are labeling are called out as implicit instead of as not labeling anything. [4/27/2013]
 	  -HTML title on stored color page [4/26/2013]
 	  -finish save as text option for the stored colors window [4/26/2013]
+    - Note how a form control is labeled (label element, fieldset+legend, group, aria-, etc. and include in notes.)
 	  -keep stored colors in the overlay.js file so they can be referrenced from invocation to invocation. [4/25/2013]
 	  -Add a clear stored colors button [4/25/2013]
 	  - ARIA Landmarks outlining does not appear when selecting install all [4/25/2013]
