@@ -284,15 +284,18 @@ blr.W15yQC.RemoveStylesWindow = {
                   node = rd.createElement('span');
                   bKeepStyle = true;
                   if (blr.W15yQC.fnElementIsChildOf(c, 'a')) {
-                    borderStyle = 'border:1px solid blue;margin:3px;';
+                    borderStyle = 'border:1px solid blue;';
                     sLabel = blr.W15yQC.fnJoin('Image-Link', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                     c2 = appendNode;
                     while (c2 != null && c2.tagName.toLowerCase() != 'a') c2 = c2.parentNode;
                     if (c2 != null) {
                       div = rd.createElement('div');
-                      div.setAttribute('style', 'border:solid 1px blue;display:table-cell;margin:2px');
+                      div.setAttribute('style', 'margin:3px');
+                      div2 = rd.createElement('div');
+                      div2.setAttribute('style', 'border:solid 1px blue;display:table-cell;margin:2px;');
+                      div.appendChild(div2);
                       c2.parentNode.insertBefore(div, c2);
-                      div.appendChild(c2);
+                      div2.appendChild(c2);
                     }
                   } else {
                     borderStyle = 'border:1px solid black;';
