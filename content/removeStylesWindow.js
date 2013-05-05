@@ -23,17 +23,17 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2012.12.10 - Created! 
+ * 2012.12.10 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
  *    - How is this handling buttons? Buttons with ARIA Labels that override child text?
  *    - How is this handling links with ARIA Labels?
  *    - DIV and SPAN elements with title attribute?
  *    - HTML5 and ARIA state info?
  *    - FIELDSET+LEGEND text?
- * 
+ *
  */
 if (!blr) {
   var blr = {};
@@ -75,12 +75,13 @@ blr.W15yQC.RemoveStylesWindow = {
     rd.title = 'Removed Style View - ' + blr.W15yQC.RemoveStylesWindow.srcDoc.title + ' - W15yQC';
 
     styleElement = rd.createElement('style');
-    styleElement.innerHTML = "*{font-family:'Open Sans Light',Arial,Helvetica,sans-serif;}button{min-height:20px;min-width:64.72px;cursor:pointer;box-shadow:inset 0 1px 0 0 #bee2f9;background:-moz-linear-gradient(center top,#e8f7ff 5%,#9ec8f2 100%);background-color:#e8f7ff;border-radius:11px;border:2px solid #2f5d99;display:inline-block;color:#14396a;font-size:15px;font-weight:700;padding:1px 8px;text-decoration:none;text-shadow:1px 1px 3px #e9edf2}button:hover{background:-moz-linear-gradient(center top,#9ec8f2 5%,#e8f7ff 100%);background-color:#9ec8f2}button:active{position:relative;top:1px}textarea:focus,input:focus,button:focus{box-shadow: 0 0 2px 4px rgba(73, 173, 227, 0.4) !important}textarea, input[type='email'], input[type='password'], input[type='text'] {background: none repeat scroll 0 0 #FFFFFF;border-color: #B2B2B2;border-radius: 3px 3px 3px 3px;border-style: solid;border-width: 1px;box-shadow: 0 1px rgba(255, 255, 255, 0.5)}";
+    styleElement.innerHTML = "*{font-family:'Open Sans Light',Arial,Helvetica,sans-serif;}a{}button{min-height:20px;min-width:64.72px;cursor:pointer;box-shadow:inset 0 1px 0 0 #bee2f9;background:-moz-linear-gradient(center top,#e8f7ff 5%,#9ec8f2 100%);background-color:#e8f7ff;border-radius:11px;border:2px solid #2f5d99;display:inline-block;color:#14396a;font-size:15px;font-weight:700;padding:1px 8px;text-decoration:none;text-shadow:1px 1px 3px #e9edf2}button:hover{background:-moz-linear-gradient(center top,#9ec8f2 5%,#e8f7ff 100%);background-color:#9ec8f2}button:active{position:relative;top:1px}textarea:focus,input:focus,button:focus{box-shadow: 0 0 2px 4px rgba(73, 173, 227, 0.4) !important}textarea, input[type='email'], input[type='password'], input[type='text'] {background: none repeat scroll 0 0 #FFFFFF;border-color: #B2B2B2;border-radius: 3px 3px 3px 3px;border-style: solid;border-width: 1px;box-shadow: 0 1px rgba(255, 255, 255, 0.5)}";
 
     styleElement.setAttribute('id', 'W15yQCRemoveStylesWindowStyles');
     rd.head.insertBefore(styleElement, rd.head.firstChild);
     blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
     blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(rd);
+    blr.W15yQC.RemoveStylesWindow.fnInstallFocusHighlighter();
   },
 
   cleanup: function () {
@@ -245,7 +246,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 node = rd.createElement('span');
                 bKeepStyle = true;
-                node.setAttribute('style', 'display:table-cell;border:thin solid black;color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color !important:black !important');
+                node.setAttribute('style', 'display:table-cell;border:thin solid black;color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none !important;color:black !important');
                 if (blr.W15yQC.fnStringHasContent(sLabel)) {
                   node.setAttribute('aria-label', sLabel);
                 }
@@ -284,20 +285,23 @@ blr.W15yQC.RemoveStylesWindow = {
                   bKeepStyle = true;
                   if (blr.W15yQC.fnElementIsChildOf(c, 'a')) {
                     borderStyle = 'border:1px solid blue;';
-                    sLabel = blr.W15yQC.fnJoin('Image-Link', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
+                    sLabel = blr.W15yQC.fnJoin('Image-Link', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                     c2 = appendNode;
                     while (c2 != null && c2.tagName.toLowerCase() != 'a') c2 = c2.parentNode;
                     if (c2 != null) {
                       div = rd.createElement('div');
-                      div.setAttribute('style', 'border:solid 1px blue;display:table-cell;margin:2px');
+                      div.setAttribute('style', 'margin:3px');
+                      div2 = rd.createElement('div');
+                      div2.setAttribute('style', 'border:solid 1px blue;display:table-cell;margin:2px;');
+                      div.appendChild(div2);
                       c2.parentNode.insertBefore(div, c2);
-                      div.appendChild(c2);
+                      div2.appendChild(c2);
                     }
                   } else {
                     borderStyle = 'border:1px solid black;';
-                    sLabel = blr.W15yQC.fnJoin('Image', blr.W15yQC.fnGetEffectiveLabelText(c, doc), ': ');
+                    sLabel = blr.W15yQC.fnJoin('Image', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                   }
-                  node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color black !important');
+                  node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color:black !important');
                   node.setAttribute('role', 'img');
                   if (blr.W15yQC.fnStringHasContent(sLabel)) {
                     node.setAttribute('aria-label', sLabel);
@@ -319,7 +323,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c, doc)));
               } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
                 node = rd.createElement('button');
-                node.appendChild(rd.createTextNode(blr.W15yQC.fnGetEffectiveLabelText(c, doc)));
+                node.appendChild(rd.createTextNode((blr.W15yQC.fnGetEffectiveLabel(c))[0]));
               } else if (/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
                 node = rd.createElement('span');
               } else if (/^(frameset)$/i.test(c.tagName)) {
@@ -333,10 +337,16 @@ blr.W15yQC.RemoveStylesWindow = {
                   href=node.getAttribute('href');
                   bSamePageLink=(blr.W15yQC.fnURLsAreEqual(blr.W15yQC.RemoveStylesWindow.srcDoc.URL, blr.W15yQC.RemoveStylesWindow.srcDoc.URL,blr.W15yQC.RemoveStylesWindow.srcDoc.URL,href)==true ||
                      /^#[^#]/.test(node.getAttribute('href')));
-                  
+
                   node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
                   if (blr.W15yQC.fnFirstChildElementIs(c, 'img') == false) {
-                    node.insertBefore(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '), node.firstChild);
+                    if (blr.W15yQC.fnFirstChildElementIs(c, 'h1') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h2') == false &&
+                        blr.W15yQC.fnFirstChildElementIs(c, 'h3') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h4') == false &&
+                        blr.W15yQC.fnFirstChildElementIs(c, 'h5') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h6') == false) {
+                        node.insertBefore(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '), node.firstChild);
+                    } else {
+                        node.firstChild.insertBefore(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '), node.firstChild.firstChild);
+                    }
                   }
                 }
               }
@@ -357,7 +367,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 if(sTagName=='input' && /^(button|checkbox|hidden|image|radio|reset|submit)$/.test(sTagTypeAttr)==false) {
                     sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
                     sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
-                    
+
                     if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
                         if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
                             appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
@@ -376,13 +386,13 @@ blr.W15yQC.RemoveStylesWindow = {
                 } else if(sRole=='presentation' && /^(table|ul|ol|body|title|html|dl)$/.test(sTagName)==false) {
                     node=rd.createElement('div');
                 }
-                
+
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
-                
+
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {
                     sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
                     sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
-                    
+
                     if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
                         if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
                             appendNode.appendChild(rd.createTextNode(' '+sControlsOtherText+' '));
@@ -424,6 +434,62 @@ blr.W15yQC.RemoveStylesWindow = {
       }
     }
     return appendNode.parentNode || appendNode;
+  },
+
+  fnInstallFocusHighlighter: function() {
+    var doc=blr.W15yQC.RemoveStylesWindow.rd, i;
+
+      function w15yqcHighlightElementWithFocus(e) {
+        if(e.target && e.target.tagName && e.target.tagName.toLowerCase() !='a') {
+            try {
+              if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+                w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+              }
+            } catch(ex)
+            {
+            }
+
+            w15yqcPrevElWithFocus = e.target;
+
+              var origNode = w15yqcPrevElWithFocus, box = w15yqcPrevElWithFocus.getBoundingClientRect();
+              while(box != null && box.width == 0 && box.height==0 && w15yqcPrevElWithFocus.firstChild && w15yqcPrevElWithFocus.firstChild != null) {
+                w15yqcPrevElWithFocus = w15yqcPrevElWithFocus.firstChild;
+                if(w15yqcPrevElWithFocus.getBoundingClientRect) {
+                  box = w15yqcPrevElWithFocus.getBoundingClientRect();
+                }
+              }
+              if(box == null || box.width == 0 || box.height==0) {
+                w15yqcPrevElWithFocus=origNode;
+              }
+
+              if (w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
+                w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("outline");
+                //w15yqcPrevElWithFocus.style.outline = "solid 2px red";
+                w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("position");
+                w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
+                if(w15yqcOriginalItemPosition=="static") {
+                  //w15yqcPrevElWithFocus.style.position = "relative";
+                }
+                //w15yqcPrevElWithFocus.style.zIndex = "199999";
+                blr.W15yQC.fnHighlightFormElement(e.target, true);
+              }
+        }
+      }
+
+      function w15yqcRemoveFocusIndication(e) {
+        if(e != null && e.target && e.target.ownerDocument) {
+          blr.W15yQC.resetHighlightElement(e.target.ownerDocument);
+        }
+      }
+
+      if (doc!=null && doc.addEventListener) {
+        doc.addEventListener( 'focus', w15yqcHighlightElementWithFocus, true);
+        doc.addEventListener( 'blur', w15yqcRemoveFocusIndication, true);
+        for (i = 0; i < doc.defaultView.frames.length; i++) { // QA this on deeply nested frames
+          doc.defaultView.frames[i].document.addEventListener( 'focus', w15yqcHighlightElementWithFocus, true);
+          doc.defaultView.frames[i].document.addEventListener( 'blur', w15yqcRemoveFocusIndication, true);
+        }
+      }
   },
 
   fnLinearizeTables: function (doc, rootNode) {
@@ -533,7 +599,7 @@ blr.W15yQC.RemoveStylesWindow = {
         converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
         converter.init(foStream, "UTF-8", 0, 0);
         converter.writeString('<html>' + rd.documentElement.innerHTML + '</html>');
-        converter.close(); // this closes foStream            
+        converter.close(); // this closes foStream
       }
     } else {
       if (blr.W15yQC.RemoveStylesWindow.prompts.alert) blr.W15yQC.RemoveStylesWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");

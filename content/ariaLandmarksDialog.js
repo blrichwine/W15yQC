@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2011.12.10 - Created! 
+ * 2011.12.10 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -84,11 +84,15 @@ blr.W15yQC.LandmarksDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.role);
+          treecell.setAttribute('label', ak.effectiveLabel);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.label);
+          treecell.setAttribute('label', ak.effectiveLabelSource);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.role);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');

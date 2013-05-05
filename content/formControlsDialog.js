@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2011.12.10 - Created! 
+ * 2011.12.10 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -187,6 +187,18 @@ blr.W15yQC.FormControlsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.controlType);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.effectiveLabel);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.effectiveLabelSource);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.legendText);
           treerow.appendChild(treecell);
 
@@ -204,10 +216,6 @@ blr.W15yQC.FormControlsDialog = {
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.title);
-          treerow.appendChild(treecell);
-
-          treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.effectiveLabelText);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
@@ -415,6 +423,7 @@ blr.W15yQC.FormControlsDialog = {
           }
         }
       }
+
     }
   },
 

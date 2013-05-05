@@ -9,24 +9,17 @@
 	 xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	 ondialogaccept=""
 	 ondialogcancel=""
-	 buttons="accept"
+	 buttons="accept" 
 	 onload="">
-   <xul:script>
-			var blr=this.arguments[0];
-   </xul:script>
 	 <xul:vbox id="aboutDialog">
 			<xul:description value="W15y Quick Check" class="name"/>
-			<xul:description id="ver" value="Version 1.0 - Beta 24" class="version"/>
+			<xul:description value="Version 1.0 - Beta 23" class="version"/>
 			<xul:description value="Released:" class="title"/>
-			<xul:description id="rd" value="February 24, 2013" class="text"/>
+			<xul:description value="February 24, 2013" class="text"/>
 			<xul:description value="Author:" class="title"/>
 			<xul:description value="Brian Richwine" class="text"/>
 			<xul:description value="Homepage:" class="title"/>
 			<xul:description onclick="window.open('http://blrichwine.github.com/W15yQC/index.html')" class="url">http://blrichwine.github.com/W15yQC/index.html</xul:description>
 	 </xul:vbox>
 	 <xul:separator class="groove"/>
-   <xul:script>
-			document.getElementById('ver').value='Version '+blr.W15yQC.releaseVersion;
-			document.getElementById('rd').value=blr.W15yQC.releaseDate;
-   </xul:script>
 </xul:dialog>

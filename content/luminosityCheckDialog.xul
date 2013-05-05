@@ -14,82 +14,94 @@
 			style="min-width:908px"
       onload="blr.W15yQC.LuminosityCheckDialog.init(this)">
    <xul:script>
-			blr=this.arguments[0];
+			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/luminosityCheckDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="425" width="900">
-      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"
       onselect="blr.W15yQC.LuminosityCheckDialog.updateNotesField()">
          <xul:treecols>
 						<xul:treecol ordinal="1" id="col-header-sourceOrder"
+							 crop="none"
 							 label=" # "
 							 style="text-align:center"
 							 fixed="true"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol  ordinal="3" id="col-header-documentNumber"
+							 crop="none"
 							 label="Doc. #"
 							 style="text-align:center"
 							 fixed="true"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter  ordinal="4" class="tree-splitter" />
+						<xul:splitter  ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="5" id="col-header-elementDescription"
+							 crop="none"
 							 label="Element Description"
 							 sortDirection=""
 							 hidden="true"
 							 flex="2"
 							 onclick=""/>
-						<xul:splitter ordinal="6" class="tree-splitter" />
+						<xul:splitter ordinal="6" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="7" id="col-header-tag"
+							 crop="none"
 							 label="Tag"
 							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="8" class="tree-splitter" />
+						<xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="9" id="col-header-id"
+							 crop="none"
 							 label="ID"
 							 style="text-align:left"
 							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="10" class="tree-splitter" />
+						<xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="11" id="col-header-class"
+							 crop="none"
 							 label="Class"
 							 style="text-align:left"
 							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="12" class="tree-splitter" />
+						<xul:splitter ordinal="12" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="13" id="col-header-textSize"
+							 crop="none"
 							 label="Size"
 							 style="text-align:right"
 							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="14" class="tree-splitter" />
+						<xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="15" id="col-header-textWeight"
+							 crop="none"
 							 label="Weight"
 							 style="text-align:right"
 							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="16" class="tree-splitter" />
+						<xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="17" id="col-header-fgColor"
+							 crop="none"
 							 label="fgColor"
 							 style="text-align:right"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="18" class="tree-splitter" />
+						<xul:splitter ordinal="18" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="19" id="col-header-bgcolor"
+							 crop="none"
 							 label="bgColor"
 							 style="text-align:right"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="20" class="tree-splitter" />
+						<xul:splitter ordinal="20" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="21" id="col-header-ratio"
+							 crop="none"
 							 label="Luminosity Ratio"
 							 style="text-align:right"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick=""/>
-						<xul:splitter ordinal="22" class="tree-splitter" /> 
+						<xul:splitter ordinal="22" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="23" id="col-header-text"
+							 crop="none"
 							 label="Text"
 							 style="text-align:left"
 							 sortDirection=""
