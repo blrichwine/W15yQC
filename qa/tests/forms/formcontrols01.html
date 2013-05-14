@@ -61,7 +61,6 @@
 			<input id="rb03" type="radio" name="group1" value="Cheese"> <label for="rb03">Cheese</label>
 		</fieldset>
 
-
 		<legend>Select a Veggie Type</legend>
 			<input id="rb04" type="radio" name="group2" value="Kale"> <label for="rb04">Kale</label><br>
 			<input id="rb05" type="radio" name="group2" value="Chard" checked> <label for="rb05">Chard</label><br>
@@ -87,6 +86,21 @@
 
 		<label>This text box is implicitly labeled.<input id="implicitLabelTest01" type="text" name="implicitLabelTest" /></label>
 
+		<fieldset><legend>Outside legend text</legend>
+			<fieldset><legend>Nested legend text number 1</legend>
+				<input id="rb01" type="radio" name="group1" value="Milk"> <label for="rb01">Milk</label><br>
+				<input id="rb02" type="radio" name="group1" value="Butter" checked> <label for="rb02">Butter</label><br>
+				<input id="rb03" type="radio" name="group1" value="Cheese"> <label for="rb03">Cheese</label>
+				<div role="button">ARIA Button</div>
+				<div role="radio">ARIA Radio Button</div>
+			</fieldset>
+
+			<fieldset><legend>Select a Veggie Type</legend>
+				<input id="rb04" type="radio" name="group2" value="Kale"> <label for="rb04">Kale</label><br>
+				<input id="rb05" type="radio" name="group2" value="Chard" checked> <label for="rb05">Chard</label><br>
+				<input id="rb06" type="radio" name="group2" value="Collard"> <label for="rbdd06">Collard</label>
+			</fieldset>
+		</fieldset>
 	</form>
 
 </body>

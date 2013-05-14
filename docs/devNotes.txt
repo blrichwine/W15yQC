@@ -142,18 +142,23 @@
 
     *** FIX ASAP***
 	Generate a set of QA pages for quick sanity check testing. Use pages and a protocol to exercise the program an inspect for errors, unexpected results, and warnings.
+    What about nested fieldsets and legends. Do the legends stack? [No, they do not. Need to make sure we provide a warning.]
     Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
     Add flag to force empty columns to appear in inspector dialogs
     Add flag to force empty columns to appear in HTML reports
     Finish inherited role detection
+
     Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
     Make a QA file for elements that we don't think should get their label from a fieldset legend and verify against JAWS
     MAJOR: Make a QA file for ARIA elements (on divs), and determine how they get their label (role=...)
+
     Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
     Begin major QA sequence.
+
     Add Quick View that gives page summary features as reported by JAWS
        - Info that JAWS reads when page loads
        - Lists of the same info reported from the List Dialogs
+
 	  video and support page for the color chooser tool
 	  video and support page for the contrast inspect tool
 	  video and support page for the problem ID tool
@@ -164,13 +169,18 @@
 	  video and support page for site inspector
 	  video and support page for full inspection
 	  video and support page for the
-      Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
+
+
       FIX INSPECTOR DIALOGS: set the border drag values appropriately on the columns.
       Store which columns are visible and which are hidden
       Add sort option for the inspectors
       Unify inspectors to have effective label field and a description of where the label came from
           - Access keys
-              Where does the label for an access key come from? Do tests to determine. Verify against QA pages.
+              Where does the label for an access key come from? Do tests to determine. Verify against QA pages. Is it always from the element's label that it is attached to?
+                - Accesskeys on links
+                - Accesskeys on buttons
+                - Accesskeys on ARIA features
+                   - ARIA button
               Add label source. [Done: 4/28/2013]
           - ARIA Landmarks
               Determine how ARIA Landmark Labels are determined. Verify against QA pages.
@@ -189,11 +199,11 @@
               Add Label Source [Done: 4/28/2013]
           - Frames OK
           - Headings
-             Add label source [Done: 4/28/2013]
+             Add label source --FIX IT RIGHT AWAY-- , effective label does not seem to be working on the ARIA headings
              Add heading type
                 h1, h2, ..., h6, ARIA heading
-      Add page score and page description to HTML results pages
-      Compare list inspector results against challenging websites, make sure page description makes sense
+
+      Compare inspector results against challenging websites, make sure page description makes sense
         Challenging website list:
           cnn.com
           google search home page
@@ -237,7 +247,6 @@
         -- Correct children
         -- correct path between ancestors and children... both in roles that should be between and that presentation role is present on other elements.
         -- Correct element to place role on (don't put heading role on a button element, etc.)
-      For form controls, add a note that describes where the effective label came from.
       Restate failures appropriately:
         bAllFormControlsHaveMeaningfulLabels >> bNoFormControlsAppearToHaveNonMeaningfulLabels
       Same page links... fix target link detection by following this algo: http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid
@@ -435,6 +444,10 @@
 
 FIXED:
 
+    - W15yQC is not seeing the <a id="sdfsd">fasdfasdf</a> as a "named" anchor.
+    - Add page score and page description to HTML results pages [5/14/2013]
+    - Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
+      For form controls, add a note that describes where the effective label came from.
     - recent files list for project scanner
     - Hide unscanned URLs checkbox
     - Do a code search for calls to .W15yQC.fnGetEffectivelabelText (line 288 removeStylesWindow.js), since we removed it!!! [5/4/2013]

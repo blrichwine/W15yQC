@@ -1,0 +1,357 @@
+
+BODY {
+	/*margin: 0;*/
+	margin: 8px;
+	background-color: #F6F6F6;
+}
+
+A,
+A:link {
+	
+}
+
+A:hover,
+A:focus,
+A:active {
+	text-decoration: none;
+}
+
+.element-invisible {
+	position: absolute !important;
+	top: -10000px;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	overflow: hidden;
+	height: 1px;
+}
+
+#discussionBoardContainer {
+	width: 100%;
+	/*min-width: 1024px;*/
+	min-width: 800px;
+	float: left;
+}
+
+/* Liquid Layout with Negative Margins
+ * See http://alistapart.com/article/negativemargins
+ */
+#discussionBoardBreadcrumbsContainer {
+	width: 100%;
+	float: left;
+	/*margin-right: -431px;*/
+}
+
+UL#discussionBoardBreadcrumbs {
+	float: left;
+	/*margin-right: 415px;*/
+	/*min-width: 400px;*/
+	/*border: 1px solid orange;*/
+	/*margin: 0 431px 0 0;*/
+	margin: 0;
+	padding: 2px;
+	list-style-type: none;
+	min-height: 26px;
+}
+
+UL#discussionBoardBreadcrumbs LI {
+	/*float: left;*/
+	display: inline;
+	padding: 0 10px 0 0;
+	margin: 0;
+	background: transparent url("../images/menu-collapsed.png") no-repeat right center;
+}
+
+UL#discussionBoardBreadcrumbs LI:last-child {
+	padding-right: 0;
+	background: none;
+}
+
+UL#discussionBoardBreadcrumbs LI A {
+	/*float: left;*/
+	display: inline;
+	padding: 3px;
+}
+
+#discussionBoardToolsContainer {
+	float: left;
+	width: 100%;
+	margin: 0 auto;
+	background-color: #DDEEFF;
+	overflow: auto;
+	border-radius: 0.5em;
+	border: 1px solid #99CCFF;
+}
+
+#discussionBoardForumOptions {
+	float: left;
+	/*width: 10%;*/
+	padding: 5px 10px;
+	min-width: 400px;
+	font-size: 0.8em;
+	/*border: 1px solid red;*/
+}
+
+#discussionBoardForumOptions > UL {
+	float: left;
+}
+
+#discussionBoardForumOptions > UL:first-child,
+#discussionBoardForumOptions > UL:first-child > LI:first-child,
+#discussionBoardForumOptions > UL:first-child > LI:first-child > A:first-child {
+	border-radius: 0.5em 0 0 0.5em;
+	-webkit-border-top-left-radius: 0.5em;
+	-webkit-border-bottom-left-radius: 0.5em;
+	-moz-border-radius: 0.5em 0 0 0.5em;
+}
+
+#discussionBoardForumOptions > UL:last-child,
+#discussionBoardForumOptions > UL:last-child > LI:first-child,
+#discussionBoardForumOptions > UL:last-child > LI:first-child > A:first-child {
+	border-radius: 0 0.5em 0.5em 0;
+	-webkit-border-top-right-radius: 0.5em;
+	-webkit-border-bottom-right-radius: 0.5em;
+	-moz-border-radius: 0 0.5em 0.5em 0;
+}
+
+UL#discussionBoardForumOptionsMenu {
+	min-width: 150px;
+	float: left;
+	overflow: auto;
+}
+
+/*
+#discussionBoardForumOptions A {
+	float: left;
+	margin: 0;
+	padding: 3px 0;
+	width: 100%;
+	font-size: 1.1em;
+	font-weight: bold;
+	text-align: center;
+	background-color: black;
+	color: white;
+	text-decoration: none;
+}
+
+#discussionBoardForumOptions A:hover,
+#discussionBoardForumOptions A:focus,
+#discussionBoardForumOptions A:active {
+	text-decoration: underline;
+}
+*/
+
+#discussionBoardSearchForm {
+	float: right;
+	/*width: 20%;*/
+	min-width: 275px;
+	min-height: 26px;
+	padding: 2px 0;
+	padding: 5px 10px;
+	/*border: 1px solid green;*/
+	text-align: center;
+}
+
+#discussionBoardSearchForm INPUT[type="search"] {
+	width: 120px;
+}
+
+#discussionBoardSearchFormAdvancedDialogOpener {
+	
+}
+
+.modalAdvancedSearchDialog {
+	font-size: 62.5%;
+	min-width: 400px;
+}
+
+#discussionBoardSearchFormAdvancedDialogContents {
+	
+}
+
+#discussionBoardSearchFormAdvancedDialogContents LABEL {
+	float: left;
+	clear: left;
+	width: 200px;
+}
+
+#discussionBoardSearchFormAdvancedDialogContents INPUT[type="text"] {
+	float: left;
+	margin-left: 10px;
+	width: 150px;
+}
+
+#discussionBoardSearchFormAdvancedDialogContents SELECT {
+	float: left;
+	margin-left: 10px;
+	width: 155px;
+}
+
+.ui-datepicker {
+	font-size: 62.5%;
+}
+
+/** Content Container **/
+
+#discussionBoardContentContainer {
+	width: 100%;
+	/*float: left;
+	margin-left: -600px;*/
+	float: left;
+	clear: both;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	/*border: 2px solid black;*/
+	overflow: auto;
+	
+	background-color: #DDEEFF;
+	border: 1px solid #99CCFF;
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em; 
+}
+
+/** Nav Region (left pane) **/
+
+#discussionBoardNavPane {
+	width: 300px;
+	float: left;
+	clear: left;
+	padding-bottom: 20px;
+	background-color: transparent;
+	border-right: 5px double #99CCFF;
+	
+	/*
+	border-radius: 0em 1em 1em 0em;
+	-webkit-border-top-right-radius: 1em;
+	-webkit-border-bottom-right-radius: 1em;
+	-moz-border-radius: 0em 1em 1em 0em;
+	*/
+	border-radius: 1em 0 0 1em;
+	-webkit-border-top-left-radius: 1em;
+	-webkit-border-bottom-left-radius: 1em;
+	-moz-border-radius: 1em 0 0 1em;
+}
+
+/** Nav Region Forums Region (left pane) **/
+
+#discussionBoardNavPaneForums {
+	padding: 10px;
+}
+
+#discussionBoardNavPaneForums LABEL,
+#discussionBoardNavPaneForums #discussionBoardNavPaneForumsListingTitle {
+	font-weight: bold;
+	margin-bottom: 0.5em;
+}
+
+#discussionBoardNavPaneForums SELECT {
+	width: 90%;
+}
+
+/** Nav Region Threads Region (left pane) **/
+
+#discussionBoardNavPaneThreads {
+	padding: 10px;
+}
+
+#discussionBoardNavPaneThreads LABEL {
+	font-weight: bold;
+}
+
+#discussionBoardNavPaneThreads #discussionBoardNavPaneThreadListingTitle {
+	font-weight: bold;
+	margin-bottom: 0.5em;
+}
+
+#discussionBoardNavPaneThreads #discussionBoardNavPaneThreadListing {
+	/*width: 90%;*/
+}
+
+/** Message Region (right pane) **/
+
+#discussionBoardMessagePane {
+	min-height: 250px;
+	margin-left: 300px;
+	padding: 10px;
+	border-left: 5px double #99CCFF;
+	/*border: 1px solid green;*/
+}
+
+#discussionBoardMessagePaneToolsContainer {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#discussionBoardMessagePaneContents {
+	width: 100%;
+	border: 1px solid transparent;
+}
+
+#discussionBoardMessagePaneContents:focus {
+	border: 1px solid #99CCFF;
+}
+
+
+.threadContainer {}
+
+.threadContainer .threadContainer { margin: 0.75em 0 0 2em; }
+
+#discussionBoardMessagePaneContents .postContainer {
+	margin: 0;
+	/*padding: 3px;*/
+	padding: 0;
+	
+	background-color: #DDEEFF;
+	border: 1px solid #99CCFF;
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+}
+
+#discussionBoardMessagePaneContents H2,
+#discussionBoardMessagePaneContents H3,
+#discussionBoardMessagePaneContents H4,
+#discussionBoardMessagePaneContents H5,
+#discussionBoardMessagePaneContents H6 {
+	font-size: 1em;
+	font-weight: bold;
+	color: white;
+	margin: 0;
+	padding: 0.2em 0.5em;
+	display: block;
+	
+	background-color: #99CCFF;
+	border-radius: 1em 1em 0 0;
+	-webkit-border-radius: 1em 1em 0 0;
+	-moz-border-radius: 1em 1em 0 0;
+}
+
+#discussionBoardMessagePaneContents .postGroup { display: block; padding: 0; margin: 0.5em 0 0 0; }
+
+#discussionBoardMessagePaneContents .postAuthor { display: inline; margin: 0.5em; }
+#discussionBoardMessagePaneContents .postDate { display: inline; margin: 0.5em; }
+#discussionBoardMessagePaneContents .postContent { display: block; margin: 0.5em; }
+#discussionBoardMessagePaneContents .postActions {
+	font-size: 62.5%;
+	display: block;
+	overflow: auto;
+	margin: 0;
+	padding: 5px 0.5em;
+	
+	background-color: #99CCFF;
+	color: white;
+	border-radius: 0 0 1em 1em;
+	-webkit-border-radius: 0 0 1em 1em;
+	-moz-border-radius: 0 0 1em 1em;
+}
+#discussionBoardMessagePaneContents .postActions > UL,
+#discussionBoardMessagePaneContents .postActions > UL > LI:first-child,
+#discussionBoardMessagePaneContents .postActions > UL > LI:first-child > A:first-child {
+	float: left;
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+}
+
+#discussionBoardMessagePaneContents .postActions UL { display: inline; margin: 0; padding: 0; }
+/*#discussionBoardMessagePaneContents .postActions UL LI { display: inline; margin: 0; padding: 0; }*/

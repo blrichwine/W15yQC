@@ -34,8 +34,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 26',
-    releaseDate: 'May 02, 2013',
+    releaseVersion: '1.0 - Beta 27',
+    releaseDate: 'May 05, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -663,6 +663,12 @@ ys: 'whys'
         while (thread.hasPendingEvents()) { thread.processNextEvent(false); }
       } catch(ex) { alert('fnDoEvents failed:'+ex.toString());
       }
+
+      try {
+        thread = Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThread;
+        while (thread.hasPendingEvents()) { thread.processNextEvent(false); }
+      } catch(ex) { alert('fnDoEvents failed:'+ex.toString());
+      }
     },
 
     fnIsValidLocale: function(sLocale) {
@@ -767,7 +773,6 @@ ys: 'whys'
     },
 
     fnJoin: function (s1, s2, sSeparator) {
-      var sRet = null;
       if (s1 == null) { return s2; }
       if (s2 == null) { return s1; }
       if (sSeparator == null) { sSeparator = ' '; }
@@ -775,12 +780,7 @@ ys: 'whys'
       s2 = blr.W15yQC.fnCleanSpaces(s2, true);
       if (s1 == '') { return s2; }
       if (s2 == '') { return s1; }
-      if (s1.length > 0 && s2.length > 0) {
-        sRet = s1 + sSeparator + s2;
-      } else {
-        sRet = s1 + s2;
-      }
-      return sRet;
+      return s1 + sSeparator + s2;
     },
 
     fnJoinIfNew: function (s1, s2, sSeparator) {
@@ -791,7 +791,8 @@ ys: 'whys'
       if (s1 == '') { return s2; }
       if (s2 == '') { return s1; }
       if (s1.indexOf(s2) < 0 && s2.indexOf(s1) < 0) { // Join if s2 is not in s1 and vice versa
-        return blr.W15yQC.fnJoin(s1, s2, sSeparator);
+        if (sSeparator == null) { sSeparator = ' '; }
+        return s1 + sSeparator + s2;
       }
       return s1;
     },
@@ -3379,6 +3380,7 @@ ys: 'whys'
           sLabelSource ='',
           aLabel=[null,''],
           sTagName,
+          sRole,
           inputType,
           implicitLabelNode,
           explictLabelsList,
@@ -3388,6 +3390,11 @@ ys: 'whys'
 
       if (node != null && node.tagName) {
         sTagName = node.tagName.toLowerCase();
+        if(node.hasAttribute && node.hasAttribute('role')) {
+          sRole=node.getAttribute('role').toLowerCase();
+        } else {
+          sRole='';
+        }
         doc=node.ownerDocument;
 
           if (sTagName == 'input') {
@@ -3448,10 +3455,9 @@ ys: 'whys'
           } else if (sTagName == 'img' || sTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','alt','title','aria-labelledby']);
 
-          } else if (node.hasAttribute('role')) { // TODO: Vet this, not checked with JAWS
-            if(node.getAttribute('role').toLowerCase()=='radio') {
+          } else if (blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
+            if(sRole=='radio' || sRole=='heading') {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','fieldset']);
-
             } else {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt']);
             }
@@ -8687,6 +8693,38 @@ ys: 'whys'
       oW15yQCReport.sWindowDescription=sDesc;
     },
 
+
+    fnDisplayPageSummary: function(rd, oW15yQCReport) {
+      var div, div2, element;
+
+      div = rd.createElement('div');
+      div.setAttribute('id', 'AIPageSummary');
+
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'Page Summary');
+
+      div2 = rd.createElement('div');
+      element = rd.createElement('h3');
+      element.appendChild(rd.createTextNode('Page Description:'));
+      div2.appendChild(element);
+
+      element = rd.createElement('p');
+      element.appendChild(rd.createTextNode(oW15yQCReport.sWindowDescription));
+      div2.appendChild(element);
+
+      element = rd.createElement('h3');
+      element.appendChild(rd.createTextNode('Page Score:'));
+      div2.appendChild(element);
+
+      element = rd.createElement('p');
+
+      element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
+      div2.appendChild(element);
+
+      div.appendChild(div2);
+      rd.body.appendChild(div);
+    },
+
+
     /*
      *
      * ======== Main Inspect Method That Starts it All for the Report Generator (web page output) ========
@@ -8777,7 +8815,7 @@ ys: 'whys'
           blr.W15yQC.fnDisplayFormResults(reportDoc, oW15yQCReport.aForms);
           blr.W15yQC.fnDisplayFormControlResults(reportDoc, oW15yQCReport.aFormControls);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Geting Images');
+        blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Getting Images');
 
         if(sReports=='' || sReports.indexOf('images')>=0) {
           blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
@@ -8798,6 +8836,7 @@ ys: 'whys'
 
         blr.W15yQC.fnDescribeWindow(oW15yQCReport);
         blr.W15yQC.fnComputeScore(oW15yQCReport);
+        blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport);
 
         blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
 
