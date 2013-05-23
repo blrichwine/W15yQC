@@ -6,7 +6,7 @@
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept, cancel"
 	title="W15yQC Web Accessibility Quick Check Options">
- 
+
    <script>
 			var blr=this.arguments[0];
    </script>
@@ -20,9 +20,12 @@
       <preference id="showOnlyIssuesByDefault" name="extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault" type="bool"/>
       <preference id="includeLabelElementsInFormControls" name="extensions.W15yQC.getElements.includeLabelElementsInFormControls" type="bool"/>
       <preference id="includeHiddenElements" name="extensions.W15yQC.getElements.includeHiddenElements" type="bool"/>
+      <preference id="firstHeadingMustBeLevel1" name="extensions.W15yQC.getElements.firstHeadingMustBeLevel1" type="bool"/>
+      <preference id="onlyOneLevel1Heading" name="extensions.W15yQC.getElements.onlyOneLevel1Heading" type="bool"/>
+      <preference id="honorARIA" name="extensions.W15yQC.getElements.honorARIA" type="bool"/>
       <preference id="testContrastMinSpec" name="extensions.W15yQC.testContrast.MinSpec" type="string"/>
 
-      <preference id="rulesToExcludeList" name="extensions.W15yQC.rulesToExcludeList" type="string"/>			
+      <preference id="rulesToExcludeList" name="extensions.W15yQC.rulesToExcludeList" type="string"/>
     </preferences>
 
 	<tabbox>
@@ -33,7 +36,7 @@
 			<tab label="Analysis"/>
 			<tab label="Rules"/>
 		</tabs>
-		
+
 		<tabpanels>
 			<tabpanel id="W15yQC_tab_general" orient="vertical">
 				<hbox>
@@ -53,7 +56,7 @@
 				<checkbox label="Collapse All Sections by Default" preference="collapsedByDefault"/>
 				<checkbox label="Show Only Elements with Issues by Default" preference="showOnlyIssuesByDefault"/>
 			</tabpanel>
-			
+
 			<tabpanel id="W15yQC_tab_InspectorDialogs" orient="vertical">
 				<checkbox label="Auto Scroll to Selected Element" preference="autoScrollToSelectedElement"/>
 			</tabpanel>
@@ -61,6 +64,9 @@
 			<tabpanel id="W15yQC_tab_Analysis" orient="vertical">
 				<checkbox label="Include Label Elements in Form Controls" preference="includeLabelElementsInFormControls"/>
 				<checkbox label="Include Hidden Elements" preference="includeHiddenElements"/>
+				<checkbox label="First Heading Must Be at Level 1" preference="firstHeadingMustBeLevel1"/>
+				<checkbox label="Should Be Only One Level 1 Heading" preference="onlyOneLevel1Heading"/>
+				<checkbox label="Honor ARIA" preference="honorARIA"/>
 					<hbox>
 						<label control="mlCCS" value="Color Contrast Spec:" style="padding-top:5px"/>
 						<menulist id="mlCCS" preference="testContrastMinSpec">
@@ -79,7 +85,7 @@
 									 style="text-align:left"
 									 fixed="false"
 									 flex="1"
-									 sortDirection="" 
+									 sortDirection=""
 									 onclick=""/>
 								<splitter ordinal="2" class="tree-splitter" />
 								<treecol  ordinal="3" id="col-header-domain2"
@@ -88,7 +94,7 @@
 									 style="text-align:left"
 									 fixed="false"
 									 flex="1"
-									 sortDirection="" 
+									 sortDirection=""
 									 onclick=""/>
 						 </treecols>
 						 <treechildren id="tEquivDomainsChildren"/>
@@ -103,7 +109,7 @@
 						 <spacer flex="1"/>
 					</hbox>
 			</tabpanel>
-			
+
 			<tabpanel id="W15yQC_tab_exclude" orient="vertical">
 				<label value="Rules to Exclude" style="font-weight: bold;" control="rulesToExcludeListText"/>
 				<description style="width: 250px; font-size: 10px; padding-left: 5px;">

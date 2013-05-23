@@ -116,20 +116,24 @@ blr.W15yQC.RemoveStylesWindow = {
     }
   },
 
+  fnTagCanHoldText: function(sTagName) {
+    return !(sTagName=='table' || sTagName=='iframe' || sTagName=='tbody' || sTagName=='tfoot' || sTagName=='html' || sTagName=='tr');
+  },
+
   fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
-      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false,
+      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false,
       c2, href;
     if (oValues == null) {
       oValues = {
         iNumberOfLinks: 0,
         iNumberOfFrames: 0,
-        iNumberOfARIALandmarks: 0
+        iNumberOfARIALandmarks: 0,
+        sHeldLabel: ''
       };
     }
-
     if (doc != null) {
       if (rootNode == null) {
         rootNode = doc.body;
@@ -139,6 +143,7 @@ blr.W15yQC.RemoveStylesWindow = {
       }
       for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
         bKeepStyle = false;
+        bDontDig=false;
         bSkipElement = false;
         sTagName='';
         sRole='';
@@ -180,8 +185,11 @@ blr.W15yQC.RemoveStylesWindow = {
                 sRole = '';
               }
 
-              if (blr.W15yQC.fnIsARIALandmark(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" || sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" || sRole == "note" || sRole == "list" || sRole == "listitem" || sRole == "img" || sRole == "grid" || sRole == "document" || sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
-                bInAriaBlock = true; // TODO: Should the landmark role prevent the natural element role?
+              if (blr.W15yQC.fnIsARIALandmark(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
+                  sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" ||
+                  sRole == "note" || sRole == "list" || sRole == "img" || sRole == "grid" || sRole == "document" ||
+                  sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
+                bInAriaBlock = true; // TODO: Should the landmark role prevent the natural element role? Is this appropriate? What about nested ARIA structures?
                 if (sRole == "menubar") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ') + ' To navigate use the left and right arrow keys.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ');
@@ -314,18 +322,22 @@ blr.W15yQC.RemoveStylesWindow = {
                 } else { // TODO: How is this calculated when it is left out?
                   level = '2'; // TODO: What should this be when it was left out?
                 }
-                if (parseInt(level, 10) > 6) {
-                  level = '6';
+                if (parseInt(level, 10) > 6) { // JAWS sets the value to level='2' if the level is not 1-6
+                  level = '2';
                 } else if (parseInt(level, 10) < 1) {
-                  level = '1';
+                  level = '2';
                 }
                 node = rd.createElement('h' + level);
                 node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c, doc)));
               } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
                 node = rd.createElement('button');
                 node.appendChild(rd.createTextNode((blr.W15yQC.fnGetEffectiveLabel(c))[0]));
+                bDontDig=true;
               } else if (/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
                 node = rd.createElement('span');
+              } else if (c.tagName=='hr') {
+                node = rd.createElement('div');
+                node.appendChild(rd.createTextNode(' dash dash dash ')); // TODO: QA This
               } else if (/^(frameset)$/i.test(c.tagName)) {
                 node = rd.createElement('div');
               } else {
@@ -382,11 +394,20 @@ blr.W15yQC.RemoveStylesWindow = {
                     }
                 }
                 if (sRole == 'listitem' || sRole == 'menuitem' || sRole == 'tab' || sRole == 'treeitem' || sRole == 'tooltip') {
-                  appendNode.appendChild(rd.createTextNode(sRole + ': '));
+                  if(blr.W15yQC.RemoveStylesWindow.fnTagCanHoldText(appendNode.tagName.toLowerCase())) {
+                    appendNode.appendChild(rd.createTextNode(' ' + blr.W15yQC.fnJoin(oValues.sHeldLabel, sRole+': ',' ')));
+                    oValues.sHeldLabel='';
+                  } else {
+                    oValues.sHeldLabel=blr.W15yQC.fnJoin(oValues.sHeldLabel,sRole+': ',' ');
+                  }
                 } else if(sRole=='presentation' && /^(table|ul|ol|body|title|html|dl)$/.test(sTagName)==false) {
                     node=rd.createElement('div');
                 }
 
+                if(blr.W15yQC.fnStringHasContent(oValues.sHeldLabel) && blr.W15yQC.RemoveStylesWindow.fnTagCanHoldText(appendNode.tagName.toLowerCase())) {
+                  appendNode.appendChild(rd.createTextNode(' ' + oValues.sHeldLabel + ' '));
+                  oValues.sHeldLabel='';
+                }
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
 
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {
@@ -408,9 +429,10 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
               }
               //alert('digging into:'+node.tagName);
-              if (c.tagName.toLowerCase() != 'object' && c.tagName.toLowerCase() != 'embed') { // TODO: Research alt material for object and embed... how does it work?
+              if (bDontDig!=true && c.tagName.toLowerCase() != 'object' && c.tagName.toLowerCase() != 'embed') { // TODO: Research alt material for object and embed... how does it work?
                 blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
               }
+              bDontDig=false;
               if (bInAriaBlock == true) {
                 if (sExitingLabel > '') {
                   p = rd.createElement('p');

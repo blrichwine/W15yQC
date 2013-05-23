@@ -141,7 +141,29 @@
 
 
     *** FIX ASAP***
+  Restore Defaults option in Options Dialog
+  Align element objects
+    -- apply consistant order
+    -- shouldn't they all have state members?
+  Hidden documents are not noted as such (iframes tests, iframe with skip class-- how should it be handled?)
+    -- links and items in the hidden frame cannot be highlighted and are not listed as being hidden (state==null)
+  Verify table inspector
+    -- especially pay attention to the default th scope
+    -- move position of the labels in the table highlighters. Can they be the first content in the cells instead of the last? [DONE 5/18/2013]
+
+  What does various flash player content sound like to JAWS... youtube, etc. Is it all the same?
+  Create test pages for the remove styles view. Besure to include challenging ARIA content. Look for labels that repeat.
+  ARIA lists / ARIA list items are not displaying properly... could be because of a table / tr interaction?
+    May have to inherit roles (like listitem) down until a content element (not tr, etc.) comes along and then announce the role.
+  how does <cite> read?
+  ARIA Lists currently stop the remove styles routine from displaying the content.
+  List of ARIA roles to ignore and warn about not being well supported?
 	Generate a set of QA pages for quick sanity check testing. Use pages and a protocol to exercise the program an inspect for errors, unexpected results, and warnings.
+    Need to investigate the effective label on ARIA roles -- especially on div, spans, links, etc. Make a list. Spider for common aria roles.
+       - Headings
+       - buttons
+       - sliders
+       - etc.
     What about nested fieldsets and legends. Do the legends stack? [No, they do not. Need to make sure we provide a warning.]
     Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
     Add flag to force empty columns to appear in inspector dialogs
@@ -158,6 +180,11 @@
     Add Quick View that gives page summary features as reported by JAWS
        - Info that JAWS reads when page loads
        - Lists of the same info reported from the List Dialogs
+         * Frame titles
+         * ARIA Landmarks
+         * Headings
+         * Links
+         * Form Controls
 
 	  video and support page for the color chooser tool
 	  video and support page for the contrast inspect tool
@@ -444,6 +471,11 @@
 
 FIXED:
 
+    - Scroll to element in inspector dialogs doesn't keep the element away from the top or bottom. [5/23/2013]
+    - Create pages with each different type of doctype and determine if the documents inspector can display the doctype [5/18/2013]
+    - <hr> read as dash dash dash [5/18/2013]
+    - Previous/Next links create a warning for prev/next what. Should "Back" links do that too? [5/18/2013]
+    - ARIA button labels repeat twice (lessonbuilder pages) [5/18/2013]
     - W15yQC is not seeing the <a id="sdfsd">fasdfasdf</a> as a "named" anchor.
     - Add page score and page description to HTML results pages [5/14/2013]
     - Create effective label routine that is senstive to obeying ARIA or not and reports the effective label and the label source: where the label comes from
@@ -746,6 +778,8 @@ Simple protocol development:
       Accessibility Quick Checks:
          Page title
          Page language
+         Frame Titles
+         ARIA Landmarks
          Skip Navigation
          Page Headings
          Links

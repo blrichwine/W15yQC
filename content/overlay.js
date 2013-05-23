@@ -49,6 +49,9 @@ if (!blr.W15yQC) {
 
     // User prefs
     bIncludeHidden: false,
+    bFirstHeadingMustBeLevel1: true,
+    bOnlyOneLevel1Heading: false,
+    bHonorARIA: true,
     bAutoScrollToSelectedElementInInspectorDialogs: true,
     domainEq1: [],
     domainEq2: [],
@@ -897,6 +900,7 @@ ys: 'whys'
       akIDNotUnique: [false,1,0,false,null],
 
       hSkippedLevel: [true,2,1,false,null],
+      hShouldNotBeMultipleLevel1Headings: [true,2,1,false,null],
       hTxtMissing: [true,2,1,false,null],
       hTxtOnlyASCII: [true,2,1,false,null],
       hTxtNotMeaninfgul: [true,1,1,false,null],
@@ -1661,23 +1665,48 @@ ys: 'whys'
     },
 
     fnMoveToElement: function(node) {
-      var top;
-      if(node != null && node.hasAttribute && node.nodeType==1) {
+      var i, l, r, height, rects, iMinTopR=null, iMaxBottomR=null, iFrames=null;
+
+      if(node != null && blr.W15yQC.fnNodeIsHidden(node)==false) {
         try {
-          if(blr.W15yQC.fnNodeIsHidden(node) || blr.W15yQC.fnNodeIsMasked(node)) {
-            node.ownerDocument.defaultView.scrollTo(0,0);
-          } else {
-            if(blr.W15yQC.fnNodeInViewPort(node)==false) {
-              top=node.ownerDocument.body.scrollTop;
-              node.scrollIntoView(true);
-              if(top != node.ownerDocument.body.scrollTop) {
-                node.ownerDocument.body.scrollTop=node.ownerDocument.body.scrollTop-10;
+					if(node.scrollIntoView && blr.W15yQC.fnNodeInViewPort(node)==false) {
+						node.scrollIntoView(true);
+					}
+        } catch(err) {}
+
+        try {
+          height = node.ownerDocument.defaultView.innerHeight;
+          rects = node.getClientRects();
+          if (node.offsetWidth >0 && node.offsetHeight > 0) {
+            for (i = 0, l = rects.length; i < l; i++) {
+              r = rects[i];
+              if(i==0) {
+                iMinTopR=r.top;
+                iMaxBottomR=r.bottom;
+              } else {
+                if(r.top<iMinTopR) { iMinTopR=r.top; }
+                if(r.bottom>r.bottom) { iMaxBottomR=r.bottom; }
               }
             }
+            if(iMinTopR<10 ) {
+              // Move document up
+              node.ownerDocument.defaultView.scrollBy(0,iMinTopR-10);
+            } else if(height-iMaxBottomR<10 && iMinTopR>10) {
+              // Move document down
+              node.ownerDocument.defaultView.scrollBy(0,(iMaxBottomR-height+10));
+            }
           }
-          blr.W15yQC.fnDoEvents();
-        } catch(err) {}
+        } catch(ex) {}
+        if (node.ownerDocument && node.ownerDocument.defaultView && node.ownerDocument.defaultView.parent != null) {
+          iFrames=node.ownerDocument.defaultView.parent.document.getElementsByTagName('iframe');
+          for (i=0;i<iFrames.length;i++) {
+            if (iFrames[i].contentDocument===node.ownerDocument) {
+              blr.W15yQC.fnMoveToElement(iFrames[i]);
+            }
+          }
+        }
       }
+
     },
 
     fnMoveFocusToElement: function(node) {
@@ -1736,7 +1765,7 @@ ys: 'whys'
         }
         origNode = node;
         div = null;
-        box = node.getBoundingClientRect();
+        box = node.getBoundingClientRect(); // TODO: Really need to get the maximum visible bounding rectangle of all children
         while(box != null && box.width == 0 && box.height==0 && node.firstChild && node.firstChild != null) {
           node = node.firstChild;
           if(node.getBoundingClientRect) {
@@ -1753,7 +1782,7 @@ ys: 'whys'
         y = 0;
         w = 0;
         h = 0;
-        if(box != null) {
+        if(box != null && box.left) {
           x = box.left + scrollLeft;
           y = box.top + scrollTop;
           w = box.width;
@@ -2787,7 +2816,7 @@ ys: 'whys'
       if(str != null && str.replace) {
         if(blr.W15yQC.bEnglishLocale) { str=str.replace(/[^a-z0-9\s]/ig,' '); }
         str = blr.W15yQC.fnCleanSpaces(str);
-        if(str.match(/^(next|prev|previous)$/i)) { return true; }
+        if(str.match(/^(next|prev|back|previous)$/i)) { return true; }
       }
       return false;
     },
@@ -5108,6 +5137,7 @@ ys: 'whys'
 
       if (doc != null) {
         if (oW15yResults == null) {
+          blr.W15yQC.fnReadUserPrefs();
           oW15yResults = new blr.W15yQC.W15yResults();
           oW15yResults.iTextSize=0;
           ARIALandmarkLevel=0;
@@ -6768,24 +6798,33 @@ ys: 'whys'
       oW15yResults.PageScore.bHasALevelOneHeading=false;
       oW15yResults.PageScore.bHeadingHierarchyIsCorrect=true;
       oW15yResults.PageScore.bHasMultipleHeadings=false;
+      oW15yResults.PageScore.bHasTooManyLevelOneHeadings=false;
       oW15yResults.PageScore.bHasEnoughHeadingsForContent=true;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         oW15yResults.PageScore.bUsesHeadings=true;
-        if(aHeadingsList.length > 0) {
+        if(aHeadingsList.length > 1) {
           oW15yResults.PageScore.bHasMultipleHeadings=true;
         }
         for (i = 0; i < aHeadingsList.length; i++) {
           //aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
-          if (aHeadingsList[i].text != null && aHeadingsList[i].text.length && aHeadingsList[i].text.length > 0) {
+          if (blr.W15yQC.fnStringHasContent(aHeadingsList[i].text)) {
             aHeadingsList[i].text = blr.W15yQC.fnCleanSpaces(aHeadingsList[i].text);
           }
           if(aHeadingsList[i].level==1) {
+            if (blr.W15yQC.bOnlyOneLevel1Heading==true && oW15yResults.PageScore.bHasALevelOneHeading==true) {
+              oW15yResults.PageScore.bHasTooManyLevelOneHeadings=true;
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hShouldNotBeMultipleLevel1Headings'); // TODO: QA This
+            }
             oW15yResults.PageScore.bHasALevelOneHeading=true;
           }
         }
-        previousHeadingLevel = 0;
+        if(oW15yResults.PageScore.bUsesHeadings==true && blr.W15yQC.bFirstHeadingMustBeLevel1==true) {
+          previousHeadingLevel = 0;
+        } else {
+          previousHeadingLevel = aHeadingsList[0].level;
+        }
         for (i = 0; i < aHeadingsList.length; i++) {
           if((i % 4) == 0) {
             if(progressWindow != null) {
@@ -8376,6 +8415,10 @@ ys: 'whys'
                 score=score-4;
                 sDesc=blr.W15yQC.fnJoin(sDesc,"Does not have a level one heading (-4).",' ');
               }
+              if(ps.bHasTooManyLevelOneHeadings==true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Should have only one level 1 heading (-4).",' ');
+              }
               if(ps.bHeadingHierarchyIsCorrect!=true) {
                 score=score-4;
                 sDesc=blr.W15yQC.fnJoin(sDesc,"Headings hierarchy skips levels (-4).",' ');
@@ -8910,6 +8953,10 @@ ys: 'whys'
       }
       blr.W15yQC.userExpertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
       blr.W15yQC.bIncludeHidden = Application.prefs.getValue("extensions.W15yQC.getElements.includeHiddenElements",false);
+      blr.W15yQC.bFirstHeadingMustBeLevel1 = Application.prefs.getValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", true);
+      blr.W15yQC.bOnlyOneLevel1Heading = Application.prefs.getValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
+      blr.W15yQC.bHonorARIA = Application.prefs.getValue("extensions.W15yQC.getElements.honorARIA", true);
+
       blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs = Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements",true);
 
       focusInspectorOn=Application.prefs.getValue("extensions.W15yQC.focusHighlighterTurnedOn",false);
@@ -9042,6 +9089,7 @@ ys: 'whys'
     bAllFramesHaveTitles: null,
     bUsesHeadings: null,
     bHasALevelOneHeading: null,
+    bHasTooManyLevelOneHeadings: null,
     bHeadingHierarchyIsCorrect: null,
     bHasEnoughHeadingsForContent: null,
     bHasLandmarksOrMultipleHeadings: null,
@@ -9226,6 +9274,8 @@ ys: 'whys'
     ownerDocumentNumber: null,
     containsDocumentNumber: null,
     role: null,
+    state: null,
+    listedByAT: true,
     notes: null,
     failed: false,
     warning: false,
@@ -9258,10 +9308,11 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
+    state: null,
+    listedByAT: true,
     notes: null,
     failed: false,
     warning: false,
-    state: null,
     effectiveLabel: null,
     effectiveLabelSource: null,
     text: null,
@@ -9319,6 +9370,8 @@ ys: 'whys'
     doc: null,
     orderNumber: null,
     ownerDocumentNumber: null,
+    state: null,
+    listedByAT: true,
     level:null,
     effectiveLabel: null,
     effectiveLabelSource: null,
@@ -9394,6 +9447,8 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
+    state: null,
+    listedByAT: true,
     name: null,
     value: null,
     title: null,
@@ -9449,6 +9504,7 @@ ys: 'whys'
     effectiveLabelSource: null,
     text: null,
     state: null,
+    listedByAT: true,
     soundex: null,
     title: null,
     target: null,
@@ -9481,6 +9537,8 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
+    state: null,
+    listedByAT: true,
     src: null,
     width: null,
     height: null,
@@ -9555,6 +9613,8 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
+    state: null,
+    listedByAT: true,
     accessKey: null,
     effectiveLabel: null,
     effectiveLabelSource: null,

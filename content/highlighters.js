@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2012.10.12 - Created! 
+ * 2012.10.12 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -513,7 +513,8 @@ blr.W15yQC.Highlighters = {
         }
       }
       for (i = 0; i < insertParents.length; i++) {
-        insertParents[i].appendChild(insertEls[i]);
+        // insertParents[i].appendChild(insertEls[i]);
+        insertParents[i].insertBefore(insertEls[i],insertParents[i].firstChild);
       }
     }
     if (isDataTable) {
@@ -575,8 +576,8 @@ blr.W15yQC.Highlighters = {
     } catch (ex) {}
     return setHighlights; // return status of highlights
   },
-  
-  installBasicElementHighlights: function(elementTagName, aDocumentsList) { 
+
+  installBasicElementHighlights: function(elementTagName, aDocumentsList) {
     var doc, styleElement, i, j, insert, span1, elementList;
     if (aDocumentsList != null && aDocumentsList.length > 0 && /^[a-z]+$/i.test(elementTagName)) {
         for (i = 0; i < aDocumentsList.length; i++) {
@@ -586,7 +587,7 @@ blr.W15yQC.Highlighters = {
                 styleElement.innerHTML = '.w15yqcBE'+elementTagName+'Insert1{text-indent:0px !important; float:none !important}.w15yqcBE'+elementTagName+'{text-indent:0px !important; border: 2px solid red !important;margin:2px !important}span.w15yqcBE'+elementTagName+'Insert2{text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
                 styleElement.setAttribute('id', 'W15yQCBE'+elementTagName+'HighlightStyle');
                 doc.head.insertBefore(styleElement, doc.head.firstChild);
-                
+
                 elementList=doc.body.getElementsByTagName(elementTagName);
                 for (j = 0; j < elementList.length; j++) {
                     elementList[j].className = 'w15yqcBE'+elementTagName+' '+elementList[j].className;
@@ -604,7 +605,7 @@ blr.W15yQC.Highlighters = {
         }
     }
   },
-  
+
   removeBasicElementHighlights: function(elementTagName, aDocumentsList) {
     var doc, i, styleElement = null,
       infoElements = null;
@@ -644,7 +645,7 @@ blr.W15yQC.Highlighters = {
     blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
     blr.W15yQC.Highlighters.highlightBasicElement('blockquote', aDocumentsList);
   },
-  
+
   removeAllHighlights: function(aDocumentsList) {
     if (aDocumentsList == null) {
         aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);

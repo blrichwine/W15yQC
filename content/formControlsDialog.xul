@@ -139,7 +139,7 @@
 						<xul:treecol ordinal="13" id="col-header-effectiveLabelSource2"
 							 crop="none"
 							 label="Label Source"
-							 hidden="true"
+							 hidden="false"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
@@ -147,6 +147,7 @@
 						<xul:treecol ordinal="15" id="col-header-legend2"
 							 crop="none"
 							 label="Legend"
+							 hidden="true"
 							 sortDirection=""
 							 flex="1"
 							 onclick=""/>
@@ -154,6 +155,7 @@
 	 				  <xul:treecol ordinal="17" id="col-header-labelTagText2"
 							 crop="none"
 							 label="Label Tag Text"
+							 hidden="true"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
@@ -161,6 +163,7 @@
 						<xul:treecol ordinal="19" id="col-header-ariaLabel2"
 							 crop="none"
 							 label="ARIA Label"
+							 hidden="true"
 							 sortDirection=""
 							 flex="3"
 							 onclick=""/>
