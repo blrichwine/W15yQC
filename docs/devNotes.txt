@@ -141,6 +141,16 @@
 
 
     *** FIX ASAP***
+
+  THINGS TO DO BEFORE MAKING WEB PAGE VIDEOS AND W15yQC Protocol Instructions:
+    -- Check table inspector TH default scope code
+    -- Add sorting to all Inspector dialogs
+    -- Add page title tests to the site inspector tool
+    -- Make and debug Quick Check View with element type label where appropriate (button, checkbox, etc.)
+    -- Make sure all move to calls come before the highlight calls
+    -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script
+
+
   Restore Defaults option in Options Dialog
   Align element objects
     -- apply consistant order
@@ -162,17 +172,18 @@
        - buttons
        - sliders
        - etc.
-    What about nested fieldsets and legends. Do the legends stack? [No, they do not. Need to make sure we provide a warning.]
-    Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
-    Add flag to force empty columns to appear in inspector dialogs
-    Add flag to force empty columns to appear in HTML reports
+    **** What about nested fieldsets and legends. Do the legends stack? [No, they do not. Need to make sure we provide a warning.]
+    **** Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
+    **** Add flag to force empty columns to appear in inspector dialogs
+    **** Add flag to force empty columns to appear in HTML reports
 
-    Finish inherited role detection
+    **** Finish inherited role detection
 
-    Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
-    Make a QA file for elements that we don't think should get their label from a fieldset legend and verify against JAWS
+    ***** Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
+    ***** Make a QA file for elements that we don't think should get their label from a fieldset legend and verify against JAWS
     MAJOR: Make a QA file for ARIA elements (on divs), and determine how they get their label (role=...)
 
+    ***** Should recursiveText function pick up title attributes on divs and spans?
     Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
     Begin major QA sequence.
 

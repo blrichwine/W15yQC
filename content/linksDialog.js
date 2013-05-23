@@ -43,45 +43,88 @@ blr.W15yQC.LinksDialog = {
   FirebugO: null,
   aDocumentsList: null,
   aLinksList: null,
+  aDisplayOrder: [],
   nodeToInspect: null,
-  fnPopulateTree: function (aDocumentsList, aLinksList) {
-    var tbc, bHasRole, bHasStateDescription, bHasTarget, i, ak, ch, treecell, treeitem, treerow, textbox;
+  sortColumns: [' Link Number (asc)'],
+
+  fnUpdateStatus: function(sLabel) {
+    document.getElementById('progressMeterLabel').value=sLabel;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdatePercentage: function(p) {
+    document.getElementById('progressMeter').value=p;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdateProgress: function(sLabel, fPercentage) {
+    if(sLabel != null) {
+      blr.W15yQC.LinksDialog.fnUpdateStatus(sLabel);
+    }
+    if(fPercentage != null) {
+      blr.W15yQC.LinksDialog.fnUpdatePercentage(fPercentage);
+    }
+    blr.W15yQC.LinksDialog.updateControlStates();
+  },
+
+  updateDisplayOrderArray: function() {
+    if(blr.W15yQC.LinksDialog.aLinksList != null && blr.W15yQC.LinksDialog.aLinksList.length>0) {
+      if(blr.W15yQC.LinksDialog.aDisplayOrder==null) {
+        blr.W15yQC.LinksDialog.aDisplayOrder=[];
+      }
+      while(blr.W15yQC.LinksDialog.aDisplayOrder.length<blr.W15yQC.LinksDialog.aLinksList.length) {
+        blr.W15yQC.LinksDialog.aDisplayOrder.push(blr.W15yQC.LinksDialog.aDisplayOrder.length);
+      }
+    } else {
+      blr.W15yQC.LinksDialog.aDisplayOrder=[];
+    }
+  },
+
+  fnPopulateTree: function (aDocumentsList, aLinksList, bDontHideCols) {
+    var tbc, bHasRole, bHasStateDescription, bHasTarget, i, ak, ch, treecell, treeitem, treerow, textbox, order;
+    blr.W15yQC.LinksDialog.updateDisplayOrderArray();
+    order=blr.W15yQC.LinksDialog.aDisplayOrder;
     if (aDocumentsList != null && aLinksList != null && aLinksList.length && aLinksList.length > 0) {
       tbc = document.getElementById('treeboxChildren');
       bHasRole = false;
       bHasStateDescription = false;
       bHasTarget = false;
       if (tbc != null) {
-        for (i = 0; i < aLinksList.length; i++) {
-          ak = aLinksList[i];
-          if (ak.role != null) bHasRole = true;
-          if (ak.target != null) bHasTarget = true;
-          if (ak.stateDescription != null) bHasStateDescription = true;
+        while (tbc.firstChild) {
+          tbc.removeChild(tbc.firstChild);
         }
-        if (!bHasRole) {
-          ch = document.getElementById('col-header-role');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasTarget) {
-          ch = document.getElementById('col-header-target');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasStateDescription) {
-          ch = document.getElementById('col-header-state');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (aDocumentsList.length <= 1) {
-          ch = document.getElementById('col-header-documentNumber');
-          ch.setAttribute('hidden', 'true');
+        if (bDontHideCols!=true) {
+            for (i = 0; i < aLinksList.length; i++) {
+              ak = aLinksList[i];
+              if (ak.role != null) bHasRole = true;
+              if (ak.target != null) bHasTarget = true;
+              if (ak.stateDescription != null) bHasStateDescription = true;
+            }
+            if (!bHasRole) {
+              ch = document.getElementById('col-header-role');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasTarget) {
+              ch = document.getElementById('col-header-target');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasStateDescription) {
+              ch = document.getElementById('col-header-state');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (aDocumentsList.length <= 1) {
+              ch = document.getElementById('col-header-documentNumber');
+              ch.setAttribute('hidden', 'true');
+            }
         }
         for (i = 0; i < aLinksList.length; i++) {
           treeitem = document.createElement('treeitem');
           treerow = document.createElement('treerow');
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
+          treecell.setAttribute('label', order[i] + 1);
           treerow.appendChild(treecell);
 
-          ak = aLinksList[i];
+          ak = aLinksList[order[i]];
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -158,12 +201,12 @@ blr.W15yQC.LinksDialog = {
 
     progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
     blr.W15yQC.fnDoEvents();
-    if(progressWindow != null) {
-      progressWindow.document.getElementById('percent').value=0;
-      progressWindow.document.getElementById('detailText').value='Getting Links...';
-      progressWindow.focus();
-      blr.W15yQC.fnDoEvents();
-    }
+    //if(progressWindow != null) {
+    //  progressWindow.document.getElementById('percent').value=0;
+    //  progressWindow.document.getElementById('detailText').value='Getting Links...';
+    //  progressWindow.focus();
+    //  blr.W15yQC.fnDoEvents();
+    //}
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
 
@@ -180,6 +223,12 @@ blr.W15yQC.LinksDialog = {
     progressWindow = null;
     dialog.focus();
   },
+
+
+  updateControlStates: function() {
+
+  },
+
 
   cleanup: function () {
     if (blr.W15yQC.LinksDialog.aDocumentsList != null) {
@@ -247,8 +296,8 @@ blr.W15yQC.LinksDialog = {
       selectedRow = treebox.currentIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
-      blr.W15yQC.highlightElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node, blr.W15yQC.LinksDialog.aLinksList[selectedRow].doc);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node);
+      blr.W15yQC.highlightElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node, blr.W15yQC.LinksDialog.aLinksList[selectedRow].doc);
     }
   },
 
@@ -260,6 +309,144 @@ blr.W15yQC.LinksDialog = {
       blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LinksDialog.aLinksList[selectedRow].node);
     }
   },
+
+  addSortColumn: function(index, ascending) {
+    while(blr.W15yQC.LinksDialog.sortColumns.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.LinksDialog.sortColumns.splice(blr.W15yQC.LinksDialog.sortColumns.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.LinksDialog.sortColumns.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.LinksDialog.sortColumns.splice(blr.W15yQC.LinksDialog.sortColumns.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.LinksDialog.sortColumns.length>3) { blr.W15yQC.LinksDialog.sortColumns.pop(); }
+    blr.W15yQC.LinksDialog.sortColumns.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+
+  sortTreeAsNumberOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.LinksDialog.aLinksList, order=blr.W15yQC.LinksDialog.aDisplayOrder;
+    blr.W15yQC.LinksDialog.addSortColumn(index, ascending);
+    blr.W15yQC.LinksDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.LinksDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending==false) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTreeAsStringOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.LinksDialog.aLinksList, order=blr.W15yQC.LinksDialog.aDisplayOrder;
+    blr.W15yQC.LinksDialog.addSortColumn(index, ascending);
+    blr.W15yQC.LinksDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.LinksDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTree: function(col) {
+    var al, ad, sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
+    blr.W15yQC.LinksDialog.updateDisplayOrderArray();
+    switch(colID) {
+      case 'col-header-sourceOrder':
+        blr.W15yQC.LinksDialog.aDisplayOrder=[];
+        blr.W15yQC.LinksDialog.sortColumns=[' Link Number (asc)'];
+        blr.W15yQC.LinksDialog.updateDisplayOrderArray();
+        break;
+      case 'col-header-documentNumber':
+        blr.W15yQC.LinksDialog.sortTreeAsNumberOn('ownerDocumentNumber',sortDir);
+        break;
+      case 'col-header-baseURI':
+        al=blr.W15yQC.LinksDialog.aLinksList;
+        ad=blr.W15yQC.LinksDialog.aDocumentsList;
+        if (al != null && al != null && al.length>0 && !al[0].baseURI) {
+            for (i=0;i<al.length;i++) {
+                al[i].baseURI=ad[al[i].ownerDocumentNumber - 1].URL;
+            }
+        }
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('baseURI',sortDir);
+        break;
+      case 'col-header-elementDescription':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('nodeDescription',sortDir);
+        break;
+      case 'col-header-effectiveLabel':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('effectiveLabel',sortDir);
+        break;
+      case 'col-header-labelSource':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('effectiveLabelSource',sortDir);
+        break;
+      case 'col-header-linkText':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('text',sortDir);
+        break;
+      case 'col-header-title':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('title',sortDir);
+        break;
+      case 'col-header-target':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('target',sortDir);
+        break;
+      case 'col-header-href':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('href',sortDir);
+        break;
+      case 'col-header-role':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('role',sortDir);
+        break;
+      case 'col-header-state':
+        blr.W15yQC.LinksDialog.sortTreeAsStringOn('stateDescription',sortDir);
+        break;
+      default:
+        alert('unhandled sort column');
+    }
+    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList, true);
+    blr.W15yQC.LinksDialog.updateControlStates();
+    blr.W15yQC.LinksDialog.fnUpdateStatus('Sorted on:'+blr.W15yQC.LinksDialog.sortColumns.toString());
+  },
+
 
   showInFirebug: function () {
     var treebox, selectedRow;
