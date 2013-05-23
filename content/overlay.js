@@ -5127,7 +5127,7 @@ ys: 'whys'
      *   Handle role="presentation" and see if that should make the element "hidden" or not (how to keep presentation role elements out of lists?)
      *
      */
-    fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRole, nestingDepth) {
+    fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
       var docNumber, node, sID, idCount, frameDocument, style,
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
@@ -5141,7 +5141,7 @@ ys: 'whys'
           oW15yResults = new blr.W15yQC.W15yResults();
           oW15yResults.iTextSize=0;
           ARIALandmarkLevel=0;
-          sInheritedRole='';
+          sInheritedRoles='';
           oW15yResults.PageScore=new blr.W15yQC.PageScore();
           oW15yResults.PageScore.bAllContentContainedInLandmark=true;
           oW15yResults.PageScore.bUsesARIABesidesLandmarks=false;
@@ -5171,6 +5171,7 @@ ys: 'whys'
           }
 
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
+            sRole=null;
             if (node.nodeType == 1 && node.tagName && node.hasAttribute) { // Only pay attention to element nodes
               style = window.getComputedStyle(node, null);
               if(style!=null) {
@@ -5231,8 +5232,8 @@ ys: 'whys'
                   sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
                   if(blr.W15yQC.fnStringHasContent(sRole)) {
                     sRole=sRole.toLowerCase();
-                    if(blr.W15yQC.fnIsValidARIARole(sRole) && !blr.W15yQC.fnIsARIALandmarkRole(sRole)) {
-                      sInheritedRole=sRole;
+                    if(blr.W15yQC.fnIsValidARIARole(sRole) && blr.W15yQC.fnIsARIALandmarkRole(sRole)!=true) {
+                      sInheritedRoles=blr.W15yQC.fnJoin(sRole,sInheritedRoles,':');
                     }
                   }
                   sTagName = node.tagName.toLowerCase();
@@ -5400,7 +5401,7 @@ ys: 'whys'
                     effectiveLabel=aLabel[0];
                     effectiveLabelSource=aLabel[1];
                     text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
-                    oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, headingLevel, effectiveLabel, effectiveLabelSource, text));
+                    oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, sInheritedRoles, headingLevel, effectiveLabel, effectiveLabelSource, text));
                     oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
                   }
 
@@ -5538,7 +5539,7 @@ ys: 'whys'
                 }
 
                 if (node.firstChild != null) { // keep looking through current document
-                  blr.W15yQC.fnGetElements(doc, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRole, nestingDepth);
+                  blr.W15yQC.fnGetElements(doc, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth);
                 }
                 if(inTable != null && node.tagName.toLowerCase() == 'table') {
                   inTable = null; // TODO: Does this need to be an array stack?
@@ -6780,7 +6781,7 @@ ys: 'whys'
                   effectiveLabelSource=aLabel[1];
                   text = blr.W15yQC.fnGetDisplayableTextRecursively(c);
 
-                  aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, headingLevel, effectiveLabel, effectiveLabelSource, text));
+                  aHeadingsList.push(new blr.W15yQC.headingElement(c, xPath, nodeDescription, doc, aHeadingsList.length, role, '', headingLevel, effectiveLabel, effectiveLabelSource, text));
                 }
               }
               blr.W15yQC.fnGetHeadings(doc, c, aHeadingsList);
@@ -6860,6 +6861,11 @@ ys: 'whys'
             if(aDocumentsList[aHeadingsList[i].ownerDocumentNumber-1].idHashTable.getItem(aHeadingsList[i].node.getAttribute('id'))>1) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); // QA: headings01.html
             }
+          }
+          if (/\b(list|listitem)\b/i.test(aHeadingsList[i].inheritedRoles)) { // TODO: QA This!
+            aHeadingsList[i].listedByAT=false;
+          } else {
+            aHeadingsList[i].listedByAT=true;
           }
         }
       }
@@ -9287,13 +9293,15 @@ ys: 'whys'
     stateDescription: null
   };
 
-  blr.W15yQC.headingElement = function (node, xpath, nodeDescription, doc, orderNumber, role, level, effectiveLabel, effectiveLabelSource, text) {
+
+  blr.W15yQC.headingElement = function (node, xpath, nodeDescription, doc, orderNumber, role, inheritedRoles, level, effectiveLabel, effectiveLabelSource, text) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
     this.role = role;
+    this.inheritedRoles = inheritedRoles;
     this.level = level;
     this.effectiveLabel = effectiveLabel;
     this.effectiveLabelSource = effectiveLabelSource;
@@ -9308,6 +9316,7 @@ ys: 'whys'
     orderNumber: null,
     ownerDocumentNumber: null,
     role: null,
+    inheritedRoles: null,
     state: null,
     listedByAT: true,
     notes: null,
@@ -9320,6 +9329,7 @@ ys: 'whys'
     soundex: null,
     stateDescription: null
   };
+
 
   blr.W15yQC.ariaElement = function (node, xpath, nodeDescription, doc, orderNumber, level, role, label, stateDescription) {
     this.node = node;
@@ -9349,6 +9359,7 @@ ys: 'whys'
     soundex: null,
     stateDescription: null
   };
+
 
   blr.W15yQC.ariaLandmarkElement = function (node, xpath, nodeDescription, doc, orderNumber, level, effectiveLabel, effectiveLabelSource, role, stateDescription) {
     this.node = node;
@@ -9383,6 +9394,7 @@ ys: 'whys'
     stateDescription: null
   };
 
+
   blr.W15yQC.formElement = function (node, xpath, nodeDescription, doc, ownerDocumentNumber, orderNumber, name, role, action, method) {
     this.node = node;
     this.xpath = xpath;
@@ -9412,6 +9424,7 @@ ys: 'whys'
     warning: false,
     stateDescription: null
   };
+
 
   blr.W15yQC.formControlElement = function (node, xpath, nodeDescription, parentFormNode, parentFormDescription, doc, orderNumber, controlType, role, name, title, legendText, labelText, ARIALabelText, ARIADescriptionText, effectiveLabel, effectiveLabelSource, stateDescription, value) {
     this.node = node;
@@ -9465,6 +9478,7 @@ ys: 'whys'
     stateDescription: null
   };
 
+
   blr.W15yQC.linkElement = function (node, xpath, nodeDescription, doc, orderNumber, role, stateDescription, effectiveLabel, effectiveLabelSource, text, title, target, href) {
     this.node = node;
     this.xpath = xpath;
@@ -9512,6 +9526,7 @@ ys: 'whys'
     stateDescription: null
   };
 
+
   blr.W15yQC.image = function (node, xpath, nodeDescription, doc, orderNumber, role, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, ariaLabel) {
     this.node = node;
     this.xpath = xpath;
@@ -9556,6 +9571,7 @@ ys: 'whys'
     title: null
   };
 
+
   blr.W15yQC.contrastElement = function (node, xpath, nodeDescription, doc, orderNumber, sText, sTextSize, textWeight, fgColor, bgColor, bHasBGImage, fgLuminosity, bgLuminosity, lRatio) {
     this.node = node;
     this.xpath = xpath;
@@ -9593,6 +9609,7 @@ ys: 'whys'
     warning: false
   };
 
+
   blr.W15yQC.accessKey = function (node, xpath, nodeDescription, doc, orderNumber, role, accessKey, effectiveLabel, effectiveLabelSource) {
     this.node = node;
     this.xpath = xpath;
@@ -9624,6 +9641,7 @@ ys: 'whys'
     stateDescription: null
   };
 
+
   blr.W15yQC.badId = function (node, xpath, nodeDescription, doc, orderNumber, ownerDocumentNumber, sID) {
     this.node = node;
     this.xpath = xpath;
@@ -9646,6 +9664,7 @@ ys: 'whys'
     failed: false,
     warning: false
   };
+
 
   blr.W15yQC.table = function (node, xpath, nodeDescription, doc, orderNumber, role, nestingLevel, title, summary) {
     this.node = node;

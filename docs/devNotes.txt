@@ -153,8 +153,6 @@
 
   What does various flash player content sound like to JAWS... youtube, etc. Is it all the same?
   Create test pages for the remove styles view. Besure to include challenging ARIA content. Look for labels that repeat.
-  ARIA lists / ARIA list items are not displaying properly... could be because of a table / tr interaction?
-    May have to inherit roles (like listitem) down until a content element (not tr, etc.) comes along and then announce the role.
   how does <cite> read?
   ARIA Lists currently stop the remove styles routine from displaying the content.
   List of ARIA roles to ignore and warn about not being well supported?
@@ -168,6 +166,7 @@
     Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
     Add flag to force empty columns to appear in inspector dialogs
     Add flag to force empty columns to appear in HTML reports
+
     Finish inherited role detection
 
     Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
@@ -471,6 +470,8 @@
 
 FIXED:
 
+    - Remove Styles View ARIA lists / ARIA list items are not displaying properly... could be because of a table / tr interaction? [fixed? 5/23/2013]
+    - Remove Styles View - May have to inherit roles (like listitem) down until a content element (not tr, etc.) comes along and then announce the role. [5/23/2013]
     - Scroll to element in inspector dialogs doesn't keep the element away from the top or bottom. [5/23/2013]
     - Create pages with each different type of doctype and determine if the documents inspector can display the doctype [5/18/2013]
     - <hr> read as dash dash dash [5/18/2013]
