@@ -43,40 +43,83 @@ blr.W15yQC.HeadingsDialog = {
   oFirebug: null,
   aDocumentsList: null,
   aHeadingsList: null,
-  fnPopulateTree: function (aDocumentsList, aHeadingsList) {
-    var tbc, bHasRole, bHasStateDescription, i, ak, ch, treecell, treeitem, treerow, sIndent, j, textbox;
+  aDisplayOrder: [],
+  sortColumns: [' Heading Number (asc)'],
+
+  fnUpdateStatus: function(sLabel) {
+    document.getElementById('progressMeterLabel').value=sLabel;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdatePercentage: function(p) {
+    document.getElementById('progressMeter').value=p;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdateProgress: function(sLabel, fPercentage) {
+    if(sLabel != null) {
+      blr.W15yQC.HeadingsDialog.fnUpdateStatus(sLabel);
+    }
+    if(fPercentage != null) {
+      blr.W15yQC.HeadingsDialog.fnUpdatePercentage(fPercentage);
+    }
+    blr.W15yQC.HeadingsDialog.updateControlStates();
+  },
+
+  updateDisplayOrderArray: function() {
+    if(blr.W15yQC.HeadingsDialog.aHeadingsList != null && blr.W15yQC.HeadingsDialog.aHeadingsList.length>0) {
+      if(blr.W15yQC.HeadingsDialog.aDisplayOrder==null) {
+        blr.W15yQC.HeadingsDialog.aDisplayOrder=[];
+      }
+      while(blr.W15yQC.HeadingsDialog.aDisplayOrder.length<blr.W15yQC.HeadingsDialog.aHeadingsList.length) {
+        blr.W15yQC.HeadingsDialog.aDisplayOrder.push(blr.W15yQC.HeadingsDialog.aDisplayOrder.length);
+      }
+    } else {
+      blr.W15yQC.HeadingsDialog.aDisplayOrder=[];
+    }
+  },
+
+  fnPopulateTree: function (aDocumentsList, aHeadingsList, bDontHideCols) {
+    var tbc, bHasRole, bHasStateDescription, i, ak, ch, treecell, treeitem, treerow, sIndent, j, textbox, order;
     if (aDocumentsList != null && aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
+        blr.W15yQC.HeadingsDialog.updateDisplayOrderArray();
+        order=blr.W15yQC.HeadingsDialog.aDisplayOrder;
 
       tbc = document.getElementById('treeboxChildren');
       bHasRole = false;
       bHasStateDescription = false;
       if (tbc != null) {
-        for (i = 0; i < aHeadingsList.length; i++) {
-          ak = aHeadingsList[i];
-          if (ak.role) bHasRole = true;
-          if (ak.stateDescription) bHasStateDescription = true;
+        while (tbc.firstChild) {
+          tbc.removeChild(tbc.firstChild);
         }
-        if (!bHasRole) {
-          ch = document.getElementById('col-header-role');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasStateDescription) {
-          ch = document.getElementById('col-header-state');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (aDocumentsList.length <= 1) {
-          ch = document.getElementById('col-header-documentNumber');
-          ch.setAttribute('hidden', 'true');
+        if (bDontHideCols!=true) {
+            for (i = 0; i < aHeadingsList.length; i++) {
+              ak = aHeadingsList[i];
+              if (ak.role) bHasRole = true;
+              if (ak.stateDescription) bHasStateDescription = true;
+            }
+            if (!bHasRole) {
+              ch = document.getElementById('col-header-role');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasStateDescription) {
+              ch = document.getElementById('col-header-state');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (aDocumentsList.length <= 1) {
+              ch = document.getElementById('col-header-documentNumber');
+              ch.setAttribute('hidden', 'true');
+            }
         }
         for (i = 0; i < aHeadingsList.length; i++) {
           treeitem = document.createElement('treeitem');
           treerow = document.createElement('treerow');
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
+          treecell.setAttribute('label', order[i] + 1);
           treerow.appendChild(treecell);
 
-          ak = aHeadingsList[i];
+          ak = aHeadingsList[order[i]];
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -157,6 +200,10 @@ blr.W15yQC.HeadingsDialog = {
     blr.W15yQC.HeadingsDialog.fnPopulateTree(blr.W15yQC.HeadingsDialog.aDocumentsList, blr.W15yQC.HeadingsDialog.aHeadingsList);
   },
 
+  updateControlStates: function() {
+
+  },
+
   cleanup: function () {
     if (blr.W15yQC.HeadingsDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
@@ -220,6 +267,137 @@ blr.W15yQC.HeadingsDialog = {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
       blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node);
     }
+  },
+
+  addSortColumn: function(index, ascending) {
+    while(blr.W15yQC.HeadingsDialog.sortColumns.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.HeadingsDialog.sortColumns.splice(blr.W15yQC.HeadingsDialog.sortColumns.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.HeadingsDialog.sortColumns.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.HeadingsDialog.sortColumns.splice(blr.W15yQC.HeadingsDialog.sortColumns.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.HeadingsDialog.sortColumns.length>3) { blr.W15yQC.HeadingsDialog.sortColumns.pop(); }
+    blr.W15yQC.HeadingsDialog.sortColumns.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+
+  sortTreeAsNumberOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.HeadingsDialog.aHeadingsList, order=blr.W15yQC.HeadingsDialog.aDisplayOrder;
+    blr.W15yQC.HeadingsDialog.addSortColumn(index, ascending);
+    blr.W15yQC.HeadingsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.HeadingsDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending==false) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTreeAsStringOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.HeadingsDialog.aHeadingsList, order=blr.W15yQC.HeadingsDialog.aDisplayOrder;
+    blr.W15yQC.HeadingsDialog.addSortColumn(index, ascending);
+    blr.W15yQC.HeadingsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.HeadingsDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTree: function(col) {
+    var al, ad, sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
+    blr.W15yQC.HeadingsDialog.updateDisplayOrderArray();
+    switch(colID) {
+      case 'col-header-sourceOrder':
+        blr.W15yQC.HeadingsDialog.aDisplayOrder=[];
+        blr.W15yQC.HeadingsDialog.sortColumns=[' Heading Number (asc)'];
+        blr.W15yQC.HeadingsDialog.updateDisplayOrderArray();
+        break;
+      case 'col-header-documentNumber':
+        blr.W15yQC.HeadingsDialog.sortTreeAsNumberOn('ownerDocumentNumber',sortDir);
+        break;
+      case 'col-header-baseURI':
+        al=blr.W15yQC.HeadingsDialog.aHeadingsList;
+        ad=blr.W15yQC.HeadingsDialog.aDocumentsList;
+        if (al != null && al != null && al.length>0 && !al[0].baseURI) {
+            for (i=0;i<al.length;i++) {
+                al[i].baseURI=ad[al[i].ownerDocumentNumber - 1].URL;
+            }
+        }
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('baseURI',sortDir);
+        break;
+      case 'col-header-elementDescription':
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('nodeDescription',sortDir);
+        break;
+      case 'col-header-level':
+        blr.W15yQC.HeadingsDialog.sortTreeAsNumberOn('level',sortDir);
+        break;
+      case 'col-header-effectiveLabel':
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('effectiveLabel',sortDir);
+        break;
+      case 'col-header-labelSource':
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('effectiveLabelSource',sortDir);
+        break;
+      case 'col-header-text':
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('text',sortDir);
+        break;
+      case 'col-header-role':
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('role',sortDir);
+        break;
+      case 'col-header-state':
+        blr.W15yQC.HeadingsDialog.sortTreeAsStringOn('stateDescription',sortDir);
+        break;
+      default:
+        alert('unhandled sort column');
+    }
+    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    blr.W15yQC.HeadingsDialog.fnPopulateTree(blr.W15yQC.HeadingsDialog.aDocumentsList, blr.W15yQC.HeadingsDialog.aHeadingsList, true);
+    blr.W15yQC.HeadingsDialog.updateControlStates();
+    blr.W15yQC.HeadingsDialog.fnUpdateStatus('Sorted on:'+blr.W15yQC.HeadingsDialog.sortColumns.toString());
   },
 
   showInFirebug: function () {

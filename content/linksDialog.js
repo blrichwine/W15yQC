@@ -44,8 +44,8 @@ blr.W15yQC.LinksDialog = {
   aDocumentsList: null,
   aLinksList: null,
   aDisplayOrder: [],
-  nodeToInspect: null,
   sortColumns: [' Link Number (asc)'],
+  nodeToInspect: null,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
