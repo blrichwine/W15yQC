@@ -229,7 +229,6 @@ blr.W15yQC.LinksDialog = {
 
   },
 
-
   cleanup: function () {
     if (blr.W15yQC.LinksDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
