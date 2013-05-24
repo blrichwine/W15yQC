@@ -5409,10 +5409,11 @@ ys: 'whys'
                     sXPath = blr.W15yQC.fnGetElementXPath(node);
                     sFormDescription = blr.W15yQC.fnDescribeElement(node);
                     ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(node, oW15yResults.aDocuments);
+                    sID = blr.W15yQC.fnGetNodeAttribute(node, 'id', null);
                     sName = blr.W15yQC.fnGetNodeAttribute(node, 'name', null);
                     sAction = blr.W15yQC.fnGetNodeAttribute(node, 'action', null);
                     sMethod = blr.W15yQC.fnGetNodeAttribute(node, 'method', null);
-                    oW15yResults.aForms.push(new blr.W15yQC.formElement(node, sXPath, sFormDescription, doc, ownerDocumentNumber, oW15yResults.aForms.length + 1, sName, sRole, sAction, sMethod));
+                    oW15yResults.aForms.push(new blr.W15yQC.formElement(node, sXPath, sFormDescription, doc, ownerDocumentNumber, oW15yResults.aForms.length + 1, sID, sName, sRole, sAction, sMethod));
                     oW15yResults.aForms[oW15yResults.aForms.length-1].ownerDocumentNumber=docNumber+1;
                   } else if ((blr.W15yQC.fnIsFormControlNode(node) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(node)))) {
                     // Document the form control
@@ -6962,7 +6963,7 @@ ys: 'whys'
     },
 
     fnGetFormControls: function (doc, rootNode, aDocumentsList, aFormsList, aFormControlsList) {
-      var bIncludeLabelControls, c, frameDocument, sXPath, sFormDescription, ownerDocumentNumber, sRole, sName, sAction, sMethod, xPath, sFormElementDescription, parentFormNode,
+      var bIncludeLabelControls, c, frameDocument, sXPath, sFormDescription, ownerDocumentNumber, sRole, sID, sName, sAction, sMethod, xPath, sFormElementDescription, parentFormNode,
           controlType, sTitle, sLegendText, sLabelTagText, effectiveLabel, effectiveLabelSource, sARIALabelText, sARIADescriptionText, sStateDescription, sValue;
 
       bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false);
@@ -6982,10 +6983,11 @@ ys: 'whys'
                 sFormDescription = blr.W15yQC.fnDescribeElement(c);
                 //ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(c, aDocumentsList);
                 sRole = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
+                sID = blr.W15yQC.fnGetNodeAttribute(c, 'id', null);
                 sName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
                 sAction = blr.W15yQC.fnGetNodeAttribute(c, 'action', null);
                 sMethod = blr.W15yQC.fnGetNodeAttribute(c, 'method', null);
-                aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sName, sRole, sAction, sMethod));
+                aFormsList.push(new blr.W15yQC.formElement(c, sXPath, sFormDescription, doc, ownerDocumentNumber, aFormsList.length + 1, sID, sName, sRole, sAction, sMethod));
               } else if ((blr.W15yQC.fnIsFormControlNode(c) || (bIncludeLabelControls == true && blr.W15yQC.fnIsLabelControlNode(c))) && blr.W15yQC.fnNodeIsHidden(c) == false) {
                 // Document the form control
                 xPath = blr.W15yQC.fnGetElementXPath(c);
@@ -9395,13 +9397,14 @@ ys: 'whys'
   };
 
 
-  blr.W15yQC.formElement = function (node, xpath, nodeDescription, doc, ownerDocumentNumber, orderNumber, name, role, action, method) {
+  blr.W15yQC.formElement = function (node, xpath, nodeDescription, doc, ownerDocumentNumber, orderNumber, id, name, role, action, method) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.ownerDocumentNumber = ownerDocumentNumber;
     this.orderNumber = orderNumber;
+    this.id = id;
     this.name = name;
     this.role = role;
     this.action = action;
@@ -9415,6 +9418,7 @@ ys: 'whys'
     doc: null,
     orderNumber: null,
     ownerDocumentNumber: null,
+    id: null,
     name: null,
     role: null,
     action: null,

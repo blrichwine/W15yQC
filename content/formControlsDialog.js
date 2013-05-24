@@ -46,26 +46,86 @@ blr.W15yQC.FormControlsDialog = {
   aFormControlsList: null,
   oLastTreeviewToHaveFocus: null,
   aLastList: null,
-  fnPopulateTree: function (aDocumentsList, aFormsList, aFormControlsList) {
-    var bHasARIADescription, bHasARIALabel, bHasId, bHasLegend, bHasName, bHasRole, bHasStateDescription, bHasValue,
-    i, tbc, ak, ch, treecell, treeitem, treerow, textbox;
-    if (aDocumentsList != null && aFormControlsList != null && aFormControlsList.length && aFormControlsList.length > 0) {
-      bHasId = false;
-      bHasName = false;
-      for (i = 0; i < aFormsList.length; i++) {
-        if (aFormsList[i].node.getAttribute('id')) bHasId = true;
-        if (aFormsList[i].name != null && aFormsList[i].name.length > 0) bHasName = true;
+  aDisplayOrder1: [],
+  sortColumns1: [' Form Number (asc)'],
+  aDisplayOrder2: [],
+  sortColumns2: [' Form Control Number (asc)'],
+
+  fnUpdateStatus: function(sLabel) {
+    document.getElementById('progressMeterLabel').value=sLabel;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdatePercentage: function(p) {
+    document.getElementById('progressMeter').value=p;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdateProgress: function(sLabel, fPercentage) {
+    if(sLabel != null) {
+      blr.W15yQC.FormControlsDialog.fnUpdateStatus(sLabel);
+    }
+    if(fPercentage != null) {
+      blr.W15yQC.FormControlsDialog.fnUpdatePercentage(fPercentage);
+    }
+    blr.W15yQC.FormControlsDialog.updateControlStates();
+  },
+
+  updateDisplayOrderArray1: function() {
+    if(blr.W15yQC.FormControlsDialog.aFormsList != null && blr.W15yQC.FormControlsDialog.aFormsList.length>0) {
+      if(blr.W15yQC.FormControlsDialog.aDisplayOrder1==null) {
+        blr.W15yQC.FormControlsDialog.aDisplayOrder1=[];
       }
+      while(blr.W15yQC.FormControlsDialog.aDisplayOrder1.length<blr.W15yQC.FormControlsDialog.aFormsList.length) {
+        blr.W15yQC.FormControlsDialog.aDisplayOrder1.push(blr.W15yQC.FormControlsDialog.aDisplayOrder1.length);
+      }
+    } else {
+      blr.W15yQC.FormControlsDialog.aDisplayOrder1=[];
+    }
+  },
+
+  updateDisplayOrderArray2: function() {
+    if(blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length>0) {
+      if(blr.W15yQC.FormControlsDialog.aDisplayOrder2==null) {
+        blr.W15yQC.FormControlsDialog.aDisplayOrder2=[];
+      }
+      while(blr.W15yQC.FormControlsDialog.aDisplayOrder2.length<blr.W15yQC.FormControlsDialog.aFormControlsList.length) {
+        blr.W15yQC.FormControlsDialog.aDisplayOrder2.push(blr.W15yQC.FormControlsDialog.aDisplayOrder2.length);
+      }
+    } else {
+      blr.W15yQC.FormControlsDialog.aDisplayOrder2=[];
+    }
+  },
+
+  fnPopulateTree1: function (aDocumentsList, aFormsList, bDontHideCols) {
+    var bHasARIADescription, bHasARIALabel, bHasId, bHasLegend, bHasName, bHasRole, bHasStateDescription, bHasValue,
+    i, tbc, ak, ch, treecell, treeitem, treerow, textbox, order1;
+
+    blr.W15yQC.FormControlsDialog.updateDisplayOrderArray1();
+    order1=blr.W15yQC.FormControlsDialog.aDisplayOrder1;
+
+    if (aDocumentsList != null && aFormsList != null && aFormsList.length && aFormsList.length > 0) {
 
       tbc = document.getElementById('treeboxChildren1');
       if (tbc != null) {
-        if (!bHasId) {
-          ch = document.getElementById('col-header-id');
-          ch.setAttribute('hidden', 'true');
+        while (tbc.firstChild) {
+          tbc.removeChild(tbc.firstChild);
         }
-        if (!bHasName) {
-          ch = document.getElementById('col-header-name');
-          ch.setAttribute('hidden', 'true');
+        if (bDontHideCols!=true) {
+            bHasId = false;
+            bHasName = false;
+            for (i = 0; i < aFormsList.length; i++) {
+              if (aFormsList[i].node.getAttribute('id')) bHasId = true;
+              if (aFormsList[i].name != null && aFormsList[i].name.length > 0) bHasName = true;
+            }
+            if (!bHasId) {
+              ch = document.getElementById('col-header-id');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasName) {
+              ch = document.getElementById('col-header-name');
+              ch.setAttribute('hidden', 'true');
+            }
         }
 
         for (i = 0; i < aFormsList.length; i++) {
@@ -73,10 +133,10 @@ blr.W15yQC.FormControlsDialog = {
           treerow = document.createElement('treerow');
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
+          treecell.setAttribute('label', order1[i] + 1);
           treerow.appendChild(treecell);
 
-          ak = aFormsList[i];
+          ak = aFormsList[order1[i]];
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -91,7 +151,7 @@ blr.W15yQC.FormControlsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.node.getAttribute('id'));
+          treecell.setAttribute('label', ak.id);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
@@ -115,53 +175,74 @@ blr.W15yQC.FormControlsDialog = {
           treeitem.appendChild(treerow);
           tbc.appendChild(treeitem);
         }
+
       }
+    } else {
+      textbox = document.getElementById('note-text');
+      textbox.value = "No form elements were detected.";
+    }
+  },
+
+
+  fnPopulateTree2: function (aDocumentsList, aFormControlsList, bDontHideCols) {
+    var bHasARIADescription, bHasARIALabel, bHasId, bHasLegend, bHasName, bHasRole, bHasStateDescription, bHasValue,
+    i, tbc, ak, ch, treecell, treeitem, treerow, textbox, order2;
+
+    blr.W15yQC.FormControlsDialog.updateDisplayOrderArray2();
+    order2=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
+
+    if (aDocumentsList != null && aFormControlsList != null && aFormControlsList.length && aFormControlsList.length > 0) {
 
       tbc = document.getElementById('treeboxChildren2');
       if (tbc != null) {
-        bHasARIALabel = false;
-        bHasLegend = false;
-        bHasARIADescription = false;
-        bHasRole = false;
-        bHasValue = false;
-        bHasStateDescription = false;
-        for (i = 0; i < aFormControlsList.length; i++) {
-          ak = aFormControlsList[i];
-          if (ak.legendText != null && ak.legendText.length > 0) bHasLegend = true;
-          if (ak.role != null && ak.role.length > 0) bHasRole = true;
-          if (ak.value != null && ak.value.length > 0) bHasValue = true;
-          if (ak.ARIALabelText != null && ak.ARIALabelText.length > 0) bHasARIALabel = true;
-          if (ak.ARIADescriptionText != null && ak.ARIADescriptionText.length > 0) bHasARIADescription = true;
-          if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
+        while (tbc.firstChild) {
+          tbc.removeChild(tbc.firstChild);
         }
-        if (!bHasARIALabel) {
-          ch = document.getElementById('col-header-ariaLabel2');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasLegend) {
-          ch = document.getElementById('col-header-legend2');
-          ch.setAttribute('flex', null);
-          ch.setAttribute('fixed', 'true');
-        }
-        if (!bHasARIADescription) {
-          ch = document.getElementById('col-header-ariaDescription2');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasRole) {
-          ch = document.getElementById('col-header-role2');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasValue) {
-          ch = document.getElementById('col-header-value2');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (!bHasStateDescription) {
-          ch = document.getElementById('col-header-state2');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (aDocumentsList.length <= 1) {
-          ch = document.getElementById('col-header-documentNumber2');
-          ch.setAttribute('hidden', 'true');
+        if (bDontHideCols!=true) {
+            bHasARIALabel = false;
+            bHasLegend = false;
+            bHasARIADescription = false;
+            bHasRole = false;
+            bHasValue = false;
+            bHasStateDescription = false;
+            for (i = 0; i < aFormControlsList.length; i++) {
+              ak = aFormControlsList[i];
+              if (ak.legendText != null && ak.legendText.length > 0) bHasLegend = true;
+              if (ak.role != null && ak.role.length > 0) bHasRole = true;
+              if (ak.value != null && ak.value.length > 0) bHasValue = true;
+              if (ak.ARIALabelText != null && ak.ARIALabelText.length > 0) bHasARIALabel = true;
+              if (ak.ARIADescriptionText != null && ak.ARIADescriptionText.length > 0) bHasARIADescription = true;
+              if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
+            }
+            if (!bHasARIALabel) {
+              ch = document.getElementById('col-header-ariaLabel2');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasLegend) {
+              ch = document.getElementById('col-header-legend2');
+              ch.setAttribute('flex', null);
+              ch.setAttribute('fixed', 'true');
+            }
+            if (!bHasARIADescription) {
+              ch = document.getElementById('col-header-ariaDescription2');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasRole) {
+              ch = document.getElementById('col-header-role2');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasValue) {
+              ch = document.getElementById('col-header-value2');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (!bHasStateDescription) {
+              ch = document.getElementById('col-header-state2');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (aDocumentsList.length <= 1) {
+              ch = document.getElementById('col-header-documentNumber2');
+              ch.setAttribute('hidden', 'true');
+            }
         }
 
         for (i = 0; i < aFormControlsList.length; i++) {
@@ -169,10 +250,10 @@ blr.W15yQC.FormControlsDialog = {
           treerow = document.createElement('treerow');
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
+          treecell.setAttribute('label', order2[i] + 1);
           treerow.appendChild(treecell);
 
-          ak = aFormControlsList[i];
+          ak = aFormControlsList[order2[i]];
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -250,9 +331,20 @@ blr.W15yQC.FormControlsDialog = {
       }
     } else {
       textbox = document.getElementById('note-text');
-      textbox.value = "No form elements were detected.";
+      textbox.value = "No form control elements were detected.";
     }
   },
+
+  fnPopulateTree: function (aDocumentsList, aFormsList, aFormControlsList, bDontHideCols) {
+    if (aDocumentsList==null || aDocumentsList.length==0 || aFormsList==null || aFormsList.length==0 || aFormControlsList==null || aFormControlsList.length==0) {
+      textbox = document.getElementById('note-text');
+      textbox.value = "No form elements were detected.";
+    } else {
+      blr.W15yQC.FormControlsDialog.fnPopulateTree1(aDocumentsList, aFormsList, bDontHideCols);
+      blr.W15yQC.FormControlsDialog.fnPopulateTree2(aDocumentsList, aFormControlsList, bDontHideCols);
+    }
+  },
+
 
   init: function (dialog) {
     var oW15yQCReport;
@@ -274,6 +366,10 @@ blr.W15yQC.FormControlsDialog = {
     blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
   },
 
+  updateControlStates: function() {
+
+  },
+
   cleanup: function () {
     if (blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
@@ -289,7 +385,7 @@ blr.W15yQC.FormControlsDialog = {
   updateNotesField1: function (bHighlightElement) {
     var treebox = document.getElementById('treebox1'),
       textbox = document.getElementById('note-text'),
-      selectedRow, sPrefix;
+      selectedRow, selectedIndex, sPrefix;
 
     blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = treebox;
     blr.W15yQC.FormControlsDialog.aLastList = blr.W15yQC.FormControlsDialog.aFormsList;
@@ -301,27 +397,28 @@ blr.W15yQC.FormControlsDialog = {
         selectedRow = 0;
         bHighlightElement = false;
       }
+      selectedIndex=blr.W15yQC.FormControlsDialog.aDisplayOrder1[selectedRow];
 
-      if (blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].notes != null) {
+      if (blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].notes != null) {
         sPrefix = 'Notes';
-        if (blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].failed) {
+        if (blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].failed) {
           sPrefix = 'Failed';
-        } else if (blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].warning) {
+        } else if (blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].warning) {
           sPrefix = 'Warning';
         }
         textbox.value = sPrefix + ': ' + blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].notes;
       } else {
         textbox.value = '';
       }
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].nodeDescription, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].xpath, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].nodeDescription, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].xpath, "\n\n");
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
       if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
         try {
-          blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node);
+          blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].node);
         } catch (err) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
+      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].doc);
     }
   },
 
@@ -347,7 +444,9 @@ blr.W15yQC.FormControlsDialog = {
         selectedRow = 0;
         bHighlightElement = false;
       }
-      aFC = blr.W15yQC.FormControlsDialog.aFormControlsList[selectedRow];
+      selectedIndex=blr.W15yQC.FormControlsDialog.aDisplayOrder2[selectedRow];
+
+      aFC = blr.W15yQC.FormControlsDialog.aFormControlsList[selectedIndex];
       if (aFC.notes != null) {
         textbox.value = blr.W15yQC.fnMakeTextNotesList(aFC);
       } else {
@@ -427,66 +526,366 @@ blr.W15yQC.FormControlsDialog = {
     }
   },
 
+  addSortColumn1: function(index, ascending) {
+    while(blr.W15yQC.FormControlsDialog.sortColumns1.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.FormControlsDialog.sortColumns1.splice(blr.W15yQC.FormControlsDialog.sortColumns1.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.FormControlsDialog.sortColumns1.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.FormControlsDialog.sortColumns1.splice(blr.W15yQC.FormControlsDialog.sortColumns1.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.FormControlsDialog.sortColumns1.length>3) { blr.W15yQC.FormControlsDialog.sortColumns1.pop(); }
+    blr.W15yQC.FormControlsDialog.sortColumns1.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+
+  sortTreeAsNumberOn1: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.FormControlsDialog.aFormsList, order=blr.W15yQC.FormControlsDialog.aDisplayOrder1;
+    blr.W15yQC.FormControlsDialog.addSortColumn1(index, ascending);
+    blr.W15yQC.FormControlsDialog.fnUpdateStatus('Sorting Forms List on:'+blr.W15yQC.FormControlsDialog.sortColumns1.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending==false) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTreeAsStringOn1: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.FormControlsDialog.aFormsList, order=blr.W15yQC.FormControlsDialog.aDisplayOrder1;
+    blr.W15yQC.FormControlsDialog.addSortColumn1(index, ascending);
+    blr.W15yQC.FormControlsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.FormControlsDialog.sortColumns1.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTree1: function(col) {
+    var al, ad, sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox1');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
+    blr.W15yQC.FormControlsDialog.updateDisplayOrderArray1();
+    switch(colID) {
+      case 'col-header-sourceOrder':
+        blr.W15yQC.FormControlsDialog.aDisplayOrder1=[];
+        blr.W15yQC.FormControlsDialog.sortColumns1=[' Form Number (asc)'];
+        blr.W15yQC.FormControlsDialog.updateDisplayOrderArray1();
+        break;
+      case 'col-header-documentNumber':
+        blr.W15yQC.FormControlsDialog.sortTreeAsNumberOn1('ownerDocumentNumber',sortDir);
+        break;
+      case 'col-header-baseURI':
+        al=blr.W15yQC.FormControlsDialog.aFormsList;
+        ad=blr.W15yQC.FormControlsDialog.aDocumentsList;
+        if (al != null && al != null && al.length>0 && !al[0].baseURI) {
+            for (i=0;i<al.length;i++) {
+                al[i].baseURI=ad[al[i].ownerDocumentNumber - 1].URL;
+            }
+        }
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn1('baseURI',sortDir);
+        break;
+      case 'col-header-elementDescription':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn1('nodeDescription',sortDir);
+        break;
+      case 'col-header-id':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn1('id',sortDir);
+        break;
+      case 'col-header-name':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn1('name',sortDir);
+        break;
+      case 'col-header-action':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn1('action',sortDir);
+        break;
+      case 'col-header-method':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn1('method',sortDir);
+        break;
+      default:
+        alert('unhandled sort column');
+    }
+    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    blr.W15yQC.FormControlsDialog.fnPopulateTree1(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, true);
+    blr.W15yQC.FormControlsDialog.updateControlStates();
+    blr.W15yQC.FormControlsDialog.fnUpdateStatus('Sorted Forms List on:'+blr.W15yQC.FormControlsDialog.sortColumns1.toString());
+  },
+
+  addSortColumn2: function(index, ascending) {
+    while(blr.W15yQC.FormControlsDialog.sortColumns2.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.FormControlsDialog.sortColumns2.splice(blr.W15yQC.FormControlsDialog.sortColumns2.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.FormControlsDialog.sortColumns2.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.FormControlsDialog.sortColumns2.splice(blr.W15yQC.FormControlsDialog.sortColumns2.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.FormControlsDialog.sortColumns2.length>3) { blr.W15yQC.FormControlsDialog.sortColumns2.pop(); }
+    blr.W15yQC.FormControlsDialog.sortColumns2.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+
+  sortTreeAsNumberOn2: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.FormControlsDialog.aFormControlsList, order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
+    blr.W15yQC.FormControlsDialog.addSortColumn2(index, ascending);
+    blr.W15yQC.FormControlsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.FormControlsDialog.sortColumns2.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending==false) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTreeAsStringOn2: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.FormControlsDialog.aFormControlsList, order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
+    blr.W15yQC.FormControlsDialog.addSortColumn2(index, ascending);
+    blr.W15yQC.FormControlsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.FormControlsDialog.sortColumns2.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+
+  sortTree2: function(col) {
+    var al, ad, sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox2');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
+    blr.W15yQC.FormControlsDialog.updateDisplayOrderArray2();
+    switch(colID) {
+      case 'col-header-sourceOrder2':
+        blr.W15yQC.FormControlsDialog.aDisplayOrder=[];
+        blr.W15yQC.FormControlsDialog.sortColumns=[' Link Number (asc)'];
+        blr.W15yQC.FormControlsDialog.updateDisplayOrderArray();
+        break;
+      case 'col-header-documentNumber2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsNumberOn2('ownerDocumentNumber',sortDir);
+        break;
+      case 'col-header-formNumber2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsNumberOn2('parentFormNumber',sortDir);
+        break;
+      case 'col-header-baseURI2':
+        al=blr.W15yQC.FormControlsDialog.aFormControlsList;
+        ad=blr.W15yQC.FormControlsDialog.aDocumentsList;
+        if (al != null && al != null && al.length>0 && !al[0].baseURI) {
+            for (i=0;i<al.length;i++) {
+                al[i].baseURI=ad[al[i].ownerDocumentNumber - 1].URL;
+            }
+        }
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('baseURI',sortDir);
+        break;
+      case 'col-header-elementDescription2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('nodeDescription',sortDir);
+        break;
+      case 'col-header-elementType2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('controlType',sortDir);
+        break;
+      case 'col-header-effectiveLabel2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('effectiveLabel',sortDir);
+        break;
+      case 'col-header-effectiveLabelSource2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('effectiveLabelSource',sortDir);
+        break;
+      case 'col-header-legend2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('legendText',sortDir);
+        break;
+      case 'col-header-labelTagText2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('labelTagText',sortDir);
+        break;
+      case 'col-header-ariaLabel2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('ARIALabelText',sortDir);
+        break;
+      case 'col-header-ariaDescription2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('ARIADescriptionText',sortDir);
+        break;
+      case 'col-header-title2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('title',sortDir);
+        break;
+      case 'col-header-name2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('name',sortDir);
+        break;
+      case 'col-header-value2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('value',sortDir);
+        break;
+      case 'col-header-role2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('role',sortDir);
+        break;
+      case 'col-header-state2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('stateDescription',sortDir);
+        break;
+      default:
+        alert('unhandled sort column');
+    }
+    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    blr.W15yQC.FormControlsDialog.fnPopulateTree2(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormControlsList, true);
+    blr.W15yQC.FormControlsDialog.updateControlStates();
+    blr.W15yQC.FormControlsDialog.fnUpdateStatus('Sorted Form Controls on:'+blr.W15yQC.FormControlsDialog.sortColumns2.toString());
+  },
+
+
   showInFirebug: function () {
-    var treebox, aList, selectedRow;
+    var treebox, aList, selectedRow, selectedIndex, order;
     if (blr.W15yQC.FormControlsDialog.FirebugO != null) {
       try {
         if (blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length && blr.W15yQC.FormControlsDialog.aFormControlsList.length > 0) {
           if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
             treebox = blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
             aList = blr.W15yQC.FormControlsDialog.aLastList;
+            if (aList===blr.W15yQC.FormControlsDialog.aFormsList) {
+                order=blr.W15yQC.FormControlsDialog.aDisplayOrder1;
+            } else {
+                order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
+            }
           } else {
             treebox = document.getElementById('treebox2');
             aList = blr.W15yQC.FormControlsDialog.aFormControlsList;
+            order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
           }
           selectedRow = treebox.currentIndex;
           if (selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
           }
+          selectedIndex=order[selectedRow];
+
           if (blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
           }
-          aList[selectedRow].node.ownerDocument.defaultView.focus();
+          aList[selectedIndex].node.ownerDocument.defaultView.focus();
           void
-
           function (arg) {
             blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function () {
               blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
             });
-          }(aList[selectedRow].node);
+          }(aList[selectedIndex].node);
         }
       } catch (ex) {}
     }
   },
 
   moveToSelectedElement: function () {
-    var treebox, aList, selectedRow;
+    var treebox, aList, selectedRow, selectedIndex, order;
     if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
       treebox = blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
       aList = blr.W15yQC.FormControlsDialog.aLastList;
+      if (aList===blr.W15yQC.FormControlsDialog.aFormsList) {
+        order=blr.W15yQC.FormControlsDialog.aDisplayOrder1;
+      } else {
+        order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
+      }
     } else {
       treebox = document.getElementById('treebox2');
       aList = blr.W15yQC.FormControlsDialog.aFormControlsList;
+      order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
     }
     selectedRow = treebox.currentIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
-      blr.W15yQC.fnMoveToElement(aList[selectedRow].node);
+      selectedIndex=order[selectedRow];
+      blr.W15yQC.fnMoveToElement(aList[selectedIndex].node);
     }
   },
 
   moveFocusToSelectedElement: function () {
-    var treebox, aList, selectedRow;
+    var treebox, aList, selectedRow, selectedIndex, order;
     if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
       treebox = blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
       aList = blr.W15yQC.FormControlsDialog.aLastList;
+      if (aList===blr.W15yQC.FormControlsDialog.aFormsList) {
+        order=blr.W15yQC.FormControlsDialog.aDisplayOrder1;
+      } else {
+        order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
+      }
     } else {
       treebox = document.getElementById('treebox2');
       aList = blr.W15yQC.FormControlsDialog.aFormControlsList;
+      order=blr.W15yQC.FormControlsDialog.aDisplayOrder2;
     }
     selectedRow = treebox.currentIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=order[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
-      blr.W15yQC.fnMoveFocusToElement(aList[selectedRow].node);
+      blr.W15yQC.fnMoveFocusToElement(aList[selectedIndex].node);
     }
   },
 

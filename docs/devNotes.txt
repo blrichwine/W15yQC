@@ -155,6 +155,7 @@
         -- sort columns are all handled
         -- ordinal numbers make sense
         -- move to element before highlighting the element
+        -- Add BaseURI, ID to forms dialog
 
 
   Restore Defaults option in Options Dialog
