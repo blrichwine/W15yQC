@@ -155,8 +155,10 @@
         -- sort columns are all handled
         -- ordinal numbers make sense
         -- move to element before highlighting the element
-        -- Add BaseURI, ID to forms dialog
+        -- Add BaseURI, ID to forms dialog, tables dialog
         -- Handle base URL in populateTree methods by using the stored URL in the document instead of calling node.doc.URL [safer]
+        -- null out all of the dialog members upon closing and call cleanUp routine in overlay.js
+        -- make sure appropriate cols have fixed width, double spaces in the label, and disable autocolwidth routine on sorting
 
 
   Restore Defaults option in Options Dialog

@@ -45,7 +45,6 @@ blr.W15yQC.LinksDialog = {
   aLinksList: null,
   aDisplayOrder: [],
   sortColumns: [' Link Number (asc)'],
-  nodeToInspect: null,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -81,14 +80,11 @@ blr.W15yQC.LinksDialog = {
   },
 
   fnPopulateTree: function (aDocumentsList, aLinksList, bDontHideCols) {
-    var tbc, bHasRole, bHasStateDescription, bHasTarget, i, ak, ch, treecell, treeitem, treerow, textbox, order;
+    var tbc, bHasRole=false, bHasStateDescription=false, bHasTarget=false, i, ak, ch, treecell, treeitem, treerow, textbox, order;
     blr.W15yQC.LinksDialog.updateDisplayOrderArray();
     order=blr.W15yQC.LinksDialog.aDisplayOrder;
     if (aDocumentsList != null && aLinksList != null && aLinksList.length && aLinksList.length > 0) {
       tbc = document.getElementById('treeboxChildren');
-      bHasRole = false;
-      bHasStateDescription = false;
-      bHasTarget = false;
       if (tbc != null) {
         while (tbc.firstChild) {
           tbc.removeChild(tbc.firstChild);
