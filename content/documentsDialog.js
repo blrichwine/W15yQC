@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2011.12.10 - Created! 
+ * 2011.12.10 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -41,19 +41,59 @@ if (!blr) {
  */
 blr.W15yQC.DocumentsDialog = {
   aDocumentsList: null,
-  fnPopulateTree: function (aDocumentsList) {
-    var tbc, i, treecell, treeitem, treerow, ak, textbox;
+  aDisplayOrder: [],
+  sortColumns: [' Document Number (asc)'],
+  fnUpdateStatus: function(sLabel) {
+    document.getElementById('progressMeterLabel').value=sLabel;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdatePercentage: function(p) {
+    document.getElementById('progressMeter').value=p;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdateProgress: function(sLabel, fPercentage) {
+    if(sLabel != null) {
+      blr.W15yQC.DocumentsDialog.fnUpdateStatus(sLabel);
+    }
+    if(fPercentage != null) {
+      blr.W15yQC.DocumentsDialog.fnUpdatePercentage(fPercentage);
+    }
+    blr.W15yQC.DocumentsDialog.updateControlStates();
+  },
+
+  updateDisplayOrderArray: function() {
+    if(blr.W15yQC.DocumentsDialog.aDocumentsList != null && blr.W15yQC.DocumentsDialog.aDocumentsList.length>0) {
+      if(blr.W15yQC.DocumentsDialog.aDisplayOrder==null) {
+        blr.W15yQC.DocumentsDialog.aDisplayOrder=[];
+      }
+      while(blr.W15yQC.DocumentsDialog.aDisplayOrder.length<blr.W15yQC.DocumentsDialog.aDocumentsList.length) {
+        blr.W15yQC.DocumentsDialog.aDisplayOrder.push(blr.W15yQC.DocumentsDialog.aDisplayOrder.length);
+      }
+    } else {
+      blr.W15yQC.DocumentsDialog.aDisplayOrder=[];
+    }
+  },
+
+  fnPopulateTree: function (aDocumentsList, bDontHideCols) {
+    var tbc, i, treecell, treeitem, treerow, ak, textbox, order;
+    blr.W15yQC.DocumentsDialog.updateDisplayOrderArray();
+    order=blr.W15yQC.DocumentsDialog.aDisplayOrder;
     if (aDocumentsList != null && aDocumentsList.length && aDocumentsList.length > 0) {
       tbc = document.getElementById('treeboxChildren');
       if (tbc != null) {
+        while (tbc.firstChild) {
+          tbc.removeChild(tbc.firstChild);
+        }
         for (i = 0; i < aDocumentsList.length; i++) {
           treeitem = document.createElement('treeitem');
           treerow = document.createElement('treerow');
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
+          treecell.setAttribute('label', order[i] + 1);
           treerow.appendChild(treecell);
 
-          ak = aDocumentsList[i];
+          ak = aDocumentsList[order[i]];
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.title);
@@ -111,6 +151,10 @@ blr.W15yQC.DocumentsDialog = {
     blr.W15yQC.DocumentsDialog.fnPopulateTree(blr.W15yQC.DocumentsDialog.aDocumentsList);
   },
 
+  updateControlStates: function() {
+
+  },
+
   cleanup: function () {
     if (blr.W15yQC.DocumentsDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
@@ -121,7 +165,7 @@ blr.W15yQC.DocumentsDialog = {
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow;
+      selectedRow, selectedIndex;
 
     if (blr.W15yQC.DocumentsDialog.aDocumentsList != null && blr.W15yQC.DocumentsDialog.aDocumentsList.length > 0) {
       if (bHighlightElement === null) bHighlightElement = true;
@@ -131,26 +175,142 @@ blr.W15yQC.DocumentsDialog = {
         selectedRow = 0;
         bHighlightElement = false;
       }
+      selectedIndex=blr.W15yQC.DocumentsDialog.aDisplayOrder[selectedRow];
 
-
-      if (blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].notes != null) {
+      if (blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].notes != null) {
         textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow]);
       } else {
         textbox.value = '';
       }
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Title: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].title, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Compatibility Mode: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].compatMode, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Document Type: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].docType, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].URL, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Title: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].title, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Compatibility Mode: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].compatMode, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Document Type: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].docType, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].URL, "\n\n");
       blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
       if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
         try {
-          blr.W15yQC.fnMoveToElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.body);
+          blr.W15yQC.fnMoveToElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.body);
         } catch (ex) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.body, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc);
+      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.body, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc);
     }
   },
+
+  addSortColumn: function(index, ascending) {
+    while(blr.W15yQC.DocumentsDialog.sortColumns.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.DocumentsDialog.sortColumns.splice(blr.W15yQC.DocumentsDialog.sortColumns.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.DocumentsDialog.sortColumns.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.DocumentsDialog.sortColumns.splice(blr.W15yQC.DocumentsDialog.sortColumns.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.DocumentsDialog.sortColumns.length>3) { blr.W15yQC.DocumentsDialog.sortColumns.pop(); }
+    blr.W15yQC.DocumentsDialog.sortColumns.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+
+  sortTreeAsNumberOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.DocumentsDialog.aDocumentsList, order=blr.W15yQC.DocumentsDialog.aDisplayOrder;
+    blr.W15yQC.DocumentsDialog.addSortColumn(index, ascending);
+    blr.W15yQC.DocumentsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.DocumentsDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending==false) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTreeAsStringOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.DocumentsDialog.aDocumentsList, order=blr.W15yQC.DocumentsDialog.aDisplayOrder;
+    blr.W15yQC.DocumentsDialog.addSortColumn(index, ascending);
+    blr.W15yQC.DocumentsDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.DocumentsDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTree: function(col) {
+    var al, ad, sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
+    blr.W15yQC.DocumentsDialog.updateDisplayOrderArray();
+    switch(colID) {
+      case 'col-header-sourceOrder':
+        blr.W15yQC.DocumentsDialog.aDisplayOrder=[];
+        blr.W15yQC.DocumentsDialog.sortColumns=[' Link Number (asc)'];
+        blr.W15yQC.DocumentsDialog.updateDisplayOrderArray();
+        break;
+      case 'col-header-title':
+        blr.W15yQC.DocumentsDialog.sortTreeAsStringOn('title',sortDir);
+        break;
+      case 'col-header-lang':
+        blr.W15yQC.DocumentsDialog.sortTreeAsStringOn('language',sortDir);
+        break;
+      case 'col-header-dir':
+        blr.W15yQC.DocumentsDialog.sortTreeAsStringOn('dir',sortDir);
+        break;
+      case 'col-header-url':
+        blr.W15yQC.DocumentsDialog.sortTreeAsStringOn('URL',sortDir);
+        break;
+      case 'col-header-cmode':
+        blr.W15yQC.DocumentsDialog.sortTreeAsStringOn('compatMode',sortDir);
+        break;
+      case 'col-header-doctype':
+        blr.W15yQC.DocumentsDialog.sortTreeAsStringOn('docType',sortDir);
+        break;
+      default:
+        alert('unhandled sort column');
+    }
+    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    blr.W15yQC.DocumentsDialog.fnPopulateTree(blr.W15yQC.DocumentsDialog.aDocumentsList, blr.W15yQC.DocumentsDialog.aDocumentsList, true);
+    blr.W15yQC.DocumentsDialog.updateControlStates();
+    blr.W15yQC.DocumentsDialog.fnUpdateStatus('Sorted on:'+blr.W15yQC.DocumentsDialog.sortColumns.toString());
+  },
+
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(blr.W15yQC.DocumentsDialog.FirebugO, 'documents');
@@ -159,10 +319,12 @@ blr.W15yQC.DocumentsDialog = {
   validateDocumentContents: function () {
 
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex,
+      selectedRow = treebox.currentIndex, selectedIndex,
       outerHeight, outerWidth, outputWindow, reportDoc, form, de, ie, he;
 
     if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.DocumentsDialog.aDisplayOrder[selectedRow];
+
       outputWindow = window.open('');
       reportDoc = outputWindow.document;
       form = reportDoc.createElement('form');
@@ -170,7 +332,7 @@ blr.W15yQC.DocumentsDialog = {
       form.setAttribute('action', 'http://validator.w3.org/check');
       form.setAttribute('enctype', 'multipart/form-data');
 
-      de = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.documentElement;
+      de = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.documentElement;
       ie = reportDoc.createElement('input');
       ie.setAttribute('id', 'direct_prefill_no');
       ie.setAttribute('name', 'prefill');
@@ -190,10 +352,11 @@ blr.W15yQC.DocumentsDialog = {
 
   validateDocumentURL: function () {
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex,
+      selectedRow = treebox.currentIndex, selectedIndex,
       URL;
     if (selectedRow != null && treebox.currentIndex >= 0) {
-      URL = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow].doc.URL;
+      selectedIndex=blr.W15yQC.DocumentsDialog.aDisplayOrder[selectedRow];
+      URL = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.URL;
       if (URL != null) {
         window.open('http://validator.w3.org/check?uri=' + encodeURI(URL) + '&charset=%28detect+automatically%29&doctype=Inline&group=0');
       }

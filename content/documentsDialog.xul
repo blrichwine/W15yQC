@@ -25,46 +25,46 @@
 	       style="text-align:center"
 	       fixed="true"
 	       sortDirection=""
-	       onclick=""/>
+	       onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
 	    <xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 	    <xul:treecol  ordinal="3" id="col-header-title"
 				 crop="none"
 	       label="Title"
 	       flex="3"
 	       sortDirection=""
-	       onclick=""/>
+	       onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
 	    <xul:splitter  ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 			<xul:treecol ordinal="5" id="col-header-lang"
 				 crop="none"
 				 label="Language"
-				 onclick=""/>
+				 onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
 			<xul:splitter ordinal="6" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 	    <xul:treecol ordinal="7" id="col-header-dir"
 				 crop="none"
 	       label="Direction"
 	       fixed="true"
 	       sortDirection=""
-	       onclick=""/>
+	       onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
 			<xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 			<xul:treecol ordinal="9" id="col-header-url"
 				 crop="none"
 				 label="URL"
 				 sortDirection=""
 	       flex="3"
-				 onclick=""/>
+				 onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
 			<xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 			<xul:treecol ordinal="11" id="col-header-cmode"
 				 crop="none"
 				 label="Compatability Mode"
 				 sortDirection=""
-				 onclick=""/>
+				 onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
 			<xul:splitter ordinal="12" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 			<xul:treecol ordinal="13" id="col-header-doctype"
 				 crop="none"
 				 label="Doctype"
 				 sortDirection=""
 				 flex="3"
-				 onclick=""/>
+				 onclick="blr.W15yQC.DocumentsDialog.sortTree(this)" />
          </xul:treecols>
 	 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
@@ -99,4 +99,7 @@
             oncommand=""/>
       </xul:hbox>
    </xul:vbox>
+	 <xul:hbox style="border-top:thin solid black">
+	 	 <xul:label flex="5" id="progressMeterLabel" control="progressMeter" value=""/><xul:progressmeter flex="12" id="progressMeter" mode="determined" value="0"/>
+	 </xul:hbox>
 </xul:dialog>

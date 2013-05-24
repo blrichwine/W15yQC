@@ -150,6 +150,11 @@
     -- Make sure all move to calls come before the highlight calls
     -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script
     -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This!
+    -- Audit dialogs
+        -- selectedIndex handling
+        -- sort columns are all handled
+        -- ordinal numbers make sense
+        -- move to element before highlighting the element
 
 
   Restore Defaults option in Options Dialog
