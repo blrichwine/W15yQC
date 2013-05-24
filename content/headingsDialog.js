@@ -215,7 +215,7 @@ blr.W15yQC.HeadingsDialog = {
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, box;
+      selectedRow, selectedIndex, box;
 
     if (bHighlightElement == null) bHighlightElement = true;
 
@@ -224,48 +224,51 @@ blr.W15yQC.HeadingsDialog = {
       selectedRow = 0;
       bHighlightElement = false;
     }
+    selectedIndex=blr.W15yQC.HeadingsDialog.aDisplayOrder[selectedRow];
 
-    if (blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].notes != null) {
+    if (blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].notes != null) {
       textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow]);
     } else {
       textbox.value = '';
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].nodeDescription, "\n\n");
 
-    if (blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node != null) {
-      box = blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node.getBoundingClientRect();
+    if (blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node != null) {
+      box = blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node.getBoundingClientRect();
       if (box != null) {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n\n");
       }
     }
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].xpath, "\n");
 
     blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
       try {
-        blr.W15yQC.fnMoveToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node);
+        blr.W15yQC.fnMoveToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node);
       } catch (ex) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].doc);
   },
 
   moveToSelectedElement: function () {
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex;
+      selectedRow = treebox.currentIndex, selectedIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.HeadingsDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
-      blr.W15yQC.highlightElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].doc);
-      blr.W15yQC.fnMoveToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node);
+      blr.W15yQC.fnMoveToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node);
+      blr.W15yQC.highlightElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].doc);
     }
   },
 
   moveFocusToSelectedElement: function () {
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex;
+      selectedRow = treebox.currentIndex, selectedIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.HeadingsDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
-      blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node);
+      blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node);
     }
   },
 
@@ -410,18 +413,19 @@ blr.W15yQC.HeadingsDialog = {
           if (selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
           }
+          selectedIndex=blr.W15yQC.HeadingsDialog.aDisplayOrder[selectedRow];
           //blr.W15yQC.HeadingsDialog.nodeToInspect = blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node;
           //blr.W15yQC.HeadingsDialog.FirebugO.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(blr.W15yQC.HeadingsDialog.nodeToInspect);});
           //oncommand=void function(arg){Firebug.GlobalUI.startFirebug(function(){Firebug.Inspector.inspectFromContextMenu(arg);})}(document.popupNode)
           //blr.W15yQC.HeadingsDialog.FirebugO.
           blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
-          blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node.ownerDocument.defaultView.focus();
+          blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node.ownerDocument.defaultView.focus();
           void
           function (arg) {
             blr.W15yQC.HeadingsDialog.FirebugO.GlobalUI.startFirebug(function () {
               blr.W15yQC.HeadingsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
             });
-          }(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node);
+          }(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node);
           //blr.W15yQC.showInFirebug(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedRow].node,blr.W15yQC.HeadingsDialog.firebugO);
         }
       } catch (ex) {}
