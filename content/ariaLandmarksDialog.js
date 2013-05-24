@@ -43,33 +43,77 @@ blr.W15yQC.LandmarksDialog = {
   FirebugO: null,
   aDocumentsList: null,
   aARIALandmarksList: null,
-  fnPopulateTree: function (aDocumentsList, aARIALandmarksList) {
-    var tbc, ak, ch, i, treecell, treeitem, treerow, textbox, bHasStateDescription;
+  aDisplayOrder: [],
+  sortColumns: [' Landmark Number (asc)'],
+
+  fnUpdateStatus: function(sLabel) {
+    document.getElementById('progressMeterLabel').value=sLabel;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdatePercentage: function(p) {
+    document.getElementById('progressMeter').value=p;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  fnUpdateProgress: function(sLabel, fPercentage) {
+    if(sLabel != null) {
+      blr.W15yQC.LandmarksDialog.fnUpdateStatus(sLabel);
+    }
+    if(fPercentage != null) {
+      blr.W15yQC.LandmarksDialog.fnUpdatePercentage(fPercentage);
+    }
+    blr.W15yQC.LandmarksDialog.updateControlStates();
+  },
+
+  updateDisplayOrderArray: function() {
+    if(blr.W15yQC.LandmarksDialog.aARIALandmarksList != null && blr.W15yQC.LandmarksDialog.aARIALandmarksList.length>0) {
+      if(blr.W15yQC.LandmarksDialog.aDisplayOrder==null) {
+        blr.W15yQC.LandmarksDialog.aDisplayOrder=[];
+      }
+      while(blr.W15yQC.LandmarksDialog.aDisplayOrder.length<blr.W15yQC.LandmarksDialog.aARIALandmarksList.length) {
+        blr.W15yQC.LandmarksDialog.aDisplayOrder.push(blr.W15yQC.LandmarksDialog.aDisplayOrder.length);
+      }
+    } else {
+      blr.W15yQC.LandmarksDialog.aDisplayOrder=[];
+    }
+  },
+
+  fnPopulateTree: function (aDocumentsList, aARIALandmarksList, bDontHideCols) {
+    var tbc, ak, ch, i, treecell, treeitem, treerow, textbox, bHasStateDescription, order;
+    blr.W15yQC.LandmarksDialog.updateDisplayOrderArray();
+    order=blr.W15yQC.LandmarksDialog.aDisplayOrder;
+
     if (aDocumentsList != null && aARIALandmarksList != null && aARIALandmarksList.length && aARIALandmarksList.length > 0) {
       tbc = document.getElementById('treeboxChildren');
       if (tbc != null) {
-        bHasStateDescription = false;
-        for (i = 0; i < aARIALandmarksList.length; i++) {
-          ak = aARIALandmarksList[i];
-          if (ak.stateDescription) bHasStateDescription = true;
+        while (tbc.firstChild) {
+          tbc.removeChild(tbc.firstChild);
         }
-        if (!bHasStateDescription) {
-          ch = document.getElementById('col-header-state');
-          ch.setAttribute('hidden', 'true');
-        }
-        if (aDocumentsList.length <= 1) {
-          ch = document.getElementById('col-header-documentNumber');
-          ch.setAttribute('hidden', 'true');
+        if (bDontHideCols!=true) {
+            bHasStateDescription = false;
+            for (i = 0; i < aARIALandmarksList.length; i++) {
+              ak = aARIALandmarksList[i];
+              if (ak.stateDescription) bHasStateDescription = true;
+            }
+            if (!bHasStateDescription) {
+              ch = document.getElementById('col-header-state');
+              ch.setAttribute('hidden', 'true');
+            }
+            if (aDocumentsList.length <= 1) {
+              ch = document.getElementById('col-header-documentNumber');
+              ch.setAttribute('hidden', 'true');
+            }
         }
 
         for (i = 0; i < aARIALandmarksList.length; i++) {
           treeitem = document.createElement('treeitem');
           treerow = document.createElement('treerow');
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', i + 1);
+          treecell.setAttribute('label', order[i] + 1);
           treerow.appendChild(treecell);
 
-          ak = aARIALandmarksList[i];
+          ak = aARIALandmarksList[order[i]];
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.ownerDocumentNumber);
@@ -144,10 +188,14 @@ blr.W15yQC.LandmarksDialog = {
     }
   },
 
+  updateControlStates: function() {
+
+  },
+
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, box;
+      selectedRow, selectedIndex, box;
 
     if (bHighlightElement === null) bHighlightElement = true;
 
@@ -156,18 +204,19 @@ blr.W15yQC.LandmarksDialog = {
       selectedRow = 0;
       bHighlightElement = false;
     }
+    selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
 
-    if (blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].notes != null) {
+    if (blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].notes != null) {
       textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow]);
     } else {
       textbox.value = '';
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].nodeDescription, "\n\n");
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].xpath, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].xpath, "\n\n");
 
-    if (blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node != null) {
-      box = blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node.getBoundingClientRect();
+    if (blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node != null) {
+      box = blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node.getBoundingClientRect();
       if (box != null) {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n\n");
       }
@@ -176,30 +225,32 @@ blr.W15yQC.LandmarksDialog = {
     blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
       try {
-        blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+        blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
       } catch (err) {}
     }
     if (bHighlightElement != false) {
-      blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].doc);
     }
   },
 
   moveToSelectedElement: function () {
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex;
+      selectedRow = treebox.currentIndex, selectedIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-      blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].doc);
-      blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+      blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
+      blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].doc);
     }
   },
 
   moveFocusToSelectedElement: function () {
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex;
+      selectedRow = treebox.currentIndex, selectedIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-      blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+      blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
     }
   },
 
@@ -207,6 +258,133 @@ blr.W15yQC.LandmarksDialog = {
     blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
     blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
   },
+
+
+  addSortColumn: function(index, ascending) {
+    while(blr.W15yQC.LandmarksDialog.sortColumns.indexOf(' '+index+' (dsc)')>=0) {
+      blr.W15yQC.LandmarksDialog.sortColumns.splice(blr.W15yQC.LandmarksDialog.sortColumns.indexOf(' '+index+' (dsc)'),1);
+    }
+    while(blr.W15yQC.LandmarksDialog.sortColumns.indexOf(' '+index+' (asc)')>=0) {
+      blr.W15yQC.LandmarksDialog.sortColumns.splice(blr.W15yQC.LandmarksDialog.sortColumns.indexOf(' '+index+' (asc)'),1);
+    }
+    while(blr.W15yQC.LandmarksDialog.sortColumns.length>3) { blr.W15yQC.LandmarksDialog.sortColumns.pop(); }
+    blr.W15yQC.LandmarksDialog.sortColumns.unshift(' '+index+(ascending?' (dsc)':' (asc)'));
+  },
+
+  sortTreeAsNumberOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.LandmarksDialog.aARIALandmarksList, order=blr.W15yQC.LandmarksDialog.aDisplayOrder;
+    blr.W15yQC.LandmarksDialog.addSortColumn(index, ascending);
+    blr.W15yQC.LandmarksDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.LandmarksDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending==false) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTreeAsStringOn: function(index, ascending) {
+    var i,j,temp,list=blr.W15yQC.LandmarksDialog.aARIALandmarksList, order=blr.W15yQC.LandmarksDialog.aDisplayOrder;
+    blr.W15yQC.LandmarksDialog.addSortColumn(index, ascending);
+    blr.W15yQC.LandmarksDialog.fnUpdateStatus('Sorting on:'+blr.W15yQC.LandmarksDialog.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
+    if(ascending!=true) {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    } else {
+      for(i=0;i<list.length;i++) {
+        for(j=i+1;j<list.length;j++) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
+            temp=order[i];
+            order[i]=order[j];
+            order[j]=temp;
+          }
+        }
+      }
+    }
+  },
+
+  sortTree: function(col) {
+    var al, ad, sortDir=/^a/i.test(col.getAttribute('sortDirection')),
+      colID=col.getAttribute('id'), i, tree=document.getElementById('treebox');
+    for(i=0;i<tree.columns.length;i++) {
+      if(/^a/.test(tree.columns.getColumnAt(i).element.getAttribute('sortDirection'))) {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','a');
+      } else {
+        tree.columns.getColumnAt(i).element.setAttribute('sortDirection','d');
+      }
+    }
+    blr.W15yQC.LandmarksDialog.updateDisplayOrderArray();
+    switch(colID) {
+      case 'col-header-sourceOrder':
+        blr.W15yQC.LandmarksDialog.aDisplayOrder=[];
+        blr.W15yQC.LandmarksDialog.sortColumns=[' Link Number (asc)'];
+        blr.W15yQC.LandmarksDialog.updateDisplayOrderArray();
+        break;
+      case 'col-header-documentNumber':
+        blr.W15yQC.LandmarksDialog.sortTreeAsNumberOn('ownerDocumentNumber',sortDir);
+        break;
+      case 'col-header-baseURI':
+        al=blr.W15yQC.LandmarksDialog.aARIALandmarksList;
+        ad=blr.W15yQC.LandmarksDialog.aDocumentsList;
+        if (al != null && al != null && al.length>0 && !al[0].baseURI) {
+            for (i=0;i<al.length;i++) {
+                al[i].baseURI=ad[al[i].ownerDocumentNumber - 1].URL;
+            }
+        }
+        blr.W15yQC.LandmarksDialog.sortTreeAsStringOn('baseURI',sortDir);
+        break;
+      case 'col-header-elementDescription':
+        blr.W15yQC.LandmarksDialog.sortTreeAsStringOn('nodeDescription',sortDir);
+        break;
+      case 'col-header-effectiveLabel':
+        blr.W15yQC.LandmarksDialog.sortTreeAsStringOn('effectiveLabel',sortDir);
+        break;
+      case 'col-header-labelSource':
+        blr.W15yQC.LandmarksDialog.sortTreeAsStringOn('effectiveLabelSource',sortDir);
+        break;
+      case 'col-header-role':
+        blr.W15yQC.LandmarksDialog.sortTreeAsStringOn('role',sortDir);
+        break;
+      case 'col-header-state':
+        blr.W15yQC.LandmarksDialog.sortTreeAsStringOn('stateDescription',sortDir);
+        break;
+      default:
+        alert('unhandled sort column');
+    }
+    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    blr.W15yQC.LandmarksDialog.fnPopulateTree(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList, true);
+    blr.W15yQC.LandmarksDialog.updateControlStates();
+    blr.W15yQC.LandmarksDialog.fnUpdateStatus('Sorted on:'+blr.W15yQC.LandmarksDialog.sortColumns.toString());
+  },
+
 
   showInFirebug: function () {
     var treebox, selectedRow;
@@ -219,14 +397,15 @@ blr.W15yQC.LandmarksDialog = {
           if (selectedRow == null || treebox.currentIndex < 0) {
             selectedRow = 0;
           }
+          selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
           blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-          blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node.ownerDocument.defaultView.focus();
+          blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node.ownerDocument.defaultView.focus();
           void
           function (arg) {
             blr.W15yQC.LandmarksDialog.FirebugO.GlobalUI.startFirebug(function () {
               blr.W15yQC.LandmarksDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
             });
-          }(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
+          }(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
         }
       } catch (ex) {}
     }
