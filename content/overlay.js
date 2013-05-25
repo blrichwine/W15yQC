@@ -8807,22 +8807,8 @@ ys: 'whys'
      *
      */
 
-    fnUpdateProgress: function(progressWindow, v, detailText) {
-      var p,dt;
-      if(progressWindow != null && progressWindow.document) {
-        p=progressWindow.document.getElementById('percent');
-        dt=progressWindow.document.getElementById('detailText');
-        if(p!=null && dt!=null && p.value && dt.value) {
-          p=progressWindow.document.getElementById('percent').value=v;
-          dt=progressWindow.document.getElementById('detailText').value=detailText;
-        }
-        progressWindow.focus();
-      }
-      blr.W15yQC.fnDoEvents();
-    },
-
-    fnFullInspect: function (reportDoc, sourceDocument, sReports) {
-      var aDocumentsList, dialogID, dialogPath, progressWindow, oW15yQCReport;
+    fnFullInspect: function (reportDoc, sourceDocument, sReports, progressWindow) {
+      var aDocumentsList, dialogID, dialogPath, oW15yQCReport;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       blr.W15yQC.fnNonDOMIntegrityTests();
       blr.W15yQC.fnReadUserPrefs();
@@ -8837,7 +8823,6 @@ ys: 'whys'
         if(sReports==null) { sReports=''; }
         if(sourceDocument==null) { sourceDocument=window.top.content.document; }
 
-        progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
 
         oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument, progressWindow);
@@ -8847,26 +8832,26 @@ ys: 'whys'
           blr.W15yQC.fnDisplayWindowDetails(reportDoc, oW15yQCReport);
         }
 
-        blr.W15yQC.fnUpdateProgress(progressWindow, 1, 'Getting Documents');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Documents', 1); }
 
         if(sReports=='' || sReports.indexOf('documents')>=0) {
           blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
           blr.W15yQC.fnDisplayDocumentsResults(reportDoc, oW15yQCReport.aDocuments);
         }
 
-        blr.W15yQC.fnUpdateProgress(progressWindow, 5, 'Getting Frame Titles');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Frame Titles', 5); }
 
         if(sReports=='' || sReports.indexOf('frames')>=0) {
           blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
           blr.W15yQC.fnDisplayFrameTitleResults(reportDoc, oW15yQCReport.aFrames);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 10, 'Getting Headings');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Headings', 10); }
 
         if(sReports=='' || sReports.indexOf('headings')>=0) {
           blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, progressWindow);
           blr.W15yQC.fnDisplayHeadingsResults(reportDoc, oW15yQCReport.aHeadings);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 15, 'Getting ARIA Landmarks');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting ARIA Landmarks', 15); }
 
         if(sReports=='' || sReports.indexOf('landmarks')>=0) {
           blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
@@ -8874,36 +8859,36 @@ ys: 'whys'
         }
 
         if(sReports=='' || sReports.indexOf('aria')>=0 && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
-          blr.W15yQC.fnUpdateProgress(progressWindow, 18, 'Getting ARIA');
+          if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting ARIA', 18); }
           blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
           blr.W15yQC.fnDisplayARIAElementsResults(reportDoc, oW15yQCReport.aARIAElements);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 24, 'Getting Links');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Links', 24); }
 
         if(sReports=='' || sReports.indexOf('links')>=0) {
           blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
           blr.W15yQC.fnDisplayLinkResults(reportDoc, oW15yQCReport.aLinks);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 75, 'Getting Forms');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Forms', 75); }
 
         if(sReports=='' || sReports.indexOf('forms')>=0) {
           blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
           blr.W15yQC.fnDisplayFormResults(reportDoc, oW15yQCReport.aForms);
           blr.W15yQC.fnDisplayFormControlResults(reportDoc, oW15yQCReport.aFormControls);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 85, 'Getting Images');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Images', 85); }
 
         if(sReports=='' || sReports.indexOf('images')>=0) {
           blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
           blr.W15yQC.fnDisplayImagesResults(reportDoc, oW15yQCReport.aImages);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 90, 'Getting Access Keys');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Access Keys', 90); }
 
         if(sReports=='' || sReports.indexOf('accesskeys')>=0) {
           blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
           blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, oW15yQCReport.aAccessKeys);
         }
-        blr.W15yQC.fnUpdateProgress(progressWindow, 95, 'Getting Tables');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Tables', 95); }
 
         if(sReports=='' || sReports.indexOf('tables')>=0) {
           blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
@@ -8914,11 +8899,10 @@ ys: 'whys'
         blr.W15yQC.fnComputeScore(oW15yQCReport);
         blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport);
 
-        blr.W15yQC.fnUpdateProgress(progressWindow, 100, 'Cleaning up...');
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
 
         blr.W15yQC.fnDisplayFooter(reportDoc);
-        progressWindow.close();
-        progressWindow = null;
+
         reportDoc.defaultView.focus();
         return reportDoc;
       }

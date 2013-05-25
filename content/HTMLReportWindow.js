@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2012.12.10 - Created! 
+ * 2012.12.10 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -47,7 +47,7 @@ blr.W15yQC.HTMLReportWindow = {
   bQuick: false,
   rd: null,
   sourceDocument: null,
-  
+
   init: function (dialog) {
     var rw, if1;
     blr.W15yQC.fnReadUserPrefs();
@@ -59,11 +59,7 @@ blr.W15yQC.HTMLReportWindow = {
     }
     rw = document.getElementById("HTMLReportWindow");
     if (rw != null) {
-      if (blr.W15yQC.HTMLReportWindow.bQuick) {
-        rw.setAttribute('title', 'Quick Report - W15y Quick Check');
-      } else {
         rw.setAttribute('title', 'Full Report - W15y Quick Check');
-      }
     }
     if1 = document.getElementById("HTMLReportIFrame");
     if (if1 != null && if1.contentDocument) {
@@ -71,12 +67,9 @@ blr.W15yQC.HTMLReportWindow = {
     }
 
     blr.W15yQC.HTMLReportWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-    
-    if(blr.W15yQC.HTMLReportWindow.bQuick) {
-        blr.W15yQC.fnInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sReports, blr.W15yQC.HTMLReportWindow.bQuick);
-    } else {
-        blr.W15yQC.fnFullInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sourceDocument, blr.W15yQC.HTMLReportWindow.sReports);
-    }
+
+    blr.W15yQC.fnFullInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sourceDocument, blr.W15yQC.HTMLReportWindow.sReports, dialog);
+    dialog.fnUpdateProgress('Ready.',null);
   },
 
   windowOnKeyDown: function (win, evt) {
@@ -215,7 +208,7 @@ blr.W15yQC.HTMLReportWindow = {
         converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
         converter.init(foStream, "UTF-8", 0, 0);
         converter.writeString('<html>' + blr.W15yQC.HTMLReportWindow.rd.documentElement.innerHTML + '</html>');
-        converter.close(); // this closes foStream            
+        converter.close(); // this closes foStream
       }
     } else {
       if (blr.W15yQC.HTMLReportWindow.prompts.alert) blr.W15yQC.HTMLReportWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");

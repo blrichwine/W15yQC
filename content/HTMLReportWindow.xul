@@ -12,9 +12,37 @@
 			onkeydown="blr.W15yQC.HTMLReportWindow.windowOnKeyDown(this,event)"
 			onkeyup="blr.W15yQC.HTMLReportWindow.windowOnKeyUp(event)"
 			onresize="blr.W15yQC.HTMLReportWindow.forceMinSize(this)"
-      onload="blr.W15yQC.HTMLReportWindow.init(this)">
+			style="padding:0px"
+      onload="fnDelayedInit()">
    <xul:script>
 			var blr=this.arguments[0];
+
+			function fnUpdateStatus(sLabel) {
+				document.getElementById('progressMeterLabel').value=sLabel;
+				document.getElementById('progressMeter').setAttribute('hidden','true');
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnUpdatePercentage(fPercentage) {
+				document.getElementById('progressMeter').value=fPercentage;
+				document.getElementById('progressMeter').setAttribute('hidden','false');
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnUpdateProgress(sLabel, fPercentage) {
+				 document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : sLabel);
+				if(fPercentage != null) {
+				 document.getElementById('progressMeter').value=fPercentage;
+				 document.getElementById('progressMeter').setAttribute('hidden','false');
+				} else {
+					document.getElementById('progressMeter').setAttribute('hidden','true');
+				}
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnDelayedInit() {
+				 window.setTimeout(function(){blr.W15yQC.HTMLReportWindow.init(window);}, 0);
+			}
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/HTMLReportWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
@@ -35,4 +63,7 @@
       </xul:hbox>
 			<xul:iframe id="HTMLReportIFrame" src="about:blank" type="content" flex="1" style="overflow:auto"/>
    </xul:vbox>
+	 <xul:hbox style="border-top:thin solid black">
+	 	 <xul:label flex="7" id="progressMeterLabel" control="progressMeter" value=""/><xul:progressmeter hidden="false" flex="3" id="progressMeter" mode="determined" value="0"/>
+	 </xul:hbox>
 </xul:window>
