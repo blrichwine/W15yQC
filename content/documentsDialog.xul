@@ -43,7 +43,7 @@
 			}
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/documentsDialog.js"/>
-   <xul:vbox id="vb" align="stretch" flex="1" height="400" width="900">
+   <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"
       onselect="blr.W15yQC.DocumentsDialog.updateNotesField()">
          <xul:treecols>

@@ -143,7 +143,7 @@ blr.W15yQC.FormControlsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.doc.URL);
+          treecell.setAttribute('label', aDocumentsList[ak.ownerDocumentNumber - 1].URL);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
@@ -175,7 +175,7 @@ blr.W15yQC.FormControlsDialog = {
           treeitem.appendChild(treerow);
           tbc.appendChild(treeitem);
         }
-
+        if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox1')); }
       }
     } else {
       textbox = document.getElementById('note-text');
@@ -328,7 +328,7 @@ blr.W15yQC.FormControlsDialog = {
           treeitem.appendChild(treerow);
           tbc.appendChild(treeitem);
         }
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox2'));
+        if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox2')); }
         if (aFormControlsList.length == 1) {
           blr.W15yQC.FormControlsDialog.updateNotesField2([aDocumentsList, aFormControlsList], false);
         }
@@ -378,13 +378,17 @@ blr.W15yQC.FormControlsDialog = {
   cleanup: function () {
     if (blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
-      blr.W15yQC.FormControlsDialog.aDocumentsList = null;
-      blr.W15yQC.FormControlsDialog.aFormControlsList = null;
-      blr.W15yQC.FormControlsDialog.aFormsList = null;
-      blr.W15yQC.FormControlsDialog.FirebugO = null;
-      blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = null;
-      blr.W15yQC.FormControlsDialog.aLastList = null;
     }
+    blr.W15yQC.FormControlsDialog.aDocumentsList = null;
+    blr.W15yQC.FormControlsDialog.aFormControlsList = null;
+    blr.W15yQC.FormControlsDialog.aFormsList = null;
+    blr.W15yQC.FormControlsDialog.FirebugO = null;
+    blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = null;
+    blr.W15yQC.FormControlsDialog.aLastList = null;
+    blr.W15yQC.FormControlsDialog.aDisplayOrder1 = null;
+    blr.W15yQC.FormControlsDialog.sortColumns1 = null;
+    blr.W15yQC.FormControlsDialog.aDisplayOrder2 = null;
+    blr.W15yQC.FormControlsDialog.sortColumns2 = null;
   },
 
   updateNotesField1: function (bHighlightElement) {
@@ -435,7 +439,7 @@ blr.W15yQC.FormControlsDialog = {
       aLabels,
       aIDs,
       i,
-      selectedRow, box,
+      selectedRow, selectedIndex, box,
       treebox = document.getElementById('treebox2'),
       textbox = document.getElementById('note-text');
     blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = treebox;
@@ -467,6 +471,7 @@ blr.W15yQC.FormControlsDialog = {
         }
       }
       textbox.value = blr.W15yQC.fnJoin(textbox.value, aFC.xpath, "\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'BaseURI: ' + blr.W15yQC.FormControlsDialog.aDocumentsList[aFC.ownerDocumentNumber - 1].URL, "\n");
 
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
       if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {

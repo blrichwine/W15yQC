@@ -45,7 +45,6 @@ blr.W15yQC.FramesDialog = {
   aDisplayOrder: [],
   sortColumns: [' Frame Number (asc)'],
 
-
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
     blr.W15yQC.fnDoEvents();
@@ -126,7 +125,7 @@ blr.W15yQC.FramesDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.doc.URL);
+          treecell.setAttribute('label', aDocumentsList[ak.ownerDocumentNumber - 1].URL);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
@@ -154,7 +153,7 @@ blr.W15yQC.FramesDialog = {
           treeitem.appendChild(treerow);
           tbc.appendChild(treeitem);
         }
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+        if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
         if (aFramesList.length == 1) {
           blr.W15yQC.FramesDialog.updateNotesField([aDocumentsList, aFramesList], false);
         }
@@ -190,15 +189,17 @@ blr.W15yQC.FramesDialog = {
   cleanup: function () {
     if (blr.W15yQC.FramesDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FramesDialog.aDocumentsList);
-      blr.W15yQC.FramesDialog.aDocumentsList = null;
-      blr.W15yQC.FramesDialog.aFramesList = null;
     }
+    blr.W15yQC.FramesDialog.aFramesList = null;
+    blr.W15yQC.FramesDialog.aDocumentsList = null;
+    blr.W15yQC.FramesDialog.aDisplayOrder = null;
+    blr.W15yQC.FramesDialog.sortColumns = null;
   },
 
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, selectedIndex, box;
+      selectedRow, selectedIndex, ak, box;
 
     if (bHighlightElement === null) bHighlightElement = true;
 
@@ -209,30 +210,32 @@ blr.W15yQC.FramesDialog = {
     }
 
     selectedIndex=blr.W15yQC.FramesDialog.aDisplayOrder[selectedRow];
+    ak=blr.W15yQC.FramesDialog.aFramesList[selectedIndex];
 
-    if (blr.W15yQC.FramesDialog.aFramesList[selectedIndex].notes != null) {
-      textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.FramesDialog.aFramesList[selectedIndex]);
+    if (ak.notes != null) {
+      textbox.value = blr.W15yQC.fnMakeTextNotesList(ak);
     } else {
       textbox.value = '';
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.FramesDialog.aFramesList[selectedIndex].nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.nodeDescription, "\n\n");
 
-    if (blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node != null) {
-      box = blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node.getBoundingClientRect();
+    if (ak.node != null) {
+      box = ak.node.getBoundingClientRect();
       if (box != null) {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n\n");
       }
     }
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.FramesDialog.aFramesList[selectedIndex].xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'BaseURI: ' + blr.W15yQC.FramesDialog.aDocumentsList[ak.ownerDocumentNumber - 1].URL, "\n");
 
     blr.W15yQC.fnResetHighlights(blr.W15yQC.FramesDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
       try {
-        blr.W15yQC.fnMoveToElement(blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node);
+        blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node, blr.W15yQC.FramesDialog.aFramesList[selectedIndex].doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
   },
 
   addSortColumn: function(index, ascending) {

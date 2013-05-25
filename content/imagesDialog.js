@@ -137,7 +137,7 @@ blr.W15yQC.ImagesDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.doc.URL);
+          treecell.setAttribute('label', aDocumentsList[ak.ownerDocumentNumber - 1].URL);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
@@ -198,7 +198,7 @@ blr.W15yQC.ImagesDialog = {
           tbc.appendChild(treeitem);
         }
       }
-      blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+      if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
       if (aImagesList.length == 1) {
         blr.W15yQC.ImagesDialog.updateNotesField([aDocumentsList, aImagesList], false);
       }
@@ -235,15 +235,18 @@ blr.W15yQC.ImagesDialog = {
   cleanup: function () {
     if (blr.W15yQC.ImagesDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
-      blr.W15yQC.ImagesDialog.aDocumentsList = null;
-      blr.W15yQC.ImagesDialog.aImagesList = null;
     }
+    blr.W15yQC.ImagesDialog.oFirebug = null;
+    blr.W15yQC.ImagesDialog.aDocumentsList = null;
+    blr.W15yQC.ImagesDialog.aImagesList = null;
+    blr.W15yQC.ImagesDialog.aDisplayOrder = null;
+    blr.W15yQC.ImagesDialog.sortColumns = null;
   },
 
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, selectedIndex, box;
+      selectedRow, selectedIndex, ak, box;
     if (bHighlightElement === null) bHighlightElement = true;
 
     selectedRow = treebox.currentIndex;
@@ -252,30 +255,32 @@ blr.W15yQC.ImagesDialog = {
       bHighlightElement = false;
     }
     selectedIndex=blr.W15yQC.ImagesDialog.aDisplayOrder[selectedRow];
+    ak=blr.W15yQC.ImagesDialog.aImagesList[selectedIndex];
 
-    if (blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].notes != null) {
+    if (ak.notes != null) {
       textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.ImagesDialog.aImagesList[selectedRow]);
     } else {
       textbox.value = '';
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.nodeDescription, "\n\n");
 
-    if (blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node != null) {
-      box = blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node.getBoundingClientRect();
+    if (ak.node != null) {
+      box = ak.node.getBoundingClientRect();
       if (box != null) {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n");
       }
     }
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'BaseURI: ' + blr.W15yQC.ImagesDialog.aDocumentsList[ak.ownerDocumentNumber - 1].URL, "\n");
 
     blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
       try {
-        blr.W15yQC.fnMoveToElement(blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node);
+        blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node, blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
   },
 
   moveToSelectedElement: function () {

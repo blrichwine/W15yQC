@@ -214,14 +214,17 @@ blr.W15yQC.TablesDialog = {
   cleanup: function () {
     if (blr.W15yQC.TablesDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.TablesDialog.aDocumentsList);
-      blr.W15yQC.TablesDialog.aDocumentsList = null;
-      blr.W15yQC.TablesDialog.aTablesList = null;
     }
+    blr.W15yQC.TablesDialog.oFirebug = null;
+    blr.W15yQC.TablesDialog.aDocumentsList = null;
+    blr.W15yQC.TablesDialog.aTablesList = null;
+    blr.W15yQC.TablesDialog.aDisplayOrder = null;
+    blr.W15yQC.TablesDialog.sortColumns = null;
   },
 
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'), textbox = document.getElementById('note-text'),
-        selectedIndex, selectedRow;
+        selectedIndex, selectedRow, ak;
     if (bHighlightElement === null) bHighlightElement = true;
 
     selectedRow = treebox.currentIndex;
@@ -231,39 +234,39 @@ blr.W15yQC.TablesDialog = {
       bHighlightElement = false;
     }
     selectedIndex=blr.W15yQC.TablesDialog.aDisplayOrder[selectedRow];
+    ak=blr.W15yQC.TablesDialog.aTablesList[selectedIndex];
 
-
-    if (blr.W15yQC.TablesDialog.aTablesList[selectedIndex].notes != null) {
-      textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.TablesDialog.aTablesList[selectedIndex]);
+    if (ak.notes != null) {
+      textbox.value = blr.W15yQC.fnMakeTextNotesList(ak);
     } else {
       textbox.value = '';
     }
 
-    if (blr.W15yQC.TablesDialog.aTablesList[selectedIndex].summary != null) {
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Summary: ' + blr.W15yQC.TablesDialog.aTablesList[selectedIndex].summary, "\n\n");
+    if (ak.summary != null) {
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Summary: ' + ak.summary, "\n\n");
     }
 
-    if (blr.W15yQC.TablesDialog.aTablesList[selectedIndex].caption != null) {
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Caption: ' + blr.W15yQC.TablesDialog.aTablesList[selectedIndex].caption, "\n\n");
+    if (ak.caption != null) {
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Caption: ' + ak.caption, "\n\n");
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.TablesDialog.aTablesList[selectedIndex].nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.nodeDescription, "\n\n");
 
-    if (blr.W15yQC.TablesDialog.aTablesList[selectedIndex].node != null) {
-      var box = blr.W15yQC.TablesDialog.aTablesList[selectedIndex].node.getBoundingClientRect();
+    if (ak.node != null) {
+      var box = ak.node.getBoundingClientRect();
       if (box != null) {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n\n");
       }
     }
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.TablesDialog.aTablesList[selectedIndex].xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n");
 
     blr.W15yQC.fnResetHighlights(blr.W15yQC.TablesDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
       try {
-        blr.W15yQC.fnMoveToElement(blr.W15yQC.TablesDialog.aTablesList[selectedIndex].node);
+        blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.TablesDialog.aTablesList[selectedIndex].node, blr.W15yQC.TablesDialog.aTablesList[selectedIndex].doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
   },
 
   highlightTables: function () {

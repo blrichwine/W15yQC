@@ -43,7 +43,7 @@
 			}
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/formControlsDialog.js"/>
-   <xul:vbox id="vb" align="stretch" flex="1" height="494" width="900">
+   <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
       <xul:label control="treebox1" value="Forms:" style="margin: 5px 0 0 3px"/>
       <xul:tree enableColumnDrag="true" id="treebox1" flex="1" seltype="single"
       onfocus="blr.W15yQC.FormControlsDialog.updateNotesField1()"
@@ -252,7 +252,7 @@
 
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
-				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="7" flex="1" />
+				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="10" flex="1" />
 						</xul:vbox>
 						<xul:hbox id="box-button" align="right">
 				 <xul:button id="button-generateHTMLReport"

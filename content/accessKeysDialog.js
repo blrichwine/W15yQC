@@ -161,7 +161,7 @@ blr.W15yQC.AccessKeyDialog = {
           treeitem.appendChild(treerow);
           tbc.appendChild(treeitem);
         }
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+        if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
         if (aAccessKeysList.length == 1) {
           blr.W15yQC.AccessKeyDialog.updateNotesField([aDocumentsList, aAccessKeysList], false);
         }
@@ -201,10 +201,12 @@ blr.W15yQC.AccessKeyDialog = {
   cleanup: function () {
     if (blr.W15yQC.AccessKeyDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
-      blr.W15yQC.AccessKeyDialog.aDocumentsList = null;
-      blr.W15yQC.AccessKeyDialog.aAccessKeysList = null;
-      blr.W15yQC.AccessKeyDialog.FirebugO = null;
     }
+    blr.W15yQC.AccessKeyDialog.aDocumentsList = null;
+    blr.W15yQC.AccessKeyDialog.aAccessKeysList = null;
+    blr.W15yQC.AccessKeyDialog.FirebugO = null;
+    blr.W15yQC.AccessKeyDialog.aDisplayOrder = null;
+    blr.W15yQC.AccessKeyDialog.sortColumns = null;
   },
 
   updateNotesField: function (bHighlightElement) {

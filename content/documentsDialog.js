@@ -43,6 +43,7 @@ blr.W15yQC.DocumentsDialog = {
   aDocumentsList: null,
   aDisplayOrder: [],
   sortColumns: [' Document Number (asc)'],
+
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
     blr.W15yQC.fnDoEvents();
@@ -129,7 +130,7 @@ blr.W15yQC.DocumentsDialog = {
           tbc.appendChild(treeitem);
         }
 
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+        if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
         if (aDocumentsList.length == 1) {
           blr.W15yQC.DocumentsDialog.updateNotesField([aDocumentsList], false);
         }
@@ -159,14 +160,16 @@ blr.W15yQC.DocumentsDialog = {
   cleanup: function () {
     if (blr.W15yQC.DocumentsDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
-      blr.W15yQC.DocumentsDialog.aDocumentsList = null;
     }
+    blr.W15yQC.DocumentsDialog.aDocumentsList = null;
+    blr.W15yQC.DocumentsDialog.aDisplayOrder = null;
+    blr.W15yQC.DocumentsDialog.sortColumns = null;
   },
 
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, selectedIndex;
+      selectedRow, selectedIndex, ak;
 
     if (blr.W15yQC.DocumentsDialog.aDocumentsList != null && blr.W15yQC.DocumentsDialog.aDocumentsList.length > 0) {
       if (bHighlightElement === null) bHighlightElement = true;
@@ -177,23 +180,24 @@ blr.W15yQC.DocumentsDialog = {
         bHighlightElement = false;
       }
       selectedIndex=blr.W15yQC.DocumentsDialog.aDisplayOrder[selectedRow];
+      ak=blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex];
 
-      if (blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].notes != null) {
+      if (ak.notes != null) {
         textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedRow]);
       } else {
         textbox.value = '';
       }
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Title: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].title, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Compatibility Mode: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].compatMode, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Document Type: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].docType, "\n\n");
-      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: ' + blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].URL, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Title: ' + ak.title, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Compatibility Mode: ' + ak.compatMode, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Document Type: ' + ak.docType, "\n\n");
+      textbox.value = blr.W15yQC.fnJoin(textbox.value, 'URL: ' + ak.URL, "\n\n");
       blr.W15yQC.fnResetHighlights(blr.W15yQC.DocumentsDialog.aDocumentsList);
       if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
         try {
-          blr.W15yQC.fnMoveToElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.body);
+          blr.W15yQC.fnMoveToElement(ak.doc.body);
         } catch (ex) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.body, blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc);
+      if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.doc.body, ak.doc);
     }
   },
 

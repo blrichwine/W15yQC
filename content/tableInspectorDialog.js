@@ -23,13 +23,13 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2012.10.12 - Created! 
+ * 2012.10.12 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
 if (!blr) {
   var blr = {};
@@ -84,7 +84,7 @@ blr.W15yQC.TableInspectorDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.doc.URL);
+          treecell.setAttribute('label', aDocumentsList[ak.ownerDocumentNumber - 1].URL);
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');

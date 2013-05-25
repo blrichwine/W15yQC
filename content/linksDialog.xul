@@ -43,7 +43,7 @@
 			}
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/linksDialog.js"/>
-   <xul:vbox id="vb" align="stretch" flex="1" height="500" width="900">
+   <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"
       onselect="blr.W15yQC.LinksDialog.updateNotesField()">
 	 			<xul:treecols>
@@ -98,6 +98,7 @@
 				 <xul:treecol ordinal="13" id="col-header-linkText"
 						crop="none"
 						label="Text  "
+						hidden="true"
 						style="text-align:left"
 						sortDirection=""
 						flex="3"
@@ -141,8 +142,8 @@
 	 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
-	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
-	 <xul:textbox id="note-text" readonly="true" multiline="true" rows="8" flex="1" />
+				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
+				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="10" flex="1" />
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
 				 <xul:button id="button-generateHTMLReport"

@@ -85,7 +85,7 @@ blr.W15yQC.LinksDialog = {
   },
 
   fnPopulateTree: function (aDocumentsList, aLinksList, bDontHideCols) {
-    var tbc, bHasRole=false, bHasStateDescription=false, bHasTarget=false, i, ak, ch, treecell, treeitem, treerow, textbox, order;
+    var tbc, bHasRole=false, bHasStateDescription=false, bHasTarget=false, bHasTitle=false, i, ak, ch, treecell, treeitem, treerow, textbox, order;
     blr.W15yQC.LinksDialog.updateDisplayOrderArray();
     order=blr.W15yQC.LinksDialog.aDisplayOrder;
     if (aDocumentsList != null && aLinksList != null && aLinksList.length && aLinksList.length > 0) {
@@ -97,9 +97,14 @@ blr.W15yQC.LinksDialog = {
         if (bDontHideCols!=true) {
             for (i = 0; i < aLinksList.length; i++) {
               ak = aLinksList[i];
+              if (ak.title != null) bHasTitle = true;
               if (ak.role != null) bHasRole = true;
               if (ak.target != null) bHasTarget = true;
               if (ak.stateDescription != null) bHasStateDescription = true;
+            }
+            if (!bHasTitle) {
+              ch = document.getElementById('col-header-title');
+              ch.setAttribute('hidden', 'true');
             }
             if (!bHasRole) {
               ch = document.getElementById('col-header-role');
@@ -180,7 +185,7 @@ blr.W15yQC.LinksDialog = {
           treeitem.appendChild(treerow);
           tbc.appendChild(treeitem);
         }
-        blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+        if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
         if (aLinksList.length == 1) {
           blr.W15yQC.LinksDialog.updateNotesField([aDocumentsList, aLinksList], false);
         }
@@ -242,15 +247,20 @@ blr.W15yQC.LinksDialog = {
   cleanup: function () {
     if (blr.W15yQC.LinksDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
-      blr.W15yQC.LinksDialog.aDocumentsList = null;
-      blr.W15yQC.LinksDialog.aLinksList = null;
     }
+    blr.W15yQC.LinksDialog.aDocumentsList = null;
+    blr.W15yQC.LinksDialog.aLinksList = null;
+    blr.W15yQC.LinksDialog.FirebugO = null;
+    blr.W15yQC.LinksDialog.aDocumentsList = null;
+    blr.W15yQC.LinksDialog.aLinksList = null;
+    blr.W15yQC.LinksDialog.aDisplayOrder = null;
+    blr.W15yQC.LinksDialog.sortColumns = null;
   },
 
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, selectedIndex, box;
+      selectedRow, selectedIndex, box, ak;
 
     if (bHighlightElement === null) bHighlightElement = true;
 
@@ -260,31 +270,32 @@ blr.W15yQC.LinksDialog = {
       bHighlightElement = false;
     }
     selectedIndex=blr.W15yQC.LinksDialog.aDisplayOrder[selectedRow];
+    ak=blr.W15yQC.LinksDialog.aLinksList[selectedIndex];
 
-
-    if (blr.W15yQC.LinksDialog.aLinksList[selectedIndex].notes != null) {
-      textbox.value = blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.LinksDialog.aLinksList[selectedIndex]);
+    if (ak.notes != null) {
+      textbox.value = blr.W15yQC.fnMakeTextNotesList(ak);
     } else {
       textbox.value = '';
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, blr.W15yQC.LinksDialog.aLinksList[selectedIndex].nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.nodeDescription, "\n\n");
 
-    if (blr.W15yQC.LinksDialog.aLinksList[selectedIndex].node != null) {
-      box = blr.W15yQC.LinksDialog.aLinksList[selectedIndex].node.getBoundingClientRect();
+    if (ak.node != null) {
+      box = ak.node.getBoundingClientRect();
       if (box != null) {
         textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n");
       }
     }
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + blr.W15yQC.LinksDialog.aLinksList[selectedIndex].xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n\n");
+    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'BaseURI: ' + blr.W15yQC.LinksDialog.aDocumentsList[ak.ownerDocumentNumber - 1].URL, "\n");
 
     blr.W15yQC.fnResetHighlights(blr.W15yQC.LinksDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
       try {
-        blr.W15yQC.fnMoveToElement(blr.W15yQC.LinksDialog.aLinksList[selectedIndex].node);
+        blr.W15yQC.fnMoveToElement(ak.node);
       } catch (ex) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.LinksDialog.aLinksList[selectedIndex].node, blr.W15yQC.LinksDialog.aLinksList[treebox.currentIndex].doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
   },
 
   objectToString: function (o, bDig) {
