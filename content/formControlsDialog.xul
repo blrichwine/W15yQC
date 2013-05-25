@@ -211,28 +211,35 @@
 							 flex="3"
 							 onclick="blr.W15yQC.FormControlsDialog.sortTree2(this)" />
 						<xul:splitter ordinal="24" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="25" id="col-header-name2"
+						<xul:treecol ordinal="25" id="col-header-id2"
+							 crop="none"
+							 label="ID  "
+							 sortDirection=""
+							 hidden="true"
+							 onclick="blr.W15yQC.FormControlsDialog.sortTree2(this)" />
+						<xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="27" id="col-header-name2"
 							 crop="none"
 							 label="Name  "
 							 sortDirection=""
 							 flex="2"
 							 onclick="blr.W15yQC.FormControlsDialog.sortTree2(this)" />
-						<xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="27" id="col-header-value2"
+						<xul:splitter ordinal="28" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="29" id="col-header-value2"
 							 crop="none"
 							 label="Value  "
 							 sortDirection=""
 							 flex="2"
 							 onclick="blr.W15yQC.FormControlsDialog.sortTree2(this)" />
-						<xul:splitter ordinal="28" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="29" id="col-header-role2"
+						<xul:splitter ordinal="30" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="31" id="col-header-role2"
 							 crop="none"
 							 label="Role  "
 							 sortDirection=""
 							 flex="2"
 							 onclick="blr.W15yQC.FormControlsDialog.sortTree2(this)" />
-						<xul:splitter ordinal="30" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="31" id="col-header-state2"
+						<xul:splitter ordinal="32" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="33" id="col-header-state2"
 							 crop="none"
 							 label="State  "
 							 sortDirection=""

@@ -304,6 +304,10 @@ blr.W15yQC.FormControlsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.id);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.value);
           treerow.appendChild(treecell);
 
@@ -783,6 +787,9 @@ blr.W15yQC.FormControlsDialog = {
         break;
       case 'col-header-title2':
         blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('title',sortDir);
+        break;
+      case 'col-header-id2':
+        blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('id',sortDir);
         break;
       case 'col-header-name2':
         blr.W15yQC.FormControlsDialog.sortTreeAsStringOn2('name',sortDir);

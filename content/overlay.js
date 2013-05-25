@@ -5476,10 +5476,11 @@ ys: 'whys'
                     controlType=sTagName+controlType;
                     sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(node, doc);
                     sStateDescription = blr.W15yQC.fnGetNodeState(node);
+                    sID = node.getAttribute('id');
                     sName = node.getAttribute('name');
                     sValue = node.getAttribute('value');
 
-                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, controlType, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
+                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, controlType, sRole, sID, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
                     oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
                   }
 
@@ -7056,10 +7057,11 @@ ys: 'whys'
                 sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
                 sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
                 sStateDescription = blr.W15yQC.fnGetNodeState(c);
+                sID = c.getAttribute('id');
                 sName = c.getAttribute('name');
                 sValue = c.getAttribute('value');
 
-                aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, controlType, sRole, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
+                aFormControlsList.push(new blr.W15yQC.formControlElement(c, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, aFormControlsList.length, controlType, sRole, sID, sName, sTitle, sLegendText, sLabelTagText, sARIALabelText, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sStateDescription, sValue));
               }
               blr.W15yQC.fnGetFormControls(doc, c, aDocumentsList, aFormsList, aFormControlsList);
             }
@@ -9437,7 +9439,7 @@ ys: 'whys'
   };
 
 
-  blr.W15yQC.formControlElement = function (node, xpath, nodeDescription, parentFormNode, parentFormDescription, doc, orderNumber, controlType, role, name, title, legendText, labelText, ARIALabelText, ARIADescriptionText, effectiveLabel, effectiveLabelSource, stateDescription, value) {
+  blr.W15yQC.formControlElement = function (node, xpath, nodeDescription, parentFormNode, parentFormDescription, doc, orderNumber, controlType, role, id, name, title, legendText, labelText, ARIALabelText, ARIADescriptionText, effectiveLabel, effectiveLabelSource, stateDescription, value) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
@@ -9447,6 +9449,7 @@ ys: 'whys'
     this.orderNumber = orderNumber;
     this.controlType = controlType;
     this.role = role;
+    this.id = id;
     this.name = name;
     this.value = value;
     this.title = title;
@@ -9473,6 +9476,7 @@ ys: 'whys'
     role: null,
     state: null,
     listedByAT: true,
+    id: null,
     name: null,
     value: null,
     title: null,
