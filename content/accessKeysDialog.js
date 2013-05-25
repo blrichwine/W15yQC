@@ -406,7 +406,9 @@ blr.W15yQC.AccessKeyDialog = {
       selectedRow = treebox.currentIndex, selectedIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
       selectedIndex=blr.W15yQC.AccessKeyDialog.aDisplayOrder[selectedRow];
+      blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].node);
+      blr.W15yQC.highlightElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].node, blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].doc);
     }
   },
 

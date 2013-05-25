@@ -160,6 +160,7 @@
         -- Handle base URL in populateTree methods by using the stored URL in the document instead of calling node.doc.URL [safer]
         -- null out all of the dialog members upon closing and call cleanUp routine in overlay.js
         -- make sure appropriate cols have fixed width, double spaces in the label, and disable autocolwidth routine on sorting
+    -- clean up code that takes a node and requires a document to boot.
 
 
   Restore Defaults option in Options Dialog

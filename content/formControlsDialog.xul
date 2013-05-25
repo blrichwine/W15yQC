@@ -216,6 +216,7 @@
 							 label="ID  "
 							 sortDirection=""
 							 hidden="true"
+							 flex="2"
 							 onclick="blr.W15yQC.FormControlsDialog.sortTree2(this)" />
 						<xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="27" id="col-header-name2"
