@@ -198,12 +198,13 @@ blr.W15yQC.TablesDialog = {
       document.getElementById('button-showInFirebug').hidden = true;
     }
 
-    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.TablesDialog.aDocumentsList = oW15yQCReport.aDocuments;
 
     blr.W15yQC.TablesDialog.aTablesList = oW15yQCReport.aTables;
     blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
     blr.W15yQC.TablesDialog.fnPopulateTree(blr.W15yQC.TablesDialog.aDocumentsList, blr.W15yQC.TablesDialog.aTablesList);
+    dialog.fnUpdateProgress('Ready',null);
   },
 
   updateControlStates: function() {

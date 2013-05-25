@@ -10,9 +10,37 @@
       ondialogaccept="blr.W15yQC.AccessKeyDialog.cleanup()"
       ondialogcancel="blr.W15yQC.AccessKeyDialog.cleanup()"
       buttons=""
-      onload="blr.W15yQC.AccessKeyDialog.init(this)">
+			style="padding:0px"
+      onload="fnDelayedInit()">
    <xul:script>
 			var blr=this.arguments[0];
+
+			function fnUpdateStatus(sLabel) {
+				document.getElementById('progressMeterLabel').value=sLabel;
+				document.getElementById('progressMeter').setAttribute('hidden','true');
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnUpdatePercentage(fPercentage) {
+				document.getElementById('progressMeter').value=fPercentage;
+				document.getElementById('progressMeter').setAttribute('hidden','false');
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnUpdateProgress(sLabel, fPercentage) {
+				 document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : sLabel);
+				if(fPercentage != null) {
+				 document.getElementById('progressMeter').value=fPercentage;
+				 document.getElementById('progressMeter').setAttribute('hidden','false');
+				} else {
+					document.getElementById('progressMeter').setAttribute('hidden','true');
+				}
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnDelayedInit() {
+				 window.setTimeout(function(){blr.W15yQC.AccessKeyDialog.init(window);}, 0);
+			}
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/accessKeysDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="450" width="900">
@@ -29,7 +57,7 @@
 						<xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol  ordinal="3" id="col-header-documentNumber"
 						  crop="none"
-							 label="Doc. #"
+							 label="Doc. #  "
 							 style="text-align:center"
 							 fixed="true"
 							 sortDirection=""
@@ -37,13 +65,13 @@
 						<xul:splitter  ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="5" id="col-header-baseURI"
 						  crop="none"
-							 label="Base URI"
+							 label="Base URI  "
 							 hidden="true"
 							 onclick="blr.W15yQC.AccessKeyDialog.sortTree(this)" />
 						<xul:splitter ordinal="6" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="7" id="col-header-elementDescription"
 						  crop="none"
-							 label="Element Description"
+							 label="Element Description  "
 							 hidden="true"
 							 sortDirection=""
 							 flex="3"
@@ -51,7 +79,7 @@
 						<xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="9" id="col-header-accessKey"
 						  crop="none"
-							 label="Key"
+							 label="Key  "
 							 style="text-align:center"
 							 sortDirection=""
 							 fixed="true"
@@ -59,14 +87,14 @@
 						<xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="11" id="col-header-effectiveLabel"
 						  crop="none"
-							 label="Effective Label"
+							 label="Effective Label  "
 							 sortDirection=""
 							 flex="3"
 							 onclick="blr.W15yQC.AccessKeyDialog.sortTree(this)" />
 						<xul:splitter ordinal="12" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="13" id="col-header-effectiveLabelSource"
 						  crop="none"
-							 label="Label Source"
+							 label="Label Source  "
 							 hidden="true"
 							 sortDirection=""
 							 flex="3"
@@ -74,14 +102,14 @@
 						<xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="15" id="col-header-role"
 						  crop="none"
-							 label="Role"
+							 label="Role  "
 							 sortDirection=""
 							 flex="2"
 							 onclick="blr.W15yQC.AccessKeyDialog.sortTree(this)" />
 						<xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="17" id="col-header-state"
 						  crop="none"
-							 label="State"
+							 label="State  "
 							 sortDirection=""
 							 flex="2"
 							 onclick="blr.W15yQC.AccessKeyDialog.sortTree(this)" />
@@ -123,6 +151,6 @@
       </xul:hbox>
    </xul:vbox>
 	 <xul:hbox style="border-top:thin solid black">
-	 	 <xul:label flex="5" id="progressMeterLabel" control="progressMeter" value=""/><xul:progressmeter flex="12" id="progressMeter" mode="determined" value="0"/>
+	 	 <xul:label flex="7" id="progressMeterLabel" control="progressMeter" value=""/><xul:progressmeter flex="3" id="progressMeter" mode="determined" value="0"/>
 	 </xul:hbox>
 </xul:dialog>

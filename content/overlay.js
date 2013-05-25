@@ -1617,8 +1617,11 @@ ys: 'whys'
         }
         if (dialogID != null) {
           blr.W15yQC.bQuick = false; // Make sure this has been reset
+          blr.W15yQC.fnDoEvents();
           win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj);
+          blr.W15yQC.fnDoEvents();
           if(win!=null && win.focus) { win.focus(); }
+          blr.W15yQC.fnDoEvents();
         }
       }
     },
@@ -5127,8 +5130,8 @@ ys: 'whys'
      *   Handle role="presentation" and see if that should make the element "hidden" or not (how to keep presentation role elements out of lists?)
      *
      */
-    fnGetElements: function (doc, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
-      var docNumber, node, sID, idCount, frameDocument, style,
+    fnGetElements: function (doc, progressWindow, total, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
+      var docNumber, node, sID, idCount, frameDocument, style, i,
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
@@ -5137,6 +5140,23 @@ ys: 'whys'
 
       if (doc != null) {
         if (oW15yResults == null) {
+          blr.W15yQC.fnDoEvents(); // This one is magical. Leave it in place!
+          total=doc.getElementsByTagName('a').length+
+            doc.getElementsByTagName('h1').length+
+            doc.getElementsByTagName('h2').length+
+            doc.getElementsByTagName('h3').length+
+            doc.getElementsByTagName('h4').length+
+            doc.getElementsByTagName('h5').length+
+            doc.getElementsByTagName('h6').length;
+          for (i=0;i<doc.defaultView.frames.length;i++) {
+            total=total+doc.defaultView.frames[i].document.getElementsByTagName('a').length+
+              doc.defaultView.frames[i].document.getElementsByTagName('h1').length+
+              doc.defaultView.frames[i].document.getElementsByTagName('h2').length+
+              doc.defaultView.frames[i].document.getElementsByTagName('h3').length+
+              doc.defaultView.frames[i].document.getElementsByTagName('h4').length+
+              doc.defaultView.frames[i].document.getElementsByTagName('h5').length+
+              doc.defaultView.frames[i].document.getElementsByTagName('h6').length;
+          }
           blr.W15yQC.fnReadUserPrefs();
           oW15yResults = new blr.W15yQC.W15yResults();
           oW15yResults.iTextSize=0;
@@ -5225,7 +5245,7 @@ ys: 'whys'
                 if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
 
                 // get frame contents
-                blr.W15yQC.fnGetElements(frameDocument, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, '', nestingDepth);
+                blr.W15yQC.fnGetElements(frameDocument, progressWindow, total, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, '', nestingDepth);
               } else {
                 if (node.nodeType == 1 && blr.W15yQC.fnNodeIsHidden(node) == false) {
                   sARIALabel=null;
@@ -5403,6 +5423,7 @@ ys: 'whys'
                     text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
                     oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, sInheritedRoles, headingLevel, effectiveLabel, effectiveLabelSource, text));
                     oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
+                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
                   }
 
                   if (sTagName == 'form') {
@@ -5475,6 +5496,7 @@ ys: 'whys'
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
                     oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
+                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
                   } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
@@ -5488,6 +5510,7 @@ ys: 'whys'
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
                     oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
+                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
                   }
 
                   if (sTagName == 'table') {
@@ -5540,7 +5563,7 @@ ys: 'whys'
                 }
 
                 if (node.firstChild != null) { // keep looking through current document
-                  blr.W15yQC.fnGetElements(doc, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth);
+                  blr.W15yQC.fnGetElements(doc, progressWindow, total, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth);
                 }
                 if(inTable != null && node.tagName.toLowerCase() == 'table') {
                   inTable = null; // TODO: Does this need to be an array stack?
@@ -6830,8 +6853,9 @@ ys: 'whys'
         for (i = 0; i < aHeadingsList.length; i++) {
           if((i % 4) == 0) {
             if(progressWindow != null) {
-              progressWindow.document.getElementById('percent').value=Math.round(3*i/aHeadingsList.length)+12;
-              progressWindow.document.getElementById('detailText').value='Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%';
+              progressWindow.fnUpdateProgress('Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%', Math.round(3*i/aHeadingsList.length)+12)
+              //progressWindow.document.getElementById('percent').value=Math.round(3*i/aHeadingsList.length)+12;
+              //progressWindow.document.getElementById('detailText').value='Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%';
               progressWindow.focus();
               blr.W15yQC.fnDoEvents();
             }
@@ -7495,9 +7519,10 @@ ys: 'whys'
       for (i = 0; i < aLinksList.length; i++) {
         if(i>20 && (i % 5)==0){
           if(progressWindow != null) {
-            progressWindow.document.getElementById('percent').value=Math.round(51*i/aLinksList.length)+24;
-            progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%';
-            progressWindow.focus();
+            progressWindow.fnUpdateProgress('Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%', Math.round(51*i/aLinksList.length)+24)
+            //progressWindow.document.getElementById('percent').value=Math.round(51*i/aLinksList.length)+24;
+            //progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%';
+            //progressWindow.focus();
           }
           blr.W15yQC.fnDoEvents();
         }
@@ -8815,7 +8840,7 @@ ys: 'whys'
         progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
         blr.W15yQC.fnDoEvents();
 
-        oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
+        oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument, progressWindow);
         reportDoc = blr.W15yQC.fnInitDisplayWindow(sourceDocument.URL, reportDoc);
 
         if(sReports=='' || sReports.indexOf('title')>=0) {
@@ -8901,7 +8926,7 @@ ys: 'whys'
     },
 
     fnQuickInspect: function (reportDoc, sReports, bQuick) {
-      return null;
+      return null; // TODO: Get rid of this!!!
     },
 
     fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
@@ -8951,8 +8976,6 @@ ys: 'whys'
       Components.utils.forceShrinkingGC();
       return oW15yQCReport;
     },
-
-
 
     fnReadUserPrefs: function() {
       var sDomains, aEquivDomains, aDomainPair, focusInspectorOn;

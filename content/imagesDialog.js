@@ -223,12 +223,13 @@ blr.W15yQC.ImagesDialog = {
       document.getElementById('button-showInFirebug').hidden = true;
     }
 
-    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.ImagesDialog.aDocumentsList = oW15yQCReport.aDocuments;
 
     blr.W15yQC.ImagesDialog.aImagesList = oW15yQCReport.aImages;
     blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
     blr.W15yQC.ImagesDialog.fnPopulateTree(blr.W15yQC.ImagesDialog.aDocumentsList, blr.W15yQC.ImagesDialog.aImagesList);
+    dialog.fnUpdateProgress('Ready',null);
   },
 
   cleanup: function () {

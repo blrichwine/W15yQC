@@ -182,6 +182,8 @@ blr.W15yQC.HeadingsDialog = {
 
   init: function (dialog) {
     var oW15yQCReport;
+    dialog.focus();
+    dialog.fnUpdateProgress('Getting Headings...', 0);
 
     blr.W15yQC.fnReadUserPrefs();
     if (dialog != null && dialog.arguments && dialog.arguments.length > 1) {
@@ -191,13 +193,15 @@ blr.W15yQC.HeadingsDialog = {
       document.getElementById('button-showInFirebug').hidden = true;
     }
 
-    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.HeadingsDialog.aDocumentsList = oW15yQCReport.aDocuments;
     //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.HeadingsDialog.aDocumentsList);
 
     blr.W15yQC.HeadingsDialog.aHeadingsList = oW15yQCReport.aHeadings;
-    blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport);
+    blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, dialog);
     blr.W15yQC.HeadingsDialog.fnPopulateTree(blr.W15yQC.HeadingsDialog.aDocumentsList, blr.W15yQC.HeadingsDialog.aHeadingsList);
+
+    dialog.fnUpdateProgress('Ready', null);
   },
 
   updateControlStates: function() {

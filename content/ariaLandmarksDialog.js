@@ -172,7 +172,7 @@ blr.W15yQC.LandmarksDialog = {
       document.getElementById('button-showInFirebug').hidden = true;
     }
 
-    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.LandmarksDialog.aDocumentsList = oW15yQCReport.aDocuments;
     blr.W15yQC.LandmarksDialog.aARIALandmarksList = oW15yQCReport.aARIALandmarks;
     blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);

@@ -48,11 +48,13 @@ blr.W15yQC.LinksDialog = {
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
+    document.getElementById('progressMeter').setAttribute('hidden','true');
     blr.W15yQC.fnDoEvents();
   },
 
   fnUpdatePercentage: function(p) {
     document.getElementById('progressMeter').value=p;
+    document.getElementById('progressMeter').setAttribute('hidden','false');
     blr.W15yQC.fnDoEvents();
   },
 
@@ -62,6 +64,9 @@ blr.W15yQC.LinksDialog = {
     }
     if(fPercentage != null) {
       blr.W15yQC.LinksDialog.fnUpdatePercentage(fPercentage);
+      document.getElementById('progressMeter').setAttribute('hidden','false');
+    } else {
+      document.getElementById('progressMeter').setAttribute('hidden','true');
     }
     blr.W15yQC.LinksDialog.updateControlStates();
   },
@@ -186,25 +191,34 @@ blr.W15yQC.LinksDialog = {
     }
   },
 
+  selectRow: function(row, override) {
+    var treeview=document.getElementById('treebox');
+    if(override==null) { override=false; }
+    if(treeview != null && ((treeview.currentIndex && treeview.currentIndex<0) || override==true)) {
+      if(blr.W15yQC.LinksDialog.aLinksList != null && row!=null && row<blr.W15yQC.LinksDialog.aLinksList.length) {
+        try {
+          if(treeview.focus) { treeview.focus(); }
+          if(treeview.view) { treeview.view.selection.select(row); }
+          if(treeview.boxObject && treeview.boxObject.ensureRowIsVisible) {treeview.boxObject.ensureRowIsVisible(row);}
+        } catch(ex) {}
+      }
+    }
+  },
+
   init: function (dialog) {
-    var oW15yQCReport, progressWindow;
+    var oW15yQCReport;
+    dialog.focus();
+    dialog.fnUpdateProgress('Getting Links...',0);
 
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.LinksDialog.FirebugO = dialog.arguments[1];
-    if (blr.W15yQC.LinksDialog.FirebugO == null || !blr.W15yQC.LinksDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
+    if (blr.W15yQC.LinksDialog.FirebugO != null && blr.W15yQC.LinksDialog.FirebugO.Inspector) {
+      document.getElementById('button-showInFirebug').hidden = false;
     }
 
-    progressWindow = window.openDialog('chrome://W15yQC/content/progressDialog.xul', 'w15yQCProgressDialog', 'dialog=yes,alwaysRaised=yes,chrome,resizable=no,centerscreen');
     blr.W15yQC.fnDoEvents();
-    //if(progressWindow != null) {
-    //  progressWindow.document.getElementById('percent').value=0;
-    //  progressWindow.document.getElementById('detailText').value='Getting Links...';
-    //  progressWindow.focus();
-    //  blr.W15yQC.fnDoEvents();
-    //}
-
-    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
+    blr.W15yQC.fnDoEvents();
 
     //blr.W15yQC.LinksDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
     blr.W15yQC.LinksDialog.aDocumentsList=oW15yQCReport.aDocuments;
@@ -212,12 +226,12 @@ blr.W15yQC.LinksDialog = {
     //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LinksDialog.aDocumentsList); // TODO: Does this need to run? Why?
 
     //blr.W15yQC.LinksDialog.aLinksList = blr.W15yQC.fnGetLinks(window.opener.parent._content.document);
-    blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
+    blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, dialog);
     blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList);
 
-    progressWindow.close();
-    progressWindow = null;
+    dialog.fnUpdateProgress('Ready',null);
     dialog.focus();
+    blr.W15yQC.LinksDialog.selectRow(0);
   },
 
 
@@ -439,7 +453,7 @@ blr.W15yQC.LinksDialog = {
       default:
         alert('unhandled sort column');
     }
-    col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending');
+    if(colID!='col-header-sourceOrder') { col.setAttribute('sortDirection',sortDir ? 'descending' : 'ascending'); }
     blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList, true);
     blr.W15yQC.LinksDialog.updateControlStates();
     blr.W15yQC.LinksDialog.fnUpdateStatus('Sorted on:'+blr.W15yQC.LinksDialog.sortColumns.toString());

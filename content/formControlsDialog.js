@@ -355,7 +355,7 @@ blr.W15yQC.FormControlsDialog = {
       document.getElementById('button-showInFirebug').hidden = true;
     }
 
-    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document);
+    oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.FormControlsDialog.aDocumentsList = oW15yQCReport.aDocuments;
     //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);
 
@@ -364,6 +364,7 @@ blr.W15yQC.FormControlsDialog = {
     blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
 
     blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
+    dialog.fnUpdateProgress('Ready',null);
   },
 
   updateControlStates: function() {
@@ -736,9 +737,9 @@ blr.W15yQC.FormControlsDialog = {
     blr.W15yQC.FormControlsDialog.updateDisplayOrderArray2();
     switch(colID) {
       case 'col-header-sourceOrder2':
-        blr.W15yQC.FormControlsDialog.aDisplayOrder=[];
-        blr.W15yQC.FormControlsDialog.sortColumns=[' Link Number (asc)'];
-        blr.W15yQC.FormControlsDialog.updateDisplayOrderArray();
+        blr.W15yQC.FormControlsDialog.aDisplayOrder2=[];
+        blr.W15yQC.FormControlsDialog.sortColumns2=[' Form Control Number (asc)'];
+        blr.W15yQC.FormControlsDialog.updateDisplayOrderArray2();
         break;
       case 'col-header-documentNumber2':
         blr.W15yQC.FormControlsDialog.sortTreeAsNumberOn2('ownerDocumentNumber',sortDir);
