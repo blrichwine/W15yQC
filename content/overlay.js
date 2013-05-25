@@ -693,6 +693,20 @@ ys: 'whys'
       return blr.W15yQC.userLocale;
     },
 
+    objectToString: function (o, bDig) {
+      var p, out = '';
+      if (o != null) {
+        for (p in o) {
+          if (o[p].toString() == '[object Object]' && bDig != false) {
+            out += 'STARTOBJ' + p + ': [' + blr.W15yQC.LinksDialog.objectToString(o[p], false) + ']\n';
+          } else {
+            out += p + ': ' + o[p] + '\n';
+          }
+        }
+      }
+      return out;
+    },
+
     fnLog: function (sMsg) {
       try {
         var consoleServ = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService);

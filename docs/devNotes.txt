@@ -147,7 +147,6 @@
     -- Add sorting to all Inspector dialogs
     -- Add page title tests to the site inspector tool
     -- Make and debug Quick Check View with element type label where appropriate (button, checkbox, etc.)
-    -- Make sure all move to calls come before the highlight calls
     -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script
     -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This!
     -- Audit dialogs

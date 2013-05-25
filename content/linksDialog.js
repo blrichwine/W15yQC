@@ -298,20 +298,6 @@ blr.W15yQC.LinksDialog = {
     if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
   },
 
-  objectToString: function (o, bDig) {
-    var p, out = '';
-    if (o != null) {
-      for (p in o) {
-        if (o[p].toString() == '[object Object]' && bDig != false) {
-          out += 'STARTOBJ' + p + ': [' + blr.W15yQC.LinksDialog.objectToString(o[p], false) + ']\n';
-        } else {
-          out += p + ': ' + o[p] + '\n';
-        }
-      }
-    }
-    return out;
-  },
-
   moveToSelectedElement: function () {
     var treebox = document.getElementById('treebox'),
       selectedRow = treebox.currentIndex, selectedIndex;
