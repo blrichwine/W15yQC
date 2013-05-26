@@ -141,8 +141,16 @@
 
 
     *** FIX ASAP***
-  Get rid of dependence on global bQuick variable
-  recursive text should not pick up option text
+  -- Quick Report
+    -- Finish fnJAWSAnnouncesControlAs
+    -- Only show elements that would be listed by AT
+       -- Don't list images [done]
+       -- Don't list labels [done]
+       -- Don't elements which have their roles overriden
+       -- Make sure elements are listed in the correct list dialogs (links or form controls)
+           -- Which ARIA widgets get listed in the form controls?
+       -- Make sure the appropriate rules are used in the quick report.
+       -- Include form control type when displaying effective label
   HTML Reports should use the effective label values
   Verify each analysis routine is using the effective label value to check for uniqueness, meaningfulness, etc.
   THINGS TO DO BEFORE MAKING WEB PAGE VIDEOS AND W15yQC Protocol Instructions:
@@ -483,6 +491,7 @@
 
 FIXED:
 
+    - recursive text should not pick up option text [5/25/2013]
     -- Audit dialogs [5/25/2013]
         -- set the border drag values appropriately on the columns.
         -- selectedIndex handling [Done]
