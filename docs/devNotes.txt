@@ -149,17 +149,6 @@
     -- Make and debug Quick Check View with element type label where appropriate (button, checkbox, etc.)
     -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script
     -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This!
-    -- Audit dialogs
-        -- selectedIndex handling [Done]
-        -- sort columns are all handled [Done]
-        -- ordinal numbers make sense [Done]
-        -- move to element before highlighting the element [Done]
-        -- Add BaseURI, ID to forms dialog, tables dialog [Done]
-        -- Add BaseURL to notes [Done]
-        -- Handle base URL in populateTree methods by using the stored URL in the document instead of calling node.doc.URL [safer] [Done]
-        -- null out all of the dialog members upon closing [Done]
-        -- make sure appropriate cols have fixed width, double spaces in the label, and disable autocolwidth routine on sorting [Done]
-        -- make each inspector dialog taller and make the notes textarea bigger so it displays the whole text up to BaseURI [Done]
     -- clean up code that takes a node and requires a document to boot.
 
 
@@ -176,7 +165,6 @@
   What does various flash player content sound like to JAWS... youtube, etc. Is it all the same?
   Create test pages for the remove styles view. Besure to include challenging ARIA content. Look for labels that repeat.
   how does <cite> read?
-  ARIA Lists currently stop the remove styles routine from displaying the content.
   List of ARIA roles to ignore and warn about not being well supported?
 	Generate a set of QA pages for quick sanity check testing. Use pages and a protocol to exercise the program an inspect for errors, unexpected results, and warnings.
     Need to investigate the effective label on ARIA roles -- especially on div, spans, links, etc. Make a list. Spider for common aria roles.
@@ -220,7 +208,6 @@
 	  video and support page for the
 
 
-      FIX INSPECTOR DIALOGS: set the border drag values appropriately on the columns.
       Store which columns are visible and which are hidden
       Add sort option for the inspectors
       Unify inspectors to have effective label field and a description of where the label came from
@@ -493,6 +480,19 @@
 
 FIXED:
 
+    -- Audit dialogs [5/25/2013]
+        -- set the border drag values appropriately on the columns.
+        -- selectedIndex handling [Done]
+        -- sort columns are all handled [Done]
+        -- ordinal numbers make sense [Done]
+        -- move to element before highlighting the element [Done]
+        -- Add BaseURI, ID to forms dialog, tables dialog [Done]
+        -- Add BaseURL to notes [Done]
+        -- Handle base URL in populateTree methods by using the stored URL in the document instead of calling node.doc.URL [safer] [Done]
+        -- null out all of the dialog members upon closing [Done]
+        -- make sure appropriate cols have fixed width, double spaces in the label, and disable autocolwidth routine on sorting [Done]
+        -- make each inspector dialog taller and make the notes textarea bigger so it displays the whole text up to BaseURI [Done]
+    - ARIA Lists currently stop the remove styles routine from displaying the content. [5/23/2013]
     - Remove Styles View ARIA lists / ARIA list items are not displaying properly... could be because of a table / tr interaction? [fixed? 5/23/2013]
     - Remove Styles View - May have to inherit roles (like listitem) down until a content element (not tr, etc.) comes along and then announce the role. [5/23/2013]
     - Scroll to element in inspector dialogs doesn't keep the element away from the top or bottom. [5/23/2013]

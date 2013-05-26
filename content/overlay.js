@@ -8795,16 +8795,29 @@ ys: 'whys'
 
 
     fnDisplayPageSummary: function(rd, oW15yQCReport) {
-      var div, div2, element;
+      var div, div2=null, element;
 
-      div = rd.createElement('div');
-      div.setAttribute('id', 'AIPageSummary');
+      div=rd.getElementById('AIDocumentDetails');
+      if (div!=null) {
+        div2=div.getElementsByTagName('div');
+        if (div2 != null && div2.length>0) {
+          div2=div2[0];
+        } else {
+          div2=null;
+        }
+      }
+      if (div2==null) {
+        div = rd.createElement('div');
+        div.setAttribute('id', 'AIPageSummary');
+        blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'Page Summary');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'Page Summary');
+        div2 = rd.createElement('div');
 
-      div2 = rd.createElement('div');
+        div.appendChild(div2);
+        rd.body.appendChild(div);
+      }
       element = rd.createElement('h3');
-      element.appendChild(rd.createTextNode('Page Description:'));
+      element.appendChild(rd.createTextNode('Page Description'));
       div2.appendChild(element);
 
       element = rd.createElement('p');
@@ -8812,16 +8825,13 @@ ys: 'whys'
       div2.appendChild(element);
 
       element = rd.createElement('h3');
-      element.appendChild(rd.createTextNode('Page Score:'));
+      element.appendChild(rd.createTextNode('Page Score'));
       div2.appendChild(element);
 
       element = rd.createElement('p');
 
       element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
       div2.appendChild(element);
-
-      div.appendChild(div2);
-      rd.body.appendChild(div);
     },
 
 
@@ -8919,9 +8929,11 @@ ys: 'whys'
           blr.W15yQC.fnDisplayTableResults(reportDoc, oW15yQCReport.aTables);
         }
 
-        blr.W15yQC.fnDescribeWindow(oW15yQCReport);
-        blr.W15yQC.fnComputeScore(oW15yQCReport);
-        blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport);
+        if(sReports=='' || sReports.indexOf('pageSummary')>=0) {
+          blr.W15yQC.fnDescribeWindow(oW15yQCReport);
+          blr.W15yQC.fnComputeScore(oW15yQCReport);
+          blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport);
+        }
 
         if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
 
@@ -9035,7 +9047,6 @@ ys: 'whys'
         win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
         if(win!=null && win.focus) win.focus();
       }
-
     },
 
 
