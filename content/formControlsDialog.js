@@ -272,7 +272,7 @@ blr.W15yQC.FormControlsDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', ak.effectiveLabel);
+          treecell.setAttribute('label', blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(ak.effectiveLabel)?ak.effectiveLabel:'unlabeled', ak.announcedAs,' '));
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
