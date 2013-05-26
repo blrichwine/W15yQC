@@ -50,7 +50,10 @@ blr.W15yQC.HTMLReportWindow = {
 
   init: function (dialog) {
     var rw, if1;
+
+    blr.W15yQC.HTMLReportWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
     blr.W15yQC.fnReadUserPrefs();
+
     if (dialog && dialog.arguments && dialog.arguments.length) {
       if (dialog.arguments.length > 1) blr.W15yQC.HTMLReportWindow.FirebugO = dialog.arguments[1];
       if (dialog.arguments.length > 2) blr.W15yQC.HTMLReportWindow.sReports = dialog.arguments[2];
@@ -59,17 +62,20 @@ blr.W15yQC.HTMLReportWindow = {
     }
     rw = document.getElementById("HTMLReportWindow");
     if (rw != null) {
-        rw.setAttribute('title', 'Full Report - W15y Quick Check');
+        if1 = document.getElementById("HTMLReportIFrame");
+        if (if1 != null && if1.contentDocument) {
+            blr.W15yQC.HTMLReportWindow.rd = if1.contentDocument;
+            if (blr.W15yQC.HTMLReportWindow.bQuick==true) {
+                rw.setAttribute('title', 'Quick Report - W15yQC');
+                blr.W15yQC.fnQuickInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sourceDocument, blr.W15yQC.HTMLReportWindow.sReports, dialog);
+                document.getElementById('button-editReport').setAttribute('hidden','true');
+            } else {
+                rw.setAttribute('title', 'Full Report - W15yQC');
+                blr.W15yQC.fnFullInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sourceDocument, blr.W15yQC.HTMLReportWindow.sReports, dialog);
+            }
+            dialog.fnUpdateProgress('Ready.',null);
+        }
     }
-    if1 = document.getElementById("HTMLReportIFrame");
-    if (if1 != null && if1.contentDocument) {
-      blr.W15yQC.HTMLReportWindow.rd = if1.contentDocument;
-    }
-
-    blr.W15yQC.HTMLReportWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-
-    blr.W15yQC.fnFullInspect(blr.W15yQC.HTMLReportWindow.rd, blr.W15yQC.HTMLReportWindow.sourceDocument, blr.W15yQC.HTMLReportWindow.sReports, dialog);
-    dialog.fnUpdateProgress('Ready.',null);
   },
 
   windowOnKeyDown: function (win, evt) {

@@ -141,7 +141,10 @@
 
 
     *** FIX ASAP***
-
+  Get rid of dependence on global bQuick variable
+  recursive text should not pick up option text
+  HTML Reports should use the effective label values
+  Verify each analysis routine is using the effective label value to check for uniqueness, meaningfulness, etc.
   THINGS TO DO BEFORE MAKING WEB PAGE VIDEOS AND W15yQC Protocol Instructions:
     -- Check table inspector TH default scope code
     -- Add sorting to all Inspector dialogs

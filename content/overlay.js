@@ -3581,8 +3581,11 @@ ys: 'whys'
       var sNodeChildText = '',
           sRecursiveText = null,
           node;
-      if (iRecursion == null) { iRecursion = 0; }
       if (rootNode != null) {
+        if (iRecursion == null) { iRecursion = 0; }
+        if (aStopElements==null) {
+          aStopElements=['option'];
+        }
         for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
           if (node.nodeType == 1 || node.nodeType == 3) { // Only pay attention to element and text nodes
             if (node.tagName && ((node.contentWindow && node.contentWindow.document !== null) ||
@@ -4662,10 +4665,9 @@ ys: 'whys'
       node.appendChild(script);
     },
 
-    fnInitDisplayWindow: function (windowURL, reportDoc) {
-      var topNav, topNavLI, topNavA, topNavSpan, titleText, outputWindow, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
+    fnInitDisplayWindow: function (windowURL, reportDoc, bQuick) {
+      var topNav, topNavLI, topNavA, topNavSpan, outputWindow, bannerDiv, bannerH1, styleRules, styleElement, scriptElement, sScript, contentMeta, genMeta;
 
-      titleText = blr.W15yQC.fnGetString('hrsTitle', [windowURL]);
       if(reportDoc == null) {
         outputWindow = window.open('');
         if(outputWindow && outputWindow.document) reportDoc = outputWindow.document;
@@ -4673,10 +4675,12 @@ ys: 'whys'
 
       contentMeta = reportDoc.createElement('meta');
       contentMeta.setAttribute('name','generator');
-      if(blr.W15yQC.bQuick==true) {
+      if(bQuick==true) {
           contentMeta.setAttribute('content','W15yQC Web Accessibility Quick Check');
+          reportDoc.title = blr.W15yQC.fnGetString('hrsQuickReport', [windowURL]);
         } else {
           contentMeta.setAttribute('content','W15yQC Web Accessibility Full Check');
+          reportDoc.title = blr.W15yQC.fnGetString('hrsFullReport', [windowURL]);
         }
 
       genMeta = reportDoc.createElement('meta');
@@ -4684,13 +4688,16 @@ ys: 'whys'
       genMeta.setAttribute('content','text/html; charset=utf-8');
       reportDoc.head.appendChild(contentMeta);
       reportDoc.head.appendChild(genMeta);
-      reportDoc.title = titleText;
 
       bannerDiv = reportDoc.createElement('div');
       bannerDiv.setAttribute('id', 'banner');
       bannerDiv.setAttribute('role', 'banner');
       bannerH1 = reportDoc.createElement('h1');
-      bannerH1.appendChild(reportDoc.createTextNode(blr.W15yQC.fnGetString('hrsBanner')));
+      if (bQuick==true) {
+        bannerH1.appendChild(reportDoc.createTextNode(blr.W15yQC.fnGetString('hrsBannerQuick')));
+      } else {
+        bannerH1.appendChild(reportDoc.createTextNode(blr.W15yQC.fnGetString('hrsBannerFull')));
+      }
       bannerDiv.appendChild(bannerH1);
       reportDoc.body.appendChild(bannerDiv);
 
@@ -5022,7 +5029,7 @@ ys: 'whys'
       rd.body.appendChild(div);
     },
 
-    fnDisplayFrameTitleResults: function (rd, aFramesList) {
+    fnDisplayFrameTitleResults: function (rd, aFramesList, bQuick) {
       var div, table, msgHash, tbody, i, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
@@ -5032,25 +5039,44 @@ ys: 'whys'
       if (aFramesList && aFramesList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIFramesTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
-                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
-                                                            blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHSrc'),
-                                                            blr.W15yQC.fnGetString('hrsTHNotes')]);
-        msgHash = new blr.W15yQC.HashTable();
-        tbody = rd.createElement('tbody');
-        for (i = 0; i < aFramesList.length; i++) {
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
-          sClass = '';
-          if (aFramesList[i].failed) {
-            sClass = 'failed';
-          } else if (aFramesList[i].warning) {
-            sClass = 'warning';
+
+        if (bQuick==true) {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aFramesList.length; i++) {
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
+            sClass = '';
+            if (aFramesList[i].failed) {
+              sClass = 'failed';
+            } else if (aFramesList[i].warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aFramesList[i].title, sNotes], sClass);
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].title, aFramesList[i].src, sNotes], sClass);
+        } else {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
+                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHSrc'),
+                                                              blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aFramesList.length; i++) {
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
+            sClass = '';
+            if (aFramesList[i].failed) {
+              sClass = 'failed';
+            } else if (aFramesList[i].warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].title, aFramesList[i].src, sNotes], sClass);
+          }
         }
+
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFramesTable');
+
       } else {
         blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFramesDetected'));
       }
@@ -5990,7 +6016,7 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aARIALandmarksList);
     },
 
-    fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList) {
+    fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList, bQuick) {
       var div, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
@@ -6000,32 +6026,40 @@ ys: 'whys'
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes && aARIALandmarksList.pageLevel.notes.length>0))) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
-                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
-                                                            blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHRole'),
-                                                            blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
-        msgHash = new blr.W15yQC.HashTable();
-        tbody = rd.createElement('tbody');
-        // Elements
-        for (i = 0; i < aARIALandmarksList.length; i++) {
-          lo = aARIALandmarksList[i];
-          sPadding = '';
-          for(j=1; j<lo.level; j++) {
-            sPadding += '&nbsp;';
+
+        if (bQuick) {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          // Elements
+          for (i = 0; i < aARIALandmarksList.length; i++) {
+            lo = aARIALandmarksList[i];
+            sPadding = '';
+            for(j=1; j<lo.level; j++) {
+              sPadding += '&nbsp;';
+            }
+            sClass = '';
+            if (lo.failed) {
+              sClass = 'failed';
+            } else if (lo.warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, lo.effectiveLabel], sClass);
           }
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
-          sClass = '';
-          if (lo.failed) {
-            sClass = 'failed';
-          } else if (lo.warning) {
-            sClass = 'warning';
-          }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
-        }
-        // Page Level
-        if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
-          for (i = 0; i < aARIALandmarksList.pageLevel.notes.length; i++) {
-            lo = aARIALandmarksList.pageLevel;
+        } else {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHRole'),
+                                                              blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          // Elements
+          for (i = 0; i < aARIALandmarksList.length; i++) {
+            lo = aARIALandmarksList[i];
+            sPadding = '';
+            for(j=1; j<lo.level; j++) {
+              sPadding += '&nbsp;';
+            }
             sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
             sClass = '';
             if (lo.failed) {
@@ -6033,7 +6067,21 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
+          }
+          // Page Level
+          if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
+            for (i = 0; i < aARIALandmarksList.pageLevel.notes.length; i++) {
+              lo = aARIALandmarksList.pageLevel;
+              sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+              sClass = '';
+              if (lo.failed) {
+                sClass = 'failed';
+              } else if (lo.warning) {
+                sClass = 'warning';
+              }
+              blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
+            }
           }
         }
 
@@ -6571,7 +6619,7 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aImagesList);
     },
 
-    fnDisplayImagesResults: function (rd, aImagesList) {
+    fnDisplayImagesResults: function (rd, aImagesList, bQuick) {
       var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
@@ -6585,32 +6633,53 @@ ys: 'whys'
         }
         table = rd.createElement('table');
         table.setAttribute('id', 'AIImagesTable');
-        colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
-                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHAlt')];
-        if(bHasTitle) colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
-        if(bHasARIALabel) colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
-        colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
-        colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+        if (bQuick) {
+          colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')];
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
-        msgHash = new blr.W15yQC.HashTable();
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
+          msgHash = new blr.W15yQC.HashTable();
 
-        tbody = rd.createElement('tbody');
-        for (i = 0; i < aImagesList.length; i++) {
-          io = aImagesList[i];
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
-          sClass = '';
-          if (io.failed) {
-            sClass = 'failed';
-          } else if (io.warning) {
-            sClass = 'warning';
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aImagesList.length; i++) {
+            io = aImagesList[i];
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+            sClass = '';
+            if (io.failed) {
+              sClass = 'failed';
+            } else if (io.warning) {
+              sClass = 'warning';
+            }
+            colValues=[i + 1, io.effectiveLabel, sNotes];
+            blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
           }
-          colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.alt];
-          if(bHasTitle) colValues.push(io.title);
-          if(bHasARIALabel) colValues.push(io.ariaLabel);
-          colValues.push(io.src);
-          colValues.push(sNotes);
-          blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
+        } else {
+          colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
+                        blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHAlt')];
+          if(bHasTitle) colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
+          if(bHasARIALabel) colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+          colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
+          colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
+          msgHash = new blr.W15yQC.HashTable();
+
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aImagesList.length; i++) {
+            io = aImagesList[i];
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+            sClass = '';
+            if (io.failed) {
+              sClass = 'failed';
+            } else if (io.warning) {
+              sClass = 'warning';
+            }
+            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.alt];
+            if(bHasTitle) colValues.push(io.title);
+            if(bHasARIALabel) colValues.push(io.ariaLabel);
+            colValues.push(io.src);
+            colValues.push(sNotes);
+            blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
+          }
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -6743,7 +6812,7 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aAccessKeysList);
     },
 
-    fnDisplayAccessKeysResults: function (rd, aAccessKeysList) {
+    fnDisplayAccessKeysResults: function (rd, aAccessKeysList, bQuick) {
       var div, table, msgHash, tbody, i, ak, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
@@ -6754,22 +6823,40 @@ ys: 'whys'
         table = rd.createElement('table');
         table.setAttribute('id', 'AIAccesskeysTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
-                                                            blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
-                                                            blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
-                                                            blr.W15yQC.fnGetString('hrsTHNotes')]);
-        msgHash = new blr.W15yQC.HashTable();
-        tbody = rd.createElement('tbody');
-        for (i = 0; i < aAccessKeysList.length; i++) {
-          ak = aAccessKeysList[i];
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
-          sClass = '';
-          if (ak.failed) {
-            sClass = 'failed';
-          } else if (ak.warning) {
-            sClass = 'warning';
+        if (bQuick==true) {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aAccessKeysList.length; i++) {
+            ak = aAccessKeysList[i];
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
+            sClass = '';
+            if (ak.failed) {
+              sClass = 'failed';
+            } else if (ak.warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, ak.accessKey, ak.effectiveLabel, sNotes], sClass);
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
+        } else {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
+                                                              blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aAccessKeysList.length; i++) {
+            ak = aAccessKeysList[i];
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
+            sClass = '';
+            if (ak.failed) {
+              sClass = 'failed';
+            } else if (ak.warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
+          }
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -6920,7 +7007,7 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aHeadingsList);
     },
 
-    fnDisplayHeadingsResults: function (rd, aHeadingsList) {
+    fnDisplayHeadingsResults: function (rd, aHeadingsList, bQuick) {
       var div, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
       div = rd.createElement('div');
       innerDiv = rd.createElement('div');
@@ -7384,7 +7471,7 @@ ys: 'whys'
       rd.body.appendChild(div);
     },
 
-    fnDisplayFormControlResults: function (rd, aFormControlsList) {
+    fnDisplayFormControlResults: function (rd, aFormControlsList, bQuick) {
       var div, i, ak, bHasARIALabel, bHasLegend, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
           aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells;
 
@@ -7412,48 +7499,71 @@ ys: 'whys'
           if (ak.stateDescription != null && ak.stateDescription.length > 0) { bHasStateDescription = true; }
         }
 
-        aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
-                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
-        if (bHasLegend) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend')); }
-        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
-        if (bHasTitle) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
-        if (bHasARIALabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
-        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
-        if (bHasARIADescription) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIADescription')); }
-        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHName'));
-        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHValue'));
-        if (bHasStateDescription) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState')); }
-        aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+        if (bQuick==true) {
+          aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHNotes')];
 
-        table = rd.createElement('table');
-        table.setAttribute('id', 'AIFormControlsTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
-        msgHash = new blr.W15yQC.HashTable();
+          table = rd.createElement('table');
+          table.setAttribute('id', 'AIFormControlsTable');
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
+          msgHash = new blr.W15yQC.HashTable();
 
-        tbody = rd.createElement('tbody');
-        for (i = 0; i < aFormControlsList.length; i++) {
-          fce = aFormControlsList[i];
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
-          sClass = '';
-          if (fce.failed) {
-            sClass = 'failed';
-          } else if (fce.warning) {
-            sClass = 'warning';
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aFormControlsList.length; i++) {
+            fce = aFormControlsList[i];
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+            sClass = '';
+            if (fce.failed) {
+              sClass = 'failed';
+            } else if (fce.warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, fce.effectiveLabel, sNotes], sClass);
           }
-          aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
-          if (bHasLegend) { aTableCells.push(fce.legendText); }
-          aTableCells.push(fce.labelTagText);
-          if (bHasTitle) { aTableCells.push(fce.title); }
-          if (bHasARIALabel) { aTableCells.push(fce.ARIALabelText); }
-          aTableCells.push(fce.effectiveLabel);
-          if (bHasARIADescription) { aTableCells.push(fce.ARIADescriptionText); }
-          aTableCells.push(fce.name);
-          aTableCells.push(fce.value);
-          if (bHasStateDescription) { aTableCells.push(fce.stateDescription); }
-          aTableCells.push(sNotes);
+        } else {
+          aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
+                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
+          if (bHasLegend) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend')); }
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
+          if (bHasTitle) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
+          if (bHasARIALabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
+          if (bHasARIADescription) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIADescription')); }
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHName'));
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHValue'));
+          if (bHasStateDescription) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHState')); }
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
-          blr.W15yQC.fnAppendTableRow(rd, tbody, aTableCells, sClass);
+          table = rd.createElement('table');
+          table.setAttribute('id', 'AIFormControlsTable');
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
+          msgHash = new blr.W15yQC.HashTable();
+
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aFormControlsList.length; i++) {
+            fce = aFormControlsList[i];
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+            sClass = '';
+            if (fce.failed) {
+              sClass = 'failed';
+            } else if (fce.warning) {
+              sClass = 'warning';
+            }
+            aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
+            if (bHasLegend) { aTableCells.push(fce.legendText); }
+            aTableCells.push(fce.labelTagText);
+            if (bHasTitle) { aTableCells.push(fce.title); }
+            if (bHasARIALabel) { aTableCells.push(fce.ARIALabelText); }
+            aTableCells.push(fce.effectiveLabel);
+            if (bHasARIADescription) { aTableCells.push(fce.ARIADescriptionText); }
+            aTableCells.push(fce.name);
+            aTableCells.push(fce.value);
+            if (bHasStateDescription) { aTableCells.push(fce.stateDescription); }
+            aTableCells.push(sNotes);
+
+            blr.W15yQC.fnAppendTableRow(rd, tbody, aTableCells, sClass);
+          }
         }
+
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
@@ -7768,7 +7878,7 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aLinksList);
     },
 
-    fnDisplayLinkResults: function (rd, aLinksList) {
+    fnDisplayLinkResults: function (rd, aLinksList, bQuick) {
       var div, table, msgHash, tbody, i, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
@@ -7778,31 +7888,38 @@ ys: 'whys'
       if (aLinksList && aLinksList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
-        if(blr.W15yQC.bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
-                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
-                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+        if(bQuick==true) {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'),blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aLinksList.length; i++) {
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+            sClass = '';
+            if (aLinksList[i].failed) {
+              sClass = 'failed';
+            } else if (aLinksList[i].warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
+          }
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
                                                               blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
                                                               blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
-        }
-        msgHash = new blr.W15yQC.HashTable();
+          msgHash = new blr.W15yQC.HashTable();
 
-        tbody = rd.createElement('tbody');
-        for (i = 0; i < aLinksList.length; i++) {
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
-          sClass = '';
-          if (aLinksList[i].failed) {
-            sClass = 'failed';
-          } else if (aLinksList[i].warning) {
-            sClass = 'warning';
-          }
-          if(blr.W15yQC.bQuick==true) {
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), sNotes], sClass);
-          } else {
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aLinksList.length; i++) {
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+            sClass = '';
+            if (aLinksList[i].failed) {
+              sClass = 'failed';
+            } else if (aLinksList[i].warning) {
+              sClass = 'warning';
+            }
             blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
           }
         }
@@ -8794,7 +8911,7 @@ ys: 'whys'
     },
 
 
-    fnDisplayPageSummary: function(rd, oW15yQCReport) {
+    fnDisplayPageSummary: function(rd, oW15yQCReport, bQuick) {
       var div, div2=null, element;
 
       div=rd.getElementById('AIDocumentDetails');
@@ -8824,14 +8941,16 @@ ys: 'whys'
       element.appendChild(rd.createTextNode(oW15yQCReport.sWindowDescription));
       div2.appendChild(element);
 
-      element = rd.createElement('h3');
-      element.appendChild(rd.createTextNode('Page Score'));
-      div2.appendChild(element);
+      if (bQuick!=true) {
+        element = rd.createElement('h3');
+        element.appendChild(rd.createTextNode('Page Score'));
+        div2.appendChild(element);
 
-      element = rd.createElement('p');
+        element = rd.createElement('p');
 
-      element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
-      div2.appendChild(element);
+        element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
+        div2.appendChild(element);
+      }
     },
 
 
@@ -8866,26 +8985,26 @@ ys: 'whys'
           blr.W15yQC.fnDisplayWindowDetails(reportDoc, oW15yQCReport);
         }
 
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Documents', 1); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Documents', 1); }
 
         if(sReports=='' || sReports.indexOf('documents')>=0) {
           blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
           blr.W15yQC.fnDisplayDocumentsResults(reportDoc, oW15yQCReport.aDocuments);
         }
 
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Frame Titles', 5); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Frame Titles', 5); }
 
         if(sReports=='' || sReports.indexOf('frames')>=0) {
           blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
           blr.W15yQC.fnDisplayFrameTitleResults(reportDoc, oW15yQCReport.aFrames);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Headings', 10); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Headings', 10); }
 
         if(sReports=='' || sReports.indexOf('headings')>=0) {
           blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, progressWindow);
           blr.W15yQC.fnDisplayHeadingsResults(reportDoc, oW15yQCReport.aHeadings);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting ARIA Landmarks', 15); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA Landmarks', 15); }
 
         if(sReports=='' || sReports.indexOf('landmarks')>=0) {
           blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
@@ -8893,36 +9012,36 @@ ys: 'whys'
         }
 
         if(sReports=='' || sReports.indexOf('aria')>=0 && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
-          if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting ARIA', 18); }
+          if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA', 18); }
           blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
           blr.W15yQC.fnDisplayARIAElementsResults(reportDoc, oW15yQCReport.aARIAElements);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Links', 24); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Links', 24); }
 
         if(sReports=='' || sReports.indexOf('links')>=0) {
           blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
           blr.W15yQC.fnDisplayLinkResults(reportDoc, oW15yQCReport.aLinks);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Forms', 75); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Forms', 75); }
 
         if(sReports=='' || sReports.indexOf('forms')>=0) {
           blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
           blr.W15yQC.fnDisplayFormResults(reportDoc, oW15yQCReport.aForms);
           blr.W15yQC.fnDisplayFormControlResults(reportDoc, oW15yQCReport.aFormControls);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Images', 85); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Images', 85); }
 
         if(sReports=='' || sReports.indexOf('images')>=0) {
           blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
           blr.W15yQC.fnDisplayImagesResults(reportDoc, oW15yQCReport.aImages);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Access Keys', 90); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Access Keys', 90); }
 
         if(sReports=='' || sReports.indexOf('accesskeys')>=0) {
           blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
           blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, oW15yQCReport.aAccessKeys);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Getting Tables', 95); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
 
         if(sReports=='' || sReports.indexOf('tables')>=0) {
           blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
@@ -8945,9 +9064,90 @@ ys: 'whys'
       return null;
     },
 
-    fnQuickInspect: function (reportDoc, sReports, bQuick) {
-      return null; // TODO: Get rid of this!!!
+    fnQuickInspect: function (reportDoc, sourceDocument, sReports, progressWindow) {
+      var aDocumentsList, dialogID, dialogPath, oW15yQCReport;
+
+      if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+      blr.W15yQC.fnNonDOMIntegrityTests();
+      blr.W15yQC.fnReadUserPrefs();
+      blr.W15yQC.bQuick = true;
+
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
+        dialogID = 'licenseDialog';
+        dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+      }
+
+      if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
+        if(sourceDocument==null) { sourceDocument=window.top.content.document; }
+
+        blr.W15yQC.fnDoEvents();
+
+        oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument, progressWindow);
+        reportDoc = blr.W15yQC.fnInitDisplayWindow(sourceDocument.URL, reportDoc, true);
+
+        blr.W15yQC.fnDisplayWindowDetails(reportDoc, oW15yQCReport);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Documents', 1); }
+
+        blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Frame Titles', 5); }
+
+        blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
+        blr.W15yQC.fnDisplayFrameTitleResults(reportDoc, oW15yQCReport.aFrames, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Headings', 10); }
+
+        blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, progressWindow);
+        blr.W15yQC.fnDisplayHeadingsResults(reportDoc, oW15yQCReport.aHeadings, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA Landmarks', 15); }
+
+        blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
+        blr.W15yQC.fnDisplayARIALandmarksResults(reportDoc, oW15yQCReport.aARIALandmarks, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA', 18); }
+        blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Links', 24); }
+
+        blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
+        blr.W15yQC.fnDisplayLinkResults(reportDoc, oW15yQCReport.aLinks, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Forms', 75); }
+
+        blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
+        blr.W15yQC.fnDisplayFormControlResults(reportDoc, oW15yQCReport.aFormControls, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Images', 85); }
+        blr.W15yQC.fnDisplayImagesResults(reportDoc, oW15yQCReport.aImages, true);
+
+        blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Access Keys', 90); }
+
+        blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
+        blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, oW15yQCReport.aAccessKeys, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
+
+        blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
+
+        blr.W15yQC.fnDescribeWindow(oW15yQCReport);
+        blr.W15yQC.fnComputeScore(oW15yQCReport);
+        blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport, true);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
+
+        blr.W15yQC.fnDisplayFooter(reportDoc);
+
+        reportDoc.defaultView.focus();
+        return reportDoc;
+      }
+      return null;
     },
+
 
     fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
       var oW15yQCReport=null, progressWindow=null;
