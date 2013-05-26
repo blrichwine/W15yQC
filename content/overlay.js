@@ -6291,8 +6291,12 @@ ys: 'whys'
     },
 
     fnGetLuminosityCheckElements: function(doc, rootNode, aLumCheckList, parentsColor, parentsBGColor) { // TODO: What percentage of text is non-compliant?
-      var node, frameDocument, tagName, aColors, xPath, nodeDescription, sText, sTextSize, fgColor, bgColor, textWeight, bBgImage, fgLum, bgLum, lRatio;
-      if (aLumCheckList == null) { aLumCheckList = []; }
+      var node, frameDocument, tagName, aColors, xPath, nodeDescription, sText, sTextSize, sID, sClass,
+        fgColor, fgC, bgColor, bgC, textWeight, bBgImage, fgLum, bgLum, lRatio;
+      if (aLumCheckList == null) {
+        aLumCheckList = [];
+        blr.W15yQC.fnDoEvents();
+      }
 
       if (doc != null) {
         if (rootNode == null) { rootNode = doc.body; }
@@ -6313,14 +6317,18 @@ ys: 'whys'
                   sText = blr.W15yQC.fnElementsOwnContent(node);
                   if(aColors != null) {
                     fgColor = [aColors[0], aColors[1], aColors[2]];
+                    fgC = blr.W15yQC.fnGetColorString(parseInt(fgColor[0], 10) * 65536 + parseInt(fgColor[1], 10) * 256 + parseInt(fgColor[2], 10));
                     bgColor = [aColors[3], aColors[4], aColors[5]];
+                    bgC = blr.W15yQC.fnGetColorString(parseInt(bgColor[0], 10) * 65536 + parseInt(bgColor[1], 10) * 256 + parseInt(bgColor[2], 10));
                     sTextSize = aColors[6];
                     textWeight = aColors[7];
                     bBgImage = aColors[8];
+                    sID = node.getAttribute('id');
+                    sClass = node.getAttribute('class');
                     //fgLum;
                     //bgLum;
                     lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
-                    aLumCheckList.push(new blr.W15yQC.contrastElement(node, xPath, nodeDescription, doc, aLumCheckList.length, sText, sTextSize, textWeight, fgColor, bgColor, bBgImage, fgLum, bgLum, lRatio));
+                    aLumCheckList.push(new blr.W15yQC.contrastElement(node, xPath, nodeDescription, doc, aLumCheckList.length, sID, sClass, sText, sTextSize, textWeight, fgColor, fgC, bgColor, bgC, bBgImage, fgLum, bgLum, lRatio));
                   }
                 }
               }
@@ -9601,17 +9609,21 @@ ys: 'whys'
   };
 
 
-  blr.W15yQC.contrastElement = function (node, xpath, nodeDescription, doc, orderNumber, sText, sTextSize, textWeight, fgColor, bgColor, bHasBGImage, fgLuminosity, bgLuminosity, lRatio) {
+  blr.W15yQC.contrastElement = function (node, xpath, nodeDescription, doc, orderNumber, id, sClass, sText, sTextSize, textWeight, fgColor, fgC, bgColor, bgC, bHasBGImage, fgLuminosity, bgLuminosity, lRatio) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
+    this.id = id;
+    this.sClass = sClass;
     this.text = sText;
     this.textSize = sTextSize;
     this.textWeight = textWeight;
     this.fgColor = fgColor;
+    this.fgC = fgC;
     this.bgColor = bgColor;
+    this.bgC = bgC;
     this.hasBackgroundImage = bHasBGImage;
     this.fgLuminosity = fgLuminosity;
     this.bgLuminosity = bgLuminosity;
@@ -9624,12 +9636,16 @@ ys: 'whys'
     nodeDescription: null,
     doc: null,
     orderNumber: null,
+    id: null,
+    sClass: null,
     text: null,
     textSize: null,
     textWeight: null,
     ownerDocumentNumber: null,
     fgColor: null,
+    fgC: null,
     bgColor: null,
+    bgC: null,
     hasBackgroundImage: false,
     fgLuminosity: null,
     bgLuminosity: null,
