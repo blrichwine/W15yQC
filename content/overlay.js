@@ -57,6 +57,8 @@ if (!blr.W15yQC) {
     domainEq2: [],
     storedColors: [],
 
+    dominantAriaRoles: /\b(button|heading|checkbox|combobox|menuitem|menuitemcheckbox|menuitemradio|option|progressbar|radio|scrollbar|slider|spinbutton|tab|textbox|treeitem|listbox|tree|treegrid|img)\b/i,
+
     // Homophones object for sounds like routine
     // TODO: add 20 most mispelled words
     // http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/Homophones
@@ -924,6 +926,8 @@ ys: 'whys'
       hTxtOnlyASCII: [true,2,1,false,null],
       hTxtNotMeaninfgul: [true,1,1,false,null],
       hTxtEmpty: [true,2,1,false,null],
+      hHeadingRoleOverriddenByInheritedRole: [true,1,1,false,null],
+      hHeadingRoleOverriddenByRoleAttr: [true,1,1,false,null],
       hIDNotValid: [false,1,1,false,null],
       hIDNotUnique: [false,1,1,false,null],
 
@@ -4891,26 +4895,54 @@ ys: 'whys'
 
     /*
    */
-    fnMakeHeadingCountsString: function (listObj, keyPlural, keyNone) {
-      var sDocumentsSectionHeading='', s='';
+    fnMakeHeadingCountsString: function (listObj, keyPlural, keyNone, bOnlyListed) {
+      var sDocumentsSectionHeading='', s='', i, iListedCount=0, bHasListedFeature=false, iListedWarningsCount=0, iListedFailuresCount=0,
+          iDisplayedCount, iDisplayedWarningsCount, iDisplayedFailuresCount;
 
-      if(listObj && (listObj.warningCount && listObj.warningCount>0) ||(listObj.failedCount && listObj.failedCount>0)) {
+      if(bOnlyListed==null) { bOnlyListed=false; }
+
+      if(listObj!=null && listObj.length>0 && listObj[0].hasOwnProperty('listedByAT')==true) {
+        bHasListedFeature=true;
+        for(i=0;i<listObj.length;i++) {
+          if(listObj[i].listedByAT != false) {
+            iListedCount++;
+            if(listObj[i].failed==true) { iListedFailuresCount++; }
+            if(listObj[i].warning==true) { iListedWarningsCount++; }
+          }
+        }
+      }
+
+      if(bOnlyListed==true && bHasListedFeature==true) {
+        iDisplayedCount=iListedCount;
+        iDisplayedWarningsCount=iListedWarningsCount;
+        iDisplayedFailuresCount=iListedFailuresCount;
+      } else {
+        iDisplayedCount=listObj==null?0:listObj.length;
+        iDisplayedWarningsCount=(listObj==null)?0:listObj.warningCount;
+        iDisplayedFailuresCount=(listObj==null)?0:listObj.failedCount;
+      }
+
+      if(listObj!=null && (iDisplayedWarningsCount>0 || iDisplayedFailuresCount>0)) {
         try{
-          if(listObj.warningCount && listObj.warningCount==1) {
+          if(iDisplayedWarningsCount==1) {
             s=' (1 warning, ';
           } else {
-            s=' ('+listObj.warningCount.toString()+' with warnings, '; // TODO: i18n this!
+            s=' ('+iDisplayedWarningsCount.toString()+' with warnings, '; // TODO: i18n this!
           }
-          if(listObj.failedCount && listObj.failedCount==1) {
+          if(iDisplayedFailuresCount==1) {
             s=s+'1 failure)';
           } else {
-            s=s+listObj.failedCount.toString()+' with failures)';
+            s=s+iDisplayedFailuresCount.toString()+' with failures)';
           }
         }
         catch(ex){ s='FAILED'+ex.toString();}
       }
-      if (listObj && listObj.length && listObj.length > 0) {
-        sDocumentsSectionHeading = blr.W15yQC.fnGetString(keyPlural) + ': ' + listObj.length.toString();
+      if (listObj && iDisplayedCount > 0) {
+        if(bHasListedFeature==true && iListedCount<listObj.length && bOnlyListed!=true) {
+          sDocumentsSectionHeading = blr.W15yQC.fnGetString(keyPlural) + ': ' + iDisplayedCount.toString()+ ' ('+iListedCount.toString()+' listed)';
+        } else {
+          sDocumentsSectionHeading = blr.W15yQC.fnGetString(keyPlural) + ': ' + iDisplayedCount.toString();
+        }
       } else {
         sDocumentsSectionHeading = blr.W15yQC.fnGetString(keyNone);
       }
@@ -5219,10 +5251,12 @@ ys: 'whys'
         sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
-        frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel, controlType,
+        frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel, controlType, bAddedARIARole=false, sPreviousInheritedRoles='',
         bIncludeLabelControls = Application.prefs.getValue('extensions.W15yQC.getElements.includeLabelElementsInFormControls',false);
 
       if (doc != null) {
+        sPreviousInheritedRoles=sInheritedRoles;
+        bAddedARIARole=false;
         if (oW15yResults == null) {
           blr.W15yQC.fnDoEvents(); // This one is magical. Leave it in place!
           total=doc.getElementsByTagName('a').length+
@@ -5246,6 +5280,8 @@ ys: 'whys'
           oW15yResults.iTextSize=0;
           ARIALandmarkLevel=0;
           sInheritedRoles='';
+          bAddedARIARole=false;
+          sPreviousInheritedRoles='';
           oW15yResults.PageScore=new blr.W15yQC.PageScore();
           oW15yResults.PageScore.bAllContentContainedInLandmark=true;
           oW15yResults.PageScore.bUsesARIABesidesLandmarks=false;
@@ -5275,6 +5311,7 @@ ys: 'whys'
           }
 
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
+            bAddedARIARole=false;
             sRole=null;
             if (node.nodeType == 1 && node.tagName && node.hasAttribute) { // Only pay attention to element nodes
               style = window.getComputedStyle(node, null);
@@ -5335,14 +5372,13 @@ ys: 'whys'
                 // get frame contents
                 blr.W15yQC.fnGetElements(frameDocument, progressWindow, total, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, '', nestingDepth);
               } else {
+                bAddedARIARole=false;
+                sRole='';
                 if (node.nodeType == 1 && blr.W15yQC.fnNodeIsHidden(node) == false) {
                   sARIALabel=null;
                   sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
                   if(blr.W15yQC.fnStringHasContent(sRole)) {
                     sRole=sRole.toLowerCase();
-                    if(blr.W15yQC.fnIsValidARIARole(sRole) && blr.W15yQC.fnIsARIALandmarkRole(sRole)!=true) {
-                      sInheritedRoles=blr.W15yQC.fnJoin(sRole,sInheritedRoles,':');
-                    }
                   }
                   sTagName = node.tagName.toLowerCase();
                   if (blr.W15yQC.fnElementUsesARIA(node) == true) {
@@ -5653,7 +5689,18 @@ ys: 'whys'
                 }
 
                 if (node.firstChild != null) { // keep looking through current document
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    if(blr.W15yQC.fnIsValidARIARole(sRole) && blr.W15yQC.fnIsARIALandmarkRole(sRole)!=true) {
+                      bAddedARIARole=true;
+                      sPreviousInheritedRoles=sInheritedRoles;
+                      sInheritedRoles=blr.W15yQC.fnJoin(sInheritedRoles,sRole,':');
+                    }
+                  }
                   blr.W15yQC.fnGetElements(doc, progressWindow, total, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth);
+                  if(bAddedARIARole==true) {
+                    sInheritedRoles=sPreviousInheritedRoles;
+                  }
+                  bAddedARIARole=false;
                 }
                 if(inTable != null && node.tagName.toLowerCase() == 'table') {
                   inTable = null; // TODO: Does this need to be an array stack?
@@ -6976,7 +7023,7 @@ ys: 'whys'
     },
 
     fnAnalyzeHeadings: function (oW15yResults, progressWindow) {
-      var i, previousHeadingLevel, aHeadingsList=oW15yResults.aHeadings, aDocumentsList=oW15yResults.aDocuments;
+      var i, previousHeadingLevel, aHeadingsList=oW15yResults.aHeadings, aDocumentsList=oW15yResults.aDocuments, listedHeadingCount=0, firstListedHeading=true;
 
       oW15yResults.PageScore.bUsesHeadings=false;
       oW15yResults.PageScore.bHasALevelOneHeading=false;
@@ -6986,17 +7033,26 @@ ys: 'whys'
       oW15yResults.PageScore.bHasEnoughHeadingsForContent=true;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
-        oW15yResults.PageScore.bUsesHeadings=true;
-        if(aHeadingsList.length > 1) {
-          oW15yResults.PageScore.bHasMultipleHeadings=true;
-        }
         for (i = 0; i < aHeadingsList.length; i++) {
           //aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
+
+          if (blr.W15yQC.dominantAriaRoles.test(aHeadingsList[i].inheritedRoles)) {  // TODO: QA This!
+            aHeadingsList[i].listedByAT=false;
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByInheritedRole', [aHeadingsList[i].inheritedRoles]); //
+          } else if(/^\s*heading\s*$/i.test(aHeadingsList[i].role)==false && blr.W15yQC.dominantAriaRoles.test(aHeadingsList[i].role)) {
+            aHeadingsList[i].listedByAT=false;
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByRoleAttr', [aHeadingsList[i].roles]); //
+          } else {
+            aHeadingsList[i].listedByAT=true;
+            listedHeadingCount++;
+          }
+
           if (blr.W15yQC.fnStringHasContent(aHeadingsList[i].text)) {
             aHeadingsList[i].text = blr.W15yQC.fnCleanSpaces(aHeadingsList[i].text);
           }
-          if(aHeadingsList[i].level==1) {
+
+          if(aHeadingsList[i].listedByAT==true && aHeadingsList[i].level==1) {
             if (blr.W15yQC.bOnlyOneLevel1Heading==true && oW15yResults.PageScore.bHasALevelOneHeading==true) {
               oW15yResults.PageScore.bHasTooManyLevelOneHeadings=true;
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hShouldNotBeMultipleLevel1Headings'); // TODO: QA This
@@ -7004,26 +7060,40 @@ ys: 'whys'
             oW15yResults.PageScore.bHasALevelOneHeading=true;
           }
         }
-        if(oW15yResults.PageScore.bUsesHeadings==true && blr.W15yQC.bFirstHeadingMustBeLevel1==true) {
-          previousHeadingLevel = 0;
-        } else {
-          previousHeadingLevel = aHeadingsList[0].level;
+
+        if(listedHeadingCount>0) {
+          oW15yResults.PageScore.bUsesHeadings=true;
+          if(aHeadingsList.length > 1) {
+            oW15yResults.PageScore.bHasMultipleHeadings=true;
+          }
         }
+
         for (i = 0; i < aHeadingsList.length; i++) {
           if((i % 4) == 0) {
             if(progressWindow != null) {
-              progressWindow.fnUpdateProgress('Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%', Math.round(3*i/aHeadingsList.length)+12)
+              progressWindow.fnUpdateProgress('Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%', Math.round(3*i/aHeadingsList.length)+12);
               //progressWindow.document.getElementById('percent').value=Math.round(3*i/aHeadingsList.length)+12;
               //progressWindow.document.getElementById('detailText').value='Analyzing Headings ' + (Math.round(100*i/aHeadingsList.length)).toString()+'%';
               progressWindow.focus();
               blr.W15yQC.fnDoEvents();
             }
           }
-          if (aHeadingsList[i].level - previousHeadingLevel > 1) {
-              oW15yResults.PageScore.bHeadingHierarchyIsCorrect=false;
-              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); // QA: headings01.html
+          if(aHeadingsList[i].listedByAT==true) {
+            if(firstListedHeading==true) {
+              firstListedHeading=false;
+              if(oW15yResults.PageScore.bUsesHeadings==true && blr.W15yQC.bFirstHeadingMustBeLevel1==true) {
+                previousHeadingLevel = 0;
+              } else {
+                previousHeadingLevel = aHeadingsList[0].level;
+              }
+            }
+
+            if (aHeadingsList[i].level - previousHeadingLevel > 1) {
+                oW15yResults.PageScore.bHeadingHierarchyIsCorrect=false;
+                blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); // QA: headings01.html
+            }
+            previousHeadingLevel = aHeadingsList[i].level;
           }
-          previousHeadingLevel = aHeadingsList[i].level;
 
           if (aHeadingsList[i].text == null) {
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtMissing'); // Not sure this can happen
@@ -7046,27 +7116,24 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); // QA: headings01.html
             }
           }
-          if (/\b(list|listitem)\b/i.test(aHeadingsList[i].inheritedRoles)) { // TODO: QA This!
-            aHeadingsList[i].listedByAT=false;
-          } else {
-            aHeadingsList[i].listedByAT=true;
-          }
         }
       }
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aHeadingsList);
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList, bQuick) {
-      var div, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span;
+      var div, divContainer, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span,
+        table, msgHash, tbody, sNotes, sClass;
       div = rd.createElement('div');
+      divContainer = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIHeadingsList');
       div.setAttribute('class', 'AIList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
 
       if (aHeadingsList && aHeadingsList.length > 0) {
-        for(i=0;i<aHeadingsList.length;i++) if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; }
+        for(i=0;i<aHeadingsList.length;i++) { if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; } }
         list = [];
         list.push(rd.createElement('ul'));
         previousHeadingLevel = 0;
@@ -7074,71 +7141,117 @@ ys: 'whys'
         previousDocument = null;
         if (aHeadingsList && aHeadingsList.length && aHeadingsList.length > 0) { previousDocument = aHeadingsList[0].doc; }
         for (i = 0; i < aHeadingsList.length; i++) {
-          sDoc = '';
-          if (i == 0 && multipleDocs==true) {
-            sDoc = 'Contained in doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO i18n this!
-          }
-          nextLogicalLevel = parseInt(previousHeadingLevel,10) + 1;
-          for (j = nextLogicalLevel; j < aHeadingsList[i].level; j++) {
-            // Add "skipped" heading levels
+          if(aHeadingsList[i].listedByAT==true) {
+            sDoc = '';
+            if (i == 0 && multipleDocs==true) {
+              sDoc = 'Contained in doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO i18n this!
+            }
+            nextLogicalLevel = parseInt(previousHeadingLevel,10) + 1;
+            for (j = nextLogicalLevel; j < aHeadingsList[i].level; j++) {
+              // Add "skipped" heading levels
+              li = rd.createElement('li');
+              if (previousDocument != aHeadingsList[i].doc) {
+                blr.W15yQC.fnAddClass(li, 'newDocument');
+                sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
+                previousDocument = aHeadingsList[i].doc;
+              }
+              li.appendChild(rd.createTextNode("[h" + j + "] "+ blr.W15yQC.fnGetString('hrsMissingHeading')));
+              li.setAttribute('class', 'skippedHeadingLevel');
+              if (previousHeadingLevel > 0) {
+                list.push(rd.createElement('ul'));
+              }
+              list[list.length - 1].appendChild(li);
+              previousHeadingLevel = j;
+            }
+
             li = rd.createElement('li');
             if (previousDocument != aHeadingsList[i].doc) {
               blr.W15yQC.fnAddClass(li, 'newDocument');
-              sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber;
+              sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO: i18n this
               previousDocument = aHeadingsList[i].doc;
             }
-            li.appendChild(rd.createTextNode("[h" + j + "] "+ blr.W15yQC.fnGetString('hrsMissingHeading')));
-            li.setAttribute('class', 'skippedHeadingLevel');
-            if (previousHeadingLevel > 0) {
+            li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
+
+            sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
+            sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
+            if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
+              span = rd.createElement('span');
+
+              span.appendChild(rd.createTextNode(' (' + sMessage + ')'));
+              span.setAttribute('class', 'headingNote');
+              li.appendChild(span);
+            }
+
+            if (aHeadingsList[i].failed) {
+              li.setAttribute('class', 'failed');
+            } else if (aHeadingsList[i].warning) {
+              li.setAttribute('class', 'warning');
+            }
+            if (aHeadingsList[i].nodeDescription != null) { li.setAttribute('title', aHeadingsList[i].nodeDescription); }
+
+            if (aHeadingsList[i].level > previousHeadingLevel && previousHeadingLevel > 0) {
               list.push(rd.createElement('ul'));
+            } else {
+              while (aHeadingsList[i].level < previousHeadingLevel) {
+                list[list.length - 2].appendChild(list[list.length - 1]);
+                list.pop();
+                previousHeadingLevel--;
+              }
             }
             list[list.length - 1].appendChild(li);
-            previousHeadingLevel = j;
+            previousHeadingLevel = parseInt(aHeadingsList[i].level,10);
           }
-
-          li = rd.createElement('li');
-          if (previousDocument != aHeadingsList[i].doc) {
-            blr.W15yQC.fnAddClass(li, 'newDocument');
-            sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO: i18n this
-            previousDocument = aHeadingsList[i].doc;
-          }
-          li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
-
-          sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
-          sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
-          if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
-            span = rd.createElement('span');
-
-            span.appendChild(rd.createTextNode(' (' + sMessage + ')'));
-            span.setAttribute('class', 'headingNote');
-            li.appendChild(span);
-          }
-
-          if (aHeadingsList[i].failed) {
-            li.setAttribute('class', 'failed');
-          } else if (aHeadingsList[i].warning) {
-            li.setAttribute('class', 'warning');
-          }
-          if (aHeadingsList[i].nodeDescription != null) { li.setAttribute('title', aHeadingsList[i].nodeDescription); }
-
-          if (aHeadingsList[i].level > previousHeadingLevel && previousHeadingLevel > 0) {
-            list.push(rd.createElement('ul'));
-          } else {
-            while (aHeadingsList[i].level < previousHeadingLevel) {
-              list[list.length - 2].appendChild(list[list.length - 1]);
-              list.pop();
-              previousHeadingLevel--;
-            }
-          }
-          list[list.length - 1].appendChild(li);
-          previousHeadingLevel = parseInt(aHeadingsList[i].level,10);
         }
         while (list.length > 1) {
           list[list.length - 2].appendChild(list[list.length - 1]);
           list.pop();
         }
         innerDiv.appendChild(list[0]);
-        div.appendChild(innerDiv);
+        divContainer.appendChild(innerDiv);
+        div.appendChild(divContainer);
+
+      if (aHeadingsList && aHeadingsList.length > 0) {
+        table = rd.createElement('table');
+        table.setAttribute('id', 'AIHeadingsTable');
+
+        if (bQuick==true) {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aHeadingsList.length; i++) {
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aHeadingsList[i], msgHash);
+            sClass = '';
+            if (aHeadingsList[i].failed) {
+              sClass = 'failed';
+            } else if (aHeadingsList[i].warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
+          }
+        } else {
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
+                                                              blr.W15yQC.fnGetString('hrsTHNotes')]);
+          msgHash = new blr.W15yQC.HashTable();
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aHeadingsList.length; i++) {
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aHeadingsList[i], msgHash);
+            sClass = '';
+            if (aHeadingsList[i].failed) {
+              sClass = 'failed';
+            } else if (aHeadingsList[i].warning) {
+              sClass = 'warning';
+            }
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+          }
+        }
+
+        table.appendChild(tbody);
+        divContainer.appendChild(table);
+        blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFramesTable');
+      }
+
       } else {
         blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
       }

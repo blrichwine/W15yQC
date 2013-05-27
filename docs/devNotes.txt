@@ -141,6 +141,7 @@
 
 
     *** FIX ASAP***
+  -- Improve dominant aria roles routine to ignore the native role (h2 is OK with heading role, button is OK with the button role, etc.)
   -- Quick Report
     -- Finish fnJAWSAnnouncesControlAs [done]
     -- Only show elements that would be listed by AT
