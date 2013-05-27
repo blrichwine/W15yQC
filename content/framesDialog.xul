@@ -47,67 +47,82 @@
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"
       onselect="blr.W15yQC.FramesDialog.updateNotesField()">
          <xul:treecols>
-	    <xul:treecol ordinal="1" id="col-header-sourceOrder"
-				 crop="none"
-	       label="#"
-	       style="text-align:center"
-	       fixed="true"
-	       sortDirection=""
-	       onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-	    <xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-	    <xul:treecol  ordinal="3" id="col-header-documentNumber"
-				 crop="none"
-		    label="Doc. #  "
-		    style="text-align:center"
-		    fixed="true"
-		    sortDirection=""
-		    onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-	    <xul:splitter ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-	    <xul:treecol  ordinal="5" id="col-header-containsDocumentNumber"
-				 crop="none"
-		    label="Contains Doc. #  "
-		    style="text-align:center"
-		    fixed="true"
-		    sortDirection=""
-		    onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-	    <xul:splitter  ordinal="6" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-            <xul:treecol ordinal="7" id="col-header-baseURI"
-				 crop="none"
-               label="Base URI  "
-               hidden="true"
-	       flex="3"
-               onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-            <xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-	    <xul:treecol ordinal="9" id="col-header-elementDescription"
-				 crop="none"
-		    label="Element Description  "
-		    hidden="true"
-		    sortDirection=""
-		    flex="3"
-		    onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-            <xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-            <xul:treecol ordinal="11" id="col-header-title"
-				 crop="none"
-               label="Title  "
-               sortDirection=""
-	       flex="3"
-               onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-            <xul:splitter ordinal="11" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-            <xul:treecol ordinal="12" id="col-header-src"
-				 crop="none"
-               label="Src  "
-	       flex="3"
-               sortDirection=""
-               onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-            <xul:splitter ordinal="13" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-            <xul:treecol ordinal="14" id="col-header-state"
-				 crop="none"
-               label="State  "
-               sortDirection=""
-               flex="2"
-               onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
-         </xul:treecols>
-	 <xul:treechildren id="treeboxChildren"/>
+						<xul:treecol ordinal="1" id="col-header-sourceOrder"
+							 crop="none"
+							 label="#"
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection=""
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-documentNumber"
+							 crop="none"
+							 label="Doc. #  "
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection=""
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol  ordinal="5" id="col-header-containsDocumentNumber"
+							 crop="none"
+							 label="Contains Doc. #  "
+							 style="text-align:center"
+							 fixed="true"
+							 sortDirection=""
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter  ordinal="6" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="7" id="col-header-baseURI"
+							 crop="none"
+							 label="Base URI  "
+							 hidden="true"
+							 flex="3"
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="9" id="col-header-elementDescription"
+							 crop="none"
+							 label="Element Description  "
+							 hidden="true"
+							 sortDirection=""
+							 flex="3"
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="11" id="col-header-effectiveLabel"
+							 crop="none"
+							 label="Effective Label  "
+							 sortDirection=""
+							 flex="3"
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="12" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="13" id="col-header-effectiveLabelSource"
+							 crop="none"
+							 label="Effective Label Source  "
+							 sortDirection=""
+							 hidden="true"
+							 flex="3"
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="15" id="col-header-title"
+							 crop="none"
+							 label="Title  "
+							 sortDirection=""
+							 flex="3"
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="17" id="col-header-src"
+							 crop="none"
+							 label="Src  "
+							 flex="3"
+							 sortDirection=""
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+						<xul:splitter ordinal="18" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="19" id="col-header-state"
+							 crop="none"
+							 label="State  "
+							 sortDirection=""
+							 flex="2"
+							 onclick="blr.W15yQC.FramesDialog.sortTree(this)" />
+				 </xul:treecols>
+	 	 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
       <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 	 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>

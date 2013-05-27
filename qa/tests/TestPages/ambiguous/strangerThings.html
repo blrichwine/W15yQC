@@ -7,7 +7,7 @@
 <body>
 	<noscript><div><h1>This is the noscript area</h1></div></noscript>
 
-	<h1>Stranger Things HTML Test Page</h1>
+	<h1 id="test">Stranger Things HTML Test Page</h1>
 	<div role="heading" aria-level="8">Div with Heading role and no ARIA labels and an invalid heading level of 8.</div>
 	<div role="heading" aria-level="0">Div with Heading role and no ARIA labels and an invalid heading level of 0.</div>
 	<div role="heading">Div with Heading role and no ARIA labels and no aria-level.</div>
@@ -34,6 +34,10 @@
 			</fieldset>
 		</fieldset>
 	</form>
+	<iframe src="test.html" aria-label="test aria-label on iframe" title="title attribute on the iframe with an aria-label"></iframe>
+	<iframe src="test.html" aria-label="test aria-label on iframe2"/></iframe>
+	<iframe src="test.html" aria-label="test aria-label on iframe3" aria-labelledby="test"/></iframe>
+	<iframe src="test.html" aria-labelledby="test"/></iframe>
 <table>
 	<tbody> tbody text content
 	<tr> test content outside of table cell

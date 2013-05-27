@@ -822,6 +822,11 @@ ys: 'whys'
       return s;
     },
 
+    fnFormatList: function (s) {
+      if(s!=null ) {s = s.replace(/,/g, ', ');}
+      return s;
+    },
+
     // Severity Levels: 0=notice, 1=warning, 2=failure
     // Expert Levels: 0=Basic, 1=Advanced, 2=Expert
     noteDetails: { // [Quick, Severity, Expert level, hasExplanation, URL]
@@ -3440,6 +3445,14 @@ ys: 'whys'
       // textarea, select, button, input
       /* Q: Is the decision that JAWS makes from the lack of the attribute or the string, does aria-label="" stop progression the same as no title attribute?
        * A: Empty aria-label and elements pointed to by aria-labelledby are the same as not having an aria-label or aria-labelled by (JAWS 13 + IE9 - Windows 7 32 bit)
+       *
+       * JAWS 14 on Windows 8 tests
+       *
+       *   Firefox 19:
+       *     Frames: Listed by title attribute on the iframe element, if title attribute is missing, then it is listed by the first of aria-labelledby, aria-label, or src attribute
+       *
+       *   IE 10
+       *     Frames: Listed by title of document contained in the frame, then if missing by the first of title attribute on the iframe element, aria-label, aria-labelled by, or src.
        */
       var sLabelText = '',
           sLabelSource ='',
@@ -3519,6 +3532,9 @@ ys: 'whys'
 
           } else if (sTagName == 'img' || sTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','alt','title','aria-labelledby']);
+
+          } else if (sTagName == 'iframe' || sTagName == 'frame') { // JAWS 14 FF19 Win8: ignore doc title, title attribute, aria-labelledby, aria-label
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','title','aria-labelledby', 'aria-label']);
 
           } else if (blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
             if(sRole=='radio' || sRole=='heading') {
@@ -4919,7 +4935,7 @@ ys: 'whys'
     },
 
     fnGetFrameTitles: function (doc, rootNode, aFramesList) {
-      var c, frameTitle, frameSrc, frameId, frameName, role, xPath, nodeDescription, frameDocument;
+      var c, frameTitle, frameSrc, frameId, frameName, role, xPath, nodeDescription, frameDocument, aLabel, effectiveLabel, effectiveLabelSource;
       if (aFramesList == null) { aFramesList = []; }
 
       if (doc != null) {
@@ -4934,8 +4950,11 @@ ys: 'whys'
               frameName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
               role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
               xPath = blr.W15yQC.fnGetElementXPath(c);
+              aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+              effectiveLabel=aLabel[0];
+              effectiveLabelSource=aLabel[1];
               nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-              aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, frameSrc));
+              aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, effectiveLabel, effectiveLabelSource, frameSrc));
               // get frame contents
               frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
               blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
@@ -5060,7 +5079,7 @@ ys: 'whys'
         table.setAttribute('id', 'AIFramesTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFramesList.length; i++) {
@@ -5071,13 +5090,13 @@ ys: 'whys'
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aFramesList[i].title, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aFramesList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
-                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHSrc'),
-                                                              blr.W15yQC.fnGetString('hrsTHNotes')]);
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
+                                                              blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFramesList.length; i++) {
@@ -5088,7 +5107,7 @@ ys: 'whys'
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].title, aFramesList[i].src, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].effectiveLabel, aFramesList[i].effectiveLabelSource, aFramesList[i].src, sNotes], sClass);
           }
         }
 
@@ -5293,7 +5312,11 @@ ys: 'whys'
                 sRole = blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
                 xPath = blr.W15yQC.fnGetElementXPath(node);
                 nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, frameSrc));
+                aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                effectiveLabel=aLabel[0];
+                effectiveLabelSource=aLabel[1];
+
+                oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, effectiveLabel, effectiveLabelSource, frameSrc));
                 oW15yResults.aFrames[oW15yResults.aFrames.length-1].ownerDocumentNumber=docNumber+1;
                 // Document the new document
                 frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
@@ -9527,7 +9550,7 @@ ys: 'whys'
   };
 
 
-  blr.W15yQC.frameElement = function (node, xpath, nodeDescription, doc, orderNumber, role, id, name, title, src) {
+  blr.W15yQC.frameElement = function (node, xpath, nodeDescription, doc, orderNumber, role, id, name, title, effectiveLabel, effectiveLabelSource, src) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
@@ -9536,6 +9559,8 @@ ys: 'whys'
     this.role = role;
     this.id = id;
     this.name = name;
+    this.effectiveLabel = effectiveLabel;
+    this.effectiveLabelSource = effectiveLabelSource;
     this.title = title;
     this.src = src;
   };
@@ -9556,6 +9581,8 @@ ys: 'whys'
     warning: false,
     id: null,
     name: null,
+    effectiveLabel: null,
+    effectiveLabelSource: null,
     title: null,
     soundex: null,
     src: null,

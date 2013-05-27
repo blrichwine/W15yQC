@@ -133,6 +133,14 @@ blr.W15yQC.FramesDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.effectiveLabel);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.effectiveLabelSource);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.title);
           treerow.appendChild(treecell);
 
@@ -344,6 +352,12 @@ blr.W15yQC.FramesDialog = {
         break;
       case 'col-header-elementDescription':
         blr.W15yQC.FramesDialog.sortTreeAsStringOn('nodeDescription',sortDir);
+        break;
+      case 'col-header-effectiveLabel':
+        blr.W15yQC.FramesDialog.sortTreeAsStringOn('title',sortDir);
+        break;
+      case 'col-header-effectiveLabelSource':
+        blr.W15yQC.FramesDialog.sortTreeAsStringOn('title',sortDir);
         break;
       case 'col-header-title':
         blr.W15yQC.FramesDialog.sortTreeAsStringOn('title',sortDir);
