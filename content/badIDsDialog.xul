@@ -74,7 +74,7 @@
 							 label="Element Description  "
 							 hidden="false"
 							 sortDirection=""
-							 flex="3"
+							 flex="1"
 							 onclick="blr.W15yQC.badIDsDialog.sortTree(this)" />
             <xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="9" id="col-header-id"
@@ -82,7 +82,15 @@
                label="ID  "
 				       style="text-align:left"
                sortDirection=""
-				       flex="3"
+				       flex="1"
+               onclick="blr.W15yQC.badIDsDialog.sortTree(this)" />
+            <xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+            <xul:treecol ordinal="11" id="col-header-id"
+							 crop="none"
+               label="Notes  "
+				       style="text-align:left"
+               sortDirection=""
+				       flex="4"
                onclick="blr.W15yQC.badIDsDialog.sortTree(this)" />
          </xul:treecols>
 				 <xul:treechildren id="treeboxChildren"/>

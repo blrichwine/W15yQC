@@ -2450,18 +2450,22 @@ ys: 'whys'
     },
 
     fnWhyInvalidID: function(sID) {
-      var sMsg=null, sMsg1=null, sMsg2=null, sMsg3=null;
+      var sMsg=null, sMsg1=null, sMsg2=null, sMsg3=null, sID2;
       sID = blr.W15yQC.fnTrim(sID);
-      if(sID==null || blr.W15yQC.fnStringHasContent(sID)) {
+      if(blr.W15yQC.fnStringHasContent(sID)) {
         if(/^[a-z]/i.test(sID)==false){
           sMsg1='begin with a letter [a-z]';
         }
         if(/\s/.test(sID)) {
           sMsg2='not contain spaces'
         }
-        sID=sID.replace(/^[a-z0-9\s:\._-]/ig,'');
-        if(sID.length>0) {
-          sMsg3="not contain the characters:'"+sID+"'";
+        sID2=sID.replace(/[a-z0-9\s:\._-]/ig,'');
+        if(blr.W15yQC.fnStringHasContent(sID2)) {
+          if(sID2.length>1) {
+            sMsg3="not contain the characters:'"+sID2+"'";
+          } else {
+            sMsg3="not contain the character:'"+sID2+"'";
+          }
         }
       }
       if(sMsg1!=null || sMsg2!=null || sMsg3!=null) {
@@ -2474,11 +2478,11 @@ ys: 'whys'
             sMsg=sMsg+sMsg2+' and '+sMsg3;
           }
         } else {
-          sMsg=sMsg+' and ';
-          if(sMsg2!=null) sMsg=sMsg+sMsg2;
-          if(sMsg3!=null) sMsg=sMsg+sMsg3;
+          if(sMsg2!=null) sMsg=sMsg+' and '+sMsg2;
+          if(sMsg3!=null) sMsg=sMsg+' and '+sMsg3;
         }
       }
+      return blr.W15yQC.fnTrim(sMsg);
     },
 
     fnIsValidHtmlIDList: function (sIDs) {
@@ -2993,7 +2997,7 @@ ys: 'whys'
               case 'button':
                 return 'button';
               case 'checkbox':
-                return 'checkbox';
+                return 'check box';
               case 'radio':
                 return 'radio button';
               case 'textbox':
@@ -3030,7 +3034,9 @@ ys: 'whys'
           case 'select':
             return 'combobox';
           case 'textarea':
-            return 'text area' ;
+            return 'edit' ;
+          default:
+            return '';
         }
       }
       return '';
@@ -8565,22 +8571,24 @@ ys: 'whys'
                 bNotUnique=false;
                 bNotValid=false;
                 sID = blr.W15yQC.fnTrim(c.getAttribute('id'));
-                if(docNumber==null) { docNumber = blr.W15yQC.fnGetOwnerDocumentNumber(rootNode, aDocumentsList); }
+                if(blr.W15yQC.fnStringHasContent(sID)) {
+                  if(docNumber==null) { docNumber = blr.W15yQC.fnGetOwnerDocumentNumber(rootNode, aDocumentsList); }
 
-                if(aDocumentsList[docNumber-1].idHashTable.getItem(sID)>1) { bNotUnique=true; }
-                if(blr.W15yQC.fnIsValidHtmlID(sID)==false) { bNotValid=true; }
+                  if(aDocumentsList[docNumber-1].idHashTable.getItem(sID)>1) { bNotUnique=true; }
+                  if(blr.W15yQC.fnIsValidHtmlID(sID)==false) { bNotValid=true; }
 
-                if(bNotUnique == true || bNotValid==true) {
-                  xPath = blr.W15yQC.fnGetElementXPath(c);
-                  nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-                  aBadIDsList.push(new blr.W15yQC.badId(c, xPath, nodeDescription, doc, aBadIDsList.length, docNumber, sID));
-                  if(bNotUnique==true) {
-                    blr.W15yQC.fnAddNote(aBadIDsList[aBadIDsList.length-1], 'idIsNotUnique');
-                    aBadIDsList[aBadIDsList.length-1].failed = true;
-                  }
-                  if(bNotValid==true) {
-                    blr.W15yQC.fnAddNote(aBadIDsList[aBadIDsList.length-1], 'idIsNotValid');
-                    aBadIDsList[aBadIDsList.length-1].warning = true;
+                  if(bNotUnique == true || bNotValid==true) {
+                    xPath = blr.W15yQC.fnGetElementXPath(c);
+                    nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
+                    aBadIDsList.push(new blr.W15yQC.badId(c, xPath, nodeDescription, doc, aBadIDsList.length, docNumber, sID));
+                    if(bNotUnique==true) {
+                      blr.W15yQC.fnAddNote(aBadIDsList[aBadIDsList.length-1], 'idIsNotUnique');
+                      aBadIDsList[aBadIDsList.length-1].failed = true;
+                    }
+                    if(bNotValid==true) {
+                      blr.W15yQC.fnAddNote(aBadIDsList[aBadIDsList.length-1], 'idIsNotValid');
+                      aBadIDsList[aBadIDsList.length-1].warning = true;
+                    }
                   }
                 }
               }

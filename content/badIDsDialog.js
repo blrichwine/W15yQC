@@ -124,6 +124,10 @@ blr.W15yQC.badIDsDialog = {
           treecell.setAttribute('label', ak.id);
           treerow.appendChild(treecell);
 
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.txtNotes);
+          treerow.appendChild(treecell);
+
           if (ak.failed) {
             treerow.setAttribute('properties', 'failed');
           } else if (ak.warning) {
@@ -145,7 +149,7 @@ blr.W15yQC.badIDsDialog = {
   },
 
   init: function (dialog) {
-    var oW15yQCReport;
+    var oW15yQCReport, i;
 
     blr.W15yQC.fnReadUserPrefs();
     if (dialog != null && dialog.arguments != null && dialog.arguments.length > 1) {
@@ -160,6 +164,11 @@ blr.W15yQC.badIDsDialog = {
 
     blr.W15yQC.badIDsDialog.aBadIDsList = blr.W15yQC.fnGetBadIDs(window.opener.parent._content.document, blr.W15yQC.badIDsDialog.aDocumentsList);
     //blr.W15yQC.badIDsDialog.aBadIDsList = oW15yQCReport.aBadIDs;
+    if(blr.W15yQC.badIDsDialog.aBadIDsList!=null) {
+        for(i=0;i<blr.W15yQC.badIDsDialog.aBadIDsList.length;i++) {
+            blr.W15yQC.badIDsDialog.aBadIDsList[i].txtNotes=blr.W15yQC.fnJoin(blr.W15yQC.fnMakeTextNotesList(blr.W15yQC.badIDsDialog.aBadIDsList[i]),blr.W15yQC.fnWhyInvalidID(blr.W15yQC.badIDsDialog.aBadIDsList[i].id),' ');
+        }
+    }
     blr.W15yQC.badIDsDialog.fnPopulateTree(blr.W15yQC.badIDsDialog.aDocumentsList, blr.W15yQC.badIDsDialog.aBadIDsList);
     dialog.fnUpdateProgress('Ready',null);
   },
@@ -182,7 +191,7 @@ blr.W15yQC.badIDsDialog = {
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, selectedIndex, box, ak;
+      selectedRow, selectedIndex, box, ak, whyInvalid;
 
     if (bHighlightElement === null) bHighlightElement = true;
 
@@ -199,6 +208,9 @@ blr.W15yQC.badIDsDialog = {
     } else {
       textbox.value = '';
     }
+
+    whyInvalid=blr.W15yQC.fnWhyInvalidID(ak.id);
+    if(blr.W15yQC.fnStringHasContent(whyInvalid)) { textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Why Invalid: ' + whyInvalid, "\n"); }
 
     textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.nodeDescription, "\n\n");
     textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n\n");

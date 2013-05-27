@@ -142,11 +142,11 @@
 
     *** FIX ASAP***
   -- Quick Report
-    -- Finish fnJAWSAnnouncesControlAs
+    -- Finish fnJAWSAnnouncesControlAs [done]
     -- Only show elements that would be listed by AT
        -- Don't list images [done]
        -- Don't list labels [done]
-       -- Don't elements which have their roles overriden
+       -- Don't list elements which have their roles overriden
        -- Make sure elements are listed in the correct list dialogs (links or form controls)
            -- Which ARIA widgets get listed in the form controls?
        -- Make sure the appropriate rules are used in the quick report.
@@ -155,11 +155,11 @@
   Verify each analysis routine is using the effective label value to check for uniqueness, meaningfulness, etc.
   THINGS TO DO BEFORE MAKING WEB PAGE VIDEOS AND W15yQC Protocol Instructions:
     -- Check table inspector TH default scope code
-    -- Add sorting to all Inspector dialogs
+    -- Add sorting to all Inspector dialogs [done]
     -- Add page title tests to the site inspector tool
     -- Make and debug Quick Check View with element type label where appropriate (button, checkbox, etc.)
-    -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script
-    -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This!
+    -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script [done]
+    -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This! [done]
     -- clean up code that takes a node and requires a document to boot.
 
 
