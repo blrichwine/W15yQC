@@ -936,6 +936,7 @@ blr.W15yQC.ScannerWindow = {
         }
         xmlDoc = null;
       }
+      blr.W15yQC.ScannerWindow.inspectPageTitles();
       blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
       blr.W15yQC.ScannerWindow.updateProjectDisplay();
       if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0 && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
@@ -943,7 +944,6 @@ blr.W15yQC.ScannerWindow = {
       } else {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('No project loaded.');
       }
-
       blr.W15yQC.ScannerWindow.updateControlStates();
     }
   },
@@ -1184,32 +1184,53 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
-  inspectPageTitle: function(pti) {
-    //var i, sPageTitle;
-    //if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
-    //  sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
-    //  for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
-    //    if(i!=pti) {
-    //      if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
-    //
-    //      }
-    //    }
-    //  }
-    //}
+  inspectPageTitle: function(pti) { // Call when one URL is added
+    var i, sPageTitle, url;
+    if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
+      url=blr.W15yQC.ScannerWindow.urlList[pti];
+      if (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize) {
+        sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
+        if (blr.W15yQC.fnStringHasContent(sPageTitle)) {
+          for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+            url=blr.W15yQC.ScannerWindow.urlList[i];
+            if(i!=pti && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize)) {
+              if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
+                blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotUnique=true;
+                blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=true;
+              }
+            }
+          }
+        } else {
+          blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotUnique=true;
+        }
+      } else {
+          blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotUnique=false;
+      }
+    }
   },
 
-  inspectPageTitles: function() {
-    //var i, j, sPageTitle;
-    //if(blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
-    //  sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
-    //  for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
-    //    if(i) {
-    //      if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
-    //
-    //      }
-    //    }
-    //  }
-    //}
+  inspectPageTitles: function() { // Call when multiple URLs are added
+    var i, j, sPageTitle, url, url2;
+    if(blr.W15yQC.ScannerWindow.urlList!=null) {
+      for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length-1;i++) {
+        url=blr.W15yQC.ScannerWindow.urlList[i];
+        if (url!=null && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize)) {
+          sPageTitle=url.windowTitle;
+          if(blr.W15yQC.fnStringHasContent(sPageTitle)) {
+            for (j=i+1;j<blr.W15yQC.ScannerWindow.urlList.length;j++) {
+              if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[j].windowTitle)) {
+                blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=true;
+                blr.W15yQC.ScannerWindow.urlList[j].windowTitleNotUnique=true;
+              }
+            }
+          } else {
+            blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=true;
+          }
+        } else {
+          blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=false;
+        }
+      }
+    }
   },
 
   setStateAsScanning: function() {
