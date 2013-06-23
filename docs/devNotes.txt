@@ -141,7 +141,20 @@
 
 
     *** FIX ASAP***
+  -- Placeholder space.
+  -- Put appropriate dialog title in on the remove styles view, choose appropriate tool name, display page title and summary of link counts, etc. in the remove styles view.
+  -- Filter out the list graphic symbols, other non-pronouncable symbols, in semantic view. Especially so fake lists are made apparent.
+  -- Can we substitute default JAWS pronounciation of characters? Should this take place in sounds like testing, too?
+  -- Outline data tables in semantic view. Provide very light background for table headers.
+  -- Indicate form controls marked as required by inserting (required) in front of them in semantic view.
+  -- Detect symbol characters that might represent fake lists, and flag them as warnings.
   -- Improve dominant aria roles routine to ignore the native role (h2 is OK with heading role, button is OK with the button role, etc.)
+  -- Site Summary (similar to page summary)
+  -- Site Statistics
+     -- Page Score Histogram
+  -- Have links on the W15yQC website underlined in the body text.
+  -- Detect CSS background images? Sprites? What are common patterns
+  -- Detect and list font usage? Look for icon fonts?
   -- Quick Report
     -- Finish fnJAWSAnnouncesControlAs [done]
     -- Only show elements that would be listed by AT

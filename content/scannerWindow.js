@@ -1712,10 +1712,13 @@ blr.W15yQC.ScannerWindow = {
     var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
     blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorting on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
     if(ascending==false) {
       for(i=0;i<list.length;i++) {
         for(j=i+1;j<list.length;j++) {
-          if(list[order[i]][index]>list[order[j]][index] || (list[order[i]][index]==list[order[j]][index] && order[i]>order[j])) {
+          if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
             order[j]=temp;
@@ -1725,7 +1728,7 @@ blr.W15yQC.ScannerWindow = {
     } else {
       for(i=0;i<list.length;i++) {
         for(j=i+1;j<list.length;j++) {
-          if(list[order[i]][index]<list[order[j]][index] || (list[order[i]][index]==list[order[j]][index] && order[i]>order[j])) {
+          if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
             order[j]=temp;
@@ -1739,10 +1742,13 @@ blr.W15yQC.ScannerWindow = {
     var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
     blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorting on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
+    for(i=0;i<list.length;i++) {
+        list[order[i]].origOrder=i;
+    }
     if(ascending!=true) {
       for(i=0;i<list.length;i++) {
         for(j=i+1;j<list.length;j++) {
-          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || ((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) && order[i]>order[j])) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
             order[j]=temp;
@@ -1752,7 +1758,7 @@ blr.W15yQC.ScannerWindow = {
     } else {
       for(i=0;i<list.length;i++) {
         for(j=i+1;j<list.length;j++) {
-          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || ((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) && order[i]>order[j])) {
+          if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
             order[j]=temp;
