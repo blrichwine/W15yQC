@@ -564,7 +564,8 @@ blr.W15yQC.ScannerWindow = {
     var row, url;
     blr.W15yQC.ScannerWindow.fnUpdateStatus('');
 
-    if(oW15yQCResults!=null && blr.W15yQC.ScannerWindow.urlList && blr.W15yQC.ScannerWindow.urlList.length>0 && urlIndex<blr.W15yQC.ScannerWindow.urlList.length) {
+    if(oW15yQCResults!=null && blr.W15yQC.ScannerWindow.urlList && blr.W15yQC.ScannerWindow.urlList.length>0 &&
+       urlIndex<blr.W15yQC.ScannerWindow.urlList.length) {
 
       blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
       url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
@@ -693,9 +694,12 @@ blr.W15yQC.ScannerWindow = {
       url.warningsCount=url.warningsCount+url.tablesWarnings;
 
       url.windowDescription=blr.W15yQC.fnJoin(oW15yQCResults.sWindowDescription, oW15yQCResults.PageScore.sDescription, "\n");
+      blr.W15yQC.ScannerWindow.inspectPageTitle(urlIndex);
+
       row=document.getElementById('URL'+urlIndex);
       blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.stateCurrentIndex);
       blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+
     }
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
