@@ -91,7 +91,7 @@
         - button texts
         - axis values [done]
       ** Problem ID dialog
-        - List valid ID rules
+        - List valid ID rules: http://stackoverflow.com/questions/70579/what-are-valid-values-for-the-id-attribute-in-html
         - list why an ID is invalid (what characters make it invalid and what position it is in)
       *** Feature Expansion ***
         ** Page Summary
