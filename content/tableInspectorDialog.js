@@ -312,7 +312,7 @@ blr.W15yQC.TableInspectorDialog = {
           blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
         } catch (ex) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].doc);
+      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node);
     }
   },
 
@@ -357,14 +357,14 @@ blr.W15yQC.TableInspectorDialog = {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
 
       if (bHighlightElement != false) {
-        idCounter = blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow');
+        idCounter = blr.W15yQC.highlightElement(aFC.node, 'yellow');
         if (blr.W15yQC.fnIsFormControlNode(aFC.node) == true) {
           if (aFC.node.hasAttribute('aria-labelledby')) {
             aIDs = aFC.node.getAttribute('aria-labelledby').split(' ');
             for (i = 0; i < aIDs.length; i++) {
               el = aFC.node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', idCounter);
+                idCounter = blr.W15yQC.highlightElement(aFC.node, 'yellow', idCounter);
               }
             }
           } else {
@@ -373,7 +373,7 @@ blr.W15yQC.TableInspectorDialog = {
               el = el.parentNode;
             }
             if (el != null && el.tagName.toLowerCase() == 'label') {
-              idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#FFAAAA', idCounter);
+              idCounter = blr.W15yQC.highlightElement(el, '#FFAAAA', idCounter);
             }
             el = aFC.node.parentNode;
             while (el != null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {
@@ -382,7 +382,7 @@ blr.W15yQC.TableInspectorDialog = {
             if (el != null && el.tagName.toLowerCase() == 'fieldset') {
               aLabels = el.getElementsByTagName('legend');
               if (aLabels != null && aLabels.length > 0) {
-                idCounter = blr.W15yQC.highlightElement(aLabels[0], aLabels[0].ownerDocument, '#AAAAFF', idCounter);
+                idCounter = blr.W15yQC.highlightElement(aLabels[0], '#AAAAFF', idCounter);
               }
             }
             if (aFC.node.hasAttribute('id')) {
@@ -391,7 +391,7 @@ blr.W15yQC.TableInspectorDialog = {
               if (aLabels != null && aLabels.length > 0) {
                 for (i = 0; i < aLabels.length; i++) {
                   if (aLabels[i].getAttribute('for') == nodeID) {
-                    idCounter = blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, '#FFAAAA', idCounter);
+                    idCounter = blr.W15yQC.highlightElement(aLabels[i], '#FFAAAA', idCounter);
                   }
                 }
               }
@@ -402,7 +402,7 @@ blr.W15yQC.TableInspectorDialog = {
             for (i = 0; i < aIDs.length; i++) {
               el = aFC.node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#AAFFAA', idCounter);
+                idCounter = blr.W15yQC.highlightElement(el, '#AAFFAA', idCounter);
               }
             }
           }

@@ -197,7 +197,7 @@ blr.W15yQC.DocumentsDialog = {
           blr.W15yQC.fnMoveToElement(ak.doc.body);
         } catch (ex) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.doc.body, ak.doc);
+      if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.doc.body);
     }
   },
 

@@ -1457,7 +1457,7 @@ ys: 'whys'
               //w15yqcPrevElWithFocus.style.position = "relative";
             }
             //w15yqcPrevElWithFocus.style.zIndex = "199999";
-            blr.W15yQC.highlightElement(e.target, e.target.ownerDocument);
+            blr.W15yQC.highlightElement(e.target);
           }
         }
       }

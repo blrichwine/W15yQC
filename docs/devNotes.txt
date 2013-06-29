@@ -170,7 +170,7 @@
   THINGS TO DO BEFORE MAKING WEB PAGE VIDEOS AND W15yQC Protocol Instructions:
     -- Check table inspector TH default scope code
     -- Add sorting to all Inspector dialogs [done]
-    -- Add page title tests to the site inspector tool
+    -- Add page title tests to the site inspector tool and add a message about it in the URL summary
     -- Make and debug Quick Check View with element type label where appropriate (button, checkbox, etc.)
     -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script [done]
     -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This! [done]

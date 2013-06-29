@@ -427,7 +427,7 @@ blr.W15yQC.FormControlsDialog = {
           blr.W15yQC.fnMoveToElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].node);
         } catch (err) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].node, blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].doc);
+      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedIndex].node);
     }
   },
 
@@ -481,14 +481,14 @@ blr.W15yQC.FormControlsDialog = {
       }
 
       if (bHighlightElement != false) {
-        idCounter = blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow');
+        idCounter = blr.W15yQC.highlightElement(aFC.node, 'yellow');
         if (blr.W15yQC.fnIsFormControlNode(aFC.node) == true) {
           if (aFC.node.hasAttribute('aria-labelledby')) {
             aIDs = aFC.node.getAttribute('aria-labelledby').split(' ');
             for (i = 0; i < aIDs.length; i++) {
               el = aFC.node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(aFC.node, aFC.doc, 'yellow', idCounter);
+                idCounter = blr.W15yQC.highlightElement(aFC.node, 'yellow', idCounter);
               }
             }
           } else {
@@ -497,7 +497,7 @@ blr.W15yQC.FormControlsDialog = {
               el = el.parentNode;
             }
             if (el != null && el.tagName.toLowerCase() == 'label') {
-              idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#FFAAAA', idCounter);
+              idCounter = blr.W15yQC.highlightElement(el, '#FFAAAA', idCounter);
             }
             el = aFC.node.parentNode;
             while (el != null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {
@@ -506,7 +506,7 @@ blr.W15yQC.FormControlsDialog = {
             if (el != null && el.tagName.toLowerCase() == 'fieldset') {
               aLabels = el.getElementsByTagName('legend');
               if (aLabels != null && aLabels.length > 0) {
-                idCounter = blr.W15yQC.highlightElement(aLabels[0], aLabels[0].ownerDocument, '#AAAAFF', idCounter);
+                idCounter = blr.W15yQC.highlightElement(aLabels[0], '#AAAAFF', idCounter);
               }
             }
             if (aFC.node.hasAttribute('id')) {
@@ -515,7 +515,7 @@ blr.W15yQC.FormControlsDialog = {
               if (aLabels != null && aLabels.length > 0) {
                 for (i = 0; i < aLabels.length; i++) {
                   if (aLabels[i].getAttribute('for') == nodeID) {
-                    idCounter = blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, '#FFAAAA', idCounter);
+                    idCounter = blr.W15yQC.highlightElement(aLabels[i], '#FFAAAA', idCounter);
                   }
                 }
               }
@@ -526,7 +526,7 @@ blr.W15yQC.FormControlsDialog = {
             for (i = 0; i < aIDs.length; i++) {
               el = aFC.node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#AAFFAA', idCounter);
+                idCounter = blr.W15yQC.highlightElement(el, '#AAFFAA', idCounter);
               }
             }
           }

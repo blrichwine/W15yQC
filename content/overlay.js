@@ -1307,34 +1307,41 @@ ys: 'whys'
       if (!blr.W15yQC.fnHasClass(ele, cls)) { ele.className += " " + cls; }
     },
 
-    fnAppendPElementTo: function (node, doc, sText) {
-      var element = doc.createElement('p');
-      element.appendChild(doc.createTextNode(sText));
-      node.appendChild(element);
+    fnAppendPElementTo: function (node, sText) {
+      var element;
+      if (node!=null && node.ownerDocument) {
+        element = node.ownerDocument.createElement('p');
+        element.appendChild(node.ownerDocument.createTextNode(sText));
+        node.appendChild(element);
+      }
     },
 
-    fnAppendExpandContractHeadingTo: function (node, doc, sText) {
-      var element, aEl, spanEl;
-      element = doc.createElement('h2');
-      element.setAttribute('tabindex', '-1');
-      aEl = doc.createElement('a');
-      aEl.setAttribute('tabindex',0);
-      aEl.setAttribute('class','ec');
-      aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
-      aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
-      aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
-      spanEl=doc.createElement('span');
-      spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
-      spanEl.setAttribute('class','auralText');
-      aEl.appendChild(spanEl);
-      aEl.appendChild(doc.createTextNode(sText));
-      element.appendChild(aEl);
-      node.appendChild(element);
+    fnAppendExpandContractHeadingTo: function (node, sText) {
+      var element, aEl, spanEl, doc;
+      if (node!=null && node.ownerDocument) {
+        doc=node.ownerDocument;
+        element = doc.createElement('h2');
+        element.setAttribute('tabindex', '-1');
+        aEl = doc.createElement('a');
+        aEl.setAttribute('tabindex',0);
+        aEl.setAttribute('class','ec');
+        aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
+        aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
+        aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
+        spanEl=doc.createElement('span');
+        spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
+        spanEl.setAttribute('class','auralText');
+        aEl.appendChild(spanEl);
+        aEl.appendChild(doc.createTextNode(sText));
+        element.appendChild(aEl);
+        node.appendChild(element);
+      }
     },
 
-    fnCreateTableHeaders: function (doc, table, aTableHeaders) {
-      var thead, tr, i, j, th, thTextArray;
-      if (doc && table && aTableHeaders && aTableHeaders.length > 0) {
+    fnCreateTableHeaders: function (table, aTableHeaders) {
+      var thead, tr, i, j, th, thTextArray, doc;
+      if (table && aTableHeaders && aTableHeaders.length > 0) {
+        doc=table.ownerDocument;
         thead = doc.createElement('thead');
         tr = doc.createElement('tr');
         for (i = 0; i < aTableHeaders.length; i++) {
@@ -1355,9 +1362,10 @@ ys: 'whys'
       return table;
     },
 
-    fnAppendTableRow: function (doc, tableBody, aTableCells, sClass) {
+    fnAppendTableRow: function (tableBody, aTableCells, sClass) {
       var i, sText, td, tr;
-      if (doc && tableBody && aTableCells && aTableCells.length > 0) {
+      if (tableBody && aTableCells && aTableCells.length > 0) {
+        doc=tableBody.ownerDocument;
         tr = doc.createElement('tr');
         for (i = 0; i < aTableCells.length; i++) {
           td = doc.createElement('td');
@@ -1457,7 +1465,7 @@ ys: 'whys'
               //w15yqcPrevElWithFocus.style.position = "relative";
             }
             //w15yqcPrevElWithFocus.style.zIndex = "199999";
-            blr.W15yQC.highlightElement(e.target, e.target.ownerDocument);
+            blr.W15yQC.highlightElement(e.target);
           }
         }
       }
@@ -1758,11 +1766,12 @@ ys: 'whys'
       }
     },
 
-    highlightElement: function (node, doc, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
+    highlightElement: function (node, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false, tagName=null, bEmptyElement=false;
+      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false, tagName=null, bEmptyElement=false, doc;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
-      if (doc != null && node != null) {
+      if (node != null && node.ownerDocument) {
+        doc=node.ownerDocument;
         if(idCounter==null && Array.isArray( blr.W15yQC.highlightTimeoutID )) {
           bSetTimeouts=true;
           for(i=0;i<blr.W15yQC.highlightTimeoutID.length;i++) {
@@ -1929,7 +1938,7 @@ ys: 'whys'
       var idCounter, aIDs, i, el, aLabels, nodeID;
 
         if(skipHighlightingFocusedElement!=true) {
-          idCounter = blr.W15yQC.highlightElement(node, node.ownerDocument, 'yellow');
+          idCounter = blr.W15yQC.highlightElement(node, 'yellow');
         } else {
           idCounter=0;
         }
@@ -1939,7 +1948,7 @@ ys: 'whys'
             for (i = 0; i < aIDs.length; i++) {
               el = node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(node, node.ownerDocument, 'yellow', idCounter);
+                idCounter = blr.W15yQC.highlightElement(node, 'yellow', idCounter);
               }
             }
           } else {
@@ -1948,7 +1957,7 @@ ys: 'whys'
               el = el.parentNode;
             }
             if (el != null && el.tagName.toLowerCase() == 'label') {
-              idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#FFAAAA', idCounter);
+              idCounter = blr.W15yQC.highlightElement(el, '#FFAAAA', idCounter);
             }
             el = node.parentNode;
             while (el != null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {
@@ -1957,7 +1966,7 @@ ys: 'whys'
             if (el != null && el.tagName.toLowerCase() == 'fieldset') {
               aLabels = el.getElementsByTagName('legend');
               if (aLabels != null && aLabels.length > 0) {
-                idCounter = blr.W15yQC.highlightElement(aLabels[0], aLabels[0].ownerDocument, '#AAAAFF', idCounter);
+                idCounter = blr.W15yQC.highlightElement(aLabels[0], '#AAAAFF', idCounter);
               }
             }
             if (node.hasAttribute('id')) {
@@ -1966,7 +1975,7 @@ ys: 'whys'
               if (aLabels != null && aLabels.length > 0) {
                 for (i = 0; i < aLabels.length; i++) {
                   if (aLabels[i].getAttribute('for') == nodeID) {
-                    idCounter = blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, '#FFAAAA', idCounter);
+                    idCounter = blr.W15yQC.highlightElement(aLabels[i], '#FFAAAA', idCounter);
                   }
                 }
               }
@@ -1977,7 +1986,7 @@ ys: 'whys'
             for (i = 0; i < aIDs.length; i++) {
               el = node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#AAFFAA', idCounter);
+                idCounter = blr.W15yQC.highlightElement(el, '#AAFFAA', idCounter);
               }
             }
           }
@@ -5075,7 +5084,7 @@ ys: 'whys'
       var div, div2, element, sWindowTitle, sWindowURL;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentDetails');
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnGetString('hrsWindowDetails'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnGetString('hrsWindowDetails'));
       div2 = rd.createElement('div');
       element = rd.createElement('h3');
       element.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsWindowTitle')));
@@ -5110,14 +5119,14 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFramesList, 'hrsFrames', 'hrsNoFrames'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFramesList, 'hrsFrames', 'hrsNoFrames'));
 
       if (aFramesList && aFramesList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIFramesTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFramesList.length; i++) {
@@ -5128,10 +5137,10 @@ ys: 'whys'
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aFramesList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aFramesList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
                                                               blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -5145,7 +5154,7 @@ ys: 'whys'
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].effectiveLabel, aFramesList[i].effectiveLabelSource, aFramesList[i].src, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].effectiveLabel, aFramesList[i].effectiveLabelSource, aFramesList[i].src, sNotes], sClass);
           }
         }
 
@@ -5154,7 +5163,7 @@ ys: 'whys'
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFramesTable');
 
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFramesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoFramesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5893,13 +5902,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
 
       if (aDocumentsList && aDocumentsList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIDocumentsTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
+        table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
                                                             blr.W15yQC.fnGetString('hrsTHLanguage'), blr.W15yQC.fnGetString('hrsTHDirection'),
                                                             blr.W15yQC.fnGetString('hrsTHDocumentURL'), blr.W15yQC.fnGetString('hrsTHCompatMode'),
                                                             blr.W15yQC.fnGetString('hrsTHDoctype'),blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -5914,13 +5923,13 @@ ys: 'whys'
           } else if (dd.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, dd.title, dd.language, dd.dir, dd.URL, dd.compatMode, dd.docType, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, dd.title, dd.language, dd.dir, dd.URL, dd.compatMode, dd.docType, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIDocumentsTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6117,14 +6126,14 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList,'hrsARIALandmarks','hrsNoARIALandmarks'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList,'hrsARIALandmarks','hrsNoARIALandmarks'));
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes && aARIALandmarksList.pageLevel.notes.length>0))) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
 
         if (bQuick) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           // Elements
@@ -6140,10 +6149,10 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, lo.effectiveLabel], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHRole'),
                                                               blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -6163,7 +6172,7 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
           }
           // Page Level
           if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
@@ -6176,7 +6185,7 @@ ys: 'whys'
               } else if (lo.warning) {
                 sClass = 'warning';
               }
-              blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
             }
           }
         }
@@ -6185,7 +6194,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIIARIALandmarksTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6267,7 +6276,7 @@ ys: 'whys'
       div.setAttribute('id', 'AIARIAElementsList');
       div.setAttribute('class', 'AIList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList,'hrsARIAEls','hrsNoARIAEls'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList,'hrsARIAEls','hrsNoARIAEls'));
 
       if (aARIAElementsList && aARIAElementsList.length > 0) {
 
@@ -6347,7 +6356,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6719,7 +6728,7 @@ ys: 'whys'
       var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
 
       if (aImagesList && aImagesList.length > 0) {
         for (i = 0; i < aImagesList.length; i++) {
@@ -6732,7 +6741,7 @@ ys: 'whys'
         if (bQuick) {
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')];
 
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -6746,7 +6755,7 @@ ys: 'whys'
               sClass = 'warning';
             }
             colValues=[i + 1, io.effectiveLabel, sNotes];
-            blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         } else {
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
@@ -6756,7 +6765,7 @@ ys: 'whys'
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -6774,14 +6783,14 @@ ys: 'whys'
             if(bHasARIALabel) colValues.push(io.ariaLabel);
             colValues.push(io.src);
             colValues.push(sNotes);
-            blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIImagesTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoImagesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoImagesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6913,14 +6922,14 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList,'hrsAccessKeys','hrsNoAccessKeys'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList,'hrsAccessKeys','hrsNoAccessKeys'));
 
       if (aAccessKeysList != null && aAccessKeysList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIAccesskeysTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
@@ -6933,10 +6942,10 @@ ys: 'whys'
             } else if (ak.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, ak.accessKey, ak.effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, ak.accessKey, ak.effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -6951,14 +6960,14 @@ ys: 'whys'
             } else if (ak.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
           }
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIAccesskeysTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7130,7 +7139,7 @@ ys: 'whys'
       div.setAttribute('id', 'AIHeadingsList');
       div.setAttribute('class', 'AIList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
 
       if (aHeadingsList && aHeadingsList.length > 0) {
         for(i=0;i<aHeadingsList.length;i++) { if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; } }
@@ -7215,7 +7224,7 @@ ys: 'whys'
         table.setAttribute('id', 'AIHeadingsTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aHeadingsList.length; i++) {
@@ -7226,10 +7235,10 @@ ys: 'whys'
             } else if (aHeadingsList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -7243,7 +7252,7 @@ ys: 'whys'
             } else if (aHeadingsList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
           }
         }
 
@@ -7253,7 +7262,7 @@ ys: 'whys'
       }
 
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7601,13 +7610,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormsList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFormsList,'hrsForms','hrsNoForms'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFormsList,'hrsForms','hrsNoForms'));
 
       if (aFormsList && aFormsList.length > 0) {
         table = rd.createElement('table');
         msgHash = new blr.W15yQC.HashTable();
         table.setAttribute('id', 'AIFormsTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
+        table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
                                                             blr.W15yQC.fnGetString('hrsTHFormElement'), blr.W15yQC.fnGetString('hrsTHName'),
                                                             blr.W15yQC.fnGetString('hrsTHAction'), blr.W15yQC.fnGetString('hrsTHMethod'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -7622,13 +7631,13 @@ ys: 'whys'
           } else if (fce.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription), fce.name, fce.action, fce.method, fce.stateDescription, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription), fce.name, fce.action, fce.method, fce.stateDescription, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormsTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFormsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoFormsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7640,7 +7649,7 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormControlsList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList,'hrsFormsCtrls','hrsNoFormCtrls'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList,'hrsFormsCtrls','hrsNoFormCtrls'));
 
       if (aFormControlsList && aFormControlsList.length > 0) {
         bHasARIALabel = false;
@@ -7666,7 +7675,7 @@ ys: 'whys'
 
           table = rd.createElement('table');
           table.setAttribute('id', 'AIFormControlsTable');
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, aTableHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -7679,7 +7688,7 @@ ys: 'whys'
             } else if (fce.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
           }
         } else {
           aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
@@ -7698,7 +7707,7 @@ ys: 'whys'
 
           table = rd.createElement('table');
           table.setAttribute('id', 'AIFormControlsTable');
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, aTableHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -7724,7 +7733,7 @@ ys: 'whys'
             if (bHasStateDescription) { aTableCells.push(fce.stateDescription); }
             aTableCells.push(sNotes);
 
-            blr.W15yQC.fnAppendTableRow(rd, tbody, aTableCells, sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, aTableCells, sClass);
           }
         }
 
@@ -7732,7 +7741,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -8047,13 +8056,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aLinksList,'hrsLinks','hrsNoLinks'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aLinksList,'hrsLinks','hrsNoLinks'));
 
       if (aLinksList && aLinksList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
         if(bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'),blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'),blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
 
@@ -8066,10 +8075,10 @@ ys: 'whys'
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
                                                               blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
                                                               blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -8084,14 +8093,14 @@ ys: 'whys'
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
           }
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AILinksTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoLinksDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoLinksDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -8639,13 +8648,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AITablesList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aTablesList,'hrsTables','hrsNoTables'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aTablesList,'hrsTables','hrsNoTables'));
 
       if (aTablesList && aTablesList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AITablesTable');
         // TODO: Make summary and caption columns so they only appear when needed.
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
+        table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHSummary'),
                                                             blr.W15yQC.fnGetString('hrsTHCaption'), blr.W15yQC.fnGetString('hrsTHSizeCR'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -8660,13 +8669,13 @@ ys: 'whys'
             sClass = 'warning';
           }
           sSize = aTablesList[i].maxCols+' x '+aTablesList[i].maxRows;
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aTablesList[i].nodeDescription), aTablesList[i].ownerDocumentNumber, aTablesList[i].summary, aTablesList[i].caption, sSize, aTablesList[i].state, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aTablesList[i].nodeDescription), aTablesList[i].ownerDocumentNumber, aTablesList[i].summary, aTablesList[i].caption, sSize, aTablesList[i].state, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AITablesTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoTablesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoTablesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -9092,7 +9101,7 @@ ys: 'whys'
       if (div2==null) {
         div = rd.createElement('div');
         div.setAttribute('id', 'AIPageSummary');
-        blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'Page Summary');
+        blr.W15yQC.fnAppendExpandContractHeadingTo(div, 'Page Summary');
 
         div2 = rd.createElement('div');
 

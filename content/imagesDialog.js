@@ -280,7 +280,7 @@ blr.W15yQC.ImagesDialog = {
         blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node);
   },
 
   moveToSelectedElement: function () {
@@ -290,7 +290,7 @@ blr.W15yQC.ImagesDialog = {
       selectedIndex=blr.W15yQC.ImagesDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node);
-      blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node, blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.ImagesDialog.aImagesList[selectedIndex].node);
     }
   },
 

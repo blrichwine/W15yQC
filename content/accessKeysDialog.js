@@ -247,7 +247,7 @@ blr.W15yQC.AccessKeyDialog = {
         blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node);
   },
 
 
@@ -412,7 +412,7 @@ blr.W15yQC.AccessKeyDialog = {
       selectedIndex=blr.W15yQC.AccessKeyDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.AccessKeyDialog.aDocumentsList);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].node);
-      blr.W15yQC.highlightElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].node, blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.AccessKeyDialog.aAccessKeysList[selectedIndex].node);
     }
   },
 

@@ -243,7 +243,7 @@ blr.W15yQC.FramesDialog = {
         blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node);
   },
 
   addSortColumn: function(index, ascending) {
@@ -410,7 +410,7 @@ blr.W15yQC.FramesDialog = {
       selectedIndex=blr.W15yQC.FramesDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FramesDialog.aDocumentsList);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node);
-      blr.W15yQC.highlightElement(blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node, blr.W15yQC.FramesDialog.aFramesList[selectedIndex].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node);
     }
   },
 

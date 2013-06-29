@@ -229,7 +229,7 @@ blr.W15yQC.badIDsDialog = {
         blr.W15yQC.fnMoveToElement(ak.node);
       } catch (err) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node);
   },
 
 
@@ -380,7 +380,7 @@ blr.W15yQC.badIDsDialog = {
     if (selectedRow != null && treebox.currentIndex >= 0) {
       selectedIndex=blr.W15yQC.badIDsDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnMoveToElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node);
-      blr.W15yQC.highlightElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node, blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node);
     }
   },
 

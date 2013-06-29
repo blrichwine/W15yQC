@@ -257,7 +257,7 @@ blr.W15yQC.HeadingsDialog = {
         blr.W15yQC.fnMoveToElement(ak.node);
       } catch (ex) {}
     }
-    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node, ak.doc);
+    if (bHighlightElement != false) blr.W15yQC.highlightElement(ak.node);
   },
 
   moveToSelectedElement: function () {
@@ -267,7 +267,7 @@ blr.W15yQC.HeadingsDialog = {
       selectedIndex=blr.W15yQC.HeadingsDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.HeadingsDialog.aDocumentsList);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node);
-      blr.W15yQC.highlightElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node, blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.HeadingsDialog.aHeadingsList[selectedIndex].node);
     }
   },
 

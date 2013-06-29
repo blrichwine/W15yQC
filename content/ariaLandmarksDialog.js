@@ -234,7 +234,7 @@ blr.W15yQC.LandmarksDialog = {
       } catch (err) {}
     }
     if (bHighlightElement != false) {
-      blr.W15yQC.highlightElement(ak.node, ak.doc);
+      blr.W15yQC.highlightElement(ak.node);
     }
   },
 
@@ -245,7 +245,7 @@ blr.W15yQC.LandmarksDialog = {
       selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
       blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
-      blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node, blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].doc);
+      blr.W15yQC.highlightElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
     }
   },
 

@@ -361,7 +361,7 @@ blr.W15yQC.LuminosityCheckDialog = {
     }
     highlightElementsCB = document.getElementById('chkbox-highlighton');
     if (highlightElementsCB.checked && bHighlightElement != false) {
-      blr.W15yQC.highlightElement(ak.node, ak.doc);
+      blr.W15yQC.highlightElement(ak.node);
     }
   },
 
@@ -372,7 +372,7 @@ blr.W15yQC.LuminosityCheckDialog = {
       selectedRow = treebox.currentIndex;
       if (selectedRow != null && treebox.currentIndex >= 0) {
         selectedIndex=blr.W15yQC.LuminosityCheckDialog.aDisplayOrder[selectedRow];
-        blr.W15yQC.highlightElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedIndex].node, blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedIndex].doc);
+        blr.W15yQC.highlightElement(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedIndex].node);
       }
     } else {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
