@@ -3308,12 +3308,10 @@ ys: 'whys'
       return sLabelText;
     },
 
-    fnGetARIALabelText: function (node, doc) {
-      var sLabelText = null;
-      if(doc==null && node != null && node.ownerDocument) {
+    fnGetARIALabelText: function (node) {
+      var sLabelText = null, doc;
+      if (node != null && node.hasAttribute && node.ownerDocument) {
         doc=node.ownerDocument;
-      }
-      if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('aria-label')) {
           sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
         }
@@ -3324,9 +3322,10 @@ ys: 'whys'
       return sLabelText;
     },
 
-    fnGetFormControlLabelTagText: function (node, doc) { // TODO: QA This. What happens with both explicit and implicit labels.
-      var sLabelText = null, implicitLabelNode, explictLabelsList, i;
-      if (node != null && node.getAttribute && doc != null) {
+    fnGetFormControlLabelTagText: function (node) { // TODO: QA This. What happens with both explicit and implicit labels.
+      var sLabelText = null, implicitLabelNode, explictLabelsList, i, doc;
+      if (node != null && node.getAttribute && node.ownerDocument) {
+        doc=node.ownerDocument;
         if(node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') { // TODO: Check this!! I don't believe it.
           sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);  // TODO: Check this!! I don't believe it.
         } else {
@@ -5581,7 +5580,7 @@ ys: 'whys'
                     sEffectiveLabelText = '';
                     if(blr.W15yQC.fnIsFormControlNode(node)) {
                       sLegendText = blr.W15yQC.fnGetLegendText(node);
-                      sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node, doc);
+                      sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node);
                       aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
                       effectiveLabel=aLabel[0];
                       effectiveLabelSource=aLabel[1];
@@ -7306,7 +7305,7 @@ ys: 'whys'
                 sEffectiveLabelText = '';
                 if(blr.W15yQC.fnIsFormControlNode(c)) {
                   sLegendText = blr.W15yQC.fnGetLegendText(c);
-                  sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c, doc);
+                  sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c);
                   aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
                   effectiveLabel=aLabel[0];
                   effectiveLabelSource=aLabel[1];
@@ -7334,7 +7333,7 @@ ys: 'whys'
                 if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
                 controlType=c.tagName.toLowerCase()+controlType;
                 sAnnouncedAs = blr.W15yQC.fnJAWSAnnouncesControlAs(c);
-                sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
+                sARIALabelText = blr.W15yQC.fnGetARIALabelText(c);
                 sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
                 sStateDescription = blr.W15yQC.fnGetNodeState(c);
                 sID = c.getAttribute('id');

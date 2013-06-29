@@ -328,7 +328,7 @@ blr.W15yQC.RemoveStylesWindow = {
                   level = '2';
                 }
                 node = rd.createElement('h' + level);
-                node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c, doc)));
+                node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c)));
               } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
                 node = rd.createElement('button');
                 node.appendChild(rd.createTextNode((blr.W15yQC.fnGetEffectiveLabel(c))[0]));
@@ -377,8 +377,8 @@ blr.W15yQC.RemoveStylesWindow = {
                   bKeepStyle = false;
                 }
                 if(sTagName=='input' && /^(button|checkbox|hidden|image|radio|reset|submit)$/.test(sTagTypeAttr)==false) {
-                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
-                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
+                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c);
+                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c);
 
                     if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
                         if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
@@ -411,8 +411,8 @@ blr.W15yQC.RemoveStylesWindow = {
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
 
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {
-                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c,doc);
-                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c,doc);
+                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c);
+                    sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c);
 
                     if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
                         if(blr.W15yQC.fnStringsEffectivelyEqual(sControlsLabelText,sControlsOtherText)==false) {
