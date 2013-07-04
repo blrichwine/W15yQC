@@ -46,7 +46,7 @@ if (!blr.W15yQC) {
     highlightTimeoutID: null,
     sb: null,
     pageLoadHandlerForFocusHighlighter: null,
-
+    skipStatusUpdateCounter: 1,
     // User prefs
     bIncludeHidden: false,
     bFirstHeadingMustBeLevel1: true,
@@ -848,7 +848,7 @@ ys: 'whys'
       docNonUniqueIDs: [false,1,1,false,null],
       docInvalidIDs: [false,1,1,false,null],
 
-      idIsNotUnique: [false,2,1,false,null],
+      idIsNotUnique: [false,1,1,false,null],
       idIsNotValid: [false,1,1,false,null],
 
       frameContentScriptGenerated: [false,0,0,false,null],
@@ -2001,36 +2001,48 @@ ys: 'whys'
     },
 
     fnNormalizeURL: function(docURL, sUrl) {
-      var firstPart;
-      if(docURL != null && sUrl != null && sUrl.length>0) {
-        docURL = blr.W15yQC.fnTrim(docURL);
-        sUrl = blr.W15yQC.fnTrim(sUrl);
-        if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
-          firstPart = docURL.match(/^([a-z-]+:)\/\//);
+      var firstPart,
+          r2=/\/\.\//g,
+          r3=/([^\/])\/[^\.\/][^\/]*\/\.\.\//g,
+          r4=/(:\/\/[^\/]+\/)\.\.(\/(.*))?$/;
+
+      if(/^\s*(tel|mailto):/i.test(sUrl)==false) {
+        if(docURL != null && sUrl != null && sUrl.length>0) {
+          docURL = blr.W15yQC.fnTrim(docURL);
+          sUrl = blr.W15yQC.fnTrim(sUrl);
+          if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
+            firstPart = docURL.match(/^([a-z-]+:)\/\//);
+              if(firstPart != null) {
+                sUrl=firstPart[1]+sUrl;
+              }
+          }
+          if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
+            firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
             if(firstPart != null) {
-              sUrl=firstPart[1]+sUrl;
-            }
-        }
-        if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
-          firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
-          if(firstPart != null) {
-            sUrl = firstPart[1]+firstPart[2]+sUrl;
-          } else {
-            firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
-            if(firstPart != null) {
-              if(sUrl.match(/^[\/\\]/) != null) {
-                sUrl = firstPart[1]+firstPart[2]+sUrl;
-              } else {
-                sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
+              sUrl = firstPart[1]+firstPart[2]+sUrl;
+            } else {
+              firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
+              if(firstPart != null) {
+                if(sUrl.match(/^[\/\\]/) != null) {
+                  sUrl = firstPart[1]+firstPart[2]+sUrl;
+                } else {
+                  sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
+                }
               }
             }
           }
         }
+        if(sUrl != null) {
+          sUrl = sUrl.replace(/\s/g,'%20');
+          sUrl = sUrl.replace(r3,'$1/');
+          sUrl = sUrl.replace(r3,'$1/');
+          sUrl = sUrl.replace(r3,'$1/');
+          sUrl = sUrl.replace(r4,'$1$3');
+          sUrl = sUrl.replace(r2, '/');
+          sUrl = sUrl.replace(r2, '/');
+          sUrl = sUrl.replace(/([^\/:]\/)\/+/g, '/');
+        }
       }
-      if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
-      sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
-      sUrl = sUrl.replace(/\/\.\//, '/','g');
-      sUrl = sUrl.replace(/([^\/:]\/)\/+/, '/','g');
       return sUrl;
     },
 
@@ -5555,7 +5567,13 @@ ys: 'whys'
                     text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
                     oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, sInheritedRoles, headingLevel, effectiveLabel, effectiveLabelSource, text));
                     oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
+                    if(progressWindow) {
+                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                        blr.W15yQC.skipStatusUpdateCounter=5;
+                      }
+                    }
                   }
 
                   if (sTagName == 'form') {
@@ -5630,7 +5648,13 @@ ys: 'whys'
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
                     oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
+                    if(progressWindow) {
+                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                        blr.W15yQC.skipStatusUpdateCounter=5;
+                      }
+                    }
                   } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
@@ -5644,7 +5668,13 @@ ys: 'whys'
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
                     oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
+                    if(progressWindow) {
+                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                        blr.W15yQC.skipStatusUpdateCounter=5;
+                      }
+                    }
                   }
 
                   if (sTagName == 'table') {
@@ -5722,6 +5752,7 @@ ys: 'whys'
           }
         }
       }
+      blr.W15yQC.skipStatusUpdateCounter=1;
       return oW15yResults;
     },
 
@@ -7796,10 +7827,9 @@ ys: 'whys'
       return aLinksList;
     },
 
-
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
       var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink,
-          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
+          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, skipStatusUpdateCounter=1;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
       oW15yResults.PageScore.bAllLinksHaveText=true;
@@ -7809,15 +7839,13 @@ ys: 'whys'
 
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
-        //aLinksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLinksList[i].node, aDocumentsList);
-        aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
           aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
         } else {
           aLinksList[i].soundex = '';
         }
-        if (blr.W15yQC.fnStringHasContent(aLinksList[i].title)) {
+        if (aLinksList[i].title!=null) {
           aLinksList[i].title = blr.W15yQC.fnCleanSpaces(aLinksList[i].title);
         }
       }
@@ -7825,12 +7853,13 @@ ys: 'whys'
       for (i = 0; i < aLinksList.length; i++) {
         if(i>20 && (i % 5)==0){
           if(progressWindow != null) {
-            progressWindow.fnUpdateProgress('Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%', Math.round(51*i/aLinksList.length)+24)
-            //progressWindow.document.getElementById('percent').value=Math.round(51*i/aLinksList.length)+24;
-            //progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%';
-            //progressWindow.focus();
+            skipStatusUpdateCounter=skipStatusUpdateCounter-1;
+            if (skipStatusUpdateCounter<1) {
+              progressWindow.fnUpdateProgress('Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%', Math.round(51*i/aLinksList.length)+24);
+              skipStatusUpdateCounter=3;
+              blr.W15yQC.fnDoEvents();
+            }
           }
-          blr.W15yQC.fnDoEvents();
         }
         if(aLinksList[i]==null || aLinksList[i].node==null || !aLinksList[i].node.hasAttribute) continue;
 
@@ -7887,30 +7916,29 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
-          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) {
+          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) { // TODO: Look to see if an onclick handler has be applied
             for (j = i+1; j < aLinksList.length; j++) {
-              if(aLinksList[j].node.hasAttribute('href') || aLinksList[j].node.hasAttribute('onclick')) {
-                bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href);
-                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text);
+              if(aLinksList[j].href != null || aLinksList[j].node.hasAttribute('onclick')) {
+                bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href); // TODO: Optimize this
+                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text); // TODO: Optimize this
                 if (aLinksList[j].text && aLinksList[j].text.length > 0) {
-                  if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || bHrefsAreEqual == false || aLinksList[i].href.length < 1)) {
+                  if (bLinkTextsAreDifferent == false && (bHrefsAreEqual == false || aLinksList[i].href == null || aLinksList[i].href.length < 1)) {
                     aLinksList[i].aSameLinkText.push(j+1);
                     aLinksList[j].aSameLinkText.push(i+1);
-                  } else if (aLinksList[i].soundex == aLinksList[j].soundex && bHrefsAreEqual == false) {
+                  } else if (bHrefsAreEqual == false && aLinksList[i].soundex == aLinksList[j].soundex) {
                     aLinksList[i].aSoundsTheSame.push(j+1);
                     aLinksList[j].aSoundsTheSame.push(i+1);
                   }
                 }
 
                 if (aLinksList[i].href != null && bHrefsAreEqual == true && bLinkTextsAreDifferent == true) {
-                  bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
                   if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
-                    if(bOnclickValuesAreDifferent == false) {
+                    if(!blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null))) {
                       aLinksList[i].aSameHrefAndOnclick.push(j+1);
                       aLinksList[j].aSameHrefAndOnclick.push(i+1);
                     }
                   } else { // unless javascript:;, #, javascript:void(0)
-                    if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) {
+                    if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) { // TODO: premake RE to optimize?
                       aLinksList[i].aDiffTextSameHref.push(j+1);
                       aLinksList[j].aDiffTextSameHref.push(i+1);
                     }
@@ -9325,51 +9353,50 @@ ys: 'whys'
     },
 
 
-    fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
-      var oW15yQCReport=null, progressWindow=null;
+    fnScannerInspect: function (sourceDocument, progressWindow) {
+      var oW15yQCReport=null;
       blr.W15yQC.bQuick = false;
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnGetElements');
-      oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeDocuments');
+      oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument, progressWindow);
+
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Documents', 1); }
       blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFrameTitles');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Frame Titles', 5); }
       blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeHeadings');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Headings', 10); }
       blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, progressWindow);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIALandmarks');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA Landmarks', 15); }
       blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIAElements');
       if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA', 18); }
         blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
       }
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeLinks');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Links', 24); }
       blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFormControls');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Forms', 75); }
       blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeImages');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Images', 85); }
       blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeAccessKeys');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Access Keys', 90); }
       blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeTables');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
       blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnDescribeWindow');
+      if(progressWindow!=null) progressWindow.fnUpdateProgress('Creating Page Description', 98);
       blr.W15yQC.fnDescribeWindow(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnComputeScore');
       blr.W15yQC.fnComputeScore(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('finished scan');
+      if(progressWindow!=null) progressWindow.fnUpdateProgress('Cleaning up...', 100);
       Components.utils.forceShrinkingGC();
       return oW15yQCReport;
     },

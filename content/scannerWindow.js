@@ -155,11 +155,13 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
 blr.W15yQC.ScannerWindow = {
   urlList: [],
   urlDisplayOrder: [],
+  urlToRowMap: [],
   urlMustMatchList: [],
   urlMustMatchListType: [],
   urlMustNotMatchList: [],
   urlMustNotMatchListType: [],
   sortColumns: [' URL Number (asc)'],
+  sortIsInvalid: true,
   parseForLinks: true,
   sProjectTitle: '',
   projectHasUnsavedChanges: false,
@@ -182,6 +184,7 @@ blr.W15yQC.ScannerWindow = {
   stateStopScanningRequested: false,
   stateCurrentIndex: 0,
   bManualURLAdd: false,
+  bUpdatingProject: false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -195,12 +198,16 @@ blr.W15yQC.ScannerWindow = {
 
   fnUpdateProgress: function(sLabel, fPercentage) {
     if(sLabel != null) {
-      blr.W15yQC.ScannerWindow.fnUpdateStatus(sLabel);
+      document.getElementById('progressMeterLabel').value=sLabel;
     }
     if(fPercentage != null) {
-      blr.W15yQC.ScannerWindow.fnUpdatePercentage(fPercentage);
+      document.getElementById('progressMeter').value=fPercentage;
     }
-    blr.W15yQC.ScannerWindow.updateControlStates();
+    blr.W15yQC.fnDoEvents();
+  },
+
+  focus: function() {
+
   },
 
   updateDisplayOrderArray: function() {
@@ -263,7 +270,13 @@ blr.W15yQC.ScannerWindow = {
       for(i=0;i<41;i++) {
         row.appendChild(document.createElement('treecell'));
       }
+      if (blr.W15yQC.ScannerWindow.urlToRowMap==null) {
+        blr.W15yQC.ScannerWindow.urlToRowMap=[];
+      }
+      blr.W15yQC.ScannerWindow.urlToRowMap.push(urlIndex);
+      blr.W15yQC.fnLog('lt urlMap:'+blr.W15yQC.ScannerWindow.urlToRowMap.length+" >> "+urlIndex);
     }
+
     url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
     row.children[0].setAttribute('label',urlIndex+1);
     row.children[1].setAttribute('label',url.loc);
@@ -325,8 +338,12 @@ blr.W15yQC.ScannerWindow = {
 
   updateProjectDisplay: function() {
     // blr.W15yQC.fnLog('scanner-updateProjectDisplay');
-    var tbc, url, i, bHideUnscannedURLs=document.getElementById('cbHideURLsNotYetScanned').checked;
+    var tbc, url, i, bHideUnscannedURLs=document.getElementById('cbHideURLsNotYetScanned').checked,
+        textbox = document.getElementById('note-text');
 
+    blr.W15yQC.ScannerWindow.bUpdatingProject=true;
+    textbox.value='';
+    blr.W15yQC.ScannerWindow.urlToRowMap=[];
     document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC', ' - ');
     tbc = document.getElementById('treeboxChildren');
     if (tbc != null) {
@@ -340,7 +357,7 @@ blr.W15yQC.ScannerWindow = {
             blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
           } else {
             url=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[i]];
-            if(url.dateScanned || url.itemsCount || url.windowTitle || url.textSize) {
+            if(url.dateScanned || url.itemsCount || url.windowTitle || url.textSize || url.score) {
               blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
             }
           }
@@ -349,6 +366,7 @@ blr.W15yQC.ScannerWindow = {
       }
     }
     blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
+    blr.W15yQC.ScannerWindow.bUpdatingProject=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
@@ -375,7 +393,7 @@ blr.W15yQC.ScannerWindow = {
 
   urlIsBlackListed: function(sURL) {
     if(sURL!=null) {
-      if(/javascript:/i.test(sURL) ||
+      if(/javascript:/i.test(sURL) || /^\s*(tel|mailto):/i.test(sURL) ||
          /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|pdf|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
         if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('url is black listed'); }
         return true;
@@ -446,9 +464,6 @@ blr.W15yQC.ScannerWindow = {
         r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
         url1 = url1.replace(r,'//'+blr.W15yQC.domainEq2[i]);
       }
-      //url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-      //url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-      //url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
     }
     if(url2 != null) {
       url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
@@ -456,9 +471,6 @@ blr.W15yQC.ScannerWindow = {
         r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
         url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[i]);
       }
-      //url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-      //url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-      //url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
     }
 
     if(url1!=url2 && url1!=null && url2!=null) {
@@ -498,10 +510,27 @@ blr.W15yQC.ScannerWindow = {
   },
 
   urlAlreadInList: function(sURL) {
-    var i;
+    var i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
     if(blr.W15yQC.ScannerWindow.urlList!=null) {
+      for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
+        r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
+        sURL = sURL.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+      }
+      sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
+      sURL = sURL.replace(r2,'');
+      sURL = sURL.replace(r4, '');
+
       for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
-        if(blr.W15yQC.ScannerWindow.fnURLsAreEqual('', blr.W15yQC.ScannerWindow.urlList[i].loc, '', sURL)) {
+        url2 = blr.W15yQC.ScannerWindow.urlList[i].loc;
+        for(j=0;j<blr.W15yQC.domainEq1.length;j++) {
+          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[j],'i');
+          url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[j]);
+        }
+        url2 = url2.replace(r3, '://');
+        url2 = url2.replace(r2,'');
+        url2 = url2.replace(r4, '');
+
+        if(sURL==url2) {
           if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('URL already in list'); }
           return true;
         }
@@ -520,24 +549,23 @@ blr.W15yQC.ScannerWindow = {
       }
       if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
         sURL = blr.W15yQC.fnNormalizeURL(sDocURL,sURL);
-        if(!blr.W15yQC.ScannerWindow.urlAlreadInList(sURL) &&
-           (blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
+        if((blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
             (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
-           !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL)) {
+             !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && !blr.W15yQC.ScannerWindow.urlAlreadInList(sURL)) {
 
           url=new blr.W15yQC.ProjectURL(sURL, source, priority);
           if(blr.W15yQC.ScannerWindow.stateScanning==true) {
-            url.linkDepth=blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth + 1;
+            url.linkDepth=parseInt(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth) + 1;
           }
           if(dontParseForLinks==null) {
             dontParseForLinks=false;
           }
           url.dontParseForLinks=dontParseForLinks;
+          blr.W15yQC.ScannerWindow.sortIsInvalid=true;
           blr.W15yQC.ScannerWindow.urlList.push(url);
-          blr.W15yQC.ScannerWindow.sortColumns=[' URL Number (asc)'];
+          blr.W15yQC.ScannerWindow.sortColumns=[''];
           blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
           blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
-
         }
       } else {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
@@ -903,7 +931,7 @@ blr.W15yQC.ScannerWindow = {
                 blr.W15yQC.ScannerWindow.urlList[i].windowDescription = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_description');
                 blr.W15yQC.ScannerWindow.urlList[i].priority = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'priority');
                 blr.W15yQC.ScannerWindow.urlList[i].source = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'source');
-                blr.W15yQC.ScannerWindow.urlList[i].linkDepth = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'link_depth');
+                blr.W15yQC.ScannerWindow.urlList[i].linkDepth = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'link_depth');
                 blr.W15yQC.ScannerWindow.urlList[i].dateScanned = blr.W15yQC.ScannerWindow.readDOMDate(urls[i],'date_scanned');
                 blr.W15yQC.ScannerWindow.urlList[i].contentType = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'content_type');
                 blr.W15yQC.ScannerWindow.urlList[i].windowTitle = blr.W15yQC.ScannerWindow.readDOMEncodedString(urls[i],'window_title');
@@ -1071,7 +1099,7 @@ blr.W15yQC.ScannerWindow = {
                 blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.windowDescription,'window_description',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.priority,'priority',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.source,'source',converter,8);
-                blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.linkDepth,'link_depth',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.linkDepth,'link_depth',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLDate(url.dateScanned,'date_scanned',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.contentType,'content_type',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLEncodedString(url.windowTitle,'window_title',converter,8);
@@ -1311,6 +1339,7 @@ blr.W15yQC.ScannerWindow = {
         iframeHolder.removeChild(scannerIFrame);
       }
     }
+    blr.W15yQC.ScannerWindow.bUpdatingProject=false;
     Components.utils.forceShrinkingGC();
   },
 
@@ -1366,15 +1395,14 @@ blr.W15yQC.ScannerWindow = {
       blr.W15yQC.ScannerWindow.stateCurrentIndex++;
 
       if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true) {
-        while(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned!=null &&
-           blr.W15yQC.ScannerWindow.stateCurrentIndex < blr.W15yQC.ScannerWindow.urlList.length) {
+        while(blr.W15yQC.ScannerWindow.stateCurrentIndex < blr.W15yQC.ScannerWindow.urlList.length && blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned!=null) {
           blr.W15yQC.ScannerWindow.stateCurrentIndex++;
         }
       }
 
       if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.selectRow(blr.W15yQC.ScannerWindow.stateCurrentIndex,true);
-        blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]);
+        blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]); // Should this be a timer driven call?
       } else {
         blr.W15yQC.ScannerWindow.setStateAsNotScanning();
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished Scanning.');
@@ -1464,7 +1492,7 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].contentType=iFrameDoc.contentType;
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
         try {
-          oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow.fnUpdateProgress);
+          oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow);
           iFrame.setAttribute('src','about:blank');
           blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);
           blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned=Date.now();
@@ -1482,6 +1510,8 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].windowDescription="An error occurred while checking this URL:\n"+ex.toString()+
           "\nFile:"+ex.fileName+"\nLineNumber:"+ex.lineNumber+"\nStack:"+ex.stack;
           oW15yQCResults = null;
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('An error occurred while checking loaded URL.');
+          alert(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].windowDescription);
         }
       } else {
         alert('iFrameDoc is null');
@@ -1570,12 +1600,13 @@ blr.W15yQC.ScannerWindow = {
   },
 
   openSelectedURL: function() {
-    var treebox = document.getElementById('treebox'), selectedRow;
+    var treebox = document.getElementById('treebox'), selectedRow, selectedIndex;
 
     blr.W15yQC.ScannerWindow.updateControlStates();
     selectedRow = treebox.currentIndex;
     if (selectedRow >= 0) {
-      window.open(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].loc);
+      selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
+      window.open(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedIndex]].loc);
     }
   },
 
@@ -1584,25 +1615,29 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow;
+      selectedRow, selectedIndex;
+    if(blr.W15yQC.ScannerWindow.bUpdatingProject==false) {
+      blr.W15yQC.ScannerWindow.updateControlStates();
+      if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+        if(textbox==null) {
+          textbox=document.createElement('textbox');
+          iframeHolder.insertBefore(textbox,scannerIFrame);
+        }
+        if(scannerIFrame!=null && scannerIFrame.parentNode) {
+          scannerIFrame.parentNode.removeChild(scannerIFrame);
+        }
 
-    blr.W15yQC.ScannerWindow.updateControlStates();
-    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
-      if(textbox==null) {
-        textbox=document.createElement('textbox');
-        iframeHolder.insertBefore(textbox,scannerIFrame);
-      }
-      if(scannerIFrame!=null && scannerIFrame.parentNode) {
-        scannerIFrame.parentNode.removeChild(scannerIFrame);
-      }
+        selectedRow = treebox.currentIndex;
+        blr.W15yQC.ScannerWindow.fnUpdateStatus(selectedRow+" - "+blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow]);
+        if (blr.W15yQC.ScannerWindow.urlList != null && iframeHolder != null &&
+            (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
 
-      selectedRow = treebox.currentIndex;
-      if (blr.W15yQC.ScannerWindow.urlList != null && iframeHolder != null &&
-          (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
-        if (blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].windowDescription != null) {
-          textbox.value = blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedRow]].windowDescription;
-        } else {
-          textbox.value = '';
+          selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
+          if (blr.W15yQC.ScannerWindow.urlList[selectedIndex].windowDescription != null) {
+            textbox.value = blr.W15yQC.ScannerWindow.urlList[selectedIndex].windowDescription;
+          } else {
+            textbox.value = '';
+          }
         }
       }
     }
@@ -1641,7 +1676,7 @@ blr.W15yQC.ScannerWindow = {
       selectedRow = document.getElementById('treebox').currentIndex;
       if (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.setStateAsScanning();
-        blr.W15yQC.ScannerWindow.stateCurrentIndex=selectedRow-1;
+        blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
         blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
         blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
         blr.W15yQC.ScannerWindow.scanNextLink();
@@ -1654,7 +1689,7 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow,
+      selectedRow, selectedIndex,
       editURL = new blr.W15yQC.ProjectURL(),
       dialogID = 'addScannerURLDialog',
       dialogPath = 'chrome://W15yQC/content/addScannerURLDialog.xul';
@@ -1671,16 +1706,17 @@ blr.W15yQC.ScannerWindow = {
 
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
-        editURL.loc=blr.W15yQC.ScannerWindow.urlList[selectedRow].loc;
-        editURL.priority=blr.W15yQC.ScannerWindow.urlList[selectedRow].priority;
-        editURL.dontParseForLinks=blr.W15yQC.ScannerWindow.urlList[selectedRow].dontParseForLinks;
+        selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
+        editURL.loc=blr.W15yQC.ScannerWindow.urlList[selectedIndex].loc;
+        editURL.priority=blr.W15yQC.ScannerWindow.urlList[selectedIndex].priority;
+        editURL.dontParseForLinks=blr.W15yQC.ScannerWindow.urlList[selectedIndex].dontParseForLinks;
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr, editURL);
         if(editURL != null && editURL.loc !=null) {
-          blr.W15yQC.ScannerWindow.urlList[selectedRow].loc=editURL.loc;
-          blr.W15yQC.ScannerWindow.urlList[selectedRow].priority=editURL.priority;
-          blr.W15yQC.ScannerWindow.urlList[selectedRow].dontParseForLinks=editURL.dontParseForLinks;
-          blr.W15yQC.ScannerWindow.urlList[selectedRow].source=editURL.source;
-          blr.W15yQC.ScannerWindow.updateUrlInTree(selectedRow);
+          blr.W15yQC.ScannerWindow.urlList[selectedIndex].loc=editURL.loc;
+          blr.W15yQC.ScannerWindow.urlList[selectedIndex].priority=editURL.priority;
+          blr.W15yQC.ScannerWindow.urlList[selectedIndex].dontParseForLinks=editURL.dontParseForLinks;
+          blr.W15yQC.ScannerWindow.urlList[selectedIndex].source=editURL.source;
+          blr.W15yQC.ScannerWindow.updateUrlInTree(selectedIndex);
         }
       }
     }
@@ -1693,7 +1729,7 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow;
+      selectedRow, selectedIndex;
 
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       if(textbox==null) {
@@ -1706,10 +1742,11 @@ blr.W15yQC.ScannerWindow = {
 
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
-        blr.W15yQC.ScannerWindow.urlList.splice(selectedRow,1);
+        selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
+        blr.W15yQC.ScannerWindow.urlList.splice(selectedIndex,1);
         blr.W15yQC.ScannerWindow.updateProjectDisplay();
-        blr.W15yQC.ScannerWindow.selectRow(selectedRow-1,true);
-        blr.W15yQC.ScannerWindow.selectRow(selectedRow,true);
+        blr.W15yQC.ScannerWindow.selectRow(selectedIndex-1,true);
+        blr.W15yQC.ScannerWindow.selectRow(selectedIndex,true);
       }
     }
     blr.W15yQC.ScannerWindow.bManualURLAdd=false;
