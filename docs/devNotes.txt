@@ -146,7 +146,7 @@
 
     *** FIX ASAP***
     Review priority of issues. How should items that need manual checks be indicated? What is the criteria for failures vs. warnings?
-  -- Date URL scanned is null once project is loaded back into project scanner
+  -- Date URL scanned is null once project is loaded back into project scanner [done 7/4/2013]
   -- *** Fix issue where page description does not display in project window for a URL [done 7/4/2013]
   -- *** display source URL and depth in project window for a URL
   -- *** Normalize URL needs to take care of http://www.somedomain.com/folder1/folder2/../page.html [done 7/3/2013]

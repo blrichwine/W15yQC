@@ -1686,7 +1686,7 @@ blr.W15yQC.ScannerWindow = {
       selectedRow = document.getElementById('treebox').currentIndex;
       if (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.setStateAsScanning();
-        blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
+        blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow]-1;
         blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
         blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
         blr.W15yQC.ScannerWindow.scanNextLink();
