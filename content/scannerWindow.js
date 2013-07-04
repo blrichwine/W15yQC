@@ -816,8 +816,18 @@ blr.W15yQC.ScannerWindow = {
   },
 
   writeXMLDate: function(value, tagName, converter, indent) {
-    if(value!=null && converter!=null && value.toISOString) {
-      converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+value.toISOString()+'</'+tagName+'>\n');
+    var d;
+    if(value!=null && converter!=null) {
+      if (value.toISOString) {
+        converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+value.toISOString()+'</'+tagName+'>\n');
+      } else {
+        d=new Date(value);
+        if (d!=null && d.toISOString) {
+          converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+d.toISOString()+'</'+tagName+'>\n');
+        } else {
+          converter.writeString(blr.W15yQC.ScannerWindow.spaces(indent)+'<'+tagName+'>'+value+'</'+tagName+'>\n');
+        }
+      }
     }
   },
 
