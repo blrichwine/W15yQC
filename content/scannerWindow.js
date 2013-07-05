@@ -274,7 +274,6 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.urlToRowMap=[];
       }
       blr.W15yQC.ScannerWindow.urlToRowMap.push(urlIndex);
-      blr.W15yQC.fnLog('lt urlMap:'+blr.W15yQC.ScannerWindow.urlToRowMap.length+" >> "+urlIndex);
     }
 
     url=blr.W15yQC.ScannerWindow.urlList[urlIndex];
@@ -509,12 +508,12 @@ blr.W15yQC.ScannerWindow = {
     return bCancel;
   },
 
-  urlAlreadInList: function(sURL) {
-    var i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
-    if(blr.W15yQC.ScannerWindow.urlList!=null) {
+  urlAlreadyInList: function(sURL) {
+    var o, i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+    if(blr.W15yQC.ScannerWindow.urlList!=null) { o=sURL;
+      sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
       for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-        r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-        sURL = sURL.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+        sURL = sURL.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
       }
       sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
       sURL = sURL.replace(r2,'');
@@ -522,9 +521,10 @@ blr.W15yQC.ScannerWindow = {
 
       for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
         url2 = blr.W15yQC.ScannerWindow.urlList[i].loc;
+        url2 = url2.replace(/#.*$/, '');
+        sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
         for(j=0;j<blr.W15yQC.domainEq1.length;j++) {
-          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[j],'i');
-          url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[j]);
+          url2 = url2.replace('//'+blr.W15yQC.domainEq1[j],'//'+blr.W15yQC.domainEq2[j],'i');
         }
         url2 = url2.replace(r3, '://');
         url2 = url2.replace(r2,'');
@@ -532,10 +532,12 @@ blr.W15yQC.ScannerWindow = {
 
         if(sURL==url2) {
           if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('URL already in list'); }
+          if(/iu\.edu/.test(o)) { blr.W15yQC.fnLog('lt:url on list:'+o+"\n"+sURL); }
           return true;
         }
       }
     }
+    if(/iu\.edu/.test(o)) { blr.W15yQC.fnLog('lt:not url on list:'+o+"\n"+sURL); }
     return false;
   },
 
@@ -551,7 +553,7 @@ blr.W15yQC.ScannerWindow = {
         sURL = blr.W15yQC.fnNormalizeURL(sDocURL,sURL);
         if((blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
             (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
-             !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && !blr.W15yQC.ScannerWindow.urlAlreadInList(sURL)) {
+             !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && !blr.W15yQC.ScannerWindow.urlAlreadyInList(sURL)) {
 
           url=new blr.W15yQC.ProjectURL(sURL, source, priority);
           if(blr.W15yQC.ScannerWindow.stateScanning==true) {
@@ -1555,7 +1557,7 @@ blr.W15yQC.ScannerWindow = {
 
     if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
       blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
-      setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 500);
+      setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 1000);
     }
   },
 
@@ -1625,7 +1627,7 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow, selectedIndex;
+      selectedRow, selectedIndex, url;
     if(blr.W15yQC.ScannerWindow.bUpdatingProject==false) {
       blr.W15yQC.ScannerWindow.updateControlStates();
       if(blr.W15yQC.ScannerWindow.stateScanning==false) {
@@ -1643,11 +1645,13 @@ blr.W15yQC.ScannerWindow = {
             (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
 
           selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
-          if (blr.W15yQC.ScannerWindow.urlList[selectedIndex].windowDescription != null) {
-            textbox.value = blr.W15yQC.ScannerWindow.urlList[selectedIndex].windowDescription;
+          url=blr.W15yQC.ScannerWindow.urlList[selectedIndex];
+          if (url.windowDescription != null) {
+            textbox.value = url.windowDescription;
           } else {
             textbox.value = '';
           }
+          textbox.value=textbox.value+"\n\nDepth:"+url.linkDepth+"\nSource:"+url.source;
         }
       }
     }
