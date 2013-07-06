@@ -38,6 +38,7 @@
 						<xul:menuitem label="Save Project" oncommand="blr.W15yQC.ScannerWindow.saveProject()"/>
 						<xul:menuitem label="Save Project As" oncommand="blr.W15yQC.ScannerWindow.saveProjectAs()"/>
 						<xul:menuseparator/>
+						<xul:menuitem label="Export URLs" oncommand="blr.W15yQC.ScannerWindow.exportLinks()"/>
 						<xul:menuitem label="Import URLs" oncommand="blr.W15yQC.ScannerWindow.importLinks()"/>
 					</xul:menupopup>
 				</xul:menu>
@@ -62,7 +63,7 @@
 					</xul:menupopup>
 				</xul:menu>
 			</xul:menubar>
-      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single" 
+      <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"
 				 onselect="blr.W15yQC.ScannerWindow.updateNotesField()">
          <xul:treecols>
 						<xul:treecol ordinal="1" id="col-header-number"
@@ -71,7 +72,7 @@
 							 crop="none"
 							 style="text-align:center"
 							 fixed="true"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter ordinal="2" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol  ordinal="3" id="col-header-url"
@@ -80,7 +81,7 @@
 							 crop="none"
 							 style="text-align:left;min-width:50px"
 				       flex="2"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter  ordinal="4" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="5" id="col-header-priority"
@@ -96,7 +97,7 @@
 							 hidden="true"
 							 style="text-align:left;min-width:50px"
 							 crop="none"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
 						<xul:splitter ordinal="8" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="9" id="col-header-linkDepth"
@@ -104,37 +105,37 @@
 							 hidden="true"
 							 crop="none"
 							 style="text-align:right;min-width:30px"
-							 sortDirection="" 
+							 sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="10" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="11" id="col-header-dateScanned"
 							 label="Date  "
 							 hidden="true"
 							 crop="none"
 							 style="text-align:left;min-width:30px"
-							 sortDirection="" 
+							 sortDirection=""
 							 fixed="true"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="12" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="12" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="13" id="col-header-MIMEtype"
 							 label="Type  "
 							 hidden="true"
 							 crop="none"
 							 style="text-align:left;min-width:30px"
-							 sortDirection="" 
+							 sortDirection=""
 							 fixed="false"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
 						<xul:treecol ordinal="15" id="col-header-title"
 							 label="Title  "
 							 hidden="false"
 							 style="text-align:left;min-width:30px"
 							 crop="none"
-							 sortDirection="" 
+							 sortDirection=""
 							 fixed="false"
 							 flex="1"
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="17" id="col-header-results-items"
                label="Items   "
 							 hidden="false"
@@ -142,7 +143,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="18" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="18" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="19" id="col-header-results-warnings"
                label="Warnings   "
 							 hidden="false"
@@ -150,7 +151,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="20" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="20" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="21" id="col-header-results-failures"
                label="Failures   "
 							 hidden="false"
@@ -158,7 +159,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="22" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="22" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="23" id="col-header-results-score"
                label="Score   "
 							 hidden="false"
@@ -166,7 +167,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="24" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="24" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="25" id="col-header-results-text"
                label="Text   "
 							 hidden="false"
@@ -174,7 +175,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="27" id="col-header-results-d"
                label="D   " tooltiptext="Downloads"
 							 hidden="false"
@@ -182,7 +183,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="28" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="28" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="29" id="col-header-results-F"
                label="F   " tooltiptext="Frames"
 							 hidden="false"
@@ -190,7 +191,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="30" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="30" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="31" id="col-header-results-fw"
                label="FW   " tooltiptext="Frame Warnings"
 							 crop="none"
@@ -198,7 +199,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="32" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="32" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="33" id="col-header-results-ff"
                label="FF   " tooltiptext="Frame Failures"
 							 hidden="true"
@@ -206,7 +207,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="34" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="34" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="35" id="col-header-results-h"
                label="H   " tooltiptext="Headings"
 							 hidden="false"
@@ -214,7 +215,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="36" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="36" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="37" id="col-header-results-hw"
                label="HW   " tooltiptext="Headings Warnings"
 							 hidden="true"
@@ -222,7 +223,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="38" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="38" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="39" id="col-header-results-hf"
                label="HF   " tooltiptext="Headings Failures"
 							 hidden="true"
@@ -230,7 +231,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="40" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="40" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="41" id="col-header-results-al"
                label="AL   " tooltiptext="ARIA Landmarks"
 							 hidden="false"
@@ -238,7 +239,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="42" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="42" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="43" id="col-header-results-alw"
                label="ALW  " tooltiptext="ARIA Landmarks Warnings"
 							 hidden="true"
@@ -246,7 +247,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="44" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="44" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="45" id="col-header-results-alf"
                label="ALF  " tooltiptext="ARIA Landmarks Failures"
 							 hidden="true"
@@ -254,7 +255,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="46" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="46" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="47" id="col-header-results-a"
                label="A   " tooltiptext="ARIA Elements"
 							 hidden="false"
@@ -262,7 +263,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="48" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="48" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="49" id="col-header-results-aw"
                label="AW   " tooltiptext="ARIA Elements Warnings"
 							 hidden="true"
@@ -270,7 +271,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="50" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="50" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="51" id="col-header-results-af"
                label="AF   " tooltiptext="ARIA Elements Failures"
 							 hidden="true"
@@ -278,7 +279,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="52" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="52" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="53" id="col-header-results-l"
                label="L    " tooltiptext="Links"
 							 hidden="false"
@@ -286,7 +287,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="54" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="54" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="55" id="col-header-results-lw"
                label="LW   " tooltiptext="Link Warnings"
 							 hidden="true"
@@ -294,7 +295,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="56" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="56" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="57" id="col-header-results-lf"
                label="LF   " tooltiptext="Link Failures"
 							 hidden="true"
@@ -302,7 +303,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="58" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="58" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="59" id="col-header-results-i"
                label=" I   " tooltiptext="Images"
 							 hidden="false"
@@ -310,7 +311,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="60" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="60" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="61" id="col-header-results-iw"
                label="IW   " tooltiptext="Image Warnings"
 							 hidden="true"
@@ -318,7 +319,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="62" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="62" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="63" id="col-header-results-if"
                label="IF   " tooltiptext="Image Failures"
 							 hidden="true"
@@ -326,7 +327,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="64" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="64" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="65" id="col-header-results-fc"
                label="FC   " tooltiptext="Form Controls"
 							 hidden="false"
@@ -334,7 +335,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="66" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="66" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="67" id="col-header-results-fcw"
                label="FCW  " tooltiptext="Frorm Control Warnings"
 							 hidden="true"
@@ -342,7 +343,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="68" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="68" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="69" id="col-header-results-fcf"
                label="FCF  " tooltiptext="Form Control Failures"
 							 hidden="true"
@@ -350,7 +351,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="70" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="70" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="71" id="col-header-results-ak"
                label="AK   " tooltiptext="Access Keys"
 							 hidden="false"
@@ -358,7 +359,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="72" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="72" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="73" id="col-header-results-akw"
                label="AKW  " tooltiptext="Access Keys Warnings"
 							 hidden="true"
@@ -366,7 +367,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="74" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="74" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="75" id="col-header-results-akf"
                label="AKF  " tooltiptext="Access Keys Failures"
 							 hidden="true"
@@ -374,7 +375,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="76" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="76" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="77" id="col-header-results-t"
                label="T   " tooltiptext="Tables"
 							 hidden="false"
@@ -382,7 +383,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="78" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="78" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="79" id="col-header-results-tw"
                label="TW   " tooltiptext="Tables Warnings"
 							 hidden="true"
@@ -390,7 +391,7 @@
 							 style="text-align:right;min-width:30px"
                sortDirection=""
 							 onclick="blr.W15yQC.ScannerWindow.sortTree(this)" />
-            <xul:splitter ordinal="80" resizeafter="closest" resizebefore="closest" class="tree-splitter" /> 
+            <xul:splitter ordinal="80" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
             <xul:treecol ordinal="81" id="col-header-results-tf"
                label="TF   " tooltiptext="Tables Failures"
 							 hidden="true"

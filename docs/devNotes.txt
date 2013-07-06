@@ -154,8 +154,8 @@
   -- Log URLs that don't match the project specs
   -- filer out mailto and tel links! mailto: tel: [done 7/3/2013]
   -- project settings to add: don't add links on pages with more than x URLs, max URLs
-  -- Change text on the stop scanning button to ack it was pressed till it can stop the process...
-  -- Put progress tracking in sort routine when urlList is greater than x entries.
+  -- Change text on the stop scanning button to ack it was pressed till it can stop the process... [7/5/2013]
+  -- Put progress tracking in sort routine when urlList is greater than x entries. [7/5/2013]
   -- *** Store the regular expressions for the equivalent domains along with the equivalent domain values to speed up the checking.
   -- *** Upgrade the equivalent URL code for the link checks so it will be faster in the fnAnalyzeLinks function.
   -- *** Add config option to always make www.somedomain.com === somedomain.com
@@ -163,8 +163,8 @@
       -- the page times out (never received a page load filter)
       -- A page load event was received, but no page load events in the last 1 second
       -- It's been over 5 seconds since the first page load event was received however they keep occurring.
-
   -- Search for url, page title, feature in project scanner!!!
+  -- Export results as csv file
 
   -- Placeholder space.
   -- Put appropriate dialog title in on the remove styles view, choose appropriate tool name, display page title and summary of link counts, etc. in the remove styles view.

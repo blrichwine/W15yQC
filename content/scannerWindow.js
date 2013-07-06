@@ -840,6 +840,24 @@ blr.W15yQC.ScannerWindow = {
     }
   },
 
+  writeCSVEncodedString: function(value, separator, converter, bLast) {
+    var sQuotes='', sSeparator=separator;
+    if(converter!=null) {
+      if (value==null) {
+        value='';
+      } else {
+        value=(value.toString()).replace("\n",'\\n','g');
+      }
+      if (separator!=null && separator>'' && value!=null && (value.contains(separator)||value.contains('"'))) {
+        sQuotes='"';
+      }
+      if (bLast==true) {
+        sSeparator="\n";
+      }
+      converter.writeString(sQuotes+value.replace('"','""','g')+sQuotes+sSeparator);
+    }
+  },
+
   openProject: function (f) {
     var fp, rv, file, sFileContents, fstream, cstream, str, read, i, bOpenedOK=false,
       properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches, urls;
@@ -1165,6 +1183,96 @@ blr.W15yQC.ScannerWindow = {
         }
 
       blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=false;
+      //catch
+    }
+  },
+
+  exportLinks: function () {
+    var bCancel=false,
+      nsIFilePicker, fp, rv, file, foStream, converter, i, url;
+
+    if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+      //try
+
+        nsIFilePicker = Components.interfaces.nsIFilePicker;
+        fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+        fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+        fp.appendFilter("CSV","*.csv");
+        rv = fp.show();
+        if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+          file = fp.file;
+          if (/\.csv$/.test(file.path) == false) {
+            file.initWithPath(file.path + '.csv');
+          }
+        } else {
+          bCancel=true;
+        }
+
+        if(bCancel==false) {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Exporting URLs.');
+          foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
+          createInstance(Components.interfaces.nsIFileOutputStream);
+
+          foStream.init(file, 0x2A, 438, 0);
+          converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+          converter.init(foStream, "UTF-8", 0, 0);
+
+          if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+
+            converter.writeString('loc,windowDescription,priority,source,linkDepth,dateScanned,contentType,windowTitle,itemsCount,warningsCount,failuresCount,score,textSize,downloadsCount,framesCount,framesWarnings,framesFailures,headingsCount,headingsWarnings,headingsFailures,ARIALandmarksCount,ARIALandmarksWarnings,ARIALandmarksFailures,ARIAElementsCount,ARIAElementsWarnings,ARIAElementsFailures,linksCount,linksWarnings,linksFailures,imagesCount,imagesWarnings,imagesFailures,formControlsCount,formControlsWarnings,formControlsFailures,accessKeysCount,accessKeysWarnings,accessKeysFailures,tablesCount,tablesWarnings,tablesFailures\n');
+            for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
+              url=blr.W15yQC.ScannerWindow.urlList[i];
+              if(url!=null) {
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.loc,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.windowDescription,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.priority,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.source,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.linkDepth,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.dateScanned,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.contentType,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.windowTitle,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.itemsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.warningsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.failuresCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.score,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.textSize,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.downloadsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.framesCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.framesWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.framesFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.headingsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.headingsWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.headingsFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.ARIALandmarksCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.ARIALandmarksWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.ARIALandmarksFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.ARIAElementsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.ARIAElementsWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.ARIAElementsFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.linksCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.linksWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.linksFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.imagesCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.imagesWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.imagesFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.formControlsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.formControlsWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.formControlsFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.accessKeysCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.accessKeysWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.accessKeysFailures,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.tablesCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.tablesWarnings,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.tablesFailures,',',converter,true);
+              }
+            }
+          }
+          converter.close(); // this closes foStream
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('URLs Exported.');
+        } else {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('URLs not exported.');
+        }
+
       //catch
     }
   },
@@ -1805,15 +1913,18 @@ blr.W15yQC.ScannerWindow = {
   },
 
   sortTreeAsNumberOn: function(index, ascending) {
-    var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
+    var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder,ll=list.length;
     blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorting on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
-    for(i=0;i<list.length;i++) {
+    for(i=0;i<ll;i++) {
         list[order[i]].origOrder=i;
     }
     if(ascending==false) {
-      for(i=0;i<list.length;i++) {
-        for(j=i+1;j<list.length;j++) {
+      for(i=0;i<ll;i++) {
+        if (ll>200 && (i % Math.floor(ll/90)==0)) {
+          blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/ll);
+        }
+        for(j=i+1;j<ll;j++) {
           if(list[order[i]][index]>list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
@@ -1822,8 +1933,11 @@ blr.W15yQC.ScannerWindow = {
         }
       }
     } else {
-      for(i=0;i<list.length;i++) {
-        for(j=i+1;j<list.length;j++) {
+      for(i=0;i<ll;i++) {
+        if (ll>200 && (i % Math.floor(ll/90)==0)) {
+          blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/ll);
+        }
+        for(j=i+1;j<ll;j++) {
           if(list[order[i]][index]<list[order[j]][index] || ((list[order[i]][index]==list[order[j]][index]) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
@@ -1832,18 +1946,22 @@ blr.W15yQC.ScannerWindow = {
         }
       }
     }
+    blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
   },
 
   sortTreeAsStringOn: function(index, ascending) {
-    var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder;
+    var i,j,temp,list=blr.W15yQC.ScannerWindow.urlList, order=blr.W15yQC.ScannerWindow.urlDisplayOrder,ll=list.length;
     blr.W15yQC.ScannerWindow.addSortColumn(index, ascending);
     blr.W15yQC.ScannerWindow.fnUpdateStatus('Sorting on:'+blr.W15yQC.ScannerWindow.sortColumns.toString());
-    for(i=0;i<list.length;i++) {
+    for(i=0;i<ll;i++) {
         list[order[i]].origOrder=i;
     }
     if(ascending!=true) {
-      for(i=0;i<list.length;i++) {
-        for(j=i+1;j<list.length;j++) {
+      for(i=0;i<ll;i++) {
+        if (ll>200 && (i % Math.floor(ll/90)==0)) {
+          blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/ll);
+        }
+        for(j=i+1;j<ll;j++) {
           if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) > (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
@@ -1852,8 +1970,11 @@ blr.W15yQC.ScannerWindow = {
         }
       }
     } else {
-      for(i=0;i<list.length;i++) {
-        for(j=i+1;j<list.length;j++) {
+      for(i=0;i<ll;i++) {
+        if (ll>200 && (i % Math.floor(ll/90)==0)) {
+          blr.W15yQC.ScannerWindow.fnUpdatePercentage(100.0*i/ll);
+        }
+        for(j=i+1;j<ll;j++) {
           if((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase()) < (list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase()) || (((list[order[i]][index]==null ? '' : list[order[i]][index].toLowerCase())==(list[order[j]][index]==null ? '' : list[order[j]][index].toLowerCase())) && list[order[i]].origOrder>list[order[j]].origOrder)) {
             temp=order[i];
             order[i]=order[j];
@@ -1862,6 +1983,7 @@ blr.W15yQC.ScannerWindow = {
         }
       }
     }
+    blr.W15yQC.ScannerWindow.fnUpdatePercentage(100);
   },
 
   sortTree: function(col) {
