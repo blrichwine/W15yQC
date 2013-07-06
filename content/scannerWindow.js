@@ -175,6 +175,7 @@ blr.W15yQC.ScannerWindow = {
   pageLoadFilter: 1000,
   iFrameOnLoadEventTimeOutTimerID: null,
   iFrameOnLoadEventFilterTimerID: null,
+  iFrameLoadEventCounter: 0,
   scannerScanNextLinkTimerID: null,
   stateScanning: false,
   stateScanningAllLinks: false,
@@ -1246,10 +1247,11 @@ blr.W15yQC.ScannerWindow = {
         if (blr.W15yQC.fnStringHasContent(sPageTitle)) {
           for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
             url=blr.W15yQC.ScannerWindow.urlList[i];
-            if(i!=pti && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize)) {
+            if(i!=pti && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize || url.score)) {
               if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
                 blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotUnique=true;
                 blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=true;
+                blr.W15yQC.ScannerWindow.updateUrlInTree(i);
               }
             }
           }
@@ -1323,7 +1325,6 @@ blr.W15yQC.ScannerWindow = {
 
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
 			buttonScanSelectedURL.disabled=true;
-      buttonStopScanning.disabled=false;
       buttonOpenSelectedURL.disabled=true;
       buttonAddNewURL.disabled=true;
       buttonEditSelectedURL.disabled=true;
@@ -1331,7 +1332,14 @@ blr.W15yQC.ScannerWindow = {
       if(textbox!=null) {
         iframeHolder.removeChild(textbox);
       }
+      if (blr.W15yQC.ScannerWindow.stateStopScanningRequested==true) {
+        buttonStopScanning.label='Stop Requested';
+        buttonStopScanning.disabled=true;
+      } else {
+        buttonStopScanning.disabled=false;
+      }
     } else {
+      buttonStopScanning.label='Stop Scanning';
 			buttonScanSelectedURL.disabled=selectedRow<0;
       buttonStopScanning.disabled=true;
       buttonAddNewURL.disabled=false;
@@ -1436,6 +1444,7 @@ blr.W15yQC.ScannerWindow = {
     var iFrameHolder, iFrame;
 
     Components.utils.forceShrinkingGC();
+    blr.W15yQC.ScannerWindow.iFrameLoadEventCounter=0;
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
@@ -1499,6 +1508,9 @@ blr.W15yQC.ScannerWindow = {
 
     iFrame=document.getElementById('pageBeingScannedIFrame');
     if(iFrame!=null) {
+      iFrame.removeEventListener("load", function(e) {
+          blr.W15yQC.ScannerWindow.iFrameOnLoadEventFired();
+        }, true);
       iFrameDoc=iFrame.contentDocument;
       if(iFrameDoc!=null) {
         blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].contentType=iFrameDoc.contentType;
@@ -1529,35 +1541,34 @@ blr.W15yQC.ScannerWindow = {
         alert('iFrameDoc is null');
       }
     }
+    oW15yQCResults = null;
 
     if(blr.W15yQC.ScannerWindow.stateScanningOneLink==false) {
-      //blr.W15yQC.ScannerWindow.scanNextLink();
-
       blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID=setTimeout(function () {
         blr.W15yQC.ScannerWindow.scanNextLink();
-      }, 1000);
+      }, 500);
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting to load next URL');
     } else {
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();
     }
-    oW15yQCResults = null;
     Components.utils.forceShrinkingGC();
   },
 
   iFrameOnLoadEventFired: function() { // TODO: Debug this and decide on how the filter should work. iFrameOnLoadEventFilterTimerID is not being used
     // blr.W15yQC.fnLog('scanner-iFrameOnLoadEventFired');
     var iFrame=document.getElementById('pageBeingScannedIFrame');
-    if(iFrame!=null) {
-      iFrame.removeEventListener("load", function(e) {
-          blr.W15yQC.ScannerWindow.iFrameOnLoadEventFired();
-        }, true);
-    }
+
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
-
+    blr.W15yQC.ScannerWindow.iFrameLoadEventCounter=blr.W15yQC.ScannerWindow.iFrameLoadEventCounter+1;
     if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
-      blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
-      setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 1000);
+      if(blr.W15yQC.ScannerWindow.iFrameLoadEventCounter>10 && iFrame!=null) {
+        iFrame.removeEventListener("load", function(e) {
+            blr.W15yQC.ScannerWindow.iFrameOnLoadEventFired();
+          }, true);
+      }
+
+      blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID=setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 1000);
     }
   },
 
