@@ -23,6 +23,7 @@
  * Project: Quick Web Accessibility Checker
  *
  */
+"use strict";
 
 /*global blr: false, Components: false, Application: false */
 
@@ -1363,7 +1364,7 @@ ys: 'whys'
     },
 
     fnAppendTableRow: function (tableBody, aTableCells, sClass) {
-      var i, sText, td, tr;
+      var i, doc, sText, td, tr;
       if (tableBody && aTableCells && aTableCells.length > 0) {
         doc=tableBody.ownerDocument;
         tr = doc.createElement('tr');
@@ -9397,7 +9398,7 @@ ys: 'whys'
     },
 
     fnReadUserPrefs: function() {
-      var sDomains, aEquivDomains, aDomainPair, focusInspectorOn;
+      var sDomains, aEquivDomains, aDomainPair, focusInspectorOn, i;
       if(Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec",'')=='') {
         Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
       }

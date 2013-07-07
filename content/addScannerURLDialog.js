@@ -35,22 +35,22 @@
  *   - .html, .htm
  *   - .shtml, .shtm
  *   - .asp, .pl
- *   - 
- *    
+ *   -
+ *
  *  Consider whether to use OS routines: https://developer.mozilla.org/en-US/docs/JavaScript_OS.File/OS.File_for_the_main_thread
  * https://addons.mozilla.org/en-US/developers/docs/sdk/1.12/modules/sdk/core/promise.html
  *
  *  Uses:
- *    
+ *
  *  Scanner: addURL
  *    URL
  *    Priority
  *    Don't scan for URLs
- *    
+ *
  *
  * TODO:
- *      
- * 
+ *
+ *
  */
 
 /*
@@ -68,7 +68,7 @@ blr.W15yQC.AddScannerURLDialog = {
   bPriorityOK:false,
   bURLHasChanged:false,
   bValuesHaveChanged:false,
-  
+
   init: function (dialog) {
     dialog.buttonlabelaccept="asdf";
     blr.W15yQC.AddScannerURLDialog.tbURL= document.getElementById('tbURL');
@@ -102,7 +102,7 @@ blr.W15yQC.AddScannerURLDialog = {
     var sPriority;
     blr.W15yQC.AddScannerURLDialog.bUrlOK=/[a-z]+:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i.test(blr.W15yQC.AddScannerURLDialog.tbURL.value);
     sPriority=blr.W15yQC.AddScannerURLDialog.fnTrim(blr.W15yQC.AddScannerURLDialog.tbPriority.value);
-    
+
     if(/^[0-9\.]+$/.test(sPriority) && !isNaN(parseFloat(sPriority))) {
       sPriority=parseFloat(sPriority);
       if(!/\./.test(sPriority)) { sPriority=sPriority+'.0'};
@@ -119,12 +119,12 @@ blr.W15yQC.AddScannerURLDialog = {
       blr.W15yQC.AddScannerURLDialog.bURLHasChanged=true;
       blr.W15yQC.AddScannerURLDialog.bValuesHaveChanged=true;
     }
-    if(blr.W15yQC.AddScannerURLDialog.inURL.priority!=sPriority || blr.W15yQC.AddScannerURLDialog.inURL.dontParseForLinks!=blr.W15yQC.AddScannerURLDialog.cbDontAdd.checked) {
+    if(blr.W15yQC.AddScannerURLDialog.inURL!=null && (blr.W15yQC.AddScannerURLDialog.inURL.priority!=sPriority || blr.W15yQC.AddScannerURLDialog.inURL.dontParseForLinks!=blr.W15yQC.AddScannerURLDialog.cbDontAdd.checked)) {
       blr.W15yQC.AddScannerURLDialog.bValuesHaveChanged=true;
     }
     blr.W15yQC.AddScannerURLDialog.bFieldsAreOK=blr.W15yQC.AddScannerURLDialog.bPriorityOK && blr.W15yQC.AddScannerURLDialog.bUrlOK;
   },
-  
+
   doOK: function() {
     blr.W15yQC.AddScannerURLDialog.checkFields();
     if(blr.W15yQC.AddScannerURLDialog.bFieldsAreOK==true) {
@@ -150,7 +150,7 @@ blr.W15yQC.AddScannerURLDialog = {
     }
     return false;
   },
-  
+
   doCancel: function() {
     blr.W15yQC.AddScannerURLDialog.inURL=null;
     return true;
@@ -158,19 +158,19 @@ blr.W15yQC.AddScannerURLDialog = {
 
   cleanup: function (dialog) {
   },
-  
+
 
   windowOnKeyDown: function() {
-    
+
   },
-  
+
   windowOnKeyUp: function() {
-    
+
   },
-  
+
   forceMinSize: function() {
-    
+
   }
-  
+
 };
 

@@ -145,6 +145,7 @@
  *
  *
  */
+"use strict";
 Components.utils.import("resource://gre/modules/osfile.jsm");
 
 
