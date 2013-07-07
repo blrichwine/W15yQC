@@ -2517,7 +2517,7 @@ ys: 'whys'
     },
 
     fnListMissingIDs: function (doc, sIDs) {
-      var aIDs, sMissingIDs = null;
+      var i, aIDs, sMissingIDs = null;
       if(doc!=null && sIDs != null && sIDs.length) {
         aIDs = sIDs.split(' ');
         if (aIDs != null) {

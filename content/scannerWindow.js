@@ -395,7 +395,7 @@ blr.W15yQC.ScannerWindow = {
   urlIsBlackListed: function(sURL) {
     if(sURL!=null) {
       if(/javascript:/i.test(sURL) || /^\s*(tel|mailto):/i.test(sURL) ||
-         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|pdf|ppt|pptx|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
+         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|m4v|mp4|pdf|ppt|pptx|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
         if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('url is black listed'); }
         return true;
       }
@@ -482,13 +482,13 @@ blr.W15yQC.ScannerWindow = {
         sURL = sURL.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
       }
       if(bIgnoreWWW) { sURL = sURL.replace(r3, '://'); }
+      sURL = sURL.replace(/#.*$/, '');
       sURL = sURL.replace(r2,'');
       sURL = sURL.replace(r4, '');
 
       for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
         url2 = blr.W15yQC.ScannerWindow.urlList[i].loc;
-        url2 = url2.replace(/#.*$/, '');
-        if(bIgnoreWWW) { sURL = sURL.replace(r3, '://'); }
+        if(bIgnoreWWW) { url2 = url2.replace(r3, '://'); }
         for(j=0;j<blr.W15yQC.domainEq1.length;j++) {
           url2 = url2.replace('//'+blr.W15yQC.domainEq1[j],'//'+blr.W15yQC.domainEq2[j],'i');
         }
@@ -511,7 +511,7 @@ blr.W15yQC.ScannerWindow = {
     var url;
 
     if(sURL!=null && sURL.length && sURL.length>0) {
-      sURL=sURL.replace(/#.+$/, '');
+      sURL=sURL.replace(/#.*$/, '');
       if(blr.W15yQC.ScannerWindow.urlList==null) {
         blr.W15yQC.ScannerWindow.urlList = [];
       }
@@ -1641,7 +1641,7 @@ blr.W15yQC.ScannerWindow = {
           }, true);
       }
 
-      blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID=setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 1000);
+      blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID=setTimeout(function(){blr.W15yQC.ScannerWindow.iFrameLoaded();}, 2000);
     }
   },
 
@@ -1702,7 +1702,7 @@ blr.W15yQC.ScannerWindow = {
     selectedRow = treebox.currentIndex;
     if (selectedRow >= 0) {
       selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
-      window.open(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlDisplayOrder[selectedIndex]].loc);
+      window.open(blr.W15yQC.ScannerWindow.urlList[selectedIndex].loc);
     }
   },
 
