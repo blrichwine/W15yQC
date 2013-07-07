@@ -145,6 +145,7 @@
 
 
     *** FIX ASAP***
+  -- add use strict to js files and do a QC run to fleece out errors.
     Review priority of issues. How should items that need manual checks be indicated? What is the criteria for failures vs. warnings?
   -- Date URL scanned is null once project is loaded back into project scanner [done 7/4/2013]
   -- *** Fix issue where page description does not display in project window for a URL [done 7/4/2013]
