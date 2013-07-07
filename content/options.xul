@@ -23,6 +23,7 @@
       <preference id="firstHeadingMustBeLevel1" name="extensions.W15yQC.getElements.firstHeadingMustBeLevel1" type="bool"/>
       <preference id="onlyOneLevel1Heading" name="extensions.W15yQC.getElements.onlyOneLevel1Heading" type="bool"/>
       <preference id="honorARIA" name="extensions.W15yQC.getElements.honorARIA" type="bool"/>
+      <preference id="ignoreWWW" name="extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW" type="bool"/>
       <preference id="testContrastMinSpec" name="extensions.W15yQC.testContrast.MinSpec" type="string"/>
 
       <preference id="rulesToExcludeList" name="extensions.W15yQC.rulesToExcludeList" type="string"/>
@@ -34,6 +35,7 @@
 			<tab label="HTML Report"/>
 			<tab label="Inspector Dialogs"/>
 			<tab label="Analysis"/>
+			<tab label="Domains"/>
 			<tab label="Rules"/>
 		</tabs>
 
@@ -76,6 +78,9 @@
 							</menupopup>
 						</menulist>
 					</hbox>
+			</tabpanel>
+
+			<tabpanel id="W15yQC_tab_Domains" orient="vertical">
 					<label control="tEquivalentDomains" value="Equivalent Domains:"/>
 					<tree enableColumnDrag="false" id="tEquivalentDomains" flex="1" seltype="single" rows="5" hidecolumnpicker="true">
 						 <treecols>
@@ -99,6 +104,7 @@
 						 </treecols>
 						 <treechildren id="tEquivDomainsChildren"/>
 					</tree>
+					<checkbox label="Ignore www - Always consider 'www.domain.com' equal to 'domain.com'" preference="ignoreWWW"/>
 					<hbox>
 						 <button id="button-addDomains"
 							 label="Add Domains"

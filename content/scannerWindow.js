@@ -443,43 +443,6 @@ blr.W15yQC.ScannerWindow = {
     return false;
   },
 
-  fnRemoveWWWAndEndingSlash: function(sUrl) {
-    sUrl = sUrl.replace(/:\/\/www\./i, '://');
-    sUrl = sUrl.replace(/[\/\\]$/, '');
-    return sUrl;
-  },
-
-  fnRemoveNamedAnchor: function(sURL) {
-    if(sURL !=null && sURL.replace) {
-      sURL=sURL.replace(/#.+$/, '');
-    }
-    return sURL;
-  },
-
-  fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-    var i,r;
-    if(url1 != null) {
-      url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
-      for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-        r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-        url1 = url1.replace(r,'//'+blr.W15yQC.domainEq2[i]);
-      }
-    }
-    if(url2 != null) {
-      url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
-      for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-        r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-        url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[i]);
-      }
-    }
-
-    if(url1!=url2 && url1!=null && url2!=null) {
-      url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
-      url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
-    }
-    return (url1 == url2);
-  },
-
   resetProjectToNew: function(bAskBeforeResettingIfUnsavedChanges) {
     // blr.W15yQC.fnLog('scanner-resetProjectToNew');
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result,
@@ -510,24 +473,24 @@ blr.W15yQC.ScannerWindow = {
   },
 
   urlAlreadyInList: function(sURL) {
-    var o, i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+    var bIgnoreWWW=false, o, i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+    bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
     if(blr.W15yQC.ScannerWindow.urlList!=null) { o=sURL;
       sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
       for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
         sURL = sURL.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
       }
-      sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
+      if(bIgnoreWWW) { sURL = sURL.replace(r3, '://'); }
       sURL = sURL.replace(r2,'');
       sURL = sURL.replace(r4, '');
 
       for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
         url2 = blr.W15yQC.ScannerWindow.urlList[i].loc;
         url2 = url2.replace(/#.*$/, '');
-        sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
+        if(bIgnoreWWW) { sURL = sURL.replace(r3, '://'); }
         for(j=0;j<blr.W15yQC.domainEq1.length;j++) {
           url2 = url2.replace('//'+blr.W15yQC.domainEq1[j],'//'+blr.W15yQC.domainEq2[j],'i');
         }
-        url2 = url2.replace(r3, '://');
         url2 = url2.replace(r2,'');
         url2 = url2.replace(r4, '');
 
@@ -545,8 +508,9 @@ blr.W15yQC.ScannerWindow = {
   addUrlToProject: function (sURL, sDocURL, source, priority, dontParseForLinks) {
     // blr.W15yQC.fnLog('scanner-addUrlToProject');
     var url;
-    sURL=blr.W15yQC.ScannerWindow.fnRemoveNamedAnchor(sURL);
+
     if(sURL!=null && sURL.length && sURL.length>0) {
+      sURL=sURL.replace(/#.+$/, '');
       if(blr.W15yQC.ScannerWindow.urlList==null) {
         blr.W15yQC.ScannerWindow.urlList = [];
       }

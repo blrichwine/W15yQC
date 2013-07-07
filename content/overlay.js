@@ -1994,12 +1994,6 @@ ys: 'whys'
 
     },
 
-    fnRemoveWWWAndEndingSlash: function(sUrl) {
-      sUrl = sUrl.replace(/:\/\/www\./i, '://');
-      sUrl = sUrl.replace(/[\/\\]$/, '');
-      return sUrl;
-    },
-
     fnNormalizeURL: function(docURL, sUrl) {
       var firstPart,
           r2=/\/\.\//g,
@@ -2047,31 +2041,32 @@ ys: 'whys'
     },
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      var i,r;
+      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
+
       if(url1 != null) {
-        url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
+        url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
+        if(bIgnoreWWW) { url1 = url1.replace(r3, '://'); }
+        url1 = url1.replace(r1, '');
+        url1 = url1.replace(r4, '');
+
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-          url1 = url1.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+          url1 = url1.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
         }
-        //url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        //url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        //url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
       }
       if(url2 != null) {
-        url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
+        url2 = blr.W15yQC.fnNormalizeURL(docURL2, url2);
+        if(bIgnoreWWW) { url2 = url2.replace(r3, '://'); }
+        url2 = url2.replace(r1, '');
+        url2 = url2.replace(r4, '');
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-          url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+          url2 = url2.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
         }
-        //url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        //url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        //url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
       }
 
       if(url1!=url2 && url1!=null && url2!=null) {
-        url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
-        url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
+        url1=url1.replace(r2,'');
+        url2=url2.replace(r2,'');
       }
       return (url1 == url2);
     },
