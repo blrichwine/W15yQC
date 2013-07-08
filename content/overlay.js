@@ -1183,7 +1183,7 @@ ys: 'whys'
     },
 
     fnStringHasContent: function(s) {
-      return (s!=null)&&/\S/.test(s);
+      return (s!=null)&&(s.length>0)&&/\S/.test(s);
     },
 
     fnElementHasOwnContent: function(node) {
@@ -7882,12 +7882,11 @@ ys: 'whys'
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasInvalidAltAttribute'); //
         }
 
-        if (aLinksList[i].text == null) {
+        if (aLinksList[i].text == null && blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==false) {
           oW15yResults.PageScore.bAllLinksHaveText=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
-        } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
-          linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
-
+        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==true) { // TODO: QA All empty link scenarios and make sure we get the right errors
+          linkText = blr.W15yQC.fnTrim(aLinksList[i].effectiveLabel.toLowerCase());
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
             oW15yResults.PageScore.bAllLinksHaveText=false;
             oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
@@ -8102,8 +8101,8 @@ ys: 'whys'
           }
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
-                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
-                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'), blr.W15yQC.fnGetString('hrsTHHref'),
                                                               blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
 
@@ -8116,7 +8115,7 @@ ys: 'whys'
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].effectiveLabel, aLinksList[i].effectiveLabelSource, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
           }
         }
         table.appendChild(tbody);
