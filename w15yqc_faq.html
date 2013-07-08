@@ -21,7 +21,7 @@
 				<h2>Latest Versions:</h2>
         <ul>
           <!-- <li class="download"><a class="buttons" title="Download W15yQC Version 1.0 Stable XPI" href="https://github.com/blrichwine/W15yQC/zipball/master">Ver 1.0 Stable XPI</a></li> -->
-          <li class="download2"><a class="buttons" href="http://blrichwine.github.com/W15yQC/downloads/ver-1.0-b28/w15yqc-v1.0-b28.xpi">Ver 1.0-B28 XPI</a></li>
+          <li class="download2"><a class="buttons" href="http://blrichwine.github.com/W15yQC/downloads/ver-1.0-b29/w15yqc-v1.0-b29.xpi">Ver 1.0-B29 XPI</a></li>
 				</ul>
 				</div>
 				<div id="downloads2">
@@ -61,7 +61,7 @@
 			<li><a href="#whyW15yqc">Why 'W15y'</a></li>
 			<li><a href="#">If W15yQC does not report any issues, does the page conform to the WCAG, Section 508, or other accessibility standard?</a></li>
 			<li><a href="#">What accessibility issues does W15yQC check for?</a></li>
-			<li><a href="#">What kind of accessibility issues can W15yQC not detect?</a></li>
+			<li><a href="#w15yqcCant">What kind of accessibility issues can W15yQC not detect?</a></li>
 			<li><a href="#">What else needs to be done to certify my Web site is accessible?</a></li>
 		</ul>
 	</li>
@@ -71,15 +71,15 @@
 			<li><a href="#howDoIReportABug">How do I report a bug?</a></li>
 		</ul>
 	</li>
-</ul>				
-				
+</ul>
+
 
 <h3 id="installing" tabindex="0">How to Install W15yQC</h3>
 <p>Watch a <a href="w15yqc_screencasts.html#scInstalling">demonstration screencast of installing W15yQC</a>.</p>
 <ol>
 <!--	<li>Go to the Firefox Add-ons site for the W15yQC Web Accessibility Quick Check Firefox Extension</li>
 	<li>Click the "Install now" button</li> -->
-	<li>Go to the <a href="https://github.com/blrichwine/W15yQC/downloads">W15yQC Downloads</a> page.</li>	
+	<li>Go to the <a href="https://github.com/blrichwine/W15yQC/downloads">W15yQC Downloads</a> page.</li>
 	<li>Select the latest stable version to download.</li>
 	<li>Once the XPI file has downloaded, just drag it into any open Firefox window to install or use Firefox's "Open file..." feature to open the XPI file.</li>
 	<li>Select "Restart Now".</li>
@@ -87,7 +87,7 @@
 </ol>
 
 <h3 id="whatIsAXPIFile" tabindex="0">What is a XPI file?</h3>
-<p>A file with the XPI file extension is a Mozilla Firefox Web Browser Extension Archive file. Extensions are Firefox add-ons that provide additional functionality to Firefox. 
+<p>A file with the XPI file extension is a Mozilla Firefox Web Browser Extension Archive file. Extensions are Firefox add-ons that provide additional functionality to Firefox.
 If you have an XPI file, just drag it to any open Firefox window to install. A XPI file is actually just a .zip file (with the file extension changed to .xpi)
 so any archive/compression program that can open ZIP files will open XPI files if the XPI file is renamed from .xpi to .zip.</p>
 <p>To learn more about Mozilla Firefox extensions and XPI files, see the "<a href="http://support.mozilla.org/en-US/kb/extensions-add-features-to-firefox">Use extensions to add features to Firefox - Firefox Help page</a>".</p>
@@ -107,6 +107,20 @@ so any archive/compression program that can open ZIP files will open XPI files i
 <h3 id="whyW15yqc" tabindex="0">Why 'W15y'?</h3>
 <p>The '15' in 'W15y' stands for the number of letters between the first W and last y in 'Web Accessibility', making W15y an abbreviation for Web Accessibility. This is in the same vein as using i18n as an abbreviation for Internationalization.</p>
 
+<h3 id="w15yqcCant" tabindex="0">What kind of accessibility issues can W15yQC not detect?</h3>
+<p>The W15yQC Firefox Extention is an automated web accessibility checking tool. It has routines that inspect the way a given web page is rendered by the Firefox web browser.
+The routines check for common patterns that indicate the potential for an accessibility issue. For almost every pattern W15yQC checks for, there are exceptions where
+nothing is wrong and the indicated warning or failure should have been a 'pass' (the warning or failure indication flagged an issue which will
+have no real-world adverse impact on accessibility). With experience, you will learn to recognize the contexts where an indicated issue will not be a true problem.
+When in doubt, consult the <a href="http://blrichwine.github.com/W15yQC/help/index.html">W15yQC help documentation</a> on a given issue,
+<a href="http://blrichwine.github.com/W15yQC/resources.html#forums">ask another accessibility professional</a>,
+or have a <a href="http://blrichwine.github.com/W15yQC/userTestingForAccessibility.html">user test the feature in question for accessibility issues</a>.</p>
+<p>Automated accessibility checkers cannot catch every accessibility issue. There will be issues that get passed - or not even examined!
+Automated checkers cannot decode complex CSS layouts or evaluate complex user interface scripting that is dependent upon user interaction.
+Many accessibility issues simply cannot be positively checked for by automatic means. Manual testing involving testing various combinations of
+web browsers and assitive technologies, testing with representative users, and even a manual code review may be required to
+find some issues.</p>
+
 <h3 id="howDoIReportABug" tabindex="0">How Do I Report a Bug</h3>
 <p><a href="https://github.com/blrichwine/W15yQC/issues">Report a bug</a> by creating a new issue on the W15yQC Issues page for the W15yQC project on github.</p>
 
@@ -117,6 +131,6 @@ so any archive/compression program that can open ZIP files will open XPI files i
       </section>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+
   </body>
 </html>

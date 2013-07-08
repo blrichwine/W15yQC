@@ -2,7 +2,7 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8">
-    <title>Tutorials - W15yQC - Web Accessibility Quick Check Firefox Extension by Brian Richwine</title>
+    <title>Web Accessibility Quick Check Protocol - W15yQC - Web Accessibility Quick Check Firefox Extension by Brian Richwine</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -36,11 +36,44 @@
         <p class="header">This project is maintained by <a class="header name" href="https://github.com/blrichwine">Brian Richwine</a></p>
       </header>
       <section role="main">
-        <h2>W15yQC Tutorials</h2>
+        <h2>A Web Accessibility Quick Check Protocol</h2>
 
-<p>The W15yQC Web Accessibility Quick Check Firefox Extention tutorials have not yet been developed.</p>
-
-
+<p>The following protocol (or procedure) uses the W15yQC extension to check a web page for obvious accessibility issues.
+</p>
+<h3>Appropriate alternative text for images.</h3>
+<p>Having the appropriate replacement text for images is very important for non-visual users, and other users of screen-reading technologies. There are two basic tests to make for each image:</p>
+<ul>
+	<li>If the image serves a meaningful (non-redundant) purpose, it should have appropriate and concise alternative text supplied for it.</li>
+	<li>If the image is strictly decorative (or redundant), then it should be indicated as such so it won't be announced by assistive technologies.</li>
+</ul>
+<h4>How to check for appropriate alternative text using W15yQC:</h4>
+<ul>
+	<li>On the W15yQC Toolbar, choose "Inspectors" and then "Images"</li>
+	<li>Scroll through each image and verify the appropriate alternative text indication was supplied:
+		<ul>
+			<li>By default, W15yQC will attempt to scroll to and highlight the selected image.</li>
+			<li>Determine if the image is meaningful and non-redundant.
+				<ul>
+					<li>If yes (image is meaningful):
+						<ul>
+							<li>Does the text listed in the effective label column accurately and concisely describe the image?</li>
+						</ul>
+					</li>
+					<li>If no (image is decorative or redundant):
+						<ul>
+							<li>Has the image been marked so it will not be announced? This can be done by:
+								<ul>
+									<li>Supplying an empty alternative text (alt=&quot;&quot; or aria-label=&quot;&quot;).</li>
+									<li>Marking the image with a role of 'presentational'.</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+</ul>
 		<footer role="contentinfo">
 			<ul><li><a href="http://blrichwine.github.com/W15yQC/index.html">Home</a></li>
 				<li><a href="http://blrichwine.github.com/W15yQC/sitemap.html">Site Map</a></li>
@@ -50,6 +83,6 @@
 		</section>
 	</div>
 	<!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+
   </body>
 </html>
