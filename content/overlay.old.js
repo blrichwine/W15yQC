@@ -23,6 +23,7 @@
  * Project: Quick Web Accessibility Checker
  *
  */
+"use strict";
 
 /*global blr: false, Components: false, Application: false */
 
@@ -34,8 +35,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 27',
-    releaseDate: 'May 05, 2013',
+    releaseVersion: '1.0 - Beta 28',
+    releaseDate: 'May 27, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -46,7 +47,7 @@ if (!blr.W15yQC) {
     highlightTimeoutID: null,
     sb: null,
     pageLoadHandlerForFocusHighlighter: null,
-
+    skipStatusUpdateCounter: 1,
     // User prefs
     bIncludeHidden: false,
     bFirstHeadingMustBeLevel1: true,
@@ -848,7 +849,7 @@ ys: 'whys'
       docNonUniqueIDs: [false,1,1,false,null],
       docInvalidIDs: [false,1,1,false,null],
 
-      idIsNotUnique: [false,2,1,false,null],
+      idIsNotUnique: [false,1,1,false,null],
       idIsNotValid: [false,1,1,false,null],
 
       frameContentScriptGenerated: [false,0,0,false,null],
@@ -1182,7 +1183,7 @@ ys: 'whys'
     },
 
     fnStringHasContent: function(s) {
-      return (s!=null)&&/\S/.test(s);
+      return (s!=null)&&(s.length>0)&&/\S/.test(s);
     },
 
     fnElementHasOwnContent: function(node) {
@@ -1307,34 +1308,41 @@ ys: 'whys'
       if (!blr.W15yQC.fnHasClass(ele, cls)) { ele.className += " " + cls; }
     },
 
-    fnAppendPElementTo: function (node, doc, sText) {
-      var element = doc.createElement('p');
-      element.appendChild(doc.createTextNode(sText));
-      node.appendChild(element);
+    fnAppendPElementTo: function (node, sText) {
+      var element;
+      if (node!=null && node.ownerDocument) {
+        element = node.ownerDocument.createElement('p');
+        element.appendChild(node.ownerDocument.createTextNode(sText));
+        node.appendChild(element);
+      }
     },
 
-    fnAppendExpandContractHeadingTo: function (node, doc, sText) {
-      var element, aEl, spanEl;
-      element = doc.createElement('h2');
-      element.setAttribute('tabindex', '-1');
-      aEl = doc.createElement('a');
-      aEl.setAttribute('tabindex',0);
-      aEl.setAttribute('class','ec');
-      aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
-      aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
-      aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
-      spanEl=doc.createElement('span');
-      spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
-      spanEl.setAttribute('class','auralText');
-      aEl.appendChild(spanEl);
-      aEl.appendChild(doc.createTextNode(sText));
-      element.appendChild(aEl);
-      node.appendChild(element);
+    fnAppendExpandContractHeadingTo: function (node, sText) {
+      var element, aEl, spanEl, doc;
+      if (node!=null && node.ownerDocument) {
+        doc=node.ownerDocument;
+        element = doc.createElement('h2');
+        element.setAttribute('tabindex', '-1');
+        aEl = doc.createElement('a');
+        aEl.setAttribute('tabindex',0);
+        aEl.setAttribute('class','ec');
+        aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
+        aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
+        aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
+        spanEl=doc.createElement('span');
+        spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
+        spanEl.setAttribute('class','auralText');
+        aEl.appendChild(spanEl);
+        aEl.appendChild(doc.createTextNode(sText));
+        element.appendChild(aEl);
+        node.appendChild(element);
+      }
     },
 
-    fnCreateTableHeaders: function (doc, table, aTableHeaders) {
-      var thead, tr, i, j, th, thTextArray;
-      if (doc && table && aTableHeaders && aTableHeaders.length > 0) {
+    fnCreateTableHeaders: function (table, aTableHeaders) {
+      var thead, tr, i, j, th, thTextArray, doc;
+      if (table && aTableHeaders && aTableHeaders.length > 0) {
+        doc=table.ownerDocument;
         thead = doc.createElement('thead');
         tr = doc.createElement('tr');
         for (i = 0; i < aTableHeaders.length; i++) {
@@ -1355,9 +1363,10 @@ ys: 'whys'
       return table;
     },
 
-    fnAppendTableRow: function (doc, tableBody, aTableCells, sClass) {
-      var i, sText, td, tr;
-      if (doc && tableBody && aTableCells && aTableCells.length > 0) {
+    fnAppendTableRow: function (tableBody, aTableCells, sClass) {
+      var i, doc, sText, td, tr;
+      if (tableBody && aTableCells && aTableCells.length > 0) {
+        doc=tableBody.ownerDocument;
         tr = doc.createElement('tr');
         for (i = 0; i < aTableCells.length; i++) {
           td = doc.createElement('td');
@@ -1758,11 +1767,12 @@ ys: 'whys'
       }
     },
 
-    highlightElement: function (node, doc, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
+    highlightElement: function (node, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
       // https://developer.mozilla.org/en/DOM/element.getClientRects
-      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false, tagName=null, bEmptyElement=false;
+      var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false, tagName=null, bEmptyElement=false, doc;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
-      if (doc != null && node != null) {
+      if (node != null && node.ownerDocument) {
+        doc=node.ownerDocument;
         if(idCounter==null && Array.isArray( blr.W15yQC.highlightTimeoutID )) {
           bSetTimeouts=true;
           for(i=0;i<blr.W15yQC.highlightTimeoutID.length;i++) {
@@ -1929,7 +1939,7 @@ ys: 'whys'
       var idCounter, aIDs, i, el, aLabels, nodeID;
 
         if(skipHighlightingFocusedElement!=true) {
-          idCounter = blr.W15yQC.highlightElement(node, node.ownerDocument, 'yellow');
+          idCounter = blr.W15yQC.highlightElement(node, 'yellow');
         } else {
           idCounter=0;
         }
@@ -1939,7 +1949,7 @@ ys: 'whys'
             for (i = 0; i < aIDs.length; i++) {
               el = node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(node, node.ownerDocument, 'yellow', idCounter);
+                idCounter = blr.W15yQC.highlightElement(node, 'yellow', idCounter);
               }
             }
           } else {
@@ -1948,7 +1958,7 @@ ys: 'whys'
               el = el.parentNode;
             }
             if (el != null && el.tagName.toLowerCase() == 'label') {
-              idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#FFAAAA', idCounter);
+              idCounter = blr.W15yQC.highlightElement(el, '#FFAAAA', idCounter);
             }
             el = node.parentNode;
             while (el != null && el.tagName.toLowerCase() != 'fieldset' && el.tagName.toLowerCase() != 'body') {
@@ -1957,7 +1967,7 @@ ys: 'whys'
             if (el != null && el.tagName.toLowerCase() == 'fieldset') {
               aLabels = el.getElementsByTagName('legend');
               if (aLabels != null && aLabels.length > 0) {
-                idCounter = blr.W15yQC.highlightElement(aLabels[0], aLabels[0].ownerDocument, '#AAAAFF', idCounter);
+                idCounter = blr.W15yQC.highlightElement(aLabels[0], '#AAAAFF', idCounter);
               }
             }
             if (node.hasAttribute('id')) {
@@ -1966,7 +1976,7 @@ ys: 'whys'
               if (aLabels != null && aLabels.length > 0) {
                 for (i = 0; i < aLabels.length; i++) {
                   if (aLabels[i].getAttribute('for') == nodeID) {
-                    idCounter = blr.W15yQC.highlightElement(aLabels[i], aLabels[i].ownerDocument, '#FFAAAA', idCounter);
+                    idCounter = blr.W15yQC.highlightElement(aLabels[i], '#FFAAAA', idCounter);
                   }
                 }
               }
@@ -1977,80 +1987,87 @@ ys: 'whys'
             for (i = 0; i < aIDs.length; i++) {
               el = node.ownerDocument.getElementById(aIDs[i]);
               if (el != null) {
-                idCounter = blr.W15yQC.highlightElement(el, el.ownerDocument, '#AAFFAA', idCounter);
+                idCounter = blr.W15yQC.highlightElement(el, '#AAFFAA', idCounter);
               }
             }
           }
         }
 
-    },
-
-    fnRemoveWWWAndEndingSlash: function(sUrl) {
-      sUrl = sUrl.replace(/:\/\/www\./i, '://');
-      sUrl = sUrl.replace(/[\/\\]$/, '');
-      return sUrl;
     },
 
     fnNormalizeURL: function(docURL, sUrl) {
-      var firstPart;
-      if(docURL != null && sUrl != null && sUrl.length>0) {
-        docURL = blr.W15yQC.fnTrim(docURL);
-        sUrl = blr.W15yQC.fnTrim(sUrl);
-        if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
-          firstPart = docURL.match(/^([a-z-]+:)\/\//);
+      var firstPart,
+          r2=/\/\.\//g,
+          r3=/([^\/])\/[^\.\/][^\/]*\/\.\.\//g,
+          r4=/(:\/\/[^\/]+\/)\.\.(\/(.*))?$/;
+
+      if(/^\s*(tel|mailto):/i.test(sUrl)==false) {
+        if(docURL != null && sUrl != null && sUrl.length>0) {
+          docURL = blr.W15yQC.fnTrim(docURL);
+          sUrl = blr.W15yQC.fnTrim(sUrl);
+          if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
+            firstPart = docURL.match(/^([a-z-]+:)\/\//);
+              if(firstPart != null) {
+                sUrl=firstPart[1]+sUrl;
+              }
+          }
+          if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
+            firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
             if(firstPart != null) {
-              sUrl=firstPart[1]+sUrl;
-            }
-        }
-        if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
-          firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
-          if(firstPart != null) {
-            sUrl = firstPart[1]+firstPart[2]+sUrl;
-          } else {
-            firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
-            if(firstPart != null) {
-              if(sUrl.match(/^[\/\\]/) != null) {
-                sUrl = firstPart[1]+firstPart[2]+sUrl;
-              } else {
-                sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
+              sUrl = firstPart[1]+firstPart[2]+sUrl;
+            } else {
+              firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
+              if(firstPart != null) {
+                if(sUrl.match(/^[\/\\]/) != null) {
+                  sUrl = firstPart[1]+firstPart[2]+sUrl;
+                } else {
+                  sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
+                }
               }
             }
           }
         }
+        if(sUrl != null) {
+          sUrl = sUrl.replace(/\s/g,'%20');
+          sUrl = sUrl.replace(r3,'$1/');
+          sUrl = sUrl.replace(r3,'$1/');
+          sUrl = sUrl.replace(r3,'$1/');
+          sUrl = sUrl.replace(r4,'$1$3');
+          sUrl = sUrl.replace(r2, '/');
+          sUrl = sUrl.replace(r2, '/');
+          sUrl = sUrl.replace(/([^\/:]\/)\/+/g, '/');
+        }
       }
-      if(sUrl != null) { sUrl = sUrl.replace(/\s/g,'%20'); }
-      sUrl = sUrl.replace(/\/[^\/]+\/\.\.\//, '/','g');
-      sUrl = sUrl.replace(/\/\.\//, '/','g');
-      sUrl = sUrl.replace(/([^\/:]\/)\/+/, '/','g');
       return sUrl;
     },
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      var i,r;
+      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
+
       if(url1 != null) {
-        url1 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL1, url1));
+        url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
+        if(bIgnoreWWW) { url1 = url1.replace(r3, '://'); }
+        url1 = url1.replace(r1, '');
+        url1 = url1.replace(r4, '');
+
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-          url1 = url1.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+          url1 = url1.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
         }
-        //url1 = url1.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        //url1 = url1.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        //url1 = url1.replace(/\/\/iu.edu/i,'//www.indiana.edu');
       }
       if(url2 != null) {
-        url2 = blr.W15yQC.fnRemoveWWWAndEndingSlash(blr.W15yQC.fnNormalizeURL(docURL2, url2));
+        url2 = blr.W15yQC.fnNormalizeURL(docURL2, url2);
+        if(bIgnoreWWW) { url2 = url2.replace(r3, '://'); }
+        url2 = url2.replace(r1, '');
+        url2 = url2.replace(r4, '');
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-          r=new RegExp('\/\/'+blr.W15yQC.domainEq1[i],'i');
-          url2 = url2.replace(r,'//'+blr.W15yQC.domainEq2[i]);
+          url2 = url2.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
         }
-        //url2 = url2.replace(/\/\/iuadapts.indiana.edu/i,'//www.indiana.edu/~iuadapts');
-        //url2 = url2.replace(/\/\/iuadapts.iu.edu/i,'//www.indiana.edu/~iuadapts');
-        //url2 = url2.replace(/\/\/iu.edu/i,'//www.indiana.edu');
       }
 
       if(url1!=url2 && url1!=null && url2!=null) {
-        url1=blr.W15yQC.fnRemoveWWWAndEndingSlash(url1.replace(/(index|home)\.s?html?$/i,''));
-        url2=blr.W15yQC.fnRemoveWWWAndEndingSlash(url2.replace(/(index|home)\.s?html?$/i,''));
+        url1=url1.replace(r2,'');
+        url2=url2.replace(r2,'');
       }
       return (url1 == url2);
     },
@@ -2500,7 +2517,7 @@ ys: 'whys'
     },
 
     fnListMissingIDs: function (doc, sIDs) {
-      var aIDs, sMissingIDs = null;
+      var i, aIDs, sMissingIDs = null;
       if(doc!=null && sIDs != null && sIDs.length) {
         aIDs = sIDs.split(' ');
         if (aIDs != null) {
@@ -3299,12 +3316,10 @@ ys: 'whys'
       return sLabelText;
     },
 
-    fnGetARIALabelText: function (node, doc) {
-      var sLabelText = null;
-      if(doc==null && node != null && node.ownerDocument) {
+    fnGetARIALabelText: function (node) {
+      var sLabelText = null, doc;
+      if (node != null && node.hasAttribute && node.ownerDocument) {
         doc=node.ownerDocument;
-      }
-      if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('aria-label')) {
           sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
         }
@@ -3315,9 +3330,10 @@ ys: 'whys'
       return sLabelText;
     },
 
-    fnGetFormControlLabelTagText: function (node, doc) { // TODO: QA This. What happens with both explicit and implicit labels.
-      var sLabelText = null, implicitLabelNode, explictLabelsList, i;
-      if (node != null && node.getAttribute && doc != null) {
+    fnGetFormControlLabelTagText: function (node) { // TODO: QA This. What happens with both explicit and implicit labels.
+      var sLabelText = null, implicitLabelNode, explictLabelsList, i, doc;
+      if (node != null && node.getAttribute && node.ownerDocument) {
+        doc=node.ownerDocument;
         if(node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') { // TODO: Check this!! I don't believe it.
           sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);  // TODO: Check this!! I don't believe it.
         } else {
@@ -5075,7 +5091,7 @@ ys: 'whys'
       var div, div2, element, sWindowTitle, sWindowURL;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentDetails');
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnGetString('hrsWindowDetails'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnGetString('hrsWindowDetails'));
       div2 = rd.createElement('div');
       element = rd.createElement('h3');
       element.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsWindowTitle')));
@@ -5110,14 +5126,14 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFramesList, 'hrsFrames', 'hrsNoFrames'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFramesList, 'hrsFrames', 'hrsNoFrames'));
 
       if (aFramesList && aFramesList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIFramesTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFramesList.length; i++) {
@@ -5128,10 +5144,10 @@ ys: 'whys'
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aFramesList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aFramesList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHContainsDocNumber'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
                                                               blr.W15yQC.fnGetString('hrsTHSrc'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -5145,7 +5161,7 @@ ys: 'whys'
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].effectiveLabel, aFramesList[i].effectiveLabelSource, aFramesList[i].src, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].effectiveLabel, aFramesList[i].effectiveLabelSource, aFramesList[i].src, sNotes], sClass);
           }
         }
 
@@ -5154,7 +5170,7 @@ ys: 'whys'
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFramesTable');
 
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFramesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoFramesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -5547,7 +5563,13 @@ ys: 'whys'
                     text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
                     oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, sInheritedRoles, headingLevel, effectiveLabel, effectiveLabelSource, text));
                     oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
+                    if(progressWindow) {
+                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                        blr.W15yQC.skipStatusUpdateCounter=5;
+                      }
+                    }
                   }
 
                   if (sTagName == 'form') {
@@ -5572,7 +5594,7 @@ ys: 'whys'
                     sEffectiveLabelText = '';
                     if(blr.W15yQC.fnIsFormControlNode(node)) {
                       sLegendText = blr.W15yQC.fnGetLegendText(node);
-                      sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node, doc);
+                      sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node);
                       aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
                       effectiveLabel=aLabel[0];
                       effectiveLabelSource=aLabel[1];
@@ -5622,7 +5644,13 @@ ys: 'whys'
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
                     oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
+                    if(progressWindow) {
+                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                        blr.W15yQC.skipStatusUpdateCounter=5;
+                      }
+                    }
                   } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
                     xPath = blr.W15yQC.fnGetElementXPath(node);
                     nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
@@ -5636,7 +5664,13 @@ ys: 'whys'
                     sState = blr.W15yQC.fnGetNodeState(node);
                     oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
                     oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) { progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100); }
+                    if(progressWindow) {
+                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                        blr.W15yQC.skipStatusUpdateCounter=5;
+                      }
+                    }
                   }
 
                   if (sTagName == 'table') {
@@ -5714,6 +5748,7 @@ ys: 'whys'
           }
         }
       }
+      blr.W15yQC.skipStatusUpdateCounter=1;
       return oW15yResults;
     },
 
@@ -5893,13 +5928,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
 
       if (aDocumentsList && aDocumentsList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIDocumentsTable');
 
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
+        table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHDocumentNumber'), blr.W15yQC.fnGetString('hrsTHTitle'),
                                                             blr.W15yQC.fnGetString('hrsTHLanguage'), blr.W15yQC.fnGetString('hrsTHDirection'),
                                                             blr.W15yQC.fnGetString('hrsTHDocumentURL'), blr.W15yQC.fnGetString('hrsTHCompatMode'),
                                                             blr.W15yQC.fnGetString('hrsTHDoctype'),blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -5914,13 +5949,13 @@ ys: 'whys'
           } else if (dd.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, dd.title, dd.language, dd.dir, dd.URL, dd.compatMode, dd.docType, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, dd.title, dd.language, dd.dir, dd.URL, dd.compatMode, dd.docType, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIDocumentsTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoDocumentsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6117,14 +6152,14 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList,'hrsARIALandmarks','hrsNoARIALandmarks'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList,'hrsARIALandmarks','hrsNoARIALandmarks'));
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes && aARIALandmarksList.pageLevel.notes.length>0))) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
 
         if (bQuick) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           // Elements
@@ -6140,10 +6175,10 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, lo.effectiveLabel], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHRole'),
                                                               blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -6163,7 +6198,7 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
           }
           // Page Level
           if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
@@ -6176,7 +6211,7 @@ ys: 'whys'
               } else if (lo.warning) {
                 sClass = 'warning';
               }
-              blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
             }
           }
         }
@@ -6185,7 +6220,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIIARIALandmarksTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6267,7 +6302,7 @@ ys: 'whys'
       div.setAttribute('id', 'AIARIAElementsList');
       div.setAttribute('class', 'AIList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList,'hrsARIAEls','hrsNoARIAEls'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList,'hrsARIAEls','hrsNoARIAEls'));
 
       if (aARIAElementsList && aARIAElementsList.length > 0) {
 
@@ -6347,7 +6382,7 @@ ys: 'whys'
         innerDiv.appendChild(list[0]);
         div.appendChild(innerDiv);
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoARIAElsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6719,7 +6754,7 @@ ys: 'whys'
       var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
 
       if (aImagesList && aImagesList.length > 0) {
         for (i = 0; i < aImagesList.length; i++) {
@@ -6732,7 +6767,7 @@ ys: 'whys'
         if (bQuick) {
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')];
 
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -6746,7 +6781,7 @@ ys: 'whys'
               sClass = 'warning';
             }
             colValues=[i + 1, io.effectiveLabel, sNotes];
-            blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         } else {
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
@@ -6756,7 +6791,7 @@ ys: 'whys'
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, colHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -6774,14 +6809,14 @@ ys: 'whys'
             if(bHasARIALabel) colValues.push(io.ariaLabel);
             colValues.push(io.src);
             colValues.push(sNotes);
-            blr.W15yQC.fnAppendTableRow(rd, tbody, colValues, sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIImagesTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoImagesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoImagesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -6913,14 +6948,14 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList,'hrsAccessKeys','hrsNoAccessKeys'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList,'hrsAccessKeys','hrsNoAccessKeys'));
 
       if (aAccessKeysList != null && aAccessKeysList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AIAccesskeysTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
@@ -6933,10 +6968,10 @@ ys: 'whys'
             } else if (ak.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, ak.accessKey, ak.effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, ak.accessKey, ak.effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHAccessKey'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHState'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -6951,14 +6986,14 @@ ys: 'whys'
             } else if (ak.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
           }
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIAccesskeysTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoAccessKeysDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7130,7 +7165,7 @@ ys: 'whys'
       div.setAttribute('id', 'AIHeadingsList');
       div.setAttribute('class', 'AIList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
 
       if (aHeadingsList && aHeadingsList.length > 0) {
         for(i=0;i<aHeadingsList.length;i++) { if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; } }
@@ -7215,7 +7250,7 @@ ys: 'whys'
         table.setAttribute('id', 'AIHeadingsTable');
 
         if (bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aHeadingsList.length; i++) {
@@ -7226,10 +7261,10 @@ ys: 'whys'
             } else if (aHeadingsList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -7243,7 +7278,7 @@ ys: 'whys'
             } else if (aHeadingsList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
           }
         }
 
@@ -7253,7 +7288,7 @@ ys: 'whys'
       }
 
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoHeadingsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7297,7 +7332,7 @@ ys: 'whys'
                 sEffectiveLabelText = '';
                 if(blr.W15yQC.fnIsFormControlNode(c)) {
                   sLegendText = blr.W15yQC.fnGetLegendText(c);
-                  sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c, doc);
+                  sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(c);
                   aLabel = blr.W15yQC.fnGetEffectiveLabel(c);
                   effectiveLabel=aLabel[0];
                   effectiveLabelSource=aLabel[1];
@@ -7325,7 +7360,7 @@ ys: 'whys'
                 if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
                 controlType=c.tagName.toLowerCase()+controlType;
                 sAnnouncedAs = blr.W15yQC.fnJAWSAnnouncesControlAs(c);
-                sARIALabelText = blr.W15yQC.fnGetARIALabelText(c, doc);
+                sARIALabelText = blr.W15yQC.fnGetARIALabelText(c);
                 sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(c, doc);
                 sStateDescription = blr.W15yQC.fnGetNodeState(c);
                 sID = c.getAttribute('id');
@@ -7601,13 +7636,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormsList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFormsList,'hrsForms','hrsNoForms'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFormsList,'hrsForms','hrsNoForms'));
 
       if (aFormsList && aFormsList.length > 0) {
         table = rd.createElement('table');
         msgHash = new blr.W15yQC.HashTable();
         table.setAttribute('id', 'AIFormsTable');
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
+        table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'),
                                                             blr.W15yQC.fnGetString('hrsTHFormElement'), blr.W15yQC.fnGetString('hrsTHName'),
                                                             blr.W15yQC.fnGetString('hrsTHAction'), blr.W15yQC.fnGetString('hrsTHMethod'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -7622,13 +7657,13 @@ ys: 'whys'
           } else if (fce.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription), fce.name, fce.action, fce.method, fce.stateDescription, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription), fce.name, fce.action, fce.method, fce.stateDescription, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormsTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFormsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoFormsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7640,7 +7675,7 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormControlsList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList,'hrsFormsCtrls','hrsNoFormCtrls'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList,'hrsFormsCtrls','hrsNoFormCtrls'));
 
       if (aFormControlsList && aFormControlsList.length > 0) {
         bHasARIALabel = false;
@@ -7666,7 +7701,7 @@ ys: 'whys'
 
           table = rd.createElement('table');
           table.setAttribute('id', 'AIFormControlsTable');
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, aTableHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -7679,7 +7714,7 @@ ys: 'whys'
             } else if (fce.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
           }
         } else {
           aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
@@ -7698,7 +7733,7 @@ ys: 'whys'
 
           table = rd.createElement('table');
           table.setAttribute('id', 'AIFormControlsTable');
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, aTableHeaders);
+          table = blr.W15yQC.fnCreateTableHeaders(table, aTableHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -7724,7 +7759,7 @@ ys: 'whys'
             if (bHasStateDescription) { aTableCells.push(fce.stateDescription); }
             aTableCells.push(sNotes);
 
-            blr.W15yQC.fnAppendTableRow(rd, tbody, aTableCells, sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, aTableCells, sClass);
           }
         }
 
@@ -7732,7 +7767,7 @@ ys: 'whys'
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFormControlsTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoFormsCtrlsDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -7788,10 +7823,9 @@ ys: 'whys'
       return aLinksList;
     },
 
-
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
       var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink,
-          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode;
+          bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, skipStatusUpdateCounter=1;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
       oW15yResults.PageScore.bAllLinksHaveText=true;
@@ -7801,15 +7835,13 @@ ys: 'whys'
 
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
-        //aLinksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aLinksList[i].node, aDocumentsList);
-        aLinksList[i].stateDescription = blr.W15yQC.fnGetNodeState(aLinksList[i].node);
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
           aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
         } else {
           aLinksList[i].soundex = '';
         }
-        if (blr.W15yQC.fnStringHasContent(aLinksList[i].title)) {
+        if (aLinksList[i].title!=null) {
           aLinksList[i].title = blr.W15yQC.fnCleanSpaces(aLinksList[i].title);
         }
       }
@@ -7817,12 +7849,13 @@ ys: 'whys'
       for (i = 0; i < aLinksList.length; i++) {
         if(i>20 && (i % 5)==0){
           if(progressWindow != null) {
-            progressWindow.fnUpdateProgress('Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%', Math.round(51*i/aLinksList.length)+24)
-            //progressWindow.document.getElementById('percent').value=Math.round(51*i/aLinksList.length)+24;
-            //progressWindow.document.getElementById('detailText').value='Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%';
-            //progressWindow.focus();
+            skipStatusUpdateCounter=skipStatusUpdateCounter-1;
+            if (skipStatusUpdateCounter<1) {
+              progressWindow.fnUpdateProgress('Inspecting Links ' + (Math.round(100*i/aLinksList.length)).toString()+'%', Math.round(51*i/aLinksList.length)+24);
+              skipStatusUpdateCounter=3;
+              blr.W15yQC.fnDoEvents();
+            }
           }
-          blr.W15yQC.fnDoEvents();
         }
         if(aLinksList[i]==null || aLinksList[i].node==null || !aLinksList[i].node.hasAttribute) continue;
 
@@ -7849,12 +7882,11 @@ ys: 'whys'
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasInvalidAltAttribute'); //
         }
 
-        if (aLinksList[i].text == null) {
+        if (aLinksList[i].text == null && blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==false) {
           oW15yResults.PageScore.bAllLinksHaveText=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
-        } else if (aLinksList[i].text.length && aLinksList[i].text.length > 0) { //TODO: Make sure these tests need to be in this if clause, or is that hiding something?
-          linkText = blr.W15yQC.fnTrim(aLinksList[i].text.toLowerCase());
-
+        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==true) { // TODO: QA All empty link scenarios and make sure we get the right errors
+          linkText = blr.W15yQC.fnTrim(aLinksList[i].effectiveLabel.toLowerCase());
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
             oW15yResults.PageScore.bAllLinksHaveText=false;
             oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
@@ -7879,30 +7911,29 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
-          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) {
+          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) { // TODO: Look to see if an onclick handler has be applied
             for (j = i+1; j < aLinksList.length; j++) {
-              if(aLinksList[j].node.hasAttribute('href') || aLinksList[j].node.hasAttribute('onclick')) {
-                bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href);
-                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text);
+              if(aLinksList[j].href != null || aLinksList[j].node.hasAttribute('onclick')) {
+                bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href); // TODO: Optimize this
+                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text); // TODO: Optimize this
                 if (aLinksList[j].text && aLinksList[j].text.length > 0) {
-                  if (bLinkTextsAreDifferent == false && (aLinksList[i].href == null || bHrefsAreEqual == false || aLinksList[i].href.length < 1)) {
+                  if (bLinkTextsAreDifferent == false && (bHrefsAreEqual == false || aLinksList[i].href == null || aLinksList[i].href.length < 1)) {
                     aLinksList[i].aSameLinkText.push(j+1);
                     aLinksList[j].aSameLinkText.push(i+1);
-                  } else if (aLinksList[i].soundex == aLinksList[j].soundex && bHrefsAreEqual == false) {
+                  } else if (bHrefsAreEqual == false && aLinksList[i].soundex == aLinksList[j].soundex) {
                     aLinksList[i].aSoundsTheSame.push(j+1);
                     aLinksList[j].aSoundsTheSame.push(i+1);
                   }
                 }
 
                 if (aLinksList[i].href != null && bHrefsAreEqual == true && bLinkTextsAreDifferent == true) {
-                  bOnclickValuesAreDifferent = blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null));
                   if(aLinksList[i].node.hasAttribute('onclick') == true || aLinksList[j].node.hasAttribute('onclick') == true) {
-                    if(bOnclickValuesAreDifferent == false) {
+                    if(!blr.W15yQC.fnScriptValuesAreDifferent(blr.W15yQC.fnGetNodeAttribute(aLinksList[i].node,'onclick',null), blr.W15yQC.fnGetNodeAttribute(aLinksList[j].node,'onclick',null))) {
                       aLinksList[i].aSameHrefAndOnclick.push(j+1);
                       aLinksList[j].aSameHrefAndOnclick.push(i+1);
                     }
                   } else { // unless javascript:;, #, javascript:void(0)
-                    if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) {
+                    if(/^\s*(#|javascript:;?|javascript:\s*void\(\s*0\s*\)\s*;?)\s*$/i.test(aLinksList[i].href)==false) { // TODO: premake RE to optimize?
                       aLinksList[i].aDiffTextSameHref.push(j+1);
                       aLinksList[j].aDiffTextSameHref.push(i+1);
                     }
@@ -8017,7 +8048,7 @@ ys: 'whys'
 
             }
           }
-        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))) {
+        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))==true) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
         }
 
@@ -8047,13 +8078,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aLinksList,'hrsLinks','hrsNoLinks'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aLinksList,'hrsLinks','hrsNoLinks'));
 
       if (aLinksList && aLinksList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AILinksTable');
         if(bQuick==true) {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'),blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'),blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
 
@@ -8066,12 +8097,12 @@ ys: 'whys'
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
-                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLinkTxt'),
-                                                              blr.W15yQC.fnGetString('hrsTHTitle'), blr.W15yQC.fnGetString('hrsTHHref'),
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'), blr.W15yQC.fnGetString('hrsTHHref'),
                                                               blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
 
@@ -8084,14 +8115,14 @@ ys: 'whys'
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].text, aLinksList[i].title, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].effectiveLabel, aLinksList[i].effectiveLabelSource, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
           }
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AILinksTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoLinksDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoLinksDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -8639,13 +8670,13 @@ ys: 'whys'
       div = rd.createElement('div');
       div.setAttribute('id', 'AITablesList');
 
-      blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, blr.W15yQC.fnMakeHeadingCountsString(aTablesList,'hrsTables','hrsNoTables'));
+      blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aTablesList,'hrsTables','hrsNoTables'));
 
       if (aTablesList && aTablesList.length > 0) {
         table = rd.createElement('table');
         table.setAttribute('id', 'AITablesTable');
         // TODO: Make summary and caption columns so they only appear when needed.
-        table = blr.W15yQC.fnCreateTableHeaders(rd, table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
+        table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHTableElement'),
                                                             blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHSummary'),
                                                             blr.W15yQC.fnGetString('hrsTHCaption'), blr.W15yQC.fnGetString('hrsTHSizeCR'),
                                                             blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
@@ -8660,13 +8691,13 @@ ys: 'whys'
             sClass = 'warning';
           }
           sSize = aTablesList[i].maxCols+' x '+aTablesList[i].maxRows;
-          blr.W15yQC.fnAppendTableRow(rd, tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aTablesList[i].nodeDescription), aTablesList[i].ownerDocumentNumber, aTablesList[i].summary, aTablesList[i].caption, sSize, aTablesList[i].state, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aTablesList[i].nodeDescription), aTablesList[i].ownerDocumentNumber, aTablesList[i].summary, aTablesList[i].caption, sSize, aTablesList[i].state, sNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AITablesTable');
       } else {
-        blr.W15yQC.fnAppendPElementTo(div, rd, blr.W15yQC.fnGetString('hrsNoTablesDetected'));
+        blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoTablesDetected'));
       }
       rd.body.appendChild(div);
     },
@@ -9092,7 +9123,7 @@ ys: 'whys'
       if (div2==null) {
         div = rd.createElement('div');
         div.setAttribute('id', 'AIPageSummary');
-        blr.W15yQC.fnAppendExpandContractHeadingTo(div, rd, 'Page Summary');
+        blr.W15yQC.fnAppendExpandContractHeadingTo(div, 'Page Summary');
 
         div2 = rd.createElement('div');
 
@@ -9317,57 +9348,56 @@ ys: 'whys'
     },
 
 
-    fnScannerInspect: function (sourceDocument, progressUpdateFunction) {
-      var oW15yQCReport=null, progressWindow=null;
+    fnScannerInspect: function (sourceDocument, progressWindow) {
+      var oW15yQCReport=null;
       blr.W15yQC.bQuick = false;
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnGetElements');
-      oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeDocuments');
+      oW15yQCReport = blr.W15yQC.fnGetElements(sourceDocument, progressWindow);
+
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Documents', 1); }
       blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFrameTitles');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Frame Titles', 5); }
       blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeHeadings');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Headings', 10); }
       blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, progressWindow);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIALandmarks');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA Landmarks', 15); }
       blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeARIAElements');
       if(blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA', 18); }
         blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
       }
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeLinks');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Links', 24); }
       blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeFormControls');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Forms', 75); }
       blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeImages');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Images', 85); }
       blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeAccessKeys');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Access Keys', 90); }
       blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnAnalyzeTables');
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
       blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnDescribeWindow');
+      if(progressWindow!=null) progressWindow.fnUpdateProgress('Creating Page Description', 98);
       blr.W15yQC.fnDescribeWindow(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('fnComputeScore');
       blr.W15yQC.fnComputeScore(oW15yQCReport);
 
-      if(progressUpdateFunction!=null) progressUpdateFunction('finished scan');
+      if(progressWindow!=null) progressWindow.fnUpdateProgress('Cleaning up...', 100);
       Components.utils.forceShrinkingGC();
       return oW15yQCReport;
     },
 
     fnReadUserPrefs: function() {
-      var sDomains, aEquivDomains, aDomainPair, focusInspectorOn;
+      var sDomains, aEquivDomains, aDomainPair, focusInspectorOn, i;
       if(Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec",'')=='') {
         Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
       }

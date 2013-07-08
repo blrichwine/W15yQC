@@ -35,8 +35,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 28',
-    releaseDate: 'May 27, 2013',
+    releaseVersion: '1.0 - Beta 29',
+    releaseDate: 'July 07, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -8048,7 +8048,7 @@ ys: 'whys'
 
             }
           }
-        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))) {
+        } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))==true) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
         }
 
