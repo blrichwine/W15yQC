@@ -31,6 +31,8 @@
  *
  *
  */
+"use strict";
+
 if (!blr) {
   var blr = {};
 }
@@ -1202,34 +1204,34 @@ blr.W15yQC.ContrastDialog = {
         treerow = document.createElement('treerow');
         treecell = document.createElement('treecell');
         tbc = document.getElementById('treeboxChildren');
-    
+
         treecell.setAttribute('label', i + 1);
         treerow.appendChild(treecell);
-    
+
         treecell = document.createElement('treecell');
         treecell.setAttribute('label', blr.W15yQC.storedColors[i][0]);
         treerow.appendChild(treecell);
-        
+
         treecell = document.createElement('treecell');
         treecell.setAttribute('label', blr.W15yQC.storedColors[i][3] ? blr.W15yQC.storedColors[i][1] : '-' );
         treerow.appendChild(treecell);
-        
+
         treecell = document.createElement('treecell');
         treecell.setAttribute('label', blr.W15yQC.storedColors[i][2]);
         treerow.appendChild(treecell);
-        
+
         treecell = document.createElement('treecell');
         treecell.setAttribute('label', blr.W15yQC.storedColors[i][4]);
         treerow.appendChild(treecell);
-        
+
         treecell = document.createElement('treecell');
         treecell.setAttribute('label', blr.W15yQC.storedColors[i][3] ? blr.W15yQC.storedColors[i][5] : '-');
         treerow.appendChild(treecell);
-        
+
         treecell = document.createElement('treecell');
         treecell.setAttribute('label', blr.W15yQC.storedColors[i][3] ? blr.W15yQC.storedColors[i][6] : '-');
         treerow.appendChild(treecell);
-    
+
         treeitem.appendChild(treerow);
         tbc.appendChild(treeitem);
     }
@@ -1249,13 +1251,13 @@ blr.W15yQC.ContrastDialog = {
         }
     }
   },
-  
+
   fnStoreColorValues: function() {
     var c1=document.getElementById('tbHTMLColor1').value,
         c2=document.getElementById('tbHTMLColor2').value,
         bgc=document.getElementById('tbHTMLColorBG').value, i,
         treeitem, treerow, treecell, tbc;
-        
+
     if(blr.W15yQC.storedColors==null) {
         blr.W15yQC.storedColors=[];
     }
@@ -1285,23 +1287,23 @@ blr.W15yQC.ContrastDialog = {
     treecell = document.createElement('treecell');
     treecell.setAttribute('label', c1);
     treerow.appendChild(treecell);
-    
+
     treecell = document.createElement('treecell');
     treecell.setAttribute('label', blr.W15yQC.ContrastDialog.color2enabled ? c2 : '-' );
     treerow.appendChild(treecell);
-    
+
     treecell = document.createElement('treecell');
     treecell.setAttribute('label', bgc);
     treerow.appendChild(treecell);
-    
+
     treecell = document.createElement('treecell');
     treecell.setAttribute('label', document.getElementById('resultsC1BGContrast').value);
     treerow.appendChild(treecell);
-    
+
     treecell = document.createElement('treecell');
     treecell.setAttribute('label', blr.W15yQC.ContrastDialog.color2enabled ? document.getElementById('resultsC2BGContrast').value : '-');
     treerow.appendChild(treecell);
-    
+
     treecell = document.createElement('treecell');
     treecell.setAttribute('label', blr.W15yQC.ContrastDialog.color2enabled ? document.getElementById('resultsC1C2Contrast').value : '-');
     treerow.appendChild(treecell);
@@ -1322,10 +1324,10 @@ blr.W15yQC.ContrastDialog = {
         document.getElementById('col-header-lcc1c2').setAttribute('hidden','false');
     }
   },
-  
+
   fnSetColorsToSelectedStoredColors: function() {
     var treebox = document.getElementById('treebox'), selectedRow = treebox.currentIndex;
-    
+
     if (isNaN(selectedRow) == false && selectedRow >= 0 && selectedRow<blr.W15yQC.storedColors.length) {
         blr.W15yQC.ContrastDialog.fnColor1HTMLColorChange(blr.W15yQC.storedColors[selectedRow][0]);
         blr.W15yQC.ContrastDialog.fnColor2HTMLColorChange(blr.W15yQC.storedColors[selectedRow][1]);
@@ -1338,7 +1340,7 @@ blr.W15yQC.ContrastDialog = {
   fnClearAllStoredColors: function() {
     var tbc, tbcp,
         prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
-   
+
     if(blr.W15yQC.storedColors!=null && blr.W15yQC.storedColors.length>0) {
 
         result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Reset project to new without saving?");
@@ -1354,7 +1356,7 @@ blr.W15yQC.ContrastDialog = {
         }
     }
   },
-  
+
   fnDeleteSelectedStoredColor: function() {
     var treebox=document.getElementById('treebox'),
       selectedRow = treebox.currentIndex,
@@ -1367,14 +1369,14 @@ blr.W15yQC.ContrastDialog = {
         row.parentNode.removeChild(row);
       }
     }
-  },  
-  
+  },
+
   fnSaveStoredColors: function() {
     var dialogID = 'SavedColorsWindow',
         dialogPath = 'chrome://W15yQC/content/SavedColorsWindow.xul';
     window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,blr.W15yQC.storedColors);
   },
-  
+
   cleanup: function () {}
 
 };

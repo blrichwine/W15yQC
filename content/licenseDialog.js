@@ -23,14 +23,16 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2012.05.05 - Created! 
+ * 2012.05.05 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
+"use strict";
+
 if (!blr) {
   var blr = {};
 }

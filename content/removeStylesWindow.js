@@ -35,6 +35,8 @@
  *    - FIELDSET+LEGEND text?
  *
  */
+"use strict";
+
 if (!blr) {
   var blr = {};
 }

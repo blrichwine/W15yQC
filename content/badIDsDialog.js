@@ -30,6 +30,8 @@
  *
  *
  */
+"use strict";
+
 if (!blr) {
   var blr = {};
 }

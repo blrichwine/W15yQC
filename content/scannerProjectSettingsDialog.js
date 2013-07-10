@@ -27,9 +27,10 @@
  *
  *
  * TODO:
- *      
- * 
+ *
+ *
  */
+"use strict";
 
 /*
  * Object:  scannerProjectSettingsDialog
@@ -39,14 +40,14 @@
 blr.W15yQC.scannerProjectSettingsDialog = {
   bFieldsAreOK:false,
   bValuesHaveChanged:false,
-  
+
   init: function (dialog) {
     var i, treeitem, treecell, row, tbc1=document.getElementById('tMustMatchListChildren'), tbc2=document.getElementById('tMustNotMatchListChildren');
-    
+
     document.getElementById('tbTitle').value=blr.W15yQC.ScannerWindow.sProjectTitle;
     document.getElementById('cbParseForLinks').checked=blr.W15yQC.ScannerWindow.parseForLinks==true;
     document.getElementById('tbMaxLengthDepth').value=blr.W15yQC.ScannerWindow.maximumURLDepth;
-    
+
     if(blr.W15yQC.ScannerWindow.urlMustMatchList != null) {
       for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
         treeitem=document.createElement('treeitem');
@@ -61,7 +62,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
         tbc1.appendChild(treeitem);
       }
     }
-    
+
     if(blr.W15yQC.ScannerWindow.urlMustNotMatchList != null) {
       for(i=0;i<blr.W15yQC.ScannerWindow.urlMustNotMatchList.length;i++) {
         treeitem=document.createElement('treeitem');
@@ -96,10 +97,10 @@ blr.W15yQC.scannerProjectSettingsDialog = {
       document.getElementById('button-editMustNotMatch').disabled=true;
       document.getElementById('button-deleteMustNotMatch').disabled=true;
     }
-    
+
   },
-  
-  
+
+
   fnAddMustMatch: function() {
     var tbc, row, d={matchSpec:'', matchTypeIsRegEx:false},
         treeitem, treerow, treecell,
@@ -145,7 +146,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
     var treebox=document.getElementById('tMustMatchList'),
       selectedRow = treebox.currentIndex,
       row;
-      
+
     if(selectedRow>=0) {
       row=treebox.getElementsByTagName('treeitem')[selectedRow];
       if(row!=null) {
@@ -199,7 +200,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
     var treebox=document.getElementById('tMustNotMatchList'),
       selectedRow = treebox.currentIndex,
       row;
-      
+
     if(selectedRow>=0) {
       row=treebox.getElementsByTagName('treeitem')[selectedRow];
       if(row!=null) {
@@ -217,7 +218,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
     }
     blr.W15yQC.scannerProjectSettingsDialog.bFieldsAreOK=false;
   },
-  
+
   doOK: function() {
     var i, count, treebox, treecells;
     blr.W15yQC.scannerProjectSettingsDialog.checkFields();
@@ -254,7 +255,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
     }
     return false;
   },
-  
+
   doCancel: function() {
     return true;
   },
@@ -263,16 +264,16 @@ blr.W15yQC.scannerProjectSettingsDialog = {
   },
 
   windowOnKeyDown: function() {
-    
+
   },
-  
+
   windowOnKeyUp: function() {
-    
+
   },
-  
+
   forceMinSize: function() {
-    
+
   }
-  
+
 };
 

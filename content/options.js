@@ -25,8 +25,9 @@
  * Dev Notes:
  * 2013.02.10 - Created!
  *
- * 
+ *
  */
+"use strict";
 Components.utils.import("resource://gre/modules/osfile.jsm");
 
 /*
@@ -34,29 +35,29 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  * Returns:
  */
 blr.W15yQC.options = {
-  
-  init: function() { 
+
+  init: function() {
     blr.W15yQC.options.fnReadPrefs();
   },
-  
+
   fnReadPrefs: function() {
     var sDomains, aEquivDomains, aDomainPair,
         tbc, url, i,
         treeitem, treerow, treecell;
-    
+
     tbc = document.getElementById('tEquivDomainsChildren');
-  
+
     if (tbc != null) {
       while (tbc.firstChild) {
         tbc.removeChild(tbc.firstChild);
       }
     }
-    
+
     sDomains=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences","");
     if(sDomains!=null && sDomains.length>3) {
       aEquivDomains=sDomains.split("|");
       if(aEquivDomains != null && aEquivDomains.length>0) {
-        for(i=0;i<aEquivDomains.length;i++) { 
+        for(i=0;i<aEquivDomains.length;i++) {
           if(/=/.test(aEquivDomains[i])==true) {
             aDomainPair=aEquivDomains[i].split("=");
             if(aDomainPair!=null && aDomainPair.length==2) {
@@ -77,12 +78,12 @@ blr.W15yQC.options = {
       }
     }
   },
-  
+
   fnUpdatesPrefs: function() {
     var sDomains='', aEquivDomains, aDomainPair,
-        tbc, url, i, treerows, treecells, 
+        tbc, url, i, treerows, treecells,
         treeitem, treerow, treecell;
-    
+
     tbc = document.getElementById('tEquivDomainsChildren');
     treerows = tbc.getElementsByTagName('treerow');
     if(treerows!=null) {
@@ -123,7 +124,7 @@ blr.W15yQC.options = {
     }
     blr.W15yQC.options.fnUpdatesPrefs();
   },
-  
+
   fnDeleteSelectedDomains: function() {
     var treebox=document.getElementById('tEquivalentDomains'),
       selectedRow = treebox.currentIndex,
@@ -138,6 +139,6 @@ blr.W15yQC.options = {
       blr.W15yQC.options.fnReadPrefs();
     }
   }
-  
+
 };
 

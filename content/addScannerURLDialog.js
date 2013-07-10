@@ -52,6 +52,7 @@
  *
  *
  */
+"use strict";
 
 /*
  * Object:  AddScannerURLDialog

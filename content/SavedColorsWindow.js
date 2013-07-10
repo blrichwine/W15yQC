@@ -23,14 +23,16 @@
  * Project:	W15y Quick Check
  *
  * Dev Notes:
- * 2012.12.10 - Created! 
+ * 2012.12.10 - Created!
  *
  * TODO:
- *      
+ *
  *    - Internationalize?
- *    
- * 
+ *
+ *
  */
+"use strict";
+
 if (!blr) {
   var blr = {};
 }
@@ -45,7 +47,7 @@ blr.W15yQC.SavedColorsWindow = {
   rd: null,
   sourceDocument: null,
   storedColors: [],
-  
+
   init: function (dialog) {
     var if1;
     blr.W15yQC.fnReadUserPrefs();
@@ -56,7 +58,7 @@ blr.W15yQC.SavedColorsWindow = {
         if (if1 != null && if1.contentDocument) {
           blr.W15yQC.SavedColorsWindow.rd = if1.contentDocument;
         }
-    
+
         blr.W15yQC.SavedColorsWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
         blr.W15yQC.SavedColorsWindow.fnGenerateHTMLViewOfStoredColors();
     }
@@ -108,7 +110,7 @@ blr.W15yQC.SavedColorsWindow = {
     thead.appendChild(tr)
     table.appendChild(thead);
     tbody=rd.createElement('tbody');
-    
+
     for(i=0;i<blr.W15yQC.SavedColorsWindow.storedColors.length;i++) {
         tr=rd.createElement('tr');
         td=rd.createElement('td');
@@ -147,7 +149,7 @@ blr.W15yQC.SavedColorsWindow = {
             span=rd.createElement('span');
             span.setAttribute('style','font-size:14px;color:'+sc[i][1]+';background-color:'+sc[i][2])
             span.appendChild(rd.createTextNode('Example text in color 2 at 14 points. '));
-            
+
             el = rd.createElement('i');
             el.appendChild(rd.createTextNode('Example text in italic. '));
             span.appendChild(el);
@@ -156,7 +158,7 @@ blr.W15yQC.SavedColorsWindow = {
             span.appendChild(el);
             td.appendChild(span);
             td.appendChild(rd.createElement('br'));
-            
+
             el = rd.createElement('div');
             el.setAttribute('style', 'width:16px;height:16px;background-color:' + sc[i][0] + ';margin:3px;float:left');
             td.appendChild(el);
@@ -193,7 +195,7 @@ blr.W15yQC.SavedColorsWindow = {
     rd.body.appendChild(table);
     rd.title="W15yQC Saved Color Set - " + rightNow.toLocaleDateString()+' '+ rightNow.toLocaleTimeString();
   },
-  
+
   windowOnKeyDown: function (win, evt) {
     switch (evt.keyCode) {
       case 224:
@@ -269,13 +271,13 @@ blr.W15yQC.SavedColorsWindow = {
             }
             converter.writeString("\n");
         }
-        converter.close(); // this closes foStream            
+        converter.close(); // this closes foStream
       }
     } else {
       if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC Alert", "Nothing to save!");
     }
   },
-  
+
   saveStoredColorsAsHTML: function () {
     var converter,
     file,
@@ -305,7 +307,7 @@ blr.W15yQC.SavedColorsWindow = {
         converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
         converter.init(foStream, "UTF-8", 0, 0); alert(blr.W15yQC.SavedColorsWindow.rd.title);
         converter.writeString('<html>' + blr.W15yQC.SavedColorsWindow.rd.documentElement.innerHTML + '</html>');
-        converter.close(); // this closes foStream            
+        converter.close(); // this closes foStream
       }
     } else {
       if (blr.W15yQC.SavedColorsWindow.prompts.alert) blr.W15yQC.SavedColorsWindow.prompts.alert(null, "W15yQC Alert", "Nothing to save!");

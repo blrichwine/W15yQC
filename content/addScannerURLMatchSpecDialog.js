@@ -25,13 +25,14 @@
  * Dev Notes:
  * 2013.02.10 - Created!
  *
- * 
+ *
  */
+"use strict";
 
 blr.W15yQC.addScannerURLMatchSpecDialog = {
    d: null,
    ok: false,
-   
+
    init: function() {
     if(blr.W15yQC.addScannerURLMatchSpecDialog.d!=null) {
       document.getElementById('tbMatchSpec').value=blr.W15yQC.addScannerURLMatchSpecDialog.d.matchSpec;
@@ -39,7 +40,7 @@ blr.W15yQC.addScannerURLMatchSpecDialog = {
     }
     blr.W15yQC.addScannerURLMatchSpecDialog.checkFields();
    },
-   
+
    checkFields: function() {
     var tbTestString=document.getElementById('tbTestString'),
         sMatchSpec=blr.W15yQC.fnTrim(document.getElementById('tbMatchSpec').value),
@@ -54,7 +55,7 @@ blr.W15yQC.addScannerURLMatchSpecDialog = {
           if(regEx!=null) {
             if(sTest!=null && sTest.length>0) {
               if(regEx.test(sTest,"i")) {
-                bMatch=true; 
+                bMatch=true;
               }
             }
           } else {
@@ -67,14 +68,14 @@ blr.W15yQC.addScannerURLMatchSpecDialog = {
         blr.W15yQC.addScannerURLMatchSpecDialog.ok=true;
         if(sTest!=null && sTest.length>0) {
           if((sTest.toLowerCase()).indexOf(sMatchSpec.toLowerCase())>=0) {
-            bMatch=true; 
+            bMatch=true;
           }
         }
       }
     } else {
       blr.W15yQC.addScannerURLMatchSpecDialog.ok=false;
     }
-    
+
     if(bMatch==true && blr.W15yQC.addScannerURLMatchSpecDialog.ok==true) {
       document.getElementById('testStringLabel').value="Test String (Matches):";
     } else {
@@ -98,7 +99,7 @@ blr.W15yQC.addScannerURLMatchSpecDialog = {
 
    doOK: function() {
       blr.W15yQC.addScannerURLMatchSpecDialog.checkFields();
-      if(blr.W15yQC.addScannerURLMatchSpecDialog.ok==true) {        
+      if(blr.W15yQC.addScannerURLMatchSpecDialog.ok==true) {
         blr.W15yQC.addScannerURLMatchSpecDialog.d.matchSpec=blr.W15yQC.fnTrim(document.getElementById('tbMatchSpec').value);
         blr.W15yQC.addScannerURLMatchSpecDialog.d.matchTypeIsRegEx=document.getElementById('cbIsRegEx').checked;
         return true;

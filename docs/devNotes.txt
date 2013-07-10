@@ -175,6 +175,8 @@
 
     *** FIX ASAP***
   -- CMU Pronouncing Dictionary: http://www.speech.cs.cmu.edu/cgi-bin/cmudict, /Users/blrichwine/Dropbox/dev/supsW15yQC/Text to Phoneme/CMU
+  -- ** Don't display Owner Document Number in full HTML report if only one document is present
+  -- ** Standardize the Effective Label and Label Source displays in Full HTML Report
   -- add use strict to js files and do a QC run to fleece out errors.
   -- ******** HTML Report, links, no effective label. Empty links that have aria-label not reported as labeled. What's up with that?
     Review priority of issues. How should items that need manual checks be indicated? What is the criteria for failures vs. warnings?
