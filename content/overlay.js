@@ -7835,6 +7835,7 @@ ys: 'whys'
 
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
+        aLinksList[i].listedByAT=true;
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
           aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
@@ -7869,12 +7870,14 @@ ys: 'whys'
         }
 
         if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
+          aLinksList[i].listedByAT=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
         } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('href'))==false &&
                    (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('title')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('alt')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('target')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].text) == true)) {
+                      aLinksList[i].listedByAT=false;
                       blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); //
                 }
 
@@ -8049,6 +8052,7 @@ ys: 'whys'
             }
           }
         } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))==true) {
+          aLinksList[i].listedByAT=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
         }
 
@@ -8090,14 +8094,16 @@ ys: 'whys'
 
           tbody = rd.createElement('tbody');
           for (i = 0; i < aLinksList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
-            sClass = '';
-            if (aLinksList[i].failed) {
-              sClass = 'failed';
-            } else if (aLinksList[i].warning) {
-              sClass = 'warning';
+            if (aLinksList[i].listedByAT!=false) {
+              sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+              sClass = '';
+              if (aLinksList[i].failed) {
+                sClass = 'failed';
+              } else if (aLinksList[i].warning) {
+                sClass = 'warning';
+              }
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
