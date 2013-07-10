@@ -58,7 +58,7 @@
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
             <menuitem id="W15yQC_menuEntry_projectScanner" accesskey="p" label="Project Scanner"
                       oncommand="blr.W15yQC.openDialog('scanner');"/>
-            <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="s" label="Remove Styles"
+            <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="s" label="Semantic View"
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
             <menuitem id="W15yQC_menuEntry_focusHighlighter" accesskey="f" label="Focus Tracker"
                       oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
@@ -123,7 +123,7 @@
       <menupopup onpopupshowing="blr.W15yQC.fnInitToolsToolbarMenuPopup(document)">
           <menuitem id="W15yTPBMI-ContrastChecker" accesskey="" label="Contrast Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
           <menuitem id="W15yTPBMI-ContrastTool" accesskey="" label="Contrast Tool" oncommand="blr.W15yQC.openDialog('contrast');"/>
-          <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Remove Styles" oncommand="blr.W15yQC.fnRemoveStyles();"/>
+          <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Semantic View" oncommand="blr.W15yQC.fnRemoveStyles();"/>
           <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
           <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
           <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Project Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
