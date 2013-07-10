@@ -7669,7 +7669,7 @@ ys: 'whys'
     },
 
     fnDisplayFormControlResults: function (rd, aFormControlsList, bQuick) {
-      var div, i, ak, bHasARIALabel, bHasLegend, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
+      var div, i, ak, bHasARIALabel, bHasLegend, bHasLabel, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
           aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells;
 
       div = rd.createElement('div');
@@ -7679,6 +7679,7 @@ ys: 'whys'
 
       if (aFormControlsList && aFormControlsList.length > 0) {
         bHasARIALabel = false;
+        bHasLabel = false;
         bHasLegend = false;
         bHasTitle = false;
         bHasARIADescription = false;
@@ -7688,6 +7689,7 @@ ys: 'whys'
         for (i = 0; i < aFormControlsList.length; i++) {
           ak = aFormControlsList[i];
           if (ak.legendText != null && ak.legendText.length > 0) { bHasLegend = true; }
+          if (ak.labelTagText != null && ak.labelTagText.length > 0) { bHasLabel = true; }
           if (ak.title != null && ak.title.length > 0) { bHasTitle = true; }
           if (ak.role != null && ak.role.length > 0) { bHasRole = true; }
           if (ak.value != null && ak.value.length > 0) { bHasValue = true; }
@@ -7720,7 +7722,7 @@ ys: 'whys'
           aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
                                blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
           if (bHasLegend) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend')); }
-          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
+          if (bHasLabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText')); }
           if (bHasTitle) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
           if (bHasARIALabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
@@ -7748,7 +7750,7 @@ ys: 'whys'
             }
             aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
             if (bHasLegend) { aTableCells.push(fce.legendText); }
-            aTableCells.push(fce.labelTagText);
+            if (bHasLabel) { aTableCells.push(fce.labelTagText); }
             if (bHasTitle) { aTableCells.push(fce.title); }
             if (bHasARIALabel) { aTableCells.push(fce.ARIALabelText); }
             aTableCells.push(blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '));
