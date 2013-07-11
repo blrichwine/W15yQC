@@ -6180,8 +6180,9 @@ ys: 'whys'
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
-                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHRole'),
-                                                              blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
+                                                              blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHState'),
+                                                              blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           // Elements
@@ -6198,7 +6199,7 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.effectiveLabelSource, lo.role, lo.stateDescription, sNotes], sClass);
           }
           // Page Level
           if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
