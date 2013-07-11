@@ -60,6 +60,54 @@
         - review each note for consistency.
         - separate statements from explanations
 
+*
+* Sanity Check
+*
+*
+   1. Run files through the quick HTML report
+      a. Files with items that should and shouldn't be listed by AT (headings, links, images, form controls, etc.)
+   2. Run files through the full HTML report
+      a. Files that have items for every section and enable every column of the table displays
+      b. Files that have items for every section and hide every posible hidden column from various table displays
+   3. Run files through each inspector dialog
+      a. Look for each type of value to be displayed in appropriate column
+      b. Sort the table display various ways and verify correct item is displayed when a row is selected
+      c. Verify the element highlighting is working as expected
+      d. Verify each of the other buttons are working as expected.
+   4. Run files through each highlighter type
+      a. Verify the correct elements get highlighted
+      b. Look for errors and warnings in the browser error logs
+      c. Make sure the highlighter toggle works
+      d. Make sure the install all feature works
+      e. Make sure the remove all feature works
+   5. Run the contrast checker tool through various files
+      a. Verify the results
+      b. Sort the table and verify the correct results are displayed when a row is selected
+      c. Verify the highlight feature is working correctly.
+      d. Verify the correct values get passed to the contrast tool
+      e. Verify the other button features work as expected
+   6. Play with the color contrast tool and verify that the features work as expected
+      a. verify the results
+   7. Run various pages through the Semantic View tool
+      a. Make sure all expected content is displayed.
+      b. Make sure content that should be missing is not displayed.
+      c. Make sure form control highlighting works
+      d. Make sure semantic highlighting works
+   8. Focus Tracker
+   9. Problem ID Checker
+      a. Verify the results
+      b. Sort the table and verify the correct results are displayed when a row is selected
+      c. Verify the highlight feature is working correctly.
+   10. Project Scanner
+      a. Load project files and verify they load correctly.
+      b. Import sitemaps and verify they load correctly.
+      c. File Save As a project file and verify it saves correctly
+      d. Export a project as csv and verify it exports correctly
+      e. Verify the function of the project settings dialog
+      f. Verify the delete URL deletes the correct URL no matter how sorted
+      g. Verify the edit URL deletes the correct URL no matter how sorted
+      h. Verify that the must match and must not match controls work correctly
+      i. Run the scanner on several different sites and make sure it does not crash, it does not slow down, and no open/save dialogs appear
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
       Documentation:
@@ -174,6 +222,8 @@
 
 
     *** FIX ASAP***
+  -- **** Generate a page that has each kind of element so a full HTML report can be tested with every column in each section displayed.
+     -- Generate pages that have each section of the HTML report, but drop out various columns from the sections
   -- CMU Pronouncing Dictionary: http://www.speech.cs.cmu.edu/cgi-bin/cmudict, /Users/blrichwine/Dropbox/dev/supsW15yQC/Text to Phoneme/CMU
   -- ** Don't display Owner Document Number in full HTML report if only one document is present
   -- ** Standardize the Effective Label and Label Source displays in Full HTML Report
