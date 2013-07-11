@@ -6178,17 +6178,17 @@ ys: 'whys'
             blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel], sClass);
           }
         } else {
+          colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
+                      blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
+                      blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHState'),
+                      blr.W15yQC.fnGetString('hrsTHNotes')];
           for (i=0;i<aARIALandmarksList.length; i++) {
             if (aARIALandmarksList[i].ownerDocumentNumber>1) {
               bHasMultipleDocs=true;
               break;
             }
           }
-          colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
-                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
-                      blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
-                      blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHState'),
-                      blr.W15yQC.fnGetString('hrsTHNotes')];
           if (bHasMultipleDocs==false) {
             colHeaders.splice(2,1);
           }
@@ -6766,7 +6766,7 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList, bQuick) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, colHeaders=[], colValues=[];
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
@@ -6774,6 +6774,7 @@ ys: 'whys'
       if (aImagesList && aImagesList.length > 0) {
         for (i = 0; i < aImagesList.length; i++) {
           io = aImagesList[i];
+          if (io.ownerDocumentNumber>1) { bHasMultipleDocs=true; }
           if(blr.W15yQC.fnStringHasContent(io.title)) { bHasTitle=true; }
           if(blr.W15yQC.fnStringHasContent(io.alt)) { bHasAlt=true; }
           if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) { bHasARIALabel=true; }
@@ -6808,6 +6809,9 @@ ys: 'whys'
           if(bHasARIALabel) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+          if (bHasMultipleDocs==false) {
+            colHeaders.splice(2,1);
+          }
 
           table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
@@ -6828,6 +6832,9 @@ ys: 'whys'
             if(bHasARIALabel) { colValues.push(io.ariaLabel); }
             colValues.push(io.src);
             colValues.push(sNotes);
+            if (bHasMultipleDocs==false) {
+              colValues.splice(2,1);
+            }
             blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         }
