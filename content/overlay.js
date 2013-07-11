@@ -6788,7 +6788,7 @@ ys: 'whys'
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
                         blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
                         blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource')];
-          if(bHasTitle) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHAlt')); }
+          if(bHasAlt) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHAlt')); }
           if(bHasTitle) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
           if(bHasARIALabel) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
