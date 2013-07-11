@@ -6751,7 +6751,7 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList, bQuick) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
@@ -6760,6 +6760,7 @@ ys: 'whys'
         for (i = 0; i < aImagesList.length; i++) {
           io = aImagesList[i];
           if(blr.W15yQC.fnStringHasContent(io.title)) { bHasTitle=true; }
+          if(blr.W15yQC.fnStringHasContent(io.alt)) { bHasAlt=true; }
           if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) { bHasARIALabel=true; }
         }
         table = rd.createElement('table');
@@ -6785,9 +6786,11 @@ ys: 'whys'
           }
         } else {
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
-                        blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHAlt')];
-          if(bHasTitle) colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
-          if(bHasARIALabel) colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+                        blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+                        blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource')];
+          if(bHasTitle) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHAlt')); }
+          if(bHasTitle) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
+          if(bHasARIALabel) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
 
@@ -6804,9 +6807,10 @@ ys: 'whys'
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.alt];
-            if(bHasTitle) colValues.push(io.title);
-            if(bHasARIALabel) colValues.push(io.ariaLabel);
+            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.effectiveLabelSource];
+            if(bHasAlt) { colValues.push(io.alt); }
+            if(bHasTitle) { colValues.push(io.title); }
+            if(bHasARIALabel) { colValues.push(io.ariaLabel); }
             colValues.push(io.src);
             colValues.push(sNotes);
             blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
