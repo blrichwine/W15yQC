@@ -35,11 +35,12 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 28',
-    releaseDate: 'May 27, 2013',
+    releaseVersion: '1.0 - Beta 29',
+    releaseDate: 'July 07, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
+    w15yqcPrevElWithFocus: null,
     bQuick: false,
     userExpertLevel: null,
     userLocale: null,
@@ -1435,37 +1436,38 @@ ys: 'whys'
 
       function w15yqcHighlightElementWithFocus(e) {
         try {
-          if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+          if (typeof blr.W15yQC.w15yqcPrevElWithFocus != 'undefined' && blr.W15yQC.w15yqcPrevElWithFocus != null && blr.W15yQC.w15yqcPrevElWithFocus.style) {
+            blr.W15yQC.w15yqcPrevElWithFocus.style.outline = blr.W15yQC.w15yqcOriginalItemStyle;
           }
         } catch(ex)
         {
         }
 
-        w15yqcPrevElWithFocus = e.target;
+        blr.W15yQC.w15yqcPrevElWithFocus = e.target;
 
         if(blr.W15yQC.pageLoadHandlerForFocusHighlighter!=null) { // see if still turned on
-          var origNode = w15yqcPrevElWithFocus,
-              box = w15yqcPrevElWithFocus.getBoundingClientRect();
-          while(box != null && box.width == 0 && box.height==0 && w15yqcPrevElWithFocus.firstChild && w15yqcPrevElWithFocus.firstChild != null) {
-            w15yqcPrevElWithFocus = w15yqcPrevElWithFocus.firstChild;
-            if(w15yqcPrevElWithFocus.getBoundingClientRect) {
-              box = w15yqcPrevElWithFocus.getBoundingClientRect();
+          var origNode = blr.W15yQC.w15yqcPrevElWithFocus,
+              box = null;
+          if(blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect) { box = blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect(); }
+          while(box != null && box.width == 0 && box.height==0 && blr.W15yQC.w15yqcPrevElWithFocus.firstChild && blr.W15yQC.w15yqcPrevElWithFocus.firstChild != null) {
+            blr.W15yQC.w15yqcPrevElWithFocus = blr.W15yQC.w15yqcPrevElWithFocus.firstChild;
+            if(blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect) {
+              box = blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect();
             }
           }
           if(box == null || box.width == 0 || box.height==0) {
-            w15yqcPrevElWithFocus=origNode;
+            blr.W15yQC.w15yqcPrevElWithFocus=origNode;
           }
 
-          if (w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("outline");
-            //w15yqcPrevElWithFocus.style.outline = "solid 2px red";
-            w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("position");
-            w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
-            if(w15yqcOriginalItemPosition=="static") {
-              //w15yqcPrevElWithFocus.style.position = "relative";
+          if (blr.W15yQC.w15yqcPrevElWithFocus != null && blr.W15yQC.w15yqcPrevElWithFocus.style) {
+            blr.W15yQC.w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(blr.W15yQC.w15yqcPrevElWithFocus,null).getPropertyValue("outline");
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.outline = "solid 2px red";
+            blr.W15yQC.w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(blr.W15yQC.w15yqcPrevElWithFocus,null).getPropertyValue("position");
+            blr.W15yQC.w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(blr.W15yQC.w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
+            if(blr.W15yQC.w15yqcOriginalItemPosition=="static") {
+              //blr.W15yQC.w15yqcPrevElWithFocus.style.position = "relative";
             }
-            //w15yqcPrevElWithFocus.style.zIndex = "199999";
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.zIndex = "199999";
             blr.W15yQC.highlightElement(e.target);
           }
         }
@@ -1477,11 +1479,11 @@ ys: 'whys'
           blr.W15yQC.resetHighlightElement(e.target.ownerDocument);
         }
         try {
-          if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            //w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
-            //w15yqcPrevElWithFocus.style.position = w15yqcOriginalItemPosition;
-            //w15yqcPrevElWithFocus.style.zIndex = w15yqcOriginalItemZIndex;
-            //w15yqcPrevElWithFocus = null;
+          if (typeof blr.W15yQC.w15yqcPrevElWithFocus != 'undefined' && blr.W15yQC.w15yqcPrevElWithFocus != null && blr.W15yQC.w15yqcPrevElWithFocus.style) {
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.outline = blr.W15yQC.w15yqcOriginalItemStyle;
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.position = blr.W15yQC.w15yqcOriginalItemPosition;
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.zIndex = blr.W15yQC.w15yqcOriginalItemZIndex;
+            //blr.W15yQC.w15yqcPrevElWithFocus = null;
           }
         }catch(ex)
         {
@@ -6148,7 +6150,7 @@ ys: 'whys'
     },
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList, bQuick) {
-      var div, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass;
+      var div, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
 
@@ -6178,10 +6180,21 @@ ys: 'whys'
             blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
-                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
-                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHRole'),
-                                                              blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
+                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHLevel'),
+                      blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
+                      blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHState'),
+                      blr.W15yQC.fnGetString('hrsTHNotes')];
+          for (i=0;i<aARIALandmarksList.length; i++) {
+            if (aARIALandmarksList[i].ownerDocumentNumber>1) {
+              bHasMultipleDocs=true;
+              break;
+            }
+          }
+          if (bHasMultipleDocs==false) {
+            colHeaders.splice(2,1);
+          }
+          table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           // Elements
@@ -6198,7 +6211,11 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.role, lo.stateDescription, sNotes], sClass);
+            colValues=[i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.effectiveLabelSource, lo.role, lo.stateDescription, sNotes];
+            if (bHasMultipleDocs==false) {
+              colValues.splice(2,1);
+            }
+            blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
           // Page Level
           if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
@@ -6751,7 +6768,7 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList, bQuick) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, colHeaders=[], colValues=[];
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
@@ -6759,7 +6776,9 @@ ys: 'whys'
       if (aImagesList && aImagesList.length > 0) {
         for (i = 0; i < aImagesList.length; i++) {
           io = aImagesList[i];
+          if (io.ownerDocumentNumber>1) { bHasMultipleDocs=true; }
           if(blr.W15yQC.fnStringHasContent(io.title)) { bHasTitle=true; }
+          if(blr.W15yQC.fnStringHasContent(io.alt)) { bHasAlt=true; }
           if(blr.W15yQC.fnStringHasContent(io.ariaLabel)) { bHasARIALabel=true; }
         }
         table = rd.createElement('table');
@@ -6785,11 +6804,16 @@ ys: 'whys'
           }
         } else {
           colHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHImageElement'),
-                        blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHAlt')];
-          if(bHasTitle) colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle'));
-          if(bHasARIALabel) colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel'));
+                        blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+                        blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource')];
+          if(bHasAlt) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHAlt')); }
+          if(bHasTitle) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
+          if(bHasARIALabel) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHNotes'));
+          if (bHasMultipleDocs==false) {
+            colHeaders.splice(2,1);
+          }
 
           table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
@@ -6804,11 +6828,15 @@ ys: 'whys'
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.alt];
-            if(bHasTitle) colValues.push(io.title);
-            if(bHasARIALabel) colValues.push(io.ariaLabel);
+            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.effectiveLabelSource];
+            if(bHasAlt) { colValues.push(io.alt); }
+            if(bHasTitle) { colValues.push(io.title); }
+            if(bHasARIALabel) { colValues.push(io.ariaLabel); }
             colValues.push(io.src);
             colValues.push(sNotes);
+            if (bHasMultipleDocs==false) {
+              colValues.splice(2,1);
+            }
             blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         }
@@ -7669,7 +7697,7 @@ ys: 'whys'
     },
 
     fnDisplayFormControlResults: function (rd, aFormControlsList, bQuick) {
-      var div, i, ak, bHasARIALabel, bHasLegend, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
+      var div, i, ak, bHasARIALabel, bHasLegend, bHasLabel, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription, bHasMultipleDocs,
           aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells;
 
       div = rd.createElement('div');
@@ -7679,15 +7707,21 @@ ys: 'whys'
 
       if (aFormControlsList && aFormControlsList.length > 0) {
         bHasARIALabel = false;
+        bHasLabel = false;
         bHasLegend = false;
         bHasTitle = false;
         bHasARIADescription = false;
         bHasRole = false;
         bHasValue = false;
         bHasStateDescription = false;
+        bHasMultipleDocs = false;
         for (i = 0; i < aFormControlsList.length; i++) {
           ak = aFormControlsList[i];
+          if (ak.ownerDocumentNumber>1) {
+            bHasMultipleDocs=true;
+          }
           if (ak.legendText != null && ak.legendText.length > 0) { bHasLegend = true; }
+          if (ak.labelTagText != null && ak.labelTagText.length > 0) { bHasLabel = true; }
           if (ak.title != null && ak.title.length > 0) { bHasTitle = true; }
           if (ak.role != null && ak.role.length > 0) { bHasRole = true; }
           if (ak.value != null && ak.value.length > 0) { bHasValue = true; }
@@ -7717,10 +7751,11 @@ ys: 'whys'
             blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
           }
         } else {
-          aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
-                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
+          aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum')];
+          if (bHasMultipleDocs) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHOwnerDocNumber')); }
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHFormCtrlEl'));
           if (bHasLegend) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend')); }
-          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText'));
+          if (bHasLabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText')); }
           if (bHasTitle) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
           if (bHasARIALabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHEffectiveLabel'));
@@ -7746,9 +7781,11 @@ ys: 'whys'
             } else if (fce.warning) {
               sClass = 'warning';
             }
-            aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
+            aTableCells = [i + 1, fce.parentFormNumber];
+            if (bHasMultipleDocs) { aTableCells.push(fce.ownerDocumentNumber); }
+            aTableCells.push(blr.W15yQC.fnMakeWebSafe(fce.nodeDescription));
             if (bHasLegend) { aTableCells.push(fce.legendText); }
-            aTableCells.push(fce.labelTagText);
+            if (bHasLabel) { aTableCells.push(fce.labelTagText); }
             if (bHasTitle) { aTableCells.push(fce.title); }
             if (bHasARIALabel) { aTableCells.push(fce.ARIALabelText); }
             aTableCells.push(blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '));
@@ -7835,6 +7872,7 @@ ys: 'whys'
 
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
+        aLinksList[i].listedByAT=true;
         if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
           aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
           aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
@@ -7869,12 +7907,14 @@ ys: 'whys'
         }
 
         if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
+          aLinksList[i].listedByAT=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
         } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('href'))==false &&
                    (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('title')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('alt')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('target')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].text) == true)) {
+                      aLinksList[i].listedByAT=false;
                       blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); //
                 }
 
@@ -8049,6 +8089,7 @@ ys: 'whys'
             }
           }
         } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('name')+aLinksList[i].node.getAttribute('id'))==true) {
+          aLinksList[i].listedByAT=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkIsNamedAnchor'); //
         }
 
@@ -8074,7 +8115,7 @@ ys: 'whys'
     },
 
     fnDisplayLinkResults: function (rd, aLinksList, bQuick) {
-      var div, table, msgHash, tbody, i, sNotes, sClass;
+      var div, table, msgHash, tbody, i, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
 
@@ -8090,20 +8131,32 @@ ys: 'whys'
 
           tbody = rd.createElement('tbody');
           for (i = 0; i < aLinksList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
-            sClass = '';
-            if (aLinksList[i].failed) {
-              sClass = 'failed';
-            } else if (aLinksList[i].warning) {
-              sClass = 'warning';
+            if (aLinksList[i].listedByAT!=false) {
+              sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+              sClass = '';
+              if (aLinksList[i].failed) {
+                sClass = 'failed';
+              } else if (aLinksList[i].warning) {
+                sClass = 'warning';
+              }
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
-                                                              blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
-                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'), blr.W15yQC.fnGetString('hrsTHHref'),
-                                                              blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHLinkElement'),
+                      blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+                      blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'), blr.W15yQC.fnGetString('hrsTHHref'),
+                      blr.W15yQC.fnGetString('hrsTHState'), blr.W15yQC.fnGetString('hrsTHNotes')];
+          for (i=0;i<aLinksList.length; i++) {
+            if (aLinksList[i].ownerDocumentNumber>1) {
+              bHasMultipleDocs=true;
+              break;
+            }
+          }
+          if (bHasMultipleDocs==false) {
+            colHeaders.splice(2,1);
+          }
+          table = blr.W15yQC.fnCreateTableHeaders(table, colHeaders);
           msgHash = new blr.W15yQC.HashTable();
 
           tbody = rd.createElement('tbody');
@@ -8115,7 +8168,11 @@ ys: 'whys'
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].effectiveLabel, aLinksList[i].effectiveLabelSource, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes], sClass);
+            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].effectiveLabel, aLinksList[i].effectiveLabelSource, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes];
+            if (bHasMultipleDocs==false) {
+              colValues.splice(2,1);
+            }
+            blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         }
         table.appendChild(tbody);
