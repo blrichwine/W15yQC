@@ -40,6 +40,7 @@ if (!blr.W15yQC) {
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
+    w15yqcPrevElWithFocus: null,
     bQuick: false,
     userExpertLevel: null,
     userLocale: null,
@@ -1435,37 +1436,38 @@ ys: 'whys'
 
       function w15yqcHighlightElementWithFocus(e) {
         try {
-          if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
+          if (typeof blr.W15yQC.w15yqcPrevElWithFocus != 'undefined' && blr.W15yQC.w15yqcPrevElWithFocus != null && blr.W15yQC.w15yqcPrevElWithFocus.style) {
+            blr.W15yQC.w15yqcPrevElWithFocus.style.outline = blr.W15yQC.w15yqcOriginalItemStyle;
           }
         } catch(ex)
         {
         }
 
-        w15yqcPrevElWithFocus = e.target;
+        blr.W15yQC.w15yqcPrevElWithFocus = e.target;
 
         if(blr.W15yQC.pageLoadHandlerForFocusHighlighter!=null) { // see if still turned on
-          var origNode = w15yqcPrevElWithFocus,
-              box = w15yqcPrevElWithFocus.getBoundingClientRect();
-          while(box != null && box.width == 0 && box.height==0 && w15yqcPrevElWithFocus.firstChild && w15yqcPrevElWithFocus.firstChild != null) {
-            w15yqcPrevElWithFocus = w15yqcPrevElWithFocus.firstChild;
-            if(w15yqcPrevElWithFocus.getBoundingClientRect) {
-              box = w15yqcPrevElWithFocus.getBoundingClientRect();
+          var origNode = blr.W15yQC.w15yqcPrevElWithFocus,
+              box = null;
+          if(blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect) { box = blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect(); }
+          while(box != null && box.width == 0 && box.height==0 && blr.W15yQC.w15yqcPrevElWithFocus.firstChild && blr.W15yQC.w15yqcPrevElWithFocus.firstChild != null) {
+            blr.W15yQC.w15yqcPrevElWithFocus = blr.W15yQC.w15yqcPrevElWithFocus.firstChild;
+            if(blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect) {
+              box = blr.W15yQC.w15yqcPrevElWithFocus.getBoundingClientRect();
             }
           }
           if(box == null || box.width == 0 || box.height==0) {
-            w15yqcPrevElWithFocus=origNode;
+            blr.W15yQC.w15yqcPrevElWithFocus=origNode;
           }
 
-          if (w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("outline");
-            //w15yqcPrevElWithFocus.style.outline = "solid 2px red";
-            w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("position");
-            w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
-            if(w15yqcOriginalItemPosition=="static") {
-              //w15yqcPrevElWithFocus.style.position = "relative";
+          if (blr.W15yQC.w15yqcPrevElWithFocus != null && blr.W15yQC.w15yqcPrevElWithFocus.style) {
+            blr.W15yQC.w15yqcOriginalItemStyle = e.target.ownerDocument.defaultView.getComputedStyle(blr.W15yQC.w15yqcPrevElWithFocus,null).getPropertyValue("outline");
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.outline = "solid 2px red";
+            blr.W15yQC.w15yqcOriginalItemPosition=e.target.ownerDocument.defaultView.getComputedStyle(blr.W15yQC.w15yqcPrevElWithFocus,null).getPropertyValue("position");
+            blr.W15yQC.w15yqcOriginalItemZIndex=e.target.ownerDocument.defaultView.getComputedStyle(blr.W15yQC.w15yqcPrevElWithFocus,null).getPropertyValue("z-index");
+            if(blr.W15yQC.w15yqcOriginalItemPosition=="static") {
+              //blr.W15yQC.w15yqcPrevElWithFocus.style.position = "relative";
             }
-            //w15yqcPrevElWithFocus.style.zIndex = "199999";
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.zIndex = "199999";
             blr.W15yQC.highlightElement(e.target);
           }
         }
@@ -1477,11 +1479,11 @@ ys: 'whys'
           blr.W15yQC.resetHighlightElement(e.target.ownerDocument);
         }
         try {
-          if (typeof w15yqcPrevElWithFocus != 'undefined' && w15yqcPrevElWithFocus != null && w15yqcPrevElWithFocus.style) {
-            //w15yqcPrevElWithFocus.style.outline = w15yqcOriginalItemStyle;
-            //w15yqcPrevElWithFocus.style.position = w15yqcOriginalItemPosition;
-            //w15yqcPrevElWithFocus.style.zIndex = w15yqcOriginalItemZIndex;
-            //w15yqcPrevElWithFocus = null;
+          if (typeof blr.W15yQC.w15yqcPrevElWithFocus != 'undefined' && blr.W15yQC.w15yqcPrevElWithFocus != null && blr.W15yQC.w15yqcPrevElWithFocus.style) {
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.outline = blr.W15yQC.w15yqcOriginalItemStyle;
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.position = blr.W15yQC.w15yqcOriginalItemPosition;
+            //blr.W15yQC.w15yqcPrevElWithFocus.style.zIndex = blr.W15yQC.w15yqcOriginalItemZIndex;
+            //blr.W15yQC.w15yqcPrevElWithFocus = null;
           }
         }catch(ex)
         {
@@ -7695,7 +7697,7 @@ ys: 'whys'
     },
 
     fnDisplayFormControlResults: function (rd, aFormControlsList, bQuick) {
-      var div, i, ak, bHasARIALabel, bHasLegend, bHasLabel, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription,
+      var div, i, ak, bHasARIALabel, bHasLegend, bHasLabel, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription, bHasMultipleDocs,
           aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells;
 
       div = rd.createElement('div');
@@ -7712,8 +7714,12 @@ ys: 'whys'
         bHasRole = false;
         bHasValue = false;
         bHasStateDescription = false;
+        bHasMultipleDocs = false;
         for (i = 0; i < aFormControlsList.length; i++) {
           ak = aFormControlsList[i];
+          if (ak.ownerDocumentNumber>1) {
+            bHasMultipleDocs=true;
+          }
           if (ak.legendText != null && ak.legendText.length > 0) { bHasLegend = true; }
           if (ak.labelTagText != null && ak.labelTagText.length > 0) { bHasLabel = true; }
           if (ak.title != null && ak.title.length > 0) { bHasTitle = true; }
@@ -7745,8 +7751,9 @@ ys: 'whys'
             blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
           }
         } else {
-          aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum'),
-                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHFormCtrlEl')];
+          aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum')];
+          if (bHasMultipleDocs) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHOwnerDocNumber')); }
+          aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHFormCtrlEl'));
           if (bHasLegend) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLegend')); }
           if (bHasLabel) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHLabelText')); }
           if (bHasTitle) { aTableHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
@@ -7774,7 +7781,9 @@ ys: 'whys'
             } else if (fce.warning) {
               sClass = 'warning';
             }
-            aTableCells = [i + 1, fce.parentFormNumber, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription)];
+            aTableCells = [i + 1, fce.parentFormNumber];
+            if (bHasMultipleDocs) { aTableCells.push(fce.ownerDocumentNumber); }
+            aTableCells.push(blr.W15yQC.fnMakeWebSafe(fce.nodeDescription));
             if (bHasLegend) { aTableCells.push(fce.legendText); }
             if (bHasLabel) { aTableCells.push(fce.labelTagText); }
             if (bHasTitle) { aTableCells.push(fce.title); }
