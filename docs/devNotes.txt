@@ -222,6 +222,9 @@
 
 
     *** FIX ASAP***
+  -- Failure Check Mods
+      -- Missing document titles on frames (not the main document) should be warnings instead of failures.
+  -- use the term Neutered Links for links without href attribute
   -- provide list of rules similar to dev.oaa-accessibility.org/rulesets/
   -- Recommended techniques have been demonstrated in the real world JAWS, NVDA, WindowEyes, VoiceOver, DragonNS, ZoomText, etc.
   -- Track flash objects, try to determine type... also track HTML5 multi-media elements, use in project scanner so pages with such content can be found, and page description
