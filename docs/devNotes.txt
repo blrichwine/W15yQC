@@ -222,8 +222,32 @@
 
 
     *** FIX ASAP***
+  -- <INPUT type="image" name="submit" src="/images/go_button.gif" alt="GO" title="Click to Search" style="border:0; vertical-align:middle;">
+        -- Label should be "Go" not "Click to Search"
+		-- URL: http://www.calstate.edu/accessibility/requests/RequestMaterials.aspx
+  -- Label details, "Position:", "XPath:"
   -- Failure Check Mods
       -- Missing document titles on frames (not the main document) should be warnings instead of failures.
+  -- Document title must not be a placeholder (untitled, filename, page title, etc.)
+  -- Go through WCAG failure documents and see which can be detected and added to the code:
+    -- Detect F36  <input type="text" name="text3" size="4" maxlength="4" onchange="form1.submit();">
+    -- Detect F37  window.open(mirrorSite);
+    -- Detect F40 <meta http-equiv="refresh" content="5; url=http://www.example.com/newpage" />
+    -- Detect F42 <span onclick="this.location.href='newpage.html'">
+  -- CSS Make sure outline:0 outline:none and outline-width:0 are both detected
+  -- Fail for BLINK element
+  -- Fail for CSS that blinks <span style="text-decoration:blink">
+  -- Fail for empty headings
+  -- Fail for MARQUEE
+  -- Require ALT attrib on APPLET
+  -- Require alternate content for OBJECT: <object>Alternative text content</object>
+  -- Detect broken skip links
+  -- Detect sensory descriptions in alt text (red, left, right)
+  -- Detect sensory descriptions in title (left, right, top, bottom)
+  -- Check if FLASH refers to version 6 or later -- CODEBASE attribute
+  -- Make sure AXIS attributes refer to a TH element in the same table.
+  -- Detect stylized headings that are not also semantic headings.
+  -- Check modify date on page vs. images, complain if image was updated and alt was not
   -- use the term Neutered Links for links without href attribute
   -- provide list of rules similar to dev.oaa-accessibility.org/rulesets/
   -- Recommended techniques have been demonstrated in the real world JAWS, NVDA, WindowEyes, VoiceOver, DragonNS, ZoomText, etc.
