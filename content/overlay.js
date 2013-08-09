@@ -886,6 +886,9 @@ ys: 'whys'
       ariaIgnoringRoleValue: [false,1,0,false,null],
       ariaAttributeWithUnexpectedTag: [false,1,0,false,null],
       ariaAttributeWithUnexpectedRole: [false,1,0,false,null],
+      ariaAttributeMustBeValidID: [false,1,0,false,null],
+      ariaAttributeMustBeValidIDList: [false,1,0,false,null],
+      ariaTargetElementIsNotADescendant: [false,1,0,false,null],
       ariaInvalidAttrWUndefValue: [false,1,1,true,null],
       ariaAttributeMustBeValidNumber: [false,2,0,false,null],
       ariaAttrMustBePosIntOneOrGreater: [false,2,0,false,null],
@@ -3477,6 +3480,8 @@ ys: 'whys'
     },
 
     fnGetEffectiveLabel: function (node) {
+      // TODO: Which ARIA roles override the native HTML element's role?
+      // TODO: Which ARIA roles allow child text collection. When does the title attribute override them?
       // TODO: pick up role="button", etc? JAWS does...
       // TODO: return an effective Label Object that contains the text and a property that tells the text source
       // textarea, select, button, input
@@ -3507,6 +3512,7 @@ ys: 'whys'
         sTagName = node.tagName.toLowerCase();
         if(node.hasAttribute && node.hasAttribute('role')) {
           sRole=node.getAttribute('role').toLowerCase();
+          sRole=sRole.replace(/^(\w+)\s.*$/, "$1");
         } else {
           sRole='';
         }
@@ -3574,8 +3580,8 @@ ys: 'whys'
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','title','aria-labelledby', 'aria-label']);
 
           } else if (blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
-            if(sRole=='radio' || sRole=='heading') {
-              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','fieldset']);
+            if(/^(button|checkbox|columnheader|directory|gridcell|heading|landmark|link|listitem|menuitem|menuitemcheckbox|menuitemradio|option|radio|row|rowgroup|rowheader|section|sectionhead|tab|treeitem)/.test(sRole)==true) {
+              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','child text','fieldset']); // TODO: Does the title attribute really trump child text for 'Name From: Contents' roles?
             } else {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt']);
             }
@@ -4214,6 +4220,13 @@ ys: 'whys'
             attrValue = node.attributes[i].value.toLowerCase();
             switch(attrName) {
               case 'aria-activedescendant': // a single ID that is a descendant or logical descendant
+                if(/^(combobox|grid|group|listbox|menu|menubar|radiogroup|row|rowgroup|tablist|textbox|toolbar|tree|treegrid)(\s.*)?$/.test(sRole)==false) {
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
                 if(blr.W15yQC.fnStringHasContent(attrValue)) {
                   if(blr.W15yQC.fnIsValidHtmlID(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
@@ -4339,7 +4352,7 @@ ys: 'whys'
                 break;
               case 'aria-invalid': // (state)
                 // TODO: Figure out how to determine if this is on the right element, or controlling the right element
-                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|spelling|grammar)$/.test(attrValue)==false) {
+                if(blr.W15yQC.fnStringHasContent(attrValue)==false || /^(true|false|spelling|grammar)$/.test(attrValue)==false) {
                   blr.W15yQC.fnAddNote(no, 'ariaInvalidAttrWUndefValue', [attrValue]); // TODO: QA This
                 }
                 break;
