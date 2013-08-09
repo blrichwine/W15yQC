@@ -222,7 +222,6 @@
 
 
     *** FIX ASAP***
-  -- Need sounds the same checks on ARIA landmark labels -- failure
   -- Headings at the same level within a "section" should not be the same - warning
   -- Main landmark should not immediately start with another role (navigation, etc.) -- warning
   -- Main landmark should have a heading at the start -- warning
@@ -650,6 +649,7 @@
 
 FIXED:
 
+    -- Need sounds the same checks on ARIA landmark labels -- failure [8/9/2013]
     -- <INPUT type="image" ... should not report being announced as "edit", but "button" [8/9/2013]
     -- <INPUT type="image" name="submit" src="/images/go_button.gif" alt="GO" title="Click to Search" style="border:0; vertical-align:middle;"> [8/9/2013]
         -- Label should be "Go" not "Click to Search"

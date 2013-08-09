@@ -896,7 +896,7 @@ ys: 'whys'
       ariaUnknownRole: [false,2,1,false,null],
       ariaLabelledbyIDsMissing: [false,2,1,false,null],
       ariaDescribedbyIDsMissing: [false,2,1,false,null],
-      ariaMissingProperties: [false,2,1,true,null],
+      ariaMissingProperties: [false,2,1,false,null],
       ariaMissingContainer: [false,2,1,true,null],
 
       imgLongdescImageFileName: [true,2,0,false,null],
@@ -4563,7 +4563,7 @@ ys: 'whys'
         if(blr.W15yQC.ARIAChecks[sRole].reqProps != null) {
           sMsg=null;
           for(i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
-            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
+            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
           }
         }
         if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); } // QA
