@@ -884,6 +884,8 @@ ys: 'whys'
       ariaHasBothLabelAndLabelledBy: [false,2,0,true,null],
       ariaMultipleRoleValues: [false,1,0,false,null],
       ariaIgnoringRoleValue: [false,1,0,false,null],
+      ariaAttributeWithUnexpectedTag: [false,1,0,false,null],
+      ariaAttributeWithUnexpectedRole: [false,1,0,false,null],
       ariaInvalidAttrWUndefValue: [false,1,1,true,null],
       ariaAttributeMustBeValidNumber: [false,2,0,false,null],
       ariaAttrMustBePosIntOneOrGreater: [false,2,0,false,null],
@@ -4202,7 +4204,8 @@ ys: 'whys'
     fnGetARIAAttributeValueWarnings: function(no, node) { // Based on: http://www.w3.org/TR/wai-aria/states_and_properties
       var doc, sRole='',i, attrName, attrValue, tagName, sMsg;
       if(node != null && node.hasAttribute) {
-        if(node.hasAttribute('role')) { sRole = node.getAttribute('role'); }
+        if(node.hasAttribute('role')) { sRole = node.getAttribute('role').toLowerCase(); }
+        sRole=(sRole==null)? '':sRole.replace(/^(\w+)\s.*$/, "$1");
         doc=node.ownerDocument;
         tagName = node.tagName.toLowerCase();
         for (i = 0; i < node.attributes.length; i++) {
