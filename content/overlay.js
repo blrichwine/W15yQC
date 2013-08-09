@@ -868,6 +868,8 @@ ys: 'whys'
 
       ldmkAndLabelNotUnique: [true,2,0,false,null],
       ldmkNotUnique: [true,2,0,false,null],
+      ldmkAndLabelNotSoundUnique: [true,2,0,false,null],
+      ldmkNotSoundUnique: [true,2,0,false,null],
       ldmkIDNotValid: [false,1,0,false,null],
       ldmkIDNotUnique: [false,2,0,false,null],
       ldmkMainLandmarkMissing: [true,2,0,true,null],
@@ -6094,7 +6096,7 @@ ys: 'whys'
 
     fnAnalyzeARIALandmarks: function (oW15yResults) {
       var aARIALandmarksList=oW15yResults.aARIALandmarks, aDocumentsList=oW15yResults.aDocuments, iMainLandmarkCount, iBannerLandmarkCount,
-        iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2;
+        iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, aLabelAndRoleSoundSame, j, sRoleAndLabel2;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
@@ -6109,8 +6111,13 @@ ys: 'whys'
         iMainLandmarkCount = 0;
         iBannerLandmarkCount = 0;
         iContentInfoLandmarkCount = 0;
+
         for (i = 0; i < aARIALandmarksList.length; i++) {
-          //aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
+          aARIALandmarksList[i].roleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].effectiveLabel, aARIALandmarksList[i].role, ' '));
+          aARIALandmarksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aARIALandmarksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aARIALandmarksList[i].roleAndLabel) : '';
+        }
+
+        for (i = 0; i < aARIALandmarksList.length; i++) {
           blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
           if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
             oW15yResults.PageScore.bHasMainLandmark=true;
@@ -6120,7 +6127,7 @@ ys: 'whys'
                aARIALandmarksList[i].node.getElementsByTagName('h4') ||
                aARIALandmarksList[i].node.getElementsByTagName('h5') ||
                aARIALandmarksList[i].node.getElementsByTagName('h6')) {
-              oW15yResults.PageScore.bMainLandmarkContainsHeading=true;
+              oW15yResults.PageScore.bMainLandmarkContainsHeading=true; // TODO: This wont find headings in sub frames
             }
             iMainLandmarkCount++;
           } else if(aARIALandmarksList[i].role.toLowerCase() == 'banner') {
@@ -6128,14 +6135,16 @@ ys: 'whys'
           } if(aARIALandmarksList[i].role.toLowerCase() == 'contentinfo') {
             iContentInfoLandmarkCount++;
           }
-          sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].effectiveLabel, ' '));
+          sRoleAndLabel = aARIALandmarksList[i].roleAndLabel;
 
           aSameLabelText = [];
+          aLabelAndRoleSoundSame = [];
           for (j = 0; j < aARIALandmarksList.length; j++) {
             if (i != j) {
-              sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].effectiveLabel, ' '));
-              if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
+              if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, aARIALandmarksList[j].roleAndLabel)) {
                 aSameLabelText.push(j+1);
+              } else if (aARIALandmarksList[i].soundex == aARIALandmarksList[j].soundex) {
+                aLabelAndRoleSoundSame.push(j+1);
               }
             }
           }
@@ -6146,6 +6155,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]);   // QA ariaTests01.html
             } else {
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]); // QA ariaTests01.html
+            }
+          }
+
+          if(aLabelAndRoleSoundSame.length>0) {
+            //oW15yResults.PageScore.bAllLandmarksUnique=false;
+            if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].effectiveLabel)) {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotSoundUnique', [blr.W15yQC.fnCutoffString(aLabelAndRoleSoundSame.toString(),99)]);   // TODO: Needs QA
+            } else {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotSoundUnique', [blr.W15yQC.fnCutoffString(aLabelAndRoleSoundSame.toString(),99)]); // TODO: Needs QA
             }
           }
 

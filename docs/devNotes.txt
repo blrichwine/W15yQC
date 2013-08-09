@@ -191,7 +191,7 @@
              Spider delay
              Drop out certain checks for speed when spidering
 
-    *** Self Maintaining Skip Navigation Links ***
+    *** Self Maintaining Skip Navigation Links *** ! s t c 1 a t c !
     1. Two versions
        a. jQuery
        b. javaScript only
@@ -222,6 +222,10 @@
 
 
     *** FIX ASAP***
+  -- Need sounds the same checks on ARIA landmark labels -- failure
+  -- Headings at the same level within a "section" should not be the same - warning
+  -- Main landmark should not immediately start with another role (navigation, etc.) -- warning
+  -- Main landmark should have a heading at the start -- warning
   -- need to spider frame titles and look for common non-meaningful ones.
   -- non-meaningful frame title test doesn't find non-meaningful frame titles "frame"
   -- Full HTML report not displaying document numbers for ARIA landmarks in multi document pages: qa_frameTitleMissing_iframe.html
