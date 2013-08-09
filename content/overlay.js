@@ -3040,6 +3040,7 @@ ys: 'whys'
                   case 'button':
                   case 'submit':
                   case 'reset':
+                  case 'image':
                     return 'button';
                   case 'radio':
                     return 'radio button';
@@ -3523,7 +3524,7 @@ ys: 'whys'
 
               case 'image':
                 // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','value','alt','src','name','id', 'fieldset']);
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','alt','title','value','src','name','id', 'fieldset']);
                 break;
 
               case 'button':

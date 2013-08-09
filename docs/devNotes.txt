@@ -222,9 +222,10 @@
 
 
     *** FIX ASAP***
-  -- <INPUT type="image" name="submit" src="/images/go_button.gif" alt="GO" title="Click to Search" style="border:0; vertical-align:middle;">
-        -- Label should be "Go" not "Click to Search"
-		-- URL: http://www.calstate.edu/accessibility/requests/RequestMaterials.aspx
+  -- need to spider frame titles and look for common non-meaningful ones.
+  -- non-meaningful frame title test doesn't find non-meaningful frame titles "frame"
+  -- Full HTML report not displaying document numbers for ARIA landmarks in multi document pages: qa_frameTitleMissing_iframe.html
+  -- <INPUT type="image" ... should not report being announced as "edit", but "button"
   -- Label details, "Position:", "XPath:"
   -- Failure Check Mods
       -- Missing document titles on frames (not the main document) should be warnings instead of failures.
@@ -645,6 +646,10 @@
 
 FIXED:
 
+    -- <INPUT type="image" ... should not report being announced as "edit", but "button" [8/9/2013]
+    -- <INPUT type="image" name="submit" src="/images/go_button.gif" alt="GO" title="Click to Search" style="border:0; vertical-align:middle;"> [8/9/2013]
+        -- Label should be "Go" not "Click to Search"
+        -- URL: http://www.calstate.edu/accessibility/requests/RequestMaterials.aspx
     - recursive text should not pick up option text [5/25/2013]
     -- Audit dialogs [5/25/2013]
         -- set the border drag values appropriately on the columns.
