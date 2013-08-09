@@ -222,6 +222,8 @@
 
 
     *** FIX ASAP***
+  -- What should happen with <div role="heading" aria-level="9"> ??? Test with JAWS (qa_ariaLevelAttributeValueInvalid.html)
+  -- Should the ariaLmkNotUnique error be removed? The landmark+label error fires instead.
   -- Headings at the same level within a "section" should not be the same - warning
   -- Main landmark should not immediately start with another role (navigation, etc.) -- warning
   -- Main landmark should have a heading at the start -- warning

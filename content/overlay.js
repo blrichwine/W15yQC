@@ -883,6 +883,7 @@ ys: 'whys'
       ariaHeadingMissingAriaLevel: [false,1,0,true,null],
       ariaHasBothLabelAndLabelledBy: [false,2,0,true,null],
       ariaMultipleRoleValues: [false,1,0,false,null],
+      ariaIgnoringRoleValue: [false,1,0,false,null],
       ariaInvalidAttrWUndefValue: [false,1,1,true,null],
       ariaAttributeMustBeValidNumber: [false,2,0,false,null],
       ariaAttrMustBePosIntOneOrGreater: [false,2,0,false,null],
@@ -3743,7 +3744,7 @@ ys: 'whys'
 
           "banner" : {
             container : null,
-            props : ["aria-expanded"],
+            props : null,
             reqProps : null,
             reqChildren : null,
             roleType : "landmark"
@@ -3791,8 +3792,8 @@ ys: 'whys'
 
           "contentinfo" : {
             container : null,
-            props : ["aria-expanded"],
-            reqProps : ["aria-labelledby"],
+            props : null,
+            reqProps : null,
             reqChildren : null,
             roleType : "landmark"
           },
@@ -3919,7 +3920,7 @@ ys: 'whys'
 
           "main" : {
             container : null,
-            props : ["aria-expanded"],
+            props : null,
             reqProps : null,
             reqChildren : null,
             roleType : "landmark"
@@ -3984,7 +3985,7 @@ ys: 'whys'
           "navigation" : {
             container : null,
             props : ["aria-expanded"],
-            reqProps : ["aria-labelledby"],
+            reqProps : null,
             reqChildren : null,
             roleType : "landmark"
           },
@@ -4700,7 +4701,7 @@ ys: 'whys'
     },
 
     fnAnalyzeARIAMarkupOnNode: function (node, doc, no) {
-      var sRole, sMissingIDs, sIDs, i;
+      var sRole, sMissingIDs, sIDs, i, roles;
       if (node != null && node.hasAttribute && doc != null) {
         if (node.hasAttribute('role')) {
           // TODO: check role values, check for multiple role values
@@ -4710,12 +4711,20 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(no, 'ariaMultipleRoleValues'); // TODO: QA This
               sRole=sRole.replace(/^[a-z]+/,'$&');
             }
-            if(blr.W15yQC.fnIsValidARIARole(sRole)==true) {
-              no = blr.W15yQC.fnCheckARIARole(no, node, sRole); // TODO: QA This
-            } else if(blr.W15yQC.fnIsAbstractARIARole(sRole)==true) {
-              blr.W15yQC.fnAddNote(no, 'ariaAbstractRole',[sRole]); // TODO: QA This
-            } else {
-              blr.W15yQC.fnAddNote(no, 'ariaUnknownRole'); // TODO: QA This
+            if (blr.W15yQC.fnStringHasContent(sRole)==true) {
+              roles=sRole.split(' ');
+              for (i=0;i<roles.length;i++) {
+                if (i>0) {
+                  blr.W15yQC.fnAddNote(no, 'ariaIgnoringRoleValue',[roles[i]]); // TODO: QA This
+                }
+                if(blr.W15yQC.fnIsValidARIARole(roles[i])==true) {
+                  no = blr.W15yQC.fnCheckARIARole(no, node, roles[i]); // TODO: QA This
+                } else if(blr.W15yQC.fnIsAbstractARIARole(roles[i])==true) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAbstractRole',[roles[i]]); // TODO: QA This
+                } else {
+                  blr.W15yQC.fnAddNote(no, 'ariaUnknownRole',[roles[i]]); // TODO: QA This
+                }
+              }
             }
           }
         }
@@ -5272,7 +5281,7 @@ ys: 'whys'
      */
     fnGetElements: function (doc, progressWindow, total, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
       var docNumber, node, sID, idCount, frameDocument, style, i,
-        sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs, el,
+        sARIALabel, sRole, sFirstRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs, el,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
         frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel, controlType, bAddedARIARole=false, sPreviousInheritedRoles='',
@@ -5442,7 +5451,8 @@ ys: 'whys'
                     oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
                     ARIAElementStack.push(node);
 
-                    switch (sRole) {
+                    sFirstRole=(sRole==null)? '':sRole.replace(/^(\w+)\s.*$/, "$1");
+                    switch (sFirstRole) {
                       case 'application':
                       case 'banner':
                       case 'complementary':
@@ -5460,7 +5470,7 @@ ys: 'whys'
                           }
                         }
                         aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sRole.replace(/contentinfo/,'content info')+' landmark',' '));
+                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
                         effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
                         oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
                         oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
