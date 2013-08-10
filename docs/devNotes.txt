@@ -222,11 +222,13 @@
 
 
     *** FIX ASAP***
+  -- Which is faster? A long regex or a switch statement?
   -- **** Determine which elements/roles allows "Name From: contents." The text alternatives for child nodes will be used. -- HANDLE THEM!!! ****
       -- Roles: button, checkbox, columnheader, directory, gridcell, landmark, link, listitem, menuitem, menuitemcheckbox, menuitemradio, option, radio,
                 row, rowgroup, rowheader, section, sectionhead, tab, treeitem
       -- Debug this in the fnGetEffectiveLabel routine!!!!
   -- div[role=combobox] is not showing up as a form control -- AUDIT all ARIA Roles that are form controls and make sure they are treated as such!
+     -- debug in fnIsFormControlNode
   -- What should happen with <div role="heading" aria-level="9"> ??? Test with JAWS (qa_ariaLevelAttributeValueInvalid.html)
   -- Should the ariaLmkNotUnique error be removed? The landmark+label error fires instead.
   -- Headings at the same level within a "section" should not be the same - warning

@@ -888,6 +888,7 @@ ys: 'whys'
       ariaAttributeWithUnexpectedRole: [false,1,0,false,null],
       ariaAttributeMustBeValidID: [false,1,0,false,null],
       ariaAttributeMustBeValidIDList: [false,1,0,false,null],
+      ariaAttributeMustBeTF: [false,1,0,false,null],
       ariaTargetElementIsNotADescendant: [false,1,0,false,null],
       ariaInvalidAttrWUndefValue: [false,1,1,true,null],
       ariaAttributeMustBeValidNumber: [false,2,0,false,null],
@@ -3096,6 +3097,7 @@ ys: 'whys'
     },
 
     fnIsFormControlNode: function (node) {
+      var sRole, sFirstRole;
       if (node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
         case 'input':
@@ -3105,10 +3107,17 @@ ys: 'whys'
           return true;
         }
         if (node.hasAttribute && node.hasAttribute('role')) {
-          switch (node.getAttribute('role')) {
+          sRole=node.getAttribute('role');
+          sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
+          switch (sFirstRole) {
           case 'button':
           case 'checkbox':
+          case 'combobox':
+          case 'listbox':
           case 'radio':
+          case 'slider':
+          case 'spinbutton':
+          case 'textbox':
             return true;
           }
         }
@@ -3589,7 +3598,6 @@ ys: 'whys'
       }
       return aLabel;
     },
-
 
 
     fnGetARIADescriptionText: function (node, doc) {
@@ -4210,8 +4218,10 @@ ys: 'whys'
     fnGetARIAAttributeValueWarnings: function(no, node) { // Based on: http://www.w3.org/TR/wai-aria/states_and_properties
       var doc, sRole='',i, attrName, attrValue, tagName, sMsg;
       if(node != null && node.hasAttribute) {
-        if(node.hasAttribute('role')) { sRole = node.getAttribute('role').toLowerCase(); }
-        sRole=(sRole==null)? '':sRole.replace(/^(\w+)\s.*$/, "$1");
+        if(node.hasAttribute('role')) {
+          sRole = node.getAttribute('role').toLowerCase();
+          sRole=sRole.replace(/^(\w+)\s.*$/, "$1");
+        }
         doc=node.ownerDocument;
         tagName = node.tagName.toLowerCase();
         for (i = 0; i < node.attributes.length; i++) {
@@ -4716,16 +4726,16 @@ ys: 'whys'
       return false;
     },
 
-    fnAnalyzeARIAMarkupOnNode: function (node, doc, no) {
-      var sRole, sMissingIDs, sIDs, i, roles;
-      if (node != null && node.hasAttribute && doc != null) {
+    fnAnalyzeARIAMarkupOnNode: function (node, no) {
+      var sRole, sFirstRole, i, roles;
+      if (node != null && node.hasAttribute) {
         if (node.hasAttribute('role')) {
           // TODO: check role values, check for multiple role values
           sRole = blr.W15yQC.fnTrim(node.getAttribute('role'));
+          sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
           if (sRole != null && sRole.length > 0) {
             if(/[a-z][,\s]+[a-z]/i.test(sRole)) {
               blr.W15yQC.fnAddNote(no, 'ariaMultipleRoleValues'); // TODO: QA This
-              sRole=sRole.replace(/^[a-z]+/,'$&');
             }
             if (blr.W15yQC.fnStringHasContent(sRole)==true) {
               roles=sRole.split(' ');
@@ -4743,11 +4753,11 @@ ys: 'whys'
               }
             }
           }
+          if (sFirstRole=='heading' && node.hasAttribute('aria-level')==false) { // TODO: Create a check aria role routine
+            blr.W15yQC.fnAddNote(no, 'ariaHeadingMissingAriaLevel');
+          }
         }
 
-        if (node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='heading' && node.hasAttribute('aria-level')==false) { // TODO: Create a check aria role routine
-          blr.W15yQC.fnAddNote(no, 'ariaHeadingMissingAriaLevel');
-        }
         blr.W15yQC.fnGetARIAAttributeValueWarnings(no,node);
       }
       return no;
@@ -5443,11 +5453,13 @@ ys: 'whys'
               } else {
                 bAddedARIARole=false;
                 sRole='';
+                sFirstRole='';
                 if (node.nodeType == 1 && blr.W15yQC.fnNodeIsHidden(node) == false) {
                   sARIALabel=null;
                   sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
                   if(blr.W15yQC.fnStringHasContent(sRole)) {
                     sRole=sRole.toLowerCase();
+                    sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
                   }
                   sTagName = node.tagName.toLowerCase();
                   if (blr.W15yQC.fnElementUsesARIA(node) == true) {
@@ -5467,7 +5479,6 @@ ys: 'whys'
                     oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
                     ARIAElementStack.push(node);
 
-                    sFirstRole=(sRole==null)? '':sRole.replace(/^(\w+)\s.*$/, "$1");
                     switch (sFirstRole) {
                       case 'application':
                       case 'banner':
@@ -5585,7 +5596,7 @@ ys: 'whys'
                   }
 
                   bFoundHeading=false;
-                  if(sRole=='heading') {
+                  if(sFirstRole=='heading') {
                     bFoundHeading=true;
                     if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
                       headingLevel=parseInt(node.getAttribute('aria-level'));
@@ -6144,7 +6155,7 @@ ys: 'whys'
         }
 
         for (i = 0; i < aARIALandmarksList.length; i++) {
-          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
+          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i]);
           if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
             oW15yResults.PageScore.bHasMainLandmark=true;
             if(aARIALandmarksList[i].node.getElementsByTagName('h1') ||
@@ -6364,7 +6375,7 @@ ys: 'whys'
         for (i = 0; i < aARIAElementsList.length; i++) {
           //aARIAElementsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIAElementsList[i].node, aDocumentsList);
           aARIAElementsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aARIAElementsList[i].node);
-          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIAElementsList[i].node, aARIAElementsList[i].doc, aARIAElementsList[i]);
+          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIAElementsList[i].node, aARIAElementsList[i]);
 
           if(aARIAElementsList[i].node != null && aARIAElementsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aARIAElementsList[i].node.getAttribute('id'))==false) {
@@ -6819,7 +6830,7 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltLengthTooLong'); // QA imageTests01.html
             }
 
-            aImagesList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aImagesList[i].node, aImagesList[i].doc, aImagesList[i]);
+            aImagesList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aImagesList[i].node, aImagesList[i]);
 
             if(aImagesList[i].node != null && aImagesList[i].node.hasAttribute('id')==true) {
               if(blr.W15yQC.fnIsValidHtmlID(aImagesList[i].node.getAttribute('id'))==false) {
@@ -7025,7 +7036,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(ak, 'akLabelEmpty'); // QA accesskeyTests01.html
           }
 
-          ak = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(ak.node, ak.doc, ak);
+          ak = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(ak.node, ak);
           if(aAccessKeysList[i].node != null && aAccessKeysList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aAccessKeysList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(ak, 'akIDNotValid'); // QA accesskeyTests01.html
@@ -7238,7 +7249,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtEmpty'); // QA: headings01.html
           }
 
-          aHeadingsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aHeadingsList[i].node, aHeadingsList[i].doc, aHeadingsList[i]);
+          aHeadingsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aHeadingsList[i].node, aHeadingsList[i]);
           if(aHeadingsList[i].node != null && aHeadingsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aHeadingsList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotValid'); // QA: headings01.html
@@ -7689,7 +7700,7 @@ ys: 'whys'
             }
           }
 
-          aFormControlsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aFormControlsList[i].node, aFormControlsList[i].doc, aFormControlsList[i]);
+          aFormControlsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aFormControlsList[i].node, aFormControlsList[i]);
           if(aFormControlsList[i].node != null && aFormControlsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aFormControlsList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlIDNotValid'); //
@@ -8168,7 +8179,7 @@ ys: 'whys'
             }
         }
 
-        aLinksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aLinksList[i].node, aLinksList[i].doc, aLinksList[i]);
+        aLinksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aLinksList[i].node, aLinksList[i]);
 
         if(aLinksList[i].node != null && aLinksList[i].node.hasAttribute('id')==true) {
           if(blr.W15yQC.fnIsValidHtmlID(aLinksList[i].node.getAttribute('id'))==false) {
