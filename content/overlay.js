@@ -35,8 +35,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 30',
-    releaseDate: 'July 27, 2013',
+    releaseVersion: '1.0 - Beta 31',
+    releaseDate: 'August 11, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,

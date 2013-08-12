@@ -35,12 +35,15 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 29',
-    releaseDate: 'July 07, 2013',
+    releaseVersion: '1.0 - Beta 30',
+    releaseDate: 'July 27, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
     w15yqcPrevElWithFocus: null,
+    w15yqcOriginalItemStyle: null,
+    w15yqcOriginalItemPosition: null,
+    w15yqcOriginalItemZIndex: null,
     bQuick: false,
     userExpertLevel: null,
     userLocale: null,
@@ -865,6 +868,8 @@ ys: 'whys'
 
       ldmkAndLabelNotUnique: [true,2,0,false,null],
       ldmkNotUnique: [true,2,0,false,null],
+      ldmkAndLabelNotSoundUnique: [true,2,0,false,null],
+      ldmkNotSoundUnique: [true,2,0,false,null],
       ldmkIDNotValid: [false,1,0,false,null],
       ldmkIDNotUnique: [false,2,0,false,null],
       ldmkMainLandmarkMissing: [true,2,0,true,null],
@@ -878,6 +883,13 @@ ys: 'whys'
       ariaHeadingMissingAriaLevel: [false,1,0,true,null],
       ariaHasBothLabelAndLabelledBy: [false,2,0,true,null],
       ariaMultipleRoleValues: [false,1,0,false,null],
+      ariaIgnoringRoleValue: [false,1,0,false,null],
+      ariaAttributeWithUnexpectedTag: [false,1,0,false,null],
+      ariaAttributeWithUnexpectedRole: [false,1,0,false,null],
+      ariaAttributeMustBeValidID: [false,1,0,false,null],
+      ariaAttributeMustBeValidIDList: [false,1,0,false,null],
+      ariaAttributeMustBeTF: [false,1,0,false,null],
+      ariaTargetElementIsNotADescendant: [false,1,0,false,null],
       ariaInvalidAttrWUndefValue: [false,1,1,true,null],
       ariaAttributeMustBeValidNumber: [false,2,0,false,null],
       ariaAttrMustBePosIntOneOrGreater: [false,2,0,false,null],
@@ -891,7 +903,7 @@ ys: 'whys'
       ariaUnknownRole: [false,2,1,false,null],
       ariaLabelledbyIDsMissing: [false,2,1,false,null],
       ariaDescribedbyIDsMissing: [false,2,1,false,null],
-      ariaMissingProperties: [false,2,1,true,null],
+      ariaMissingProperties: [false,2,1,false,null],
       ariaMissingContainer: [false,2,1,true,null],
 
       imgLongdescImageFileName: [true,2,0,false,null],
@@ -3037,6 +3049,7 @@ ys: 'whys'
                   case 'button':
                   case 'submit':
                   case 'reset':
+                  case 'image':
                     return 'button';
                   case 'radio':
                     return 'radio button';
@@ -3084,6 +3097,7 @@ ys: 'whys'
     },
 
     fnIsFormControlNode: function (node) {
+      var sRole, sFirstRole;
       if (node != null && node.tagName) {
         switch (node.tagName.toLowerCase()) {
         case 'input':
@@ -3093,10 +3107,17 @@ ys: 'whys'
           return true;
         }
         if (node.hasAttribute && node.hasAttribute('role')) {
-          switch (node.getAttribute('role')) {
+          sRole=node.getAttribute('role');
+          sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
+          switch (sFirstRole) {
           case 'button':
           case 'checkbox':
+          case 'combobox':
+          case 'listbox':
           case 'radio':
+          case 'slider':
+          case 'spinbutton':
+          case 'textbox':
             return true;
           }
         }
@@ -3468,6 +3489,8 @@ ys: 'whys'
     },
 
     fnGetEffectiveLabel: function (node) {
+      // TODO: Which ARIA roles override the native HTML element's role?
+      // TODO: Which ARIA roles allow child text collection. When does the title attribute override them?
       // TODO: pick up role="button", etc? JAWS does...
       // TODO: return an effective Label Object that contains the text and a property that tells the text source
       // textarea, select, button, input
@@ -3498,6 +3521,7 @@ ys: 'whys'
         sTagName = node.tagName.toLowerCase();
         if(node.hasAttribute && node.hasAttribute('role')) {
           sRole=node.getAttribute('role').toLowerCase();
+          sRole=sRole.replace(/^(\w+)\s.*$/, "$1");
         } else {
           sRole='';
         }
@@ -3520,7 +3544,7 @@ ys: 'whys'
 
               case 'image':
                 // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','value','alt','src','name','id', 'fieldset']);
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','alt','title','value','src','name','id', 'fieldset']);
                 break;
 
               case 'button':
@@ -3565,8 +3589,8 @@ ys: 'whys'
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','title','aria-labelledby', 'aria-label']);
 
           } else if (blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
-            if(sRole=='radio' || sRole=='heading') {
-              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','fieldset']);
+            if(/^(button|checkbox|columnheader|directory|gridcell|heading|landmark|link|listitem|menuitem|menuitemcheckbox|menuitemradio|option|radio|row|rowgroup|rowheader|section|sectionhead|tab|treeitem)/.test(sRole)==true) {
+              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','child text','fieldset']); // TODO: Does the title attribute really trump child text for 'Name From: Contents' roles?
             } else {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt']);
             }
@@ -3574,7 +3598,6 @@ ys: 'whys'
       }
       return aLabel;
     },
-
 
 
     fnGetARIADescriptionText: function (node, doc) {
@@ -3737,7 +3760,7 @@ ys: 'whys'
 
           "banner" : {
             container : null,
-            props : ["aria-expanded"],
+            props : null,
             reqProps : null,
             reqChildren : null,
             roleType : "landmark"
@@ -3785,8 +3808,8 @@ ys: 'whys'
 
           "contentinfo" : {
             container : null,
-            props : ["aria-expanded"],
-            reqProps : ["aria-labelledby"],
+            props : null,
+            reqProps : null,
             reqChildren : null,
             roleType : "landmark"
           },
@@ -3913,7 +3936,7 @@ ys: 'whys'
 
           "main" : {
             container : null,
-            props : ["aria-expanded"],
+            props : null,
             reqProps : null,
             reqChildren : null,
             roleType : "landmark"
@@ -3978,7 +4001,7 @@ ys: 'whys'
           "navigation" : {
             container : null,
             props : ["aria-expanded"],
-            reqProps : ["aria-labelledby"],
+            reqProps : null,
             reqChildren : null,
             roleType : "landmark"
           },
@@ -4195,7 +4218,10 @@ ys: 'whys'
     fnGetARIAAttributeValueWarnings: function(no, node) { // Based on: http://www.w3.org/TR/wai-aria/states_and_properties
       var doc, sRole='',i, attrName, attrValue, tagName, sMsg;
       if(node != null && node.hasAttribute) {
-        if(node.hasAttribute('role')) { sRole = node.getAttribute('role'); }
+        if(node.hasAttribute('role')) {
+          sRole = node.getAttribute('role').toLowerCase();
+          sRole=sRole.replace(/^(\w+)\s.*$/, "$1");
+        }
         doc=node.ownerDocument;
         tagName = node.tagName.toLowerCase();
         for (i = 0; i < node.attributes.length; i++) {
@@ -4204,6 +4230,13 @@ ys: 'whys'
             attrValue = node.attributes[i].value.toLowerCase();
             switch(attrName) {
               case 'aria-activedescendant': // a single ID that is a descendant or logical descendant
+                if(/^(combobox|grid|group|listbox|menu|menubar|radiogroup|row|rowgroup|tablist|textbox|toolbar|tree|treegrid)(\s.*)?$/.test(sRole)==false) {
+                  if(blr.W15yQC.fnStringHasContent(sRole)) {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
+                  } else {
+                    blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedTag', [attrName,tagName]); // TODO: QA This
+                  }
+                }
                 if(blr.W15yQC.fnStringHasContent(attrValue)) {
                   if(blr.W15yQC.fnIsValidHtmlID(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
@@ -4329,7 +4362,7 @@ ys: 'whys'
                 break;
               case 'aria-invalid': // (state)
                 // TODO: Figure out how to determine if this is on the right element, or controlling the right element
-                if(blr.W15yQC.fnStringHasContent(attrValue)==true && /^(true|false|spelling|grammar)$/.test(attrValue)==false) {
+                if(blr.W15yQC.fnStringHasContent(attrValue)==false || /^(true|false|spelling|grammar)$/.test(attrValue)==false) {
                   blr.W15yQC.fnAddNote(no, 'ariaInvalidAttrWUndefValue', [attrValue]); // TODO: QA This
                 }
                 break;
@@ -4557,7 +4590,7 @@ ys: 'whys'
         if(blr.W15yQC.ARIAChecks[sRole].reqProps != null) {
           sMsg=null;
           for(i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
-            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
+            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
           }
         }
         if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); } // QA
@@ -4693,30 +4726,38 @@ ys: 'whys'
       return false;
     },
 
-    fnAnalyzeARIAMarkupOnNode: function (node, doc, no) {
-      var sRole, sMissingIDs, sIDs, i;
-      if (node != null && node.hasAttribute && doc != null) {
+    fnAnalyzeARIAMarkupOnNode: function (node, no) {
+      var sRole, sFirstRole, i, roles;
+      if (node != null && node.hasAttribute) {
         if (node.hasAttribute('role')) {
           // TODO: check role values, check for multiple role values
           sRole = blr.W15yQC.fnTrim(node.getAttribute('role'));
+          sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
           if (sRole != null && sRole.length > 0) {
             if(/[a-z][,\s]+[a-z]/i.test(sRole)) {
               blr.W15yQC.fnAddNote(no, 'ariaMultipleRoleValues'); // TODO: QA This
-              sRole=sRole.replace(/^[a-z]+/,'$&');
             }
-            if(blr.W15yQC.fnIsValidARIARole(sRole)==true) {
-              no = blr.W15yQC.fnCheckARIARole(no, node, sRole); // TODO: QA This
-            } else if(blr.W15yQC.fnIsAbstractARIARole(sRole)==true) {
-              blr.W15yQC.fnAddNote(no, 'ariaAbstractRole',[sRole]); // TODO: QA This
-            } else {
-              blr.W15yQC.fnAddNote(no, 'ariaUnknownRole'); // TODO: QA This
+            if (blr.W15yQC.fnStringHasContent(sRole)==true) {
+              roles=sRole.split(' ');
+              for (i=0;i<roles.length;i++) {
+                if (i>0) {
+                  blr.W15yQC.fnAddNote(no, 'ariaIgnoringRoleValue',[roles[i]]); // TODO: QA This
+                }
+                if(blr.W15yQC.fnIsValidARIARole(roles[i])==true) {
+                  no = blr.W15yQC.fnCheckARIARole(no, node, roles[i]); // TODO: QA This
+                } else if(blr.W15yQC.fnIsAbstractARIARole(roles[i])==true) {
+                  blr.W15yQC.fnAddNote(no, 'ariaAbstractRole',[roles[i]]); // TODO: QA This
+                } else {
+                  blr.W15yQC.fnAddNote(no, 'ariaUnknownRole',[roles[i]]); // TODO: QA This
+                }
+              }
             }
+          }
+          if (sFirstRole=='heading' && node.hasAttribute('aria-level')==false) { // TODO: Create a check aria role routine
+            blr.W15yQC.fnAddNote(no, 'ariaHeadingMissingAriaLevel');
           }
         }
 
-        if (node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='heading' && node.hasAttribute('aria-level')==false) { // TODO: Create a check aria role routine
-          blr.W15yQC.fnAddNote(no, 'ariaHeadingMissingAriaLevel');
-        }
         blr.W15yQC.fnGetARIAAttributeValueWarnings(no,node);
       }
       return no;
@@ -5266,7 +5307,7 @@ ys: 'whys'
      */
     fnGetElements: function (doc, progressWindow, total, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
       var docNumber, node, sID, idCount, frameDocument, style, i,
-        sARIALabel, sRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs,
+        sARIALabel, sRole, sFirstRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs, el,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,
         frameSrc, frameId, frameName, tableSummary, i, accessKey, aLabel, controlType, bAddedARIARole=false, sPreviousInheritedRoles='',
@@ -5305,7 +5346,17 @@ ys: 'whys'
           oW15yResults.PageScore.bUsesARIABesidesLandmarks=false;
           oW15yResults.PageScore.bAllIDsAreUnique=true;
           // Put the top window's document in the list
-          oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(doc, doc.URL, oW15yResults.aDocuments.length, doc.title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
+          title=null;
+          el=null;
+          if (doc.head!=null) {
+            el=doc.head.getElementsByTagName('TITLE');
+            if (el!=null) {
+              if (typeof el[0] != 'undefined') {
+                title=blr.W15yQC.fnTrim(doc.title+'');
+              }
+            }
+          }
+          oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(doc, doc.URL, oW15yResults.aDocuments.length, title, blr.W15yQC.fnGetDocumentLanguage(doc), blr.W15yQC.fnGetDocumentDirection(doc), doc.compatMode, blr.W15yQC.fnGetDocType(doc)));
           if(doc.body!=null) {
             blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],doc.body);
             if(doc.body.parentNode != null) {
@@ -5382,7 +5433,17 @@ ys: 'whys'
                 // Document the new document
                 frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
                 // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
-                oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, oW15yResults.aDocuments.length, frameDocument.title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
+                title=null;
+                el=null;
+                if (frameDocument.head!=null) {
+                  el=frameDocument.head.getElementsByTagName('TITLE');
+                  if (el!=null) {
+                    if (typeof el[0] != 'undefined') {
+                      title=blr.W15yQC.fnTrim(frameDocument.title+'');
+                    }
+                  }
+                }
+                oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, oW15yResults.aDocuments.length, title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
                 oW15yResults.aDocuments[oW15yResults.aDocuments.length-1].ownerDocumentNumber=docNumber+1;
                 if(frameDocument && frameDocument.body) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body); }
                 if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
@@ -5392,11 +5453,13 @@ ys: 'whys'
               } else {
                 bAddedARIARole=false;
                 sRole='';
+                sFirstRole='';
                 if (node.nodeType == 1 && blr.W15yQC.fnNodeIsHidden(node) == false) {
                   sARIALabel=null;
                   sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
                   if(blr.W15yQC.fnStringHasContent(sRole)) {
                     sRole=sRole.toLowerCase();
+                    sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
                   }
                   sTagName = node.tagName.toLowerCase();
                   if (blr.W15yQC.fnElementUsesARIA(node) == true) {
@@ -5416,7 +5479,7 @@ ys: 'whys'
                     oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
                     ARIAElementStack.push(node);
 
-                    switch (sRole) {
+                    switch (sFirstRole) {
                       case 'application':
                       case 'banner':
                       case 'complementary':
@@ -5434,7 +5497,7 @@ ys: 'whys'
                           }
                         }
                         aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sRole.replace(/contentinfo/,'content info')+' landmark',' '));
+                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
                         effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
                         oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
                         oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
@@ -5533,7 +5596,7 @@ ys: 'whys'
                   }
 
                   bFoundHeading=false;
-                  if(sRole=='heading') {
+                  if(sFirstRole=='heading') {
                     bFoundHeading=true;
                     if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
                       headingLevel=parseInt(node.getAttribute('aria-level'));
@@ -5838,7 +5901,7 @@ ys: 'whys'
           suspectCSS='';
           if (aDocumentsList[i].title == null) {
             oW15yResults.PageScore.bAllDocumentsHaveTitles=false;
-            blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleMissing'); // QA iframeTests01.html -- TODO: Can't produce, scan this be detected?
+            blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleMissing'); // QA iframeTests01.html -- TODO: Can't produce, can this be detected?
           } else if (blr.W15yQC.fnStringHasContent(aDocumentsList[i].title)==false) {
             oW15yResults.PageScore.bAllDocumentsHaveTitles=false;
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docTitleEmpty'); // QA contents_of_frame_1.html
@@ -6070,7 +6133,7 @@ ys: 'whys'
 
     fnAnalyzeARIALandmarks: function (oW15yResults) {
       var aARIALandmarksList=oW15yResults.aARIALandmarks, aDocumentsList=oW15yResults.aDocuments, iMainLandmarkCount, iBannerLandmarkCount,
-        iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, j, sRoleAndLabel2;
+        iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, aLabelAndRoleSoundSame, j, sRoleAndLabel2;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
@@ -6085,9 +6148,14 @@ ys: 'whys'
         iMainLandmarkCount = 0;
         iBannerLandmarkCount = 0;
         iContentInfoLandmarkCount = 0;
+
         for (i = 0; i < aARIALandmarksList.length; i++) {
-          //aARIALandmarksList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIALandmarksList[i].node, aDocumentsList);
-          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i].doc, aARIALandmarksList[i]);
+          aARIALandmarksList[i].roleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].effectiveLabel, aARIALandmarksList[i].role, ' '));
+          aARIALandmarksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aARIALandmarksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aARIALandmarksList[i].roleAndLabel) : '';
+        }
+
+        for (i = 0; i < aARIALandmarksList.length; i++) {
+          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i]);
           if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
             oW15yResults.PageScore.bHasMainLandmark=true;
             if(aARIALandmarksList[i].node.getElementsByTagName('h1') ||
@@ -6096,7 +6164,7 @@ ys: 'whys'
                aARIALandmarksList[i].node.getElementsByTagName('h4') ||
                aARIALandmarksList[i].node.getElementsByTagName('h5') ||
                aARIALandmarksList[i].node.getElementsByTagName('h6')) {
-              oW15yResults.PageScore.bMainLandmarkContainsHeading=true;
+              oW15yResults.PageScore.bMainLandmarkContainsHeading=true; // TODO: This wont find headings in sub frames
             }
             iMainLandmarkCount++;
           } else if(aARIALandmarksList[i].role.toLowerCase() == 'banner') {
@@ -6104,14 +6172,16 @@ ys: 'whys'
           } if(aARIALandmarksList[i].role.toLowerCase() == 'contentinfo') {
             iContentInfoLandmarkCount++;
           }
-          sRoleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].role, aARIALandmarksList[i].effectiveLabel, ' '));
+          sRoleAndLabel = aARIALandmarksList[i].roleAndLabel;
 
           aSameLabelText = [];
+          aLabelAndRoleSoundSame = [];
           for (j = 0; j < aARIALandmarksList.length; j++) {
             if (i != j) {
-              sRoleAndLabel2 = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[j].role, aARIALandmarksList[j].effectiveLabel, ' '));
-              if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, sRoleAndLabel2)) {
+              if (blr.W15yQC.fnStringsEffectivelyEqual(sRoleAndLabel, aARIALandmarksList[j].roleAndLabel)) {
                 aSameLabelText.push(j+1);
+              } else if (aARIALandmarksList[i].soundex == aARIALandmarksList[j].soundex) {
+                aLabelAndRoleSoundSame.push(j+1);
               }
             }
           }
@@ -6122,6 +6192,15 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]);   // QA ariaTests01.html
             } else {
               blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotUnique', [blr.W15yQC.fnCutoffString(aSameLabelText.toString(),99)]); // QA ariaTests01.html
+            }
+          }
+
+          if(aLabelAndRoleSoundSame.length>0) {
+            //oW15yResults.PageScore.bAllLandmarksUnique=false;
+            if(blr.W15yQC.fnStringHasContent(aARIALandmarksList[i].effectiveLabel)) {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkAndLabelNotSoundUnique', [blr.W15yQC.fnCutoffString(aLabelAndRoleSoundSame.toString(),99)]);   // TODO: Needs QA
+            } else {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkNotSoundUnique', [blr.W15yQC.fnCutoffString(aLabelAndRoleSoundSame.toString(),99)]); // TODO: Needs QA
             }
           }
 
@@ -6296,7 +6375,7 @@ ys: 'whys'
         for (i = 0; i < aARIAElementsList.length; i++) {
           //aARIAElementsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aARIAElementsList[i].node, aDocumentsList);
           aARIAElementsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aARIAElementsList[i].node);
-          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIAElementsList[i].node, aARIAElementsList[i].doc, aARIAElementsList[i]);
+          blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIAElementsList[i].node, aARIAElementsList[i]);
 
           if(aARIAElementsList[i].node != null && aARIAElementsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aARIAElementsList[i].node.getAttribute('id'))==false) {
@@ -6751,7 +6830,7 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltLengthTooLong'); // QA imageTests01.html
             }
 
-            aImagesList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aImagesList[i].node, aImagesList[i].doc, aImagesList[i]);
+            aImagesList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aImagesList[i].node, aImagesList[i]);
 
             if(aImagesList[i].node != null && aImagesList[i].node.hasAttribute('id')==true) {
               if(blr.W15yQC.fnIsValidHtmlID(aImagesList[i].node.getAttribute('id'))==false) {
@@ -6957,7 +7036,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(ak, 'akLabelEmpty'); // QA accesskeyTests01.html
           }
 
-          ak = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(ak.node, ak.doc, ak);
+          ak = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(ak.node, ak);
           if(aAccessKeysList[i].node != null && aAccessKeysList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aAccessKeysList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(ak, 'akIDNotValid'); // QA accesskeyTests01.html
@@ -7170,7 +7249,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtEmpty'); // QA: headings01.html
           }
 
-          aHeadingsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aHeadingsList[i].node, aHeadingsList[i].doc, aHeadingsList[i]);
+          aHeadingsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aHeadingsList[i].node, aHeadingsList[i]);
           if(aHeadingsList[i].node != null && aHeadingsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aHeadingsList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotValid'); // QA: headings01.html
@@ -7621,7 +7700,7 @@ ys: 'whys'
             }
           }
 
-          aFormControlsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aFormControlsList[i].node, aFormControlsList[i].doc, aFormControlsList[i]);
+          aFormControlsList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aFormControlsList[i].node, aFormControlsList[i]);
           if(aFormControlsList[i].node != null && aFormControlsList[i].node.hasAttribute('id')==true) {
             if(blr.W15yQC.fnIsValidHtmlID(aFormControlsList[i].node.getAttribute('id'))==false) {
               blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlIDNotValid'); //
@@ -8100,7 +8179,7 @@ ys: 'whys'
             }
         }
 
-        aLinksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aLinksList[i].node, aLinksList[i].doc, aLinksList[i]);
+        aLinksList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aLinksList[i].node, aLinksList[i]);
 
         if(aLinksList[i].node != null && aLinksList[i].node.hasAttribute('id')==true) {
           if(blr.W15yQC.fnIsValidHtmlID(aLinksList[i].node.getAttribute('id'))==false) {
