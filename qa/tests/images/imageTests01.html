@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Image tests 01</title>
+  <style>
+	</style>
+</head>
+<body>
+<h1>Image Tests 01</h1>
+<ul>
+	<li><img id="23" src="test01.gif" alt="Alt for 01"/></li>
+	<li><img id="23" src="test02.gif" /></li>
+	<li><img id="23a" src="test03.gif" alt="Alt for 03"/></li>
+	<li><img id="a23" src="test04.gif" alt="Alt for 04" longdesc="test04.html"/></li>
+	<li><img id="a23b" src="test05.gif" alt="Alt for 05" longdesc="http://www.indiana.edu/~iuadapts/test04.html"/></li>
+	<li><img id="a23c" src="test06.gif" alt="Alt for 06" longdesc="Bogus long description value"/></li>
+	<li><img id="a23d" src="test07.gif" alt="Alt for 07" longdesc="http://www.indiana.edu/~iuadapts/test07.gif"/></li>
+	<li><img id="b23" src="test08.gif" role="presentation"/></li>
+	<li><img id="b23d" src="test09.gif" role="presentation" alt="alt test 09"/></li>
+	<li><img id="b23e" src="test10.gif" role="presentation" title="title test 10"/></li>
+	<li><img id="b23f" src="test11.gif" role="presentation" aria-label="aria-label test 11"/></li>
+	<li><img id="b23g" src="test12.gif" title="title test 12"/></li>
+	<li><img id="b23h" src="test13.gif" aria-label="aria-label test 13"/></li>
+	<li><img id="iat01" src="test14.gif" alt="test14.gif"/></li>
+	<li><img id="iat02" src="test15.gif" alt="Image of test 15"/></li>
+	<li><img id="iat03" src="test16.gif" alt="alt text"/></li>
+	<li><img id="iat04" src="test17.gif" alt="spacer.gif"/></li>
+	<li><img id="iat05" src="test18.gif" alt="decorative"/></li>
+	<li><img id="iat06" src="test19.gif" alt="http://www.google.com"/></li>
+	<li><img id="iat07" src="test20.gif" alt="1234-124-1234-1234-1234-1234-1234-2341"/></li>
+	<li><img id="iat08" src="spacer.gif" alt="should not have alt text"/></li>
+	<li><img id="iat09" src="test21.gif" alt="***"/></li>
+	<li><img id="iat10" src="test22.gif" aria-labeledby="Invalid spelling of attribute"/></li>
+	<li><img id="iat11" src="test23.gif" aria-label="This is a really long alternative text that should trigger the alternate text is too long warning in the quick check code. The limit is currently set at 100 characters. So lets see what happens. This should be long enough to be a bother."/></li>
+
+	<img src="image.png" alt="alternative text" usemap="#mapname" />
+	<map name="mapname">
+		<area shape="rect" coords="9,372,66,397" href="http://en.wikipedia.org/" alt="area alternative text" />
+		<area shape="rect" coords="69,372,75,397" href="" alt="area alternative text" />
+		<area shape="rect" coords="90,372,105,397" href="" alt="" />
+		<area shape="rect" coords="110,372,125,397" href="http://www.google.com" alt="" />
+	</map>
+<map name="ImageMap_1_474895672" id="ImageMap_1_474895672">
+	<area href="/wiki/Samuel_Johnson" shape="poly" coords="65,167,60,139,77,109,92,111,95,141,108,151,102,167,102,172,118,176,142,226,121,225" alt="Dr Johnson - Dictionary writer" title="Dr Johnson - Dictionary writer">
+	<area href="/wiki/James_Boswell" shape="poly" coords="37,109,41,124,21,147,30,194,60,206,59,175,67,167,59,141,54,114,47,109" alt="" title="Boswell - Biographer">
+	<area href="/wiki/Joshua_Reynolds" shape="poly" coords="92,134,101,117,111,111,120,116,121,125,139,155,137,157,108,157,107,146,97,143" alt="" title="">
+	<area href="" shape="poly" coords="150,154,151,131,159,127,154,120,155,111,167,110,173,117,183,133,178,138,171,151,155,157" alt="David Garrick - actor" title="David Garrick - actor">
+	<area href="" shape="poly" coords="122,197,152,167,166,167,178,136,186,133,181,122,184,108,199,111,201,136,204,142,190,146,182,175,174,212,149,203,152,190,132,202" alt="" title="">
+	<area href="/wiki/Pasquale_Paoli" shape="rect" coords="203,107,220,139" alt="Click Here">
+	<area href="/wiki/Charles_Burney" shape="poly" coords="221,116,235,123,245,147,241,176,243,183,239,215,208,213,206,182,226,171" alt="alt text" title="Charles Burney - music historian">
+	<area href="/wiki/Thomas_Warton" shape="poly" coords="243,136,265,115,276,116,278,150,272,158,261,154,258,146,244,140" title="Thomas Warton - poet laureate">
+	<area href="/wiki/Oliver_Goldsmith" shape="poly" coords="278,220,287,217,278,181,293,171,273,158,288,140,278,126,278,121,287,118,299,123,310,136,318,162,343,192,319,204,304,186,296,190,298,220" alt="Oliver Goldsmith - writer" title="Oliver Goldsmith - writer">
+	<area href="/wiki/Joshua_Reynolds" shape="rect" coords="219,42,284,91" alt="prob.The Infant Academy 1782" title="prob.The Infant Academy 1782">
+	<area href="/wiki/Joshua_Reynolds" shape="rect" coords="139,42,183,93" alt="unknown painting" title="unknown painting">
+	<area href="/wiki/Joshua_Reynolds" shape="circle" coords="49,69,10" alt="An unknown portrait" title="An unknown portrait">
+	<area href="/wiki/Francis_Barber" shape="poly" coords="244,93,248,86,259,86,259,97,269,106,269,114,263,115,255,127,246,127,248,107,250,104" alt="servant - poss. Francis Barber" title="servant - poss. Francis Barber">
+	<area href="/wiki/The_Club_%28Literary_Club%29" shape="rect" coords="6,5,341,243" alt="Use button to enlarge or use hyperlinks" title="Use button to enlarge or use hyperlinks">
+</map>
+<img alt="demo of a map" src="350px-JoshuaReynoldsParty.jpg" class="thumbimage" usemap="#ImageMap_1_474895672" height="254" width="350">
+</ul>
+</body>
+</html>

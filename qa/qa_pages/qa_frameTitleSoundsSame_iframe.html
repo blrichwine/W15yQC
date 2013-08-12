@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:frameTitleSoundsSame via IFRAME -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:frameTitleSoundsSame</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Warning: Frame title sounds the same as another frame's title. (for frame #1 - on the main page)</li>
+				<li>Warning: Frame title sounds the same as another frame's title. (for frame #2 - on the main page)</li>
+			</ul>
+		</p>
+		<h1>IFRAME with a title attribute that does not have a unique title.</h1>
+		<iframe src="demo_content/noerrorsframecontent.html" title="frame  1"></iframe> <!-- title attribute not unique on purpose. -->
+		<h1>IFRAME with a title attribute that does not have a unique title.</h1>
+		<iframe src="demo_content/noerrorsframecontent02.html" title="frame Won"></iframe> <!-- title attribute not unique on purpose. -->
+		<h1>IFRAME with a title attribute that does not have a unique title.</h1>
+		<iframe src="demo_content/noerrorsframecontent03.html" title="frame 3"></iframe> <!-- title attribute should be reported as unique. -->
+	</div>
+</body>
+</html>

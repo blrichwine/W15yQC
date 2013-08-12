@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Document Default Language Not Specified (docLangNotGiven) - W15yQC Help Page</title>
+  <link rel="stylesheet" href="w15yqc_help.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1 id="banner">W15y Quick Check Help</h1>
+		<ul role="navigation" aria-label="Top.">
+			<li><a href="">Help Contents</a></li>
+			<li><a href="">Help Index</a></li>
+			<li><a href="">Previous Entry</a></li>
+			<li><a href="">Next Entry</a></li>
+		</ul>
+	</div>
+	<div role="navigation" aria-label="sidebar">
+		<ul>
+			<li><a href="page1.html">Page 1</a></li>
+			<li><a href="page2.html">Page 2</a></li>
+			<li><a href="page3.html">Page 3</a></li>
+		</ul>
+	</div>
+	<div role="main">
+		<h2>Help for "Failure: Default human language is not specified. "lang" attribute not found in the html or body elements." (code: docLangNotGiven)</h2>
+		<h3>Background</h3>
+
+		<h3>W15yQC Checks</h3>
+		<h3>Example Failures</h3>
+<pre class="language-html" data-number=""><code class="language-html">
+    &lt;html&gt;
+      &lt;head&gt;
+        &lt;title&gt;&lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+		...
+</code></pre>
+		<h4>QA Pages</h4>
+		<ul>
+			<li><a href="/qa/qa_pages/qa_docTitleMissing.html">Document Titles Missing QA Page: qa_docTitleMissing.html</a></li>
+		</ul>
+		<h3>Suggestions</h3>
+			Add appropriate content to the TITLE element:
+<pre class="language-html" data-number=""><code class="language-html">
+    &lt;html&gt;
+      &lt;head&gt;
+        &lt;title&gt;Downloads - W15yQC&lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+		...
+</code></pre>
+		<h3>Related WCAG 2.0 Success Criteria</h3>
+		<ul>
+			<li>
+			 <a href="http://www.w3.org/TR/2008/REC-WCAG20-20081211/#meaning-doc-lang-id">WCAG 2.0 SC 3.1.1 Language of Page</a>: The default human language of each Web page can be programmatically determined. (Level A)
+			 (<a href="http://www.w3.org/TR/UNDERSTANDING-WCAG20/meaning-doc-lang-id.html">understanding 3.1.1</a>)
+			 (<a href="http://www.w3.org/WAI/WCAG20/quickref/#qr-meaning-doc-lang-id">how to meet 3.1.1</a>)
+			</li>
+		</ul>
+
+		<h3>Related Section 508 Standards</h3>
+		<ul>
+		</ul>
+
+	</div>
+	<div role="contentinfo">
+		<p>Last Updated: August 4th, 2013</p>
+		<div role="navigation">
+			<ul>
+				<li><a href="page1.html">Page 1</a></li>
+				<li><a href="page2.html">Page 2</a></li>
+				<li><a href="page3.html">Page 3</a></li>
+			</ul>
+		</div>
+		<div role="navigation">
+			<ul>
+				<li><a href="page1.html">Page 4</a></li>
+				<li><a href="page2.html">Page 5</a></li>
+				<li><a href="page3.html">Page 6</a></li>
+			</ul>
+		</div>
+	</div>
+
+</body>
+</html>

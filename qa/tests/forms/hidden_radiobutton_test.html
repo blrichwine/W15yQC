@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<title>hidden radio buttons test</title>
+<style type="text/css">
+
+ul.color-list {
+    list-style: none outside none;
+    margin: 0;
+    padding: 6px;
+}
+.annotation.red, .color-block.red, button.annotation.red {
+    background-color: #FF0000;
+}
+ul.color-list li {
+    border: 3px solid #E0E0E0;
+    border-radius: 4px 4px 4px 4px;
+    display: inline-block;
+    height: 20px;
+    margin-right: 2px;
+    width: 20px;
+}
+ul.color-list li.selectedColor {
+    border-color: #4AB036;
+}
+.annotation.yellow, .color-block.yellow, button.annotation.yellow {
+    background-color: #FFEA00;
+}
+.annotation.cyan, .color-block.cyan, button.annotation.cyan {
+    background-color: #00FFF6;
+}
+ul.color-list li.last {
+    margin-right: 0;
+}
+.annotation.green, .color-block.green, button.annotation.green {
+    background-color: #55DA3B;
+}
+.hidden {
+clip: rect(1px, 1px, 1px, 1px);
+height: 1px;
+overflow: hidden;
+position: absolute;
+width: 1px;
+}
+fieldset {
+border: 0;
+padding: 0;
+margin: 0;
+}
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("input:radio[name=highlight-colors]").change(function() {
+			$('li[class~="selectedColor"]').removeClass("selectedColor");
+			$('input:radio[name="highlight-colors"]:checked').each(function () {
+				$('li[data-color="' + $(this).attr("value") + '"]').addClass("selectedColor");
+			});
+		});
+		$("li[data-color]").hover(function () {
+			$(this).toggleClass("selectedColor");
+		});
+	});
+</script>
+</head>
+<body>
+<h1>Highlight Colors</h1>
+	<form id="form1" name="form1" method="post" action="">
+		<div class="highlight-colors">
+			<fieldset>
+			<legend class="hidden">Choose a highlight color</legend>
+        	<ul class="color-list">
+            	<li data-color="red" class="color-block red selectedColor"><span><input name="highlight-colors" type="radio" title="Red Highlight" value="red" class="hidden" /></span></li>
+                <li data-color="yellow" class="color-block yellow"><span><input name="highlight-colors" type="radio" title="Yellow Highlight" value="yellow" class="hidden"/></span></li>
+                <li data-color="cyan" class="color-block cyan"><span><input name="highlight-colors" type="radio" title="Cyan Highlight" value="cyan" class="hidden"/></span></li>
+                <li data-color="green" class="color-block last green"><span><input name="highlight-colors" type="radio" title="Green Highlight" value="green" class="hidden"/></span></li>
+            </ul>
+			</fieldset>
+		</div>
+	</form>
+
+</body>
+</html>

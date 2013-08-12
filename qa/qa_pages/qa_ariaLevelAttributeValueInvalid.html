@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ariaLevelAttributeValueInvalid -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+	</div>
+	<div role="main">
+		<div aria-level="a" role="heading">W15yQC Quality Assurance Page - code:ariaLevelAttributeValueInvalid</div>
+		<div aria-level="" role="heading">W15yQC Quality Assurance Page - code:ariaLevelAttributeValueInvalid</div>
+		<div aria-level="9" role="heading">W15yQC Quality Assurance Page - code:ariaLevelAttributeValueInvalid</div>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: a is an invalid aria-level attribute value. It must be an integer greater than or equal to 1.
+				(Heading 1 - on the main page)</li>
+				<li>Failure: a is an invalid aria-level attribute value. It must be an integer greater than or equal to 1.
+				(Heading 2 - on the main page)</li>
+			</ul>
+		</p>
+	</div>
+	<div role="contentinfo"><p>Status: Not approved -- need resolution on what should happen with aria-level="9" on the heading role.</p></div>
+</body>
+</html>

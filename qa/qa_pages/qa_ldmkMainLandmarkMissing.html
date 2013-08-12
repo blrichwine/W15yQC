@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ldmkMainLandmarkMissing -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+		<div role="navigation"><a href="#">Home</a></div>
+	</div>
+	<div> <!-- main landmark missing on purpose -->
+		<h1>W15yQC Quality Assurance Page - code:ldmkMainLandmarkMissing</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: Missing 'Main' Landmark If ARIA Landmarks are used, there should be a 'Main' Landmark (--Page Level-- on the main page)</li>
+			</ul>
+		</p>
+		<div role="navigation" aria-label="site nav"><a href="#">Home</a></div>
+	</div>
+</body>
+</html>

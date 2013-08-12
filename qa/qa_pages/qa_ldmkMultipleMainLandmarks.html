@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ldmkMultipleMainLandmarks -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+		<div role="navigation"><a href="#">Home</a></div>
+	</div>
+	<div role="main"> <!-- multiple main landmarks on purpose -->
+		<h1>W15yQC Quality Assurance Page - code:ldmkMultipleMainLandmarks</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: Landmark and label combination is the same as landmarks: 4. (Landmark 3 - on the main page)</li>
+				<li>Failure: Landmark and label combination is the same as landmarks: 3. (Landmark 4 - on the main page)</li>
+				<li>Failure: Document contains 2 'Main' landmarks. Documents should contain only one 'Main' landmark (--Page Level-- on the main page)</li>
+			</ul>
+		</p>
+		<div role="main"> <!-- multiple main landmarks on purpose -->
+			<div role="navigation" aria-label="site nav"><a href="#">Home</a></div>
+		</div>
+	</div>
+</body>
+</html>

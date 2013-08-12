@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ariaHasBothLabelAndLabelledBy -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1 id="id1">The Banner!</h1>
+	</div>
+	<div role="main">
+		<div role="heading" aria-level="1" aria-label="aria label" aria-labelledby="id1">W15yQC Quality Assurance Page - code:ariaHasBothLabelAndLabelledBy</div>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: Element has both ARIA-Label and ARIA-Labelledby attributes. aria-labelledby content overrides aria-label content (any aria-label text will be ignored).
+				(Heading 2 - on the main page)</li>
+				<li>Failure: Element has both ARIA-Label and ARIA-Labelledby attributes. aria-labelledby content overrides aria-label content (any aria-label text will be ignored).
+				(on the main page elements with ARIA section)</li>
+			</ul>
+		</p>
+	</div>
+</body>
+</html>

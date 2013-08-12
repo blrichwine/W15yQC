@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Form Controls Tests 01 - W15yQC QA</title>
+</head>
+<body>
+	<noscript><div><h1>This is the noscript area</h1></div></noscript>
+	<h1>Form Controls Tests</h1>
+	<form name="tests_A" method="get">
+		<p>Here is a label for a control down below...</p>
+		<label for="toofar">Far away control:</label>
+		<p>An unlabeled text box:</p>
+		<input type="text" name="formAtxtbox" />
+
+		<p>A button labeled only with ascii symbols:</p>
+		<input type="button" value=">" />
+
+		<p>A series of buttons with non-meaningful labels:</p>
+		<input type="button" value="next" />
+		<input type="button" value="prev" />
+		<input type="button" value="previous" />
+		<input type="button" value="1" />
+
+		<p>These two buttons do not have unique labels:</p>
+		<input type="button" value="next 1" />
+		<input type="button" value="next  1" />
+
+		<p>These two buttons have labels that sound alike:</p>
+		<input type="button" value="next 23" />
+		<input type="button" value="next twenty three" />
+		<input type="button" value="next twunty threeee" />
+
+		<p>These form controls have empty labels:</p>
+		<input type="button" value="" />
+		<label for="empty2"></label> <input type="text" id="empty2"/>
+
+		<p>Here are some div elements using ARIA to be a button.</p>
+		<div role="button">ARIA Button 1</div>
+		<div role="button" aria-label="ARIA Button 2">ARIA Button 2</div>
+
+		<p>Here are some form controls where the labels label the wrong controls:</p>
+		<label for="wlln">First Name:</label><input id="wlfn" type="text" />
+		<label for="wlfn">Last Name:</label><input id="wlln" type="text" />
+
+		<p>Here is a text box where the label is too far away:</p>
+		<input type="text" name="toofar" id="toofar"/>
+
+		<p>Here is a pair of text boxes which have the same id values:</p>
+		<input id="dup1" title="Duplicate 1"/> <input id="dup1" title="Duplicate 2"/>
+
+		<p>Here is a text box with an invalid id:</p>
+		<input id="$er" title="Invalid ID"/>
+
+		<p>This submit button should have a default label:</p>
+		<input type="submit" />
+
+		<fieldset><legend>Select a Dairy Type</legend>
+			<input id="rb01" type="radio" name="group1" value="Milk"> <label for="rb01">Milk</label><br>
+			<input id="rb02" type="radio" name="group1" value="Butter" checked> <label for="rb02">Butter</label><br>
+			<input id="rb03" type="radio" name="group1" value="Cheese"> <label for="rb03">Cheese</label>
+			<input id="cb01" type="checkbox" name="cbgroup1" value="Allergic"> <label for="cb01">Allergic?</label>
+		</fieldset>
+
+		<legend>Select a Veggie Type</legend>
+			<input id="rb04" type="radio" name="group2" value="Kale"> <label for="rb04">Kale</label><br>
+			<input id="rb05" type="radio" name="group2" value="Chard" checked> <label for="rb05">Chard</label><br>
+			<input id="rb06" type="radio" name="group2" value="Collard"> <label for="rbdd06">Collard</label>
+
+		<fieldset>
+			<input id="rb07" type="radio" name="group1" value="Cat"> <label for="rb07">Cat</label><br>
+			<input id="rb08" type="radio" name="group1" value="Dog" checked> <label for="rb08">Dog</label><br>
+			<input id="rb09" type="radio" name="group1" value="Fish"> <label for="rb09">Fish</label>
+		</fieldset>
+
+
+		<p>Here is a form control that has three labels:</p>
+		<label for="tbw3labels">Label 1</label>
+		<label for="tbw3labels">Label 2</label>
+		<label for="tbw3labels">Label 3</label>
+		<input type="text" id="tbw3labels" name="threeLabels" aria-describedby="tbw3labelsdesc" /><br>
+		<span id="tbw3labelsdesc">Description for the text box above</span><br>
+
+		<label>Here is a label that does not label a control.</label>
+
+		<p>Here is a form control that has the same id as another control and it's label. </p>
+		<input id="wlln" type="text" name="nonUniqueIDLabelTest" />
+
+		<label>This text box is implicitly labeled.<input id="implicitLabelTest01" type="text" name="implicitLabelTest" /></label>
+
+		<fieldset><legend>Outside legend text</legend>
+			<fieldset><legend>Nested legend text number 1</legend>
+				<input id="rb01" type="radio" name="group1" value="Milk"> <label for="rb01">Milk</label><br>
+				<input id="rb02" type="radio" name="group1" value="Butter" checked> <label for="rb02">Butter</label><br>
+				<input id="rb03" type="radio" name="group1" value="Cheese"> <label for="rb03">Cheese</label>
+				<div role="button">ARIA Button</div>
+				<div role="radio">ARIA Radio Button</div>
+			</fieldset>
+
+			<fieldset><legend>Select a Veggie Type</legend>
+				<input id="rb04" type="radio" name="group2" value="Kale"> <label for="rb04">Kale</label><br>
+				<input id="rb05" type="radio" name="group2" value="Chard" checked> <label for="rb05">Chard</label><br>
+				<input id="rb06" type="radio" name="group2" value="Collard"> <label for="rbdd06">Collard</label>
+			</fieldset>
+		</fieldset>
+		<textarea id="ta01" name="unlabelledTA"></textarea>
+		<label>Implicitly labeled textarea: <textarea id="ta02" name="unlabelledTA"></textarea></label>
+		<label for="ta03">Explicitly labeled textarea:</label><textarea id="ta03" name="unlabelledTA"></textarea>
+
+		<p>An input type="image" with label coming from the alt attribute:</p>
+		<INPUT type="image" name="submit" src="/images/go_button.gif" alt="GO" title="Click to Search" style="border:0; vertical-align:middle;">
+	</form>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head> <!-- title is missing on purpose for QA -->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <style>
+	  iframe {
+			height: 50px;
+			width: 700px;
+		}
+		.skip {
+			position: absolute !important;
+			clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+			clip: rect(1px, 1px, 1px, 1px);
+			padding:0 !important;
+			border:0 !important;
+			height: 1px !important;
+			width: 1px !important;
+			overflow: hidden;
+		}
+		.hiddenFromAll {
+			display:none;
+			visibility:hidden;
+		}
+	</style>
+</head>
+<body lang="en US"> <!-- lang value purposely malformed for QA -->
+	<h1>Here is a level 1 heading in the main document.</h1>
+
+	<p>Here is a blank iframe:</p>
+	<!-- <iframe></iframe> -->
+
+	<p>Here is an iframe that is hidden from all users:</p>
+	<iframe id="if2" src="framesetTests/contents_of_frame1.html" title="title iframe 2" class="hiddenFromAll"></iframe>
+
+	<p>Here is an iframe that is hidden from sighted users:</p>
+	<iframe id="if3" src="framesetTests/contents_of_frame2.html" title="title iframe 3" class="skip"></iframe>
+
+	<p>Here is an iframe with an invalid ID:</p>
+	<iframe id="2030" src="framesetTests/contents_of_frame3.html" title="title iframe 4"></iframe>
+
+	<p id="if5">Here is an iframe with a non-unique ID:</p>
+	<iframe id="if5" src="framesetTests/contents_of_frame1.html" title="title iframe 5"></iframe>
+
+	<p>Here is a many nested iframe:</p>
+	<iframe id="if6-9" src="framesetTests/firstNested.html" title="title iframe 6"></iframe>
+
+	<p>Here is a iframe with a non-unique title.</p>
+	<iframe id="10" src="framesetTests/contents_of_frame1.html" title="title iframe 3"></iframe>
+
+	<p>Here is a iframe with a no title attribute.</p>
+	<iframe id="if11" src="framesetTests/contents_of_frame1.html"></iframe>
+
+	<p>Here is a iframe with a title that contains only ascii symbols.</p>
+	<iframe id="if12" src="framesetTests/contents_of_frame1.html" title="()*&^"></iframe>
+
+	<p>Here is a iframe with an empty title.</p>
+	<iframe id="if13" src="framesetTests/contents_of_frame1.html" title=""></iframe>
+
+	<p>Here is a iframe with a title that sounds the same as another.</p>
+	<iframe id="if14" src="framesetTests/contents_of_frame1.html" title="title iframe for"></iframe>
+
+	<p>Here is an iframe that is quite normal:</p>
+	<iframe id="s" src="framesetTests/contents_of_frame1.html" title="title iframe s"></iframe>
+
+</body>
+</html>

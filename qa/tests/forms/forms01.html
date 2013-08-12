@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Forms Tests 01 - W15yQC QA</title>
+</head>
+<body>
+	<h1>Forms Tests</h1>
+	<h2>Non-unique form name</h2>
+	<p>The following two forms have the same form name. This should produce a warning note: frmNameNotUnique.</p>
+	<h3>Form 1</h3>
+	<form name="form1and2" method="get">
+		<input type="text" name="form1txtbox" /> <input type="submit" />
+	</form>
+	<h3>Form 2</h3>
+	<form name="form1and2" method="get">
+		<input type="text" name="form2txtbox" /> <input type="submit" />
+	</form>
+
+	<h2>Nested forms</h2>
+	<p>The following two forms are nested. This would produce a warning, however Firefox does not allow the nested form - notes: frmFormIsNested, frmFormContainsForms.</p>
+	<h3>Form 3</h3>
+	<form name="form3" method="get">
+		<input type="text" name="form3txtbox" /> <input type="submit" name="submit3" value="Submit 3"/>
+		<h3>Form 4</h3>
+		<form name="form4" method="get">
+			<input type="text" name="form4txtbox" /> <input type="submit" name="submit4" value="Submit 4"/>
+		</form>
+	</form>
+
+	<h2>ID is not unique</h2>
+	<p>The following two forms have the same form ID. This should produce a warning note: frmNameNotUnique.</p>
+	<h3>Form 5</h3>
+	<form name="form5" id="f" method="get">
+		<input type="text" name="form5txtbox" /> <input type="submit" />
+	</form>
+	<h3>Form 6</h3>
+	<form name="form6" id="f" method="get">
+		<input type="text" name="form6txtbox" /> <input type="submit" />
+	</form>
+
+	<h2>ID is invalid</h2>
+	<p>The following form has an invalid ID. This should produce a warning note: frmNameNotUnique.</p>
+	<h3>Form 7</h3>
+	<form name="form7" method="get" id="f(23)">
+		<input type="text" name="form7txtbox" /> <input type="submit" />
+	</form>
+
+</body>
+</html>
