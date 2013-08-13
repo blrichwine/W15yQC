@@ -896,6 +896,11 @@ ys: 'whys'
       ariaInvalidAttrWUndefValue: [false,1,1,true,null],
       ariaAttributeMustBeValidNumber: [false,2,0,false,null],
       ariaAttrMustBePosIntOneOrGreater: [false,2,0,false,null],
+      ariaMaxNotGreaterThanAriaMin: [false,2,0,false,null],
+      ariaMaxNotGreaterThanEqualAriaNow: [false,2,0,false,null],
+      ariaMinNotLessThanEqualAriaNow: [false,2,0,false,null],
+      ariaMaxWOAriaMin: [false,2,0,false,null],
+      ariaMinWOAriaMax: [false,2,0,false,null],
       ariaPosInSetWOAriaSetSize: [false,2,0,false,null],
       ariaEmptyValueTextWValueNowWarning: [false,1,1,true,null],
       ariaInvalidAriaLabeledBy: [false,2,0,false,null],
@@ -4520,7 +4525,7 @@ ys: 'whys'
               case 'aria-valuemin':
                 if(blr.W15yQC.fnStringHasContent(attrValue)) {
                   if(blr.W15yQC.fnIsValidNumber(attrValue)) {
-                    if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuemin'))==false) {
+                    if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuemax'))==false) {
                       blr.W15yQC.fnAddNote(no, 'ariaMinWOAriaMax'); // TODO: QA This
                     }
                     if(blr.W15yQC.fnIsValidNumber(node.getAttribute('aria-valuenow'))) {
