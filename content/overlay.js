@@ -7186,7 +7186,9 @@ ys: 'whys'
         for (i = 0; i < aHeadingsList.length; i++) {
           //aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
-
+          if (aHeadingsList[i].level == null || aHeadingsList[i].level<1) {
+            aHeadingsList[i].level=2; // JAWS defaults to level 2 if ARIA heading level is not specified
+          }
           if (blr.W15yQC.dominantAriaRoles.test(aHeadingsList[i].inheritedRoles)) {  // TODO: QA This!
             aHeadingsList[i].listedByAT=false;
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByInheritedRole', [aHeadingsList[i].inheritedRoles]); //
@@ -7245,12 +7247,12 @@ ys: 'whys'
             previousHeadingLevel = aHeadingsList[i].level;
           }
 
-          if (aHeadingsList[i].text == null) {
+          if (aHeadingsList[i].text == null && blr.W15yQC.fnStringHasContent(aHeadingsList.effectiveLabel)==false) {
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtMissing'); // Not sure this can happen
-          } else if (aHeadingsList[i].text.length && aHeadingsList[i].text.length > 0) {
-            if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aHeadingsList[i].text)) {
+          } else if (aHeadingsList[i].effectiveLabel.length && aHeadingsList[i].effectiveLabel.length > 0) {
+            if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aHeadingsList[i].effectiveLabel)) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtOnlyASCII'); // QA: headings01.html
-            } else if (blr.W15yQC.fnIsMeaningfulHeadingText(aHeadingsList[i].text) == false) {
+            } else if (blr.W15yQC.fnIsMeaningfulHeadingText(aHeadingsList[i].effectiveLabel) == false) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtNotMeaninfgul'); // QA: headings01.html
             }
           } else {
@@ -7283,7 +7285,12 @@ ys: 'whys'
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
 
       if (aHeadingsList && aHeadingsList.length > 0) {
-        for(i=0;i<aHeadingsList.length;i++) { if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; } }
+        for(i=0;i<aHeadingsList.length;i++) {
+          if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; }
+          if (aHeadingsList[i].level==null || aHeadingsList[i].level<1) {
+            aHeadingsList[i].level=2;
+          }
+        }
         list = [];
         list.push(rd.createElement('ul'));
         previousHeadingLevel = 0;
@@ -7320,7 +7327,7 @@ ys: 'whys'
               sDoc = 'In doc #' + aHeadingsList[i].ownerDocumentNumber; // TODO: i18n this
               previousDocument = aHeadingsList[i].doc;
             }
-            li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].text));
+            li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].effectiveLabel));
 
             sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
             sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
