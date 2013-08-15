@@ -906,13 +906,14 @@ ys: 'whys'
       ariaInvalidAriaLabeledBy: [false,2,0,false,null],
       ariaIDNotValid: [false,1,0,false,null],
       ariaIDNotUnique: [false,2,0,false,null],
+      ariaUnrecognizedARIAAttribute: [false,2,0,false,null],
 
       ariaAbstractRole: [false,2,1,false,null],
       ariaUnknownRole: [false,2,1,false,null],
       ariaLabelledbyIDsMissing: [false,2,1,false,null],
       ariaDescribedbyIDsMissing: [false,2,1,false,null],
       ariaMissingProperties: [false,2,1,false,null],
-      ariaMissingContainer: [false,2,1,true,null],
+      ariaMissingContainer: [false,2,1,false,null],
 
       imgLongdescImageFileName: [true,2,0,false,null],
       imgLongdescShouldBeURL: [true,2,0,false,null],
@@ -4444,7 +4445,7 @@ ys: 'whys'
                 if(node.hasAttribute('aria-setsize')==false) {
                   blr.W15yQC.fnAddNote(no, 'ariaPosInSetWOAriaSetSize'); // TODO: QA This
                 }
-                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(sInt,10)<1) {
+                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(attrValue,10)<1) {
                   blr.W15yQC.fnAddNote(no, 'ariaAttrMustBePosIntOneOrGreater',[attrValue,attrName]); // TODO: QA This
                 }
                 break;
@@ -4493,7 +4494,7 @@ ys: 'whys'
                 }
                 break;
               case 'aria-setsize':
-                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(sInt,10)<1) {
+                if(blr.W15yQC.fnIsValidPositiveInt(attrValue)==false || parseInt(attrValue,10)<1) {
                   blr.W15yQC.fnAddNote(no, 'ariaAttrMustBePosIntOneOrGreater',[attrValue,attrName]); // TODO: QA This
                 }
                 break;
@@ -4622,8 +4623,9 @@ ys: 'whys'
             }
           }
           if(!bFoundRequiredContainer) {
+            sMsg=null;
             for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
-              blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].container[i],', ');
+              sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].container[i],', ');
             }
             if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingContainer', [sMsg]); } // QA
           }
