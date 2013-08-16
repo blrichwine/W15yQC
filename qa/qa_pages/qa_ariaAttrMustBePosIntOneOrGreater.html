@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ariaAttrMustBePosIntOneOrGreater -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+	</div>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:ariaAttrMustBePosIntOneOrGreater</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: 0 is an invalid aria-level attribute value. It must be an integer greater than or equal to 1.
+				(&lt;role="heading" aria-level="0" aria-label="First ARIA Heading"&gt; - Elements with ARIA Section)</li>
+				<li>Failure: 0 is an invalid aria-level attribute value. It must be an integer greater than or equal to 1.
+				(&lt;role="heading" aria-level="1f" aria-label="First ARIA Heading"&gt; - Elements with ARIA Section)</li>
+				<li>Failure: 0 is an invalid aria-level attribute value. It must be an integer greater than or equal to 1.
+				(&lt;role="heading" aria-level="-1" aria-label="First ARIA Heading"&gt; - Elements with ARIA Section)</li>
+				<li>Failure: 0 is an invalid aria-level attribute value. It must be an integer greater than or equal to 1.
+				(&lt;role="heading" aria-level="g" aria-label="First ARIA Heading"&gt; - Elements with ARIA Section)</li>
+			</ul>
+		</p>
+	</div>
+	<div role="heading" aria-level="0" aria-label="First ARIA Heading"></div>
+	<div role="heading" aria-level="1f" aria-label="Second ARIA Heading"></div>
+	<div role="heading" aria-level="-1" aria-label="Third ARIA Heading"></div>
+	<div role="heading" aria-level="g" aria-label="Forth ARIA Heading"></div>
+	<div role="contentinfo"><p>Status: Not approved -- Need to come up with a complete set of instances where this should occur.</p></div>
+</body>
+</html>

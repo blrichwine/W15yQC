@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ariaInvalidAriaLabeledBy -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+	</div>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:ariaInvalidAriaLabeledBy</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: 'aria-labeledby' is not a valid attribute. The valid spelling is with a double L before the 'ed': 'aria-labelledby'.
+				(&lt;DIV role="slider" aria-labeledby="id1" aria-valuemax="100" aria-valuenow="1" aria-valuemin="1"&gt; - Elements with ARIA Section)</li>
+				<li>Failure: Form control is unlabeled.
+				(Forms control element number 1)</li>
+				<li>Failure: 'aria-labeledby' is not a valid attribute. The valid spelling is with a double L before the 'ed': 'aria-labelledby'.
+				(Forms control element number 1)</li>
+			</ul>
+		</p>
+	</div>
+	<div role="slider" aria-valuemin="1" aria-valuenow="1" aria-valuemax="100" aria-labeledby="id1"></div>
+	<div role="contentinfo"><p>Status: Not approved -- Need to come up with a complete set of instances where this should occur.</p></div>
+</body>
+</html>

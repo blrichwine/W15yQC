@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ariaMaxNotGreaterThanEqualAriaNow -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+	</div>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:ariaMaxNotGreaterThanEqualAriaNow</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: The aria-valuenow attribute's value is greater than the aria-valuemax attribute's value.
+				(&lt;DIV role="slider" aria-label="slider" aria-valuemax="9" aria-valuemin="10" aria-valuenow="4"&gt; - Elements with ARIA Section)</li>
+				<li>Failure: The aria-valuenow attribute's value is greater than the aria-valuemax attribute's value.
+				(Forms control element number 1)</li>
+			</ul>
+		</p>
+	</div>
+	<div role="slider" aria-valuemin="1" aria-valuenow="10" aria-valuemax="9" aria-label="slider"></div>
+	<div role="contentinfo"><p>Status: Not approved -- Need to come up with a complete set of instances where this should occur.</p></div>
+</body>
+</html>
