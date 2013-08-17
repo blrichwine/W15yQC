@@ -2842,6 +2842,13 @@ ys: 'whys'
       return false;
     },
 
+    fnAppearsToBeRelativeURL: function (sText) { // TODO: QA THIS!!!
+      if (sText != null && sText.match(/(\/|\.(s?html?|php|asp))/i) && sText.match(/^\s*(\.\.?\/)?([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?\s*$/i)) {
+        return true;
+      }
+      return false;
+    },
+
     fnAppearsToBeFullyQualifiedURL: function (sURL) { // TODO: QA THIS!!!
       if (sURL != null && sURL.match(/[a-z]+:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/i)) {
         return true;
@@ -2876,7 +2883,7 @@ ys: 'whys'
     },
 
     fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer: function (sText) {
-      if (sText != null && sText.match(/^(spac.r|shim|layout|inv.s.b[ale]+)(\s(img|image|graphic|pic|picture))?$/i)) {
+      if (sText != null && sText.match(/^(spac.r|blank filler|filler|blank|shim|layout|inv.s.b[ale]+)(\s(img|image|graphic|pic|picture))?$/i)) {
         return true;
       }
       return false;
@@ -6863,7 +6870,7 @@ ys: 'whys'
               } else if (blr.W15yQC.fnAppearsToBeImageFileName(sText)) { // QA File imageTests01.html
                 oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
                 blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsFileName'); // QA imageTests01.html
-              } else if (blr.W15yQC.fnAppearsToBeURL(sText)) { // QA File imageTests01.html
+              } else if (blr.W15yQC.fnAppearsToBeURL(sText) || blr.W15yQC.fnAppearsToBeRelativeURL(sText)) { // QA File imageTests01.html
                 oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
                 blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIsURL'); // QA imageTests01.html
               } else if (blr.W15yQC.fnAppearsToBeJunkText(sText)) { // QA File imageTests01.html

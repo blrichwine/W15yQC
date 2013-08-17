@@ -222,7 +222,6 @@
 
 
     *** FIX ASAP***
-  -- ARIA Attributes with ID List- Failure if none exist. Warning if any are missing. Right now it is always a failure
   -- Which is faster? A long regex or a switch statement?
   -- **** Determine which elements/roles allows "Name From: contents." The text alternatives for child nodes will be used. -- HANDLE THEM!!! ****
       -- Roles: button, checkbox, columnheader, directory, gridcell, landmark, link, listitem, menuitem, menuitemcheckbox, menuitemradio, option, radio,
@@ -659,6 +658,7 @@
 
 FIXED:
 
+    -- ARIA Attributes with ID List- Failure if none exist. Warning if any are missing. Right now it is always a failure [8/17/2013]
     -- Need sounds the same checks on ARIA landmark labels -- failure [8/9/2013]
     -- <INPUT type="image" ... should not report being announced as "edit", but "button" [8/9/2013]
     -- <INPUT type="image" name="submit" src="/images/go_button.gif" alt="GO" title="Click to Search" style="border:0; vertical-align:middle;"> [8/9/2013]
