@@ -222,6 +222,7 @@
 
 
     *** FIX ASAP***
+  -- ARIA Attributes with ID List- Failure if none exist. Warning if any are missing. Right now it is always a failure
   -- Which is faster? A long regex or a switch statement?
   -- **** Determine which elements/roles allows "Name From: contents." The text alternatives for child nodes will be used. -- HANDLE THEM!!! ****
       -- Roles: button, checkbox, columnheader, directory, gridcell, landmark, link, listitem, menuitem, menuitemcheckbox, menuitemradio, option, radio,

@@ -910,8 +910,8 @@ ys: 'whys'
 
       ariaAbstractRole: [false,2,1,false,null],
       ariaUnknownRole: [false,2,1,false,null],
-      ariaLabelledbyIDsMissing: [false,2,1,false,null],
-      ariaDescribedbyIDsMissing: [false,2,1,false,null],
+      ariaAttributesEveryIDDoesntExist: [false,2,0,false,null],
+      ariaAttributesIDsDontExist: [false,1,1,false,null],
       ariaMissingProperties: [false,2,1,false,null],
       ariaMissingContainer: [false,2,1,false,null],
 
@@ -2540,14 +2540,21 @@ ys: 'whys'
     },
 
     fnListMissingIDs: function (doc, sIDs) {
-      var i, aIDs, sMissingIDs = null;
+      var i, aIDs, sMissingIDs = null, bFoundAnID=false;
       if(doc!=null && sIDs != null && sIDs.length) {
         aIDs = sIDs.split(' ');
         if (aIDs != null) {
           for (i = 0; i < aIDs.length; i++) {
-            if (doc.getElementById(aIDs[i]) == null) { sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, aIDs[i], ', '); }
+            if (doc.getElementById(aIDs[i]) == null) {
+              sMissingIDs = blr.W15yQC.fnJoin(sMissingIDs, aIDs[i], ', ');
+            } else {
+              bFoundAnID=true;
+            }
           }
         }
+      }
+      if (bFoundAnID==false) {
+        sMissingIDs=sMissingIDs+' (every ID)';
       }
       return sMissingIDs;
     },
@@ -4250,7 +4257,12 @@ ys: 'whys'
                   if(blr.W15yQC.fnIsValidHtmlID(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
                     if(sMsg != null) {
-                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      if (/every id/i.test(sMsg)) {
+                        sMsg=sMsg.replace(/\s?\(.*$/i,'');
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesEveryIDDoesntExist', [attrName, sMsg]); // TODO: QA This
+                      } else {
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      }
                     } else {
                       if(blr.W15yQC.fnIsDescendant(node,doc.getElementById(attrValue))==false) {
                         blr.W15yQC.fnAddNote(no, 'ariaTargetElementIsNotADescendant', [attrValue]); // TODO: QA This
@@ -4301,7 +4313,12 @@ ys: 'whys'
                   if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
                     if(sMsg != null) {
-                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      if (/every id/i.test(sMsg)) {
+                        sMsg=sMsg.replace(/\s?\(.*$/i,'');
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesEveryIDDoesntExist', [attrName, sMsg]); // TODO: QA This
+                      } else {
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      }
                     }
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA this
@@ -4313,7 +4330,12 @@ ys: 'whys'
                   if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
                     if(sMsg != null) {
-                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      if (/every id/i.test(sMsg)) {
+                        sMsg=sMsg.replace(/\s?\(.*$/i,'');
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesEveryIDDoesntExist', [attrName, sMsg]); // TODO: QA This
+                      } else {
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      }
                     }
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
@@ -4346,7 +4368,12 @@ ys: 'whys'
                   if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
                     if(sMsg != null) {
-                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      if (/every id/i.test(sMsg)) {
+                        sMsg=sMsg.replace(/\s?\(.*$/i,'');
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesEveryIDDoesntExist', [attrName, sMsg]); // TODO: QA This
+                      } else {
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      }
                     }
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
@@ -4389,7 +4416,12 @@ ys: 'whys'
                   if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
                     if(sMsg != null) {
-                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA this
+                      if (/every id/i.test(sMsg)) {
+                        sMsg=sMsg.replace(/\s?\(.*$/i,'');
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesEveryIDDoesntExist', [attrName, sMsg]); // TODO: QA This
+                      } else {
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      }
                     }
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
@@ -4434,7 +4466,12 @@ ys: 'whys'
                   if(blr.W15yQC.fnIsValidHtmlIDList(attrValue)) {
                     sMsg = blr.W15yQC.fnListMissingIDs(doc, attrValue);
                     if(sMsg != null) {
-                      blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      if (/every id/i.test(sMsg)) {
+                        sMsg=sMsg.replace(/\s?\(.*$/i,'');
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesEveryIDDoesntExist', [attrName, sMsg]); // TODO: QA This
+                      } else {
+                        blr.W15yQC.fnAddNote(no, 'ariaAttributesIDsDontExist', [attrName, sMsg]); // TODO: QA This
+                      }
                     }
                   } else {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeMustBeValidIDList', [attrName]); // TODO: QA This
