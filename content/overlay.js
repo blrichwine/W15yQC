@@ -919,6 +919,7 @@ ys: 'whys'
       imgLongdescShouldBeURL: [true,2,0,false,null],
       imgMissingAltAttribute: [true,2,0,false,null],
       imgNoAltText: [true,1,0,false,null],
+      imgWithLongdescShouldHaveAltText: [true,2,0,false,null],
       imgHasAltTextAndPresRole: [false,2,0,false,null],
       imgSpacerWithAltTxt: [true,1,0,false,null],
       imgSpacerShouldHaveEmptyAltTxt: [true,1,0,false,null],
@@ -2875,7 +2876,14 @@ ys: 'whys'
     },
 
     fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer: function (sText) {
-      if (sText != null && sText.match(/\b(spacer([\. ](gif|jpg|ima?ge?|pic).*))\s*$/i)) {
+      if (sText != null && sText.match(/^(spac.r|shim|layout|inv.s.b[ale]+)(\s(img|image|graphic|pic|picture))?$/i)) {
+        return true;
+      }
+      return false;
+    },
+
+    fnImageFilenameAppearsToBeASpacer: function (sText) {
+      if (sText != null && sText.match(/\b((spac.r|shim|inv.s.ble)([\. ](gif|jpg|ima?ge?|pic).*))\s*$/i)) {
         return true;
       }
       return false;
@@ -6832,7 +6840,11 @@ ys: 'whys'
             sCombinedLabel = blr.W15yQC.fnTrim(blr.W15yQC.fnJoin(blr.W15yQC.fnJoin(aImagesList[i].alt, aImagesList[i].title, ''), aImagesList[i].ariaLabel, ''));
             if (sCombinedLabel == null || sCombinedLabel.length < 1) {
               if(aImagesList[i].alt != null && blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node)==false) {
-                blr.W15yQC.fnAddNote(aImagesList[i], 'imgNoAltText'); // QA imageTests01.html
+                if (blr.W15yQC.fnStringHasContent(aImagesList[i].node.getAttribute('longdesc'))) {
+                  blr.W15yQC.fnAddNote(aImagesList[i], 'imgWithLongdescShouldHaveAltText'); // QA qa_imgWithLongdescShouldHaveAltText.html
+                } else {
+                  blr.W15yQC.fnAddNote(aImagesList[i], 'imgNoAltText'); // QA imageTests01.html
+                }
               }
             } else if(blr.W15yQC.fnNodeHasPresentationRole(aImagesList[i].node) == true) {
                 blr.W15yQC.fnAddNote(aImagesList[i], 'imgHasAltTextAndPresRole'); // QA imageTests01.html
@@ -6868,7 +6880,7 @@ ys: 'whys'
                 blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltTxtIncludesImageTxt'); // QA imageTests01.html
               }
 
-              if(blr.W15yQC.fnAltTextAppearsIfItShouldBeEmptyCauseItIsASpacer(aImagesList[i].src) == true) {
+              if(blr.W15yQC.fnImageFilenameAppearsToBeASpacer(aImagesList[i].src) == true) {
                 oW15yResults.PageScore.bAllAltTextIsMeaningful=false;
                 blr.W15yQC.fnAddNote(aImagesList[i], 'imgSpacerWithAltTxt'); // QA imageTests01.html
               }
