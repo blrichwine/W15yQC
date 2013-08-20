@@ -6035,7 +6035,8 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docValidLangList',[sLangList]); // TODO: QA This
           }
           if(aDocumentsList[i].invalidLangValues.length>0) {
-            sLangList = aDocumentsList[i].invalidLangValues.toString().replace(/,/g,', ');
+            sLangList = "'"+aDocumentsList[i].invalidLangValues.toString()+"'";
+            sLangList = sLangList.replace(/,/g,"', '");
             sLangList = blr.W15yQC.fnCutoffString(sLangList, 150);
             blr.W15yQC.fnAddNote(aDocumentsList[i], 'docInvalidLangList',[sLangList]); // TODO: QA This
           }

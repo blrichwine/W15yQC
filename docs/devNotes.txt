@@ -191,7 +191,7 @@
              Spider delay
              Drop out certain checks for speed when spidering
 
-    *** Self Maintaining Skip Navigation Links *** ! s t c 1 a t c !
+    *** Self Maintaining Skip Navigation Links ***
     1. Two versions
        a. jQuery
        b. javaScript only
@@ -222,6 +222,10 @@
 
 
     *** FIX ASAP***
+  -- Need to debug the lang attribute checks.
+      -- get rid of document specific error checks on the attribute values themselves (still report missing default lang specification).
+      -- enhance the code that lists the invalid lang attribute values to include commenting on invalid use of underscore, etc.
+      -- BUG:when element has both lang and xml:lang attributes, only one value is being reported as valid even if both are. Ignore for the moment the conflict.
   -- Which is faster? A long regex or a switch statement?
   -- **** Determine which elements/roles allows "Name From: contents." The text alternatives for child nodes will be used. -- HANDLE THEM!!! ****
       -- Roles: button, checkbox, columnheader, directory, gridcell, landmark, link, listitem, menuitem, menuitemcheckbox, menuitemradio, option, radio,
