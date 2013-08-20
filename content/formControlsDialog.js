@@ -342,6 +342,7 @@ blr.W15yQC.FormControlsDialog = {
   },
 
   fnPopulateTree: function (aDocumentsList, aFormsList, aFormControlsList, bDontHideCols) {
+    var textbox;
     if (aDocumentsList==null || aDocumentsList.length==0 || aFormsList==null || aFormsList.length==0 || aFormControlsList==null || aFormControlsList.length==0) {
       textbox = document.getElementById('note-text');
       textbox.value = "No form elements were detected.";
