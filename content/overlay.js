@@ -853,7 +853,7 @@ ys: 'whys'
       docNonUniqueIDs: [false,1,1,false,null],
       docInvalidIDs: [false,1,1,false,null],
 
-      idIsNotUnique: [false,1,1,false,null],
+      idIsNotUnique: [false,2,1,false,null],
       idIsNotValid: [false,1,1,false,null],
 
       frameContentScriptGenerated: [false,0,0,false,null],
@@ -864,7 +864,7 @@ ys: 'whys'
       frameTitleSoundsSame: [true,1,0,false,null],
       frameTitleEmpty: [true,2,0,false,null],
       frameIDNotValid: [false,1,1,false,null],
-      frameIDNotUnique: [false,1,1,false,null],
+      frameIDNotUnique: [false,2,1,false,null],
 
       ldmkAndLabelNotUnique: [true,2,0,false,null],
       ldmkNotUnique: [true,2,0,false,null],
@@ -879,7 +879,6 @@ ys: 'whys'
 
       ariaLmkAndLabelNotUnique: [true,2,0,false,null],
       ariaLmkNotUnique: [true,2,0,false,null],
-      ariaLevelAttributeValueInvalid: [false,2,0,false,null],
       ariaHeadingMissingAriaLevel: [false,1,0,true,null],
       ariaHasBothLabelAndLabelledBy: [false,2,0,true,null],
       ariaMultipleRoleValues: [false,1,0,false,null],
@@ -942,7 +941,7 @@ ys: 'whys'
       akLabelNotUnique: [true,2,0,false,null],
       akLabelEmpty: [true,2,0,false,null],
       akIDNotValid: [false,1,0,false,null],
-      akIDNotUnique: [false,1,0,false,null],
+      akIDNotUnique: [false,2,0,false,null],
 
       hSkippedLevel: [true,2,1,false,null],
       hShouldNotBeMultipleLevel1Headings: [true,2,1,false,null],
@@ -953,13 +952,13 @@ ys: 'whys'
       hHeadingRoleOverriddenByInheritedRole: [true,1,1,false,null],
       hHeadingRoleOverriddenByRoleAttr: [true,1,1,false,null],
       hIDNotValid: [false,1,1,false,null],
-      hIDNotUnique: [false,1,1,false,null],
+      hIDNotUnique: [false,2,1,false,null],
 
       frmNameNotUnique: [false,1,1,false,null],
       frmFormIsNested: [false,2,1,false,null],
       frmFormContainsForms: [false,2,1,false,null],
       frmIDNotValid: [false,1,1,false,null],
-      frmIDNotUnique: [false,1,1,false,null],
+      frmIDNotUnique: [false,2,1,false,null],
 
       frmCtrlNotLabeled: [true,2,0,false,null],
       frmCtrlLabelOnlyASCII: [true,2,0,false,null],
@@ -983,7 +982,7 @@ ys: 'whys'
       frmCtrlLegendWOFieldset: [false,2,0,false,null],
       frmCtrlFieldsetWOLegend: [false,2,0,false,null],
       frmCtrlRadioButtonWOLegendText: [false,1,0,false,null],
-      frmCtrlIDNotValid: [false,2,0,false,null],
+      frmCtrlIDNotValid: [false,1,0,false,null],
       frmCtrlIDNotUnique: [false,2,0,false,null],
 
       lnkTxtMissing: [true,2,0,false,null],
@@ -1010,7 +1009,7 @@ ys: 'whys'
       lnkTargetIDisNotUnique: [false,2,0,false,null],
       lnkTargetIDNotValid: [false,1,0,false,null],
       lnkServerSideImageMap: [false,2,0,false,null],
-      lnkIDNotValid: [false,2,0,false,null],
+      lnkIDNotValid: [false,1,0,false,null],
       lnkIDNotUnique: [false,2,0,false,null],
 
       tblMultipleCaptions: [false,2,0,false,null],
@@ -2583,6 +2582,7 @@ ys: 'whys'
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
+          case 'back':
           case 'click':
           case 'click here':
           case 'clicking here':
@@ -2596,6 +2596,11 @@ ys: 'whys'
           case 'get details':
           case 'learn more':
           case 'here':
+          case 'no':
+          case 'yes':
+          case 'next':
+          case 'prev':
+          case 'previous':
           case 'more':
           case 'read':
           case 'read this':
@@ -8026,9 +8031,8 @@ ys: 'whys'
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
         aLinksList[i].listedByAT=true;
-        if (aLinksList[i].text != null && aLinksList[i].text.length && aLinksList[i].text.length > 0) {
-          aLinksList[i].text = blr.W15yQC.fnCleanSpaces(aLinksList[i].text);
-          aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].text) : '';
+        if (aLinksList[i].effectiveLabel != null && aLinksList[i].effectiveLabel.length && aLinksList[i].effectiveLabel.length > 0) {
+          aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].effectiveLabel) : '';
         } else {
           aLinksList[i].soundex = '';
         }
@@ -8066,7 +8070,7 @@ ys: 'whys'
                    (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('title')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('alt')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('target')) == true ||
-                    blr.W15yQC.fnStringHasContent(aLinksList[i].text) == true)) {
+                    blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel) == true)) {
                       aLinksList[i].listedByAT=false;
                       blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); //
                 }
@@ -8108,8 +8112,8 @@ ys: 'whys'
             for (j = i+1; j < aLinksList.length; j++) {
               if(aLinksList[j].href != null || aLinksList[j].node.hasAttribute('onclick')) {
                 bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href); // TODO: Optimize this
-                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].text, aLinksList[j].text); // TODO: Optimize this
-                if (aLinksList[j].text && aLinksList[j].text.length > 0) {
+                bLinkTextsAreDifferent = blr.W15yQC.fnLinkTextsAreDifferent(aLinksList[i].effectiveLabel, aLinksList[j].effectiveLabel); // TODO: Optimize this
+                if (aLinksList[j].effectiveLabel && aLinksList[j].effectiveLabel.length > 0) {
                   if (bLinkTextsAreDifferent == false && (bHrefsAreEqual == false || aLinksList[i].href == null || aLinksList[i].href.length < 1)) {
                     aLinksList[i].aSameLinkText.push(j+1);
                     aLinksList[j].aSameLinkText.push(i+1);

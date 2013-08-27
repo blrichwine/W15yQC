@@ -219,7 +219,15 @@
        b. Appear as popup overlay that floats over location (x, y offset)
        c. Always visible
 
-
+  *** QA Tools
+    Perl script to check for QA status
+      Scan overlay.properties file for entries
+      Ignore entries on ignore.properties.lst
+      Check for presence of property in the noteDetails array
+      Check for presence in rest of overlay.js file and report function and note the line and function
+      Check for presence of a QA file
+      Inspect the QA file for a verified date
+      Compare the verify date with cutoff date
 
     *** FIX ASAP***
   -- Need to debug the lang attribute checks.
