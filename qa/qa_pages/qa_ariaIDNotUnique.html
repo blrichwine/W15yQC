@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:ariaIDNotUnique -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1 id="id1">The Banner!</h1><!-- id not unique on purpose -->
+	</div>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:ariaIDNotUnique</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Failure: ID is not unique.
+				(Heading element number 1)</li>
+				<li>Failure: ID is not unique.
+				(Heading element number 3)</li>
+				<li>Failure: ID is not unique.
+				(Links element number 1)</li>
+				<li>Failure: ID is not unique.
+				(ARIA element number 3)</li>
+			</ul>
+		</p>
+	</div>
+	<div role="heading" aria-level="2" id="id1">google</a><!-- id not unique on purpose -->
+	<div role="contentinfo"><p>Status: Approved -- 08-28-2013</p></div>
+</body>
+</html>

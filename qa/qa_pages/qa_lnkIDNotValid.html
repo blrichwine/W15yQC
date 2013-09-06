@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:lnkIDNotValid -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+	</div>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:lnkIDNotValid</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Warning: Document contains 1 IDs that are not valid for HTML: 3d1
+				(Document number 1)</li>
+				<li>Warning: ID is not a valid HTML ID.
+				(Links element number 1)</li>
+				<li>Warning: ID is not a valid HTML ID.
+				(Access Keys element number 1)</li>
+			</ul>
+		</p>
+	</div>
+	<a href="http://www.google.com/" accesskey="g" id="3d1">google</a><!-- id not valid on purpose -->
+	<div role="contentinfo"><p>Status: Approved -- 08/26/2013</p></div>
+</body>
+</html>

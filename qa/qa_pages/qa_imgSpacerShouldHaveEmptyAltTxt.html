@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>code:imgSpacerShouldHaveEmptyAltTxt -- W15yQC Quality Assurance Page</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div role="banner">
+		<h1>The Banner!</h1>
+	</div>
+	<div role="main">
+		<h1>W15yQC Quality Assurance Page - code:imgSpacerShouldHaveEmptyAltTxt</h1>
+		<p>This page should generate the following failures or warnings:
+			<ul>
+				<li>Warning: If the image is a layout / spacer graphic, the alt text should be empty.
+				(&lt;img src=&quot;doesNotExist.jpg&quot; alt=&quot;spacer&auot;&gt; - Images Section)</li>
+			</ul>
+		</p>
+	</div>
+
+
+<img src="doesNotExist.jpg" alt="spacer">
+	<div role="contentinfo"><p>Status: Not approved -- Need to come up with a complete set of instances where this should occur.</p></div>
+</body>
+</html>
