@@ -2095,7 +2095,7 @@ ys: 'whys'
       return (url1 == url2);
     },
 
-    fnLinkTextsAreDifferent: function(s1, s2) {
+    fnLinkTextsAreDifferent: function(s1, s2) { // TODO: QA This function
       if(s1 == s2) { return false; }
       if(s1 != null) { s1 = blr.W15yQC.fnCleanSpaces(s1).toLowerCase(); }
       if(s2 != null) { s2 = blr.W15yQC.fnCleanSpaces(s2).toLowerCase(); }
@@ -8031,7 +8031,7 @@ ys: 'whys'
       // Check if link Texts are empty, too short, only ASCII symbols, the same as other link texts, or sounds like any other link texts
       for (i = 0; i < aLinksList.length; i++) {
         aLinksList[i].listedByAT=true;
-        if (aLinksList[i].effectiveLabel != null && aLinksList[i].effectiveLabel.length && aLinksList[i].effectiveLabel.length > 0) {
+        if (blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==true) {
           aLinksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aLinksList[i].effectiveLabel) : '';
         } else {
           aLinksList[i].soundex = '';
@@ -8065,14 +8065,14 @@ ys: 'whys'
 
         if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
           aLinksList[i].listedByAT=false;
-          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); //
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkInvalid'); // QA This... what if href=""
         } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('href'))==false &&
                    (blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('title')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('alt')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].node.getAttribute('target')) == true ||
                     blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel) == true)) {
                       aLinksList[i].listedByAT=false;
-                      blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); //
+                      blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); // QA this. what if href=""
                 }
 
         if(aLinksList[i].node.hasAttribute('alt')) {
@@ -8097,7 +8097,7 @@ ys: 'whys'
             oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
           }
-          if(blr.W15yQC.fnStringHasContent(aLinksList[i].title) && blr.W15yQC.fnStringsEffectivelyEqual(aLinksList[i].title,linkText)==false) {
+          if(blr.W15yQC.fnStringHasContent(aLinksList[i].title) && blr.W15yQC.fnStringsEffectivelyEqual(aLinksList[i].title, linkText)==false) {
             oW15yResults.PageScore.bNoLinksHaveTitleTextDiffThanLinkText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTitleTxtDiffThanLinkTxt'); // TODO: QA This!
           }
@@ -8108,7 +8108,7 @@ ys: 'whys'
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTooSmallToHit', [maxRect[0],maxRect[1]]); // TODO: QA This, Check order
           }
 
-          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) { // TODO: Look to see if an onclick handler has be applied
+          if(aLinksList[i].node.hasAttribute('href') || aLinksList[i].node.hasAttribute('onclick')) { // TODO: Look to see if an onclick handler has been applied
             for (j = i+1; j < aLinksList.length; j++) {
               if(aLinksList[j].href != null || aLinksList[j].node.hasAttribute('onclick')) {
                 bHrefsAreEqual = blr.W15yQC.fnURLsAreEqual(aLinksList[i].doc.URL, aLinksList[i].href, aLinksList[j].doc.URL, aLinksList[j].href); // TODO: Optimize this
@@ -8161,7 +8161,7 @@ ys: 'whys'
         } else {
           if (aLinksList[i].node.hasAttribute('href') == true) {
             oW15yResults.PageScore.bAllLinksHaveText=false;
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtEmpty'); //
+            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtEmpty'); // QA This
           }
         }
 

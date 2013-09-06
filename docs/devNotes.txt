@@ -219,6 +219,9 @@
        b. Appear as popup overlay that floats over location (x, y offset)
        c. Always visible
 
+  *** FAQ Entries
+    -- Why do some links not appear in the list?
+    --
   *** QA Tools
     Perl script to check for QA status
       Scan overlay.properties file for entries
@@ -230,6 +233,8 @@
       Compare the verify date with cutoff date
 
     *** FIX ASAP***
+  -- Perform a TODO sweep and clean up what we can.
+  -- Link text different than title attribute value is only performed when there is link text content. Will not report empty links that have title text.
   -- Need to debug the lang attribute checks.
       -- get rid of document specific error checks on the attribute values themselves (still report missing default lang specification).
       -- enhance the code that lists the invalid lang attribute values to include commenting on invalid use of underscore, etc.
