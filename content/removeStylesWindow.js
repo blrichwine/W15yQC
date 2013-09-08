@@ -235,10 +235,10 @@ blr.W15yQC.RemoveStylesWindow = {
                 div2 = rd.createElement('div');
                 div2.setAttribute('style', 'padding:5px');
                 div.appendChild(div2);
-                if (appendNode.tagName.toLowerCase()=='tableh') {
+                if (appendNode.tagName.toLowerCase()=='table') {
                     appendNode.parentNode.insertBefore(div, appendNode);
                     div2.appendChild(appendNode);
-                } else if (appendNode.tagName.toLowerCase()=='tbodyh') {
+                } else if (appendNode.tagName.toLowerCase()=='tbody') {
                     appendNode.parentNode.parentNode.insertBefore(div, appendNode.parentNode);
                     div2.appendChild(appendNode);
                 } else {
