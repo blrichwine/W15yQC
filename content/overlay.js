@@ -4668,7 +4668,7 @@ ys: 'whys'
         if(blr.W15yQC.ARIAChecks[sRole].container != null) {
           sMsg=null;
           bFoundRequiredContainer = false;
-          c=node.parent;
+          c=node.parentNode;
           while(c != null && bFoundRequiredContainer == false) {
             if(c.hasAttribute && c.hasAttribute('role')) {
               cRole = c.getAttribute('role');
@@ -4679,6 +4679,7 @@ ys: 'whys'
                 }
               }
             }
+            c=c.parentNode;
           }
           if(!bFoundRequiredContainer) {
             sMsg=null;
