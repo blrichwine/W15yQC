@@ -137,7 +137,7 @@ blr.W15yQC.RemoveStylesWindow = {
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
       box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false, bInARIAList=false,
-      c2, href;
+      c2, href, hn;
     if (oValues == null) {
       oValues = {
         iNumberOfLinks: 0,
@@ -354,7 +354,11 @@ blr.W15yQC.RemoveStylesWindow = {
                   level = '2';
                 }
                 node = rd.createElement('h' + level);
-                node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c)));
+                if (c.parentNode.tagName.toLowerCase()=='a') {
+                  node.appendChild(rd.createTextNode('Link: '+blr.W15yQC.fnGetARIALabelText(c)));
+                } else {
+                  node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c)));
+                }
               } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
                 node = rd.createElement('button');
                 node.appendChild(rd.createTextNode((blr.W15yQC.fnGetEffectiveLabel(c))[0]));
@@ -371,7 +375,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 if (node.hasAttribute('src') == true) {
                   node.setAttribute('src', 'dont-load-' + node.getAttribute('src'));
                 }
-                if (/^(a)$/i.test(node.tagName) && node.hasAttribute('href')) {
+                if (/^a$/i.test(node.tagName) && node.hasAttribute('href')) {
                   href=node.getAttribute('href');
                   bSamePageLink=(blr.W15yQC.fnURLsAreEqual(blr.W15yQC.RemoveStylesWindow.srcDoc.URL, blr.W15yQC.RemoveStylesWindow.srcDoc.URL,blr.W15yQC.RemoveStylesWindow.srcDoc.URL,href)==true ||
                      /^#[^#]/.test(node.getAttribute('href')));
@@ -381,11 +385,11 @@ blr.W15yQC.RemoveStylesWindow = {
                     if (blr.W15yQC.fnFirstChildElementIs(c, 'h1') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h2') == false &&
                         blr.W15yQC.fnFirstChildElementIs(c, 'h3') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h4') == false &&
                         blr.W15yQC.fnFirstChildElementIs(c, 'h5') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h6') == false) {
-                        node.insertBefore(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '), node.firstChild);
-                    } else {
-                        node.firstChild.insertBefore(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '), node.firstChild.firstChild);
+                        node.appendChild(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '));
                     }
                   }
+                } else if (/^h/i.test(node.tagName) && c.parentNode.tagName.toLowerCase()=='a') {
+                    node.appendChild(rd.createTextNode('Link: '));
                 }
               }
 

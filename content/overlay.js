@@ -1243,10 +1243,11 @@ ys: 'whys'
 
     fnFirstChildElementIs: function(node, sElementTagName) {
       var nodeStack=[], n;
+      sElementTagName=sElementTagName.toLowerCase();
       if(node != null && node.firstChild && node.firstChild != null) {
         n=node.firstChild;
         while(n != null && n.nodeType != null) {
-          if(n.nodeType==1 && n.tagName && n.tagName != null && n.tagName.toLowerCase()=='img') {
+          if(n.nodeType==1 && n.tagName && n.tagName != null && n.tagName.toLowerCase()==sElementTagName) {
               return true;
           } else if(n.nodeType==3 && blr.W15yQC.fnStringHasContent(n.textContent)) {
               return false;
