@@ -35,8 +35,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 32',
-    releaseDate: 'August 15, 2013',
+    releaseVersion: '1.0 - Beta 33',
+    releaseDate: 'September 06, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -2712,7 +2712,7 @@ ys: 'whys'
         if(t.hasAttribute('role')==true && t.getAttribute('role').toLowerCase()=='presentation') {
            return true;
         }
-        if(blr.W15yQC.fnStringHasContent(t.caption)==false && blr.W15yQC.fnStringHasContent(t.summary)==false) {
+        if((t.caption == null || blr.W15yQC.fnStringHasContent(t.caption.textContent)==false) && blr.W15yQC.fnStringHasContent(t.getAttribute('summary'))==false) {
           if(t.rows && t.rows.length) {
             for(i=0;i<t.rows.length;i++) {
               if(t.rows[i] != null && t.rows[i].cells && t.rows[i].cells.length) {
