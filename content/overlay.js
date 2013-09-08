@@ -2712,7 +2712,7 @@ ys: 'whys'
         if(t.hasAttribute('role')==true && t.getAttribute('role').toLowerCase()=='presentation') {
            return true;
         }
-        if(blr.W15yQC.fnStringHasContent(t.caption)==false && blr.W15yQC.fnStringHasContent(t.summary)==false) {
+        if((t.caption == null || blr.W15yQC.fnStringHasContent(t.caption.textContent)==false) && blr.W15yQC.fnStringHasContent(t.getAttribute('summary'))==false) {
           if(t.rows && t.rows.length) {
             for(i=0;i<t.rows.length;i++) {
               if(t.rows[i] != null && t.rows[i].cells && t.rows[i].cells.length) {

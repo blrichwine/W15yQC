@@ -123,11 +123,20 @@ blr.W15yQC.RemoveStylesWindow = {
     return !(sTagName=='table' || sTagName=='iframe' || sTagName=='tbody' || sTagName=='tfoot' || sTagName=='html' || sTagName=='tr');
   },
 
+    fnElementIsChildOf: function(childNode, parentNode) {
+      if(childNode != null && childNode.parentNode && childNode.parentNode != null && parentNode != null) {
+        var node=childNode.parentNode;
+        while(node!=null && node !== parentNode) { node=node.parentNode;}
+         if (node != null && node===parentNode) {return true;}
+      }
+      return false;
+    },
+
   fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
-      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false,
+      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false, bInARIAList=false,
       c2, href;
     if (oValues == null) {
       oValues = {
@@ -176,6 +185,9 @@ blr.W15yQC.RemoveStylesWindow = {
             if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() !== 'style' && c.tagName.toLowerCase() !== 'script' && blr.W15yQC.fnNodeIsHidden(c) == false) {
               node = null;
               bSkipElement = false;
+              bInAriaBlock=false;
+              bInARIAList=false;
+
               sTagName = c.tagName.toLowerCase();
               if (c.hasAttribute('type')) {
                 sTagTypeAttr = c.getAttribute('type').toLowerCase();
@@ -192,6 +204,9 @@ blr.W15yQC.RemoveStylesWindow = {
                   sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" ||
                   sRole == "note" || sRole == "list" || sRole == "img" || sRole == "grid" || sRole == "document" ||
                   sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
+                if (sRole=="list") {
+                    bInARIAList=true;
+                }
                 bInAriaBlock = true; // TODO: Should the landmark role prevent the natural element role? Is this appropriate? What about nested ARIA structures?
                 if (sRole == "menubar") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ') + ' To navigate use the left and right arrow keys.';
@@ -200,8 +215,8 @@ blr.W15yQC.RemoveStylesWindow = {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu.', ' ') + ' To navigate use the up and down arrow keys.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu.', ' ');
                 } else if (blr.W15yQC.fnIsARIALandmark(c)) {
-                  sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark.';
-                  sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark.';
+                  sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark. ';
+                  sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark. ';
                 } else if (sRole == 'presentation') {
                   sEnteringLabel = '';
                   sExitingLabel = '';
@@ -211,7 +226,6 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 div = rd.createElement('div');
                 div.setAttribute('style', 'border:thin solid black;margin: 3px 2px 3px 0px');
-                appendNode.appendChild(div);
                 if (sEnteringLabel > '') {
                   p = rd.createElement('p');
                   p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
@@ -221,10 +235,19 @@ blr.W15yQC.RemoveStylesWindow = {
                 div2 = rd.createElement('div');
                 div2.setAttribute('style', 'padding:5px');
                 div.appendChild(div2);
-                appendNode = div2;
+                if (appendNode.tagName.toLowerCase()=='tableh') {
+                    appendNode.parentNode.insertBefore(div, appendNode);
+                    div2.appendChild(appendNode);
+                } else if (appendNode.tagName.toLowerCase()=='tbodyh') {
+                    appendNode.parentNode.parentNode.insertBefore(div, appendNode.parentNode);
+                    div2.appendChild(appendNode);
+                } else {
+                    appendNode.appendChild(div);
+                    appendNode = div2;
+                }
               }
 
-              if (bSkipElement == false && sTagName == 'object' || sTagName == 'embed') {
+              if (sTagName == 'object' || sTagName == 'embed') {
                 if ((sTagTypeAttr == "application/x-shockwave-flash") || (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase() == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
                   sLabel = 'Flash Object';
                 } else {
@@ -298,7 +321,7 @@ blr.W15yQC.RemoveStylesWindow = {
                     borderStyle = 'border:1px solid blue;';
                     sLabel = blr.W15yQC.fnJoin('Image-Link', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                     c2 = appendNode;
-                    while (c2 != null && c2.tagName.toLowerCase() != 'a') c2 = c2.parentNode;
+                    while (c2 != null && c2.tagName.toLowerCase() != 'a') { c2 = c2.parentNode; }
                     if (c2 != null) {
                       div = rd.createElement('div');
                       div.setAttribute('style', 'margin:3px');
@@ -319,7 +342,7 @@ blr.W15yQC.RemoveStylesWindow = {
                   }
                   node.appendChild(rd.createTextNode(sLabel));
                 }
-              } else if (sRole == 'heading') {
+              } else if (sRole == 'heading') { // TODO: Improve the handling of heading roles on complex elements (a, tr, td, etc.s)
                 if (blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
                   level = parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level')), 10).toString();
                 } else { // TODO: How is this calculated when it is left out?
@@ -370,7 +393,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 for (i = 0; i < node.attributes.length; i++) {
                   if (/^(on[a-z]+|class|align|border)$/i.test(node.attributes[i].name) == true) {
                     node.removeAttribute(node.attributes[i].name);
-                  } else if (/^javascript:/i.test(node.attributes[i].value)) {
+                  } else if (/^\s*javascript:/i.test(node.attributes[i].value)) {
                     node.setAttribute(node.attributes[i].name, 'javascript:return false;');
                   }
                 }
@@ -436,6 +459,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, node, doc, c, oValues);
               }
               bDontDig=false;
+
               if (bInAriaBlock == true) {
                 if (sExitingLabel > '') {
                   p = rd.createElement('p');
@@ -445,7 +469,9 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 appendNode = div.parentNode;
                 bInAriaBlock = false;
+                bInARIAList = false;
               }
+
             }
           }
         } else {
@@ -517,8 +543,107 @@ blr.W15yQC.RemoveStylesWindow = {
       }
   },
 
+  fnMoveTableContent: function(doc,t,el,fc) {
+    var div, el2, sTagName;
+    if (el!=null && el.firstChild!=null) {
+
+      for (el=el.firstChild; el != null; el = el==null ? null : el.nextSibling) {
+        if (el.tagName!=null && el.tagName.toLowerCase) {
+            sTagName=el.tagName.toLowerCase();
+        } else {
+            sTagName=null;
+        }
+        // alert('switch:'+sTagName);
+        switch (sTagName) {
+            case 'thead':
+            case 'tbody':
+            case 'tfoot':
+            case 'tr':
+                // alert('recurse');
+                blr.W15yQC.RemoveStylesWindow.fnMoveTableContent(doc,t,el,fc);
+                break;
+            case 'caption':
+            case 'th':
+            case 'td':
+                // alert('move content');
+                if (el.firstChild!=null) {
+                    div=doc.createElement('div');
+                    if (fc == null) {
+                      fc = div;
+                    }
+                    while (el.firstChild) {
+                      div.appendChild(el.firstChild);
+                    }
+                    t.parentNode.insertBefore(div, t);
+                }
+                break;
+            default:
+                if (el!=null && el.nodeType==3 && blr.W15yQC.fnStringHasContent(el.textContent)) {
+                    // alert('move type 3 content');
+                    div=doc.createElement('div');
+                    if (fc == null) {
+                      fc = div;
+                    }
+                    div.appendChild(el.firstChild);
+                    t.parentNode.insertBefore(div, t);
+                } else if (el!=null && el.nodeType==1) {
+                // alert('move default content:'+el.tagName);
+                    el2=el;
+                    el=el.nextSibling;
+                    div=doc.createElement('div');
+                    if (fc == null) {
+                      fc = div;
+                    }
+                    div.appendChild(el2);
+                    t.parentNode.insertBefore(div, t);
+                }
+        }
+      }
+    }
+    return fc;
+  },
+
   fnLinearizeTables: function (doc, rootNode) {
-    var c, i, j, firstMoved, div, frameDocument;
+    var c, i, j, firstMoved, div, frameDocument, pn;
+    if (doc != null && doc.body) {
+      if (rootNode == null) {
+        rootNode = doc.body;
+      }
+      for (c = rootNode.firstChild; c != null; c = c == null ? null : c.nextSibling) {
+        if (c.nodeType == 1) {
+          if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+            frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
+            blr.W15yQC.fnLinearizeTables(frameDocument, frameDocument.body);
+          } else { // keep looking through current document
+            if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+              if (blr.W15yQC.fnAppearsToBeALayoutTable(c) == true) {
+                firstMoved = blr.W15yQC.RemoveStylesWindow.fnMoveTableContent(doc,c,c);
+                //alert(c.innerHTML.replace(/\s+/,' '));
+                pn=c.parentNode;
+                pn.removeChild(c);
+
+                if (firstMoved != null && firstMoved.previousSibling != null) {
+                  c = firstMoved.previousSibling;
+                } else if(firstMoved != null) {
+                  c = firstMoved;
+                } else {
+                  c = pn;
+                }
+
+
+
+              }
+            }
+            blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(doc, c);
+          }
+        }
+      }
+    }
+  },
+
+
+  fnLinearizeTables_old: function (doc, rootNode) {
+    var c, i, j, firstMoved, div, frameDocument, pn;
     if (doc != null && doc.body) {
       if (rootNode == null) {
         rootNode = doc.body;
@@ -527,10 +652,13 @@ blr.W15yQC.RemoveStylesWindow = {
         if (c.nodeType == 1) {
           if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-            blr.W15yQC.fnBuildRemoveStylesView(frameDocument, frameDocument.body);
+            blr.W15yQC.fnLinearizeTables(frameDocument, frameDocument.body);
           } else { // keep looking through current document
             if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
               if (blr.W15yQC.fnAppearsToBeALayoutTable(c) == true) {
+
+
+
                 firstMoved = null;
                 if (c.rows && c.rows.length) {
                   for (i = 0; i < c.rows.length; i++) {
@@ -548,12 +676,20 @@ blr.W15yQC.RemoveStylesWindow = {
                     }
                   }
                 }
-                c.parentNode.removeChild(c);
+                //alert(c.innerHTML.replace(/\s+/,' '));
+                pn=c.parentNode;
+                pn.removeChild(c);
+
                 if (firstMoved != null && firstMoved.previousSibling != null) {
                   c = firstMoved.previousSibling;
+                } else if(firstMoved != null) {
+                  c = firstMoved;
                 } else {
-                  c = null;
+                  c = pn;
                 }
+
+
+
               }
             }
             blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(doc, c);
@@ -627,7 +763,7 @@ blr.W15yQC.RemoveStylesWindow = {
         converter.close(); // this closes foStream
       }
     } else {
-      if (blr.W15yQC.RemoveStylesWindow.prompts.alert) blr.W15yQC.RemoveStylesWindow.prompts.alert(null, "W15yQC HTML Report Alert", "Nothing to save!");
+      if (blr.W15yQC.RemoveStylesWindow.prompts.alert) blr.W15yQC.RemoveStylesWindow.prompts.alert(null, "W15yQC Semantic View Report Alert", "Nothing to save!");
     }
   }
 
