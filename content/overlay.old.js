@@ -35,8 +35,8 @@ if (!blr) { var blr = {}; }
  */
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 33',
-    releaseDate: 'September 06, 2013',
+    releaseVersion: '1.0 - Beta 34',
+    releaseDate: 'September 08, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -1243,10 +1243,11 @@ ys: 'whys'
 
     fnFirstChildElementIs: function(node, sElementTagName) {
       var nodeStack=[], n;
+      sElementTagName=sElementTagName.toLowerCase();
       if(node != null && node.firstChild && node.firstChild != null) {
         n=node.firstChild;
         while(n != null && n.nodeType != null) {
-          if(n.nodeType==1 && n.tagName && n.tagName != null && n.tagName.toLowerCase()=='img') {
+          if(n.nodeType==1 && n.tagName && n.tagName != null && n.tagName.toLowerCase()==sElementTagName) {
               return true;
           } else if(n.nodeType==3 && blr.W15yQC.fnStringHasContent(n.textContent)) {
               return false;
@@ -4667,7 +4668,7 @@ ys: 'whys'
         if(blr.W15yQC.ARIAChecks[sRole].container != null) {
           sMsg=null;
           bFoundRequiredContainer = false;
-          c=node.parent;
+          c=node.parentNode;
           while(c != null && bFoundRequiredContainer == false) {
             if(c.hasAttribute && c.hasAttribute('role')) {
               cRole = c.getAttribute('role');
@@ -4678,6 +4679,7 @@ ys: 'whys'
                 }
               }
             }
+            c=c.parentNode;
           }
           if(!bFoundRequiredContainer) {
             sMsg=null;
