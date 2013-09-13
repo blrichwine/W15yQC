@@ -136,7 +136,7 @@ blr.W15yQC.RemoveStylesWindow = {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
-      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false, bInARIAList=false,
+      box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false,
       c2, href, hn;
     if (oValues == null) {
       oValues = {
@@ -186,7 +186,6 @@ blr.W15yQC.RemoveStylesWindow = {
               node = null;
               bSkipElement = false;
               bInAriaBlock=false;
-              bInARIAList=false;
 
               sTagName = c.tagName.toLowerCase();
               if (c.hasAttribute('type')) {
@@ -204,9 +203,6 @@ blr.W15yQC.RemoveStylesWindow = {
                   sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" ||
                   sRole == "note" || sRole == "list" || sRole == "img" || sRole == "grid" || sRole == "document" ||
                   sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
-                if (sRole=="list") {
-                    bInARIAList=true;
-                }
                 bInAriaBlock = true; // TODO: Should the landmark role prevent the natural element role? Is this appropriate? What about nested ARIA structures?
                 if (sRole == "menubar") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ') + ' To navigate use the left and right arrow keys.';
@@ -247,7 +243,12 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
               }
 
-              if (sTagName == 'object' || sTagName == 'embed') {
+
+              if (sRole == 'presentation' && /^(h1|h2|h3|h4|h5|h6)$/i.test(c.tagName)) {
+                node=rd.createElement('div');
+              } else if (sRole == 'presentation' && /^(i|b|strong)$/i.test(c.tagName)) {
+                node=rd.createElement('span');
+              } else if (sTagName == 'object' || sTagName == 'embed') {
                 if ((sTagTypeAttr == "application/x-shockwave-flash") || (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase() == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
                   sLabel = 'Flash Object';
                 } else {
@@ -355,9 +356,12 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 node = rd.createElement('h' + level);
                 if (c.parentNode.tagName.toLowerCase()=='a') {
-                  node.appendChild(rd.createTextNode('Link: '+blr.W15yQC.fnGetARIALabelText(c)));
-                } else {
-                  node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c)));
+                  node.appendChild(rd.createTextNode('Link: '));
+                }
+                sLabel=blr.W15yQC.fnGetARIALabelText(c);
+                if (blr.W15yQC.fnStringHasContent(sLabel)) {
+                    node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c)));
+                    bDontDig=true; // TODO: ignore child text? What about complex content?
                 }
               } else if (sRole == 'button' || (c.tagName.toLowerCase() == 'input' && c.hasAttribute('type') && (c.getAttribute('type').toLowerCase() == 'image' || c.getAttribute('type').toLowerCase() == 'submit' || c.getAttribute('type').toLowerCase() == 'button'))) {
                 node = rd.createElement('button');
@@ -473,7 +477,6 @@ blr.W15yQC.RemoveStylesWindow = {
                 }
                 appendNode = div.parentNode;
                 bInAriaBlock = false;
-                bInARIAList = false;
               }
 
             }

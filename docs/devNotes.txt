@@ -233,6 +233,18 @@
       Compare the verify date with cutoff date
 
     *** FIX ASAP***
+  -- Headings with role="presentation" are appearing in the heading lists. Should they?
+  -- Should effective label source really be hidden by default on most inspector dialogs?
+  -- What does role="presentation" do on:
+       headings
+       lists of all sorts
+       parents with nested lists that don't have role="presentation"
+       input controls -- including labels
+       objects (like flash objects)
+       html5 "landmark" elements
+       blockquotes
+  -- What happens when a role="heading" with an aria-label has complex child content? Does it get ignored?
+
   -- Perform a TODO sweep and clean up what we can.
   -- Link text different than title attribute value is only performed when there is link text content. Will not report empty links that have title text.
   -- Need to debug the lang attribute checks.
