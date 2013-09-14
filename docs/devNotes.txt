@@ -233,7 +233,8 @@
       Compare the verify date with cutoff date
 
     *** FIX ASAP***
-  -- Headings with role="presentation" are appearing in the heading lists. Should they?
+  -- Spell check the overlay.properties file!
+  -- What other elements (besides headings) should be suppresed by role="presentation" ?
   -- Should effective label source really be hidden by default on most inspector dialogs?
   -- What does role="presentation" do on:
        headings
@@ -687,6 +688,7 @@
 
 FIXED:
 
+    -- Headings with role="presentation" are appearing in the heading lists. Should they? [Answer: No] [DONE 2013/09/13]
     -- ARIA Attributes with ID List- Failure if none exist. Warning if any are missing. Right now it is always a failure [8/17/2013]
     -- Need sounds the same checks on ARIA landmark labels -- failure [8/9/2013]
     -- <INPUT type="image" ... should not report being announced as "edit", but "button" [8/9/2013]

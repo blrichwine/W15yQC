@@ -999,6 +999,8 @@ ys: 'whys'
       lnkTxtDiffSameHref: [true,1,0,false,null],
       lnkTxtEmpty: [true,2,0,false,null],
       lnkTitleTxtDiffThanLinkTxt: [false, 1, 0, true, null],
+      lnkTextComesOnlyFromTitle: [true, 2, 0, true, null],
+      lnkTextComesOnlyFromAlt: [true, 2, 0, true, null],
       lnkIsNamedAnchor: [true,0,0,false,null],
       lnkTargetsLink: [true,0,0,false,null],
       lnkTargets: [true,0,0,false,null],
@@ -3488,7 +3490,15 @@ ys: 'whys'
                 } else {
                   sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText,blr.W15yQC.fnGetDisplayableTextRecursively(node),' '));
                 }
-                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', '); }
+                if(sLabelText.length > l) {
+                  if (node.hasAttribute('title') && blr.W15yQC.fnStringsEffectivelyEqual(sLabelText,node.getAttribute('title'))) {
+                    sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'title attribute', ', ');
+                  } else if (node.hasAttribute('alt') && blr.W15yQC.fnStringsEffectivelyEqual(sLabelText,node.getAttribute('alt'))) {
+                    sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'alt attribute', ', ');
+                  } else {
+                    sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', ');
+                  }
+                }
                 break;
 
               case 'default':
@@ -3496,7 +3506,7 @@ ys: 'whys'
                   sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, aConfig[i+1], ' '));
                   i++;
                 }
-                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', '); }
+                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'default text', ', '); }
                 break;
 
               case 'alt':
@@ -3698,6 +3708,7 @@ ys: 'whys'
 
     fnGetDisplayableTextRecursively: function (rootNode, iRecursion, aStopElements) {
       // TODO: Vet this with JAWS
+      // TODO: How is this used? Getting the title and alt text isn't exactly displayable text. What should this function do? Do we need another one?
       // TODO: QA THIS, rethink this...
       // TODO: Gan we get this from Firefox? What about ARIA-label and other ARIA attribute?
       // How does display:none, visibility:hidden, and aria-hidden=true affect child text collection?
@@ -7257,10 +7268,13 @@ ys: 'whys'
           }
           if (blr.W15yQC.dominantAriaRoles.test(aHeadingsList[i].inheritedRoles)) {  // TODO: QA This!
             aHeadingsList[i].listedByAT=false;
-            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByInheritedRole', [aHeadingsList[i].inheritedRoles]); //
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByInheritedRole', [aHeadingsList[i].inheritedRoles]); // TODO: QA This
           } else if(/^\s*heading\s*$/i.test(aHeadingsList[i].role)==false && blr.W15yQC.dominantAriaRoles.test(aHeadingsList[i].role)) {
             aHeadingsList[i].listedByAT=false;
-            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByRoleAttr', [aHeadingsList[i].roles]); //
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByRoleAttr', [aHeadingsList[i].role]); // TODO: QA This
+          } else if(/^\s*presentation\s*$/i.test(aHeadingsList[i].role)) {
+            aHeadingsList[i].listedByAT=false;
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingRoleOverriddenByRoleAttr', [aHeadingsList[i].role]); // TODO: QA This
           } else {
             aHeadingsList[i].listedByAT=true;
             listedHeadingCount++;
@@ -8081,11 +8095,12 @@ ys: 'whys'
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasInvalidAltAttribute'); //
         }
 
+        linkText = blr.W15yQC.fnTrim(aLinksList[i].effectiveLabel.toLowerCase());
+
         if (aLinksList[i].text == null && blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==false) {
           oW15yResults.PageScore.bAllLinksHaveText=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
         } else if (blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==true) { // TODO: QA All empty link scenarios and make sure we get the right errors
-          linkText = blr.W15yQC.fnTrim(aLinksList[i].effectiveLabel.toLowerCase());
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(linkText)) {
             oW15yResults.PageScore.bAllLinksHaveText=false;
             oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
@@ -8098,10 +8113,6 @@ ys: 'whys'
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
             oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
-          }
-          if(blr.W15yQC.fnStringHasContent(aLinksList[i].title) && blr.W15yQC.fnStringsEffectivelyEqual(aLinksList[i].title, linkText)==false) {
-            oW15yResults.PageScore.bNoLinksHaveTitleTextDiffThanLinkText=false;
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTitleTxtDiffThanLinkTxt'); // TODO: QA This!
           }
           maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
 
@@ -8165,6 +8176,16 @@ ys: 'whys'
             oW15yResults.PageScore.bAllLinksHaveText=false;
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtEmpty'); // QA This
           }
+        }
+
+        if(blr.W15yQC.fnStringHasContent(aLinksList[i].title) && blr.W15yQC.fnStringsEffectivelyEqual(aLinksList[i].title, linkText)==false) {
+          oW15yResults.PageScore.bNoLinksHaveTitleTextDiffThanLinkText=false;
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTitleTxtDiffThanLinkTxt'); // TODO: QA This!
+        }
+        if (/title attribute/i.test(aLinksList[i].effectiveLabelSource)) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextComesOnlyFromTitle'); // TODO: QA This!
+        } else if (/alt attribute/i.test(aLinksList[i].effectiveLabelSource)) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextComesOnlyFromAlt'); // TODO: QA This!
         }
 
         if (aLinksList[i].node.hasAttribute('href') == true) {
