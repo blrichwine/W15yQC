@@ -1000,6 +1000,7 @@ FIXED:
        - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
        - compare results on running against FAE on several pages (link text, form control text, headings)
     4) Run through the Mozilla extension validator
+    5) Run through a spell checker
 
  Steps to perform to issue release
     1) Upload to download section on github
