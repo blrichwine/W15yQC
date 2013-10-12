@@ -233,7 +233,14 @@
       Compare the verify date with cutoff date
 
     *** FIX ASAP***
+  -- Spider page titles
+  -- What are meaningless page titles?
+  -- need to add aria-describedby to getEffectiveLabel
+  -- Project scanner does not work correctly unless in expert, non-quick mode.
+  -- Log rejected links
   -- Spell check the overlay.properties file!
+  -- Test against examples at: http://wet-boew.github.io/wet-boew/demos/index-eng.html
+  -- role="search" is coming up a failure due to falsely requiring an aria-labelledby attribute.
   -- What other elements (besides headings) should be suppresed by role="presentation" ?
   -- Should effective label source really be hidden by default on most inspector dialogs?
   -- What does role="presentation" do on:

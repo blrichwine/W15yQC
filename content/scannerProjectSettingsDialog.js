@@ -220,7 +220,7 @@ blr.W15yQC.scannerProjectSettingsDialog = {
   },
 
   doOK: function() {
-    var i, count, treebox, treecells;
+    var i, count, treebox, treecells,row;
     blr.W15yQC.scannerProjectSettingsDialog.checkFields();
     if(blr.W15yQC.scannerProjectSettingsDialog.bFieldsAreOK==true) {
       blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=true;

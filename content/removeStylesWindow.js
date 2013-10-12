@@ -120,7 +120,7 @@ blr.W15yQC.RemoveStylesWindow = {
   },
 
   fnTagCanHoldText: function(sTagName) {
-    return !(sTagName=='table' || sTagName=='iframe' || sTagName=='tbody' || sTagName=='tfoot' || sTagName=='html' || sTagName=='tr');
+    return !(sTagName=='table' || sTagName=='iframe' || sTagName=='tbody' || sTagName=='tfoot' || sTagName=='html' || sTagName=='tr' || sTagName=='ol' || sTagName=='ul');
   },
 
     fnElementIsChildOf: function(childNode, parentNode) {
@@ -428,6 +428,7 @@ blr.W15yQC.RemoveStylesWindow = {
                     }
                 }
                 if (sRole == 'listitem' || sRole == 'menuitem' || sRole == 'tab' || sRole == 'treeitem' || sRole == 'tooltip') {
+                  blr.W15yQC.fnAddClass(node,'w15yqcListItem');
                   if(blr.W15yQC.RemoveStylesWindow.fnTagCanHoldText(appendNode.tagName.toLowerCase())) {
                     appendNode.appendChild(rd.createTextNode(' ' + blr.W15yQC.fnJoin(oValues.sHeldLabel, sRole+': ',' ')));
                     oValues.sHeldLabel='';
@@ -442,6 +443,7 @@ blr.W15yQC.RemoveStylesWindow = {
                   appendNode.appendChild(rd.createTextNode(' ' + oValues.sHeldLabel + ' '));
                   oValues.sHeldLabel='';
                 }
+                
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
 
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {

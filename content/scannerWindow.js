@@ -229,6 +229,7 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
+    blr.W15yQC.bQuick = false; // Make sure this has been reset
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
@@ -395,7 +396,7 @@ blr.W15yQC.ScannerWindow = {
   urlIsBlackListed: function(sURL) {
     if(sURL!=null) {
       if(/javascript:/i.test(sURL) || /^\s*(tel|mailto):/i.test(sURL) ||
-         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpg|m4v|mp4|pdf|ppt|pptx|ram|svg|tif|tiff|wmx)$/i.test(sURL)) {
+         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpeg|mpg|m4v|mp4|pdf|ppt|pptx|ram|rar|svg|tif|tiff|wmx|zip)$/i.test(sURL)) {
         if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('url is black listed'); }
         return true;
       }
@@ -457,6 +458,7 @@ blr.W15yQC.ScannerWindow = {
         if(!result) { bCancel=true; }
       }
       if(!bCancel) {
+        blr.W15yQC.bQuick = false;
         blr.W15yQC.ScannerWindow.projectHasUnsavedChanges = false;
         blr.W15yQC.ScannerWindow.urlList = [];
         blr.W15yQC.ScannerWindow.urlMustMatchList = [];
@@ -580,9 +582,9 @@ blr.W15yQC.ScannerWindow = {
         url.framesFailures=0;
         url.framesWarnings=0;
       }
-      url.itemsCount=url.framesCount;
-      url.failuresCount=url.framesFailures;
-      url.warningsCount=url.framesWarnings;
+      url.itemsCount=(url.framesCount>0?url.framesCount : 0);
+      url.failuresCount=(url.framesFailures>0? url.framesFailures : 0);
+      url.warningsCount=(url.framesWarnings>0? url.framesWarnings : 0);
 
 
       if(oW15yQCResults.aHeadings && oW15yQCResults.aHeadings.length>0) {
@@ -594,9 +596,9 @@ blr.W15yQC.ScannerWindow = {
         url.headingsFailures=0;
         url.headingsWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.headingsCount;
-      url.failuresCount=url.failuresCount+url.headingsFailures;
-      url.warningsCount=url.warningsCount+url.headingsWarnings;
+      url.itemsCount=url.itemsCount+(url.headingsCount>0?url.headingsCount : 0);
+      url.failuresCount=url.failuresCount+(url.headingsFailures>0?url.headingsFailures : 0);
+      url.warningsCount=url.warningsCount+(url.headingsWarnings>0?url.headingsWarnings : 0);
 
       if(oW15yQCResults.aARIALandmarks && oW15yQCResults.aARIALandmarks.length>0) {
         url.ARIALandmarksCount=oW15yQCResults.aARIALandmarks.length;
@@ -607,9 +609,9 @@ blr.W15yQC.ScannerWindow = {
         url.ARIALandmarksFailures=0;
         url.ARIALandmarksWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.ARIALandmarksCount;
-      url.failuresCount=url.failuresCount+url.ARIALandmarksFailures;
-      url.warningsCount=url.warningsCount+url.ARIALandmarksWarnings;
+      url.itemsCount=url.itemsCount+(url.ARIALandmarksCount>0?url.ARIALandmarksCount : 0);
+      url.failuresCount=url.failuresCount+(url.ARIALandmarksFailures>0?url.ARIALandmarksFailures : 0);
+      url.warningsCount=url.warningsCount+(url.ARIALandmarksWarnings>0?url.ARIALandmarksWarnings : 0);
 
       if(oW15yQCResults.aARIAElements && oW15yQCResults.aARIAElements.length>0) {
         url.ARIAElementsCount=oW15yQCResults.aARIAElements.length;
@@ -620,9 +622,9 @@ blr.W15yQC.ScannerWindow = {
         url.ARIAElementsFailures=0;
         url.ARIAElementsWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.ARIAElementsCount;
-      url.failuresCount=url.failuresCount+url.ARIAElementsFailures;
-      url.warningsCount=url.warningsCount+url.ARIAElementsWarnings;
+      url.itemsCount=url.itemsCount+(url.ARIAElementsCount>0?url.ARIAElementsCount : 0);
+      url.failuresCount=url.failuresCount+(url.ARIAElementsFailures>0?url.ARIAElementsFailures : 0);
+      url.warningsCount=url.warningsCount+(url.ARIAElementsWarnings>0?url.ARIAElementsWarnings : 0);
 
       if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length>0) {
         url.linksCount=oW15yQCResults.aLinks.length;
@@ -633,9 +635,9 @@ blr.W15yQC.ScannerWindow = {
         url.linksFailures=0;
         url.linksWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.linksCount;
-      url.failuresCount=url.failuresCount+url.linksFailures;
-      url.warningsCount=url.warningsCount+url.linksWarnings;
+      url.itemsCount=url.itemsCount+(url.linksCount>0?url.linksCount : 0);
+      url.failuresCount=url.failuresCount+(url.linksFailures>0?url.linksFailures : 0);
+      url.warningsCount=url.warningsCount+(url.linksWarnings>0?url.linksWarnings : 0);
 
       if(oW15yQCResults.aImages && oW15yQCResults.aImages.length>0) {
         url.imagesCount=oW15yQCResults.aImages.length;
@@ -646,9 +648,9 @@ blr.W15yQC.ScannerWindow = {
         url.imagesFailures=0;
         url.imagesWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.imagesCount;
-      url.failuresCount=url.failuresCount+url.imagesFailures;
-      url.warningsCount=url.warningsCount+url.imagesWarnings;
+      url.itemsCount=url.itemsCount+(url.imagesCount>0?url.imagesCount : 0);
+      url.failuresCount=url.failuresCount+(url.imagesFailures>0?url.imagesFailures : 0);
+      url.warningsCount=url.warningsCount+(url.imagesWarnings>0?url.imagesWarnings : 0);
 
       if(oW15yQCResults.aFormControls && oW15yQCResults.aFormControls.length>0) {
         url.formControlsCount=oW15yQCResults.aFormControls.length;
@@ -659,9 +661,9 @@ blr.W15yQC.ScannerWindow = {
         url.formControlsFailures=0;
         url.formControlsWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.formControlsCount;
-      url.failuresCount=url.failuresCount+url.formControlsFailures;
-      url.warningsCount=url.warningsCount+url.formControlsWarnings;
+      url.itemsCount=url.itemsCount+(url.formControlsCount>0?url.formControlsCount : 0);
+      url.failuresCount=url.failuresCount+(url.formControlsFailures>0?url.formControlsFailures : 0);
+      url.warningsCount=url.warningsCount+(url.formControlsWarnings>0?url.formControlsWarnings : 0);
 
       if(oW15yQCResults.aAccessKeys && oW15yQCResults.aAccessKeys.length>0) {
         url.accessKeysCount=oW15yQCResults.aAccessKeys.length;
@@ -672,9 +674,9 @@ blr.W15yQC.ScannerWindow = {
         url.accessKeysFailures=0;
         url.accessKeysWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.accessKeysCount;
-      url.failuresCount=url.failuresCount+url.accessKeysFailures;
-      url.warningsCount=url.warningsCount+url.accessKeysWarnings;
+      url.itemsCount=url.itemsCount+(url.accessKeysCount>0?url.accessKeysCount : 0);
+      url.failuresCount=url.failuresCount+(url.accessKeysFailures>0?url.accessKeysFailures : 0);
+      url.warningsCount=url.warningsCount+(url.accessKeysWarnings>0?url.accessKeysWarnings : 0);
 
       if(oW15yQCResults.aTables && oW15yQCResults.aTables.length>0) {
         url.tablesCount=oW15yQCResults.aTables.length;
@@ -685,9 +687,9 @@ blr.W15yQC.ScannerWindow = {
         url.tablesFailures=0;
         url.tablesWarnings=0;
       }
-      url.itemsCount=url.itemsCount+url.tablesCount;
-      url.failuresCount=url.failuresCount+url.tablesFailures;
-      url.warningsCount=url.warningsCount+url.tablesWarnings;
+      url.itemsCount=url.itemsCount+(url.tablesCount>0?url.tablesCount : 0);
+      url.failuresCount=url.failuresCount+(url.tablesFailures>0?url.tablesFailures : 0);
+      url.warningsCount=url.warningsCount+(url.tablesWarnings>0?url.tablesWarnings : 0);
 
       url.windowDescription=blr.W15yQC.fnJoin(oW15yQCResults.sWindowDescription, oW15yQCResults.PageScore.sDescription, "\n");
       blr.W15yQC.ScannerWindow.inspectPageTitle(urlIndex);
@@ -1363,6 +1365,7 @@ blr.W15yQC.ScannerWindow = {
 
   setStateAsScanning: function() {
     // blr.W15yQC.fnLog('scanner-setStateAsScanning');
+    blr.W15yQC.bQuick = false; // Make sure this has been reset
     blr.W15yQC.ScannerWindow.stateScanning = true;
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
@@ -1446,6 +1449,7 @@ blr.W15yQC.ScannerWindow = {
         if(!result) { bCancel=true; }
       }
       if(!bCancel && blr.W15yQC.ScannerWindow.stateScanning!=true && blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+        blr.W15yQC.bQuick = false; // Make sure this has been reset
         blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
         blr.W15yQC.ScannerWindow.setStateAsScanning();
         blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
@@ -1466,6 +1470,7 @@ blr.W15yQC.ScannerWindow = {
         if(!result) { bCancel=true; }
       }
       if(!bCancel && blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+        blr.W15yQC.bQuick = false; // Make sure this has been reset
         blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
         blr.W15yQC.ScannerWindow.setStateAsScanning();
         blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
@@ -1483,6 +1488,7 @@ blr.W15yQC.ScannerWindow = {
     Components.utils.forceShrinkingGC();
 
     if(blr.W15yQC.ScannerWindow.stateStopScanningRequested!=true) {
+      blr.W15yQC.bQuick = false; // Make sure this has been reset
       blr.W15yQC.ScannerWindow.updateControlStates();
 
       blr.W15yQC.ScannerWindow.stateCurrentIndex++;
@@ -1495,6 +1501,7 @@ blr.W15yQC.ScannerWindow = {
 
       if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.ScannerWindow.selectRow(blr.W15yQC.ScannerWindow.stateCurrentIndex,true);
+        blr.W15yQC.bQuick = false; // Make sure this has been reset
         blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]); // Should this be a timer driven call?
       } else {
         blr.W15yQC.ScannerWindow.setStateAsNotScanning();
@@ -1578,6 +1585,7 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
+    blr.W15yQC.bQuick = false; // Make sure this has been reset
 
     iFrame=document.getElementById('pageBeingScannedIFrame');
     if(iFrame!=null) {
@@ -1633,6 +1641,7 @@ blr.W15yQC.ScannerWindow = {
 
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
     clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
+    blr.W15yQC.bQuick = false; // Make sure this has been reset
     blr.W15yQC.ScannerWindow.iFrameLoadEventCounter=blr.W15yQC.ScannerWindow.iFrameLoadEventCounter+1;
     if(blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad==true) {
       if(blr.W15yQC.ScannerWindow.iFrameLoadEventCounter>10 && iFrame!=null) {
@@ -1773,6 +1782,7 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.stateScanning==false && blr.W15yQC.ScannerWindow.urlList != null && blr.W15yQC.ScannerWindow.urlList.length>0) {
       selectedRow = document.getElementById('treebox').currentIndex;
       if (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
+        blr.W15yQC.bQuick = false; // Make sure this has been reset
         blr.W15yQC.ScannerWindow.setStateAsScanning();
         blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow]-1;
         blr.W15yQC.ScannerWindow.stateScanningOneLink=true;

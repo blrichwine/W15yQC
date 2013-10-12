@@ -76,14 +76,14 @@ blr.W15yQC.Highlighters = {
   },
 
   extendedHighlightLists: function (aDocumentsList) { // TODO: What about definition lists?
-    var doc, styleElement, i, lists, listIndex, div, span;
+    var doc, styleElement, j, i, lists, listIndex, div, span, listItem;
     blr.W15yQC.Highlighters.removeListHighlights(aDocumentsList);
     if (aDocumentsList != null && aDocumentsList.length > 0) {
       for (i = 0; i < aDocumentsList.length; i++) {
         doc = aDocumentsList[i].doc;
         if (doc != null && doc.body && doc.head && doc.head.firstChild) {
           styleElement = doc.createElement('style');
-          styleElement.innerHTML = 'div.w15yqcListBorder {text-align:left !important;border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{text-align:left !important;text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
+          styleElement.innerHTML = 'div.w15yqcListBorder {text-align:left !important;border: 2px solid red !important;margin:3px !important}span.w15yqcListInsert{text-align:left !important;text-indent:0px !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:0 1px 0 1px !important;padding:2px 2px 2px 2px !important;position:relative !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}dl dt,ol li,ul li, .w15yqcListItem{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
           styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
           doc.head.insertBefore(styleElement, doc.head.firstChild);
           lists = doc.getElementsByTagName('ul');
@@ -125,9 +125,15 @@ blr.W15yQC.Highlighters = {
               div.appendChild(lists[listIndex]);
             }
           }
-
         }
+        lists=null;
+        lists = doc.evaluate("//*[@role='listitem']", doc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+        for (j = lists.snapshotLength - 1; j >= 0; j--) {
+          listItem = lists.snapshotItem(j);
+          if(listItem!=null) { blr.W15yQC.fnAddClass(listItem,'w15yqcListItem'); }
+        }        
       }
+
     }
   },
 
