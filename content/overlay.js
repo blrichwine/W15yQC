@@ -958,6 +958,7 @@ ys: 'whys'
       hTxtOnlyASCII: [true,2,1,false,null],
       hTxtNotMeaninfgul: [true,1,1,false,null],
       hTxtEmpty: [true,2,1,false,null],
+      hHeadingNotUniqueInSection: [true,2,1,false,null],
       hHeadingRoleOverriddenByInheritedRole: [true,1,1,false,null],
       hHeadingRoleOverriddenByRoleAttr: [true,1,1,false,null],
       hIDNotValid: [false,1,1,false,null],
@@ -7352,7 +7353,8 @@ ys: 'whys'
     },
 
     fnAnalyzeHeadings: function (oW15yResults, progressWindow) {
-      var i, previousHeadingLevel, aHeadingsList=oW15yResults.aHeadings, aDocumentsList=oW15yResults.aDocuments, listedHeadingCount=0, firstListedHeading=true;
+      var i, previousHeadingLevel, aHeadingsList=oW15yResults.aHeadings, aDocumentsList=oW15yResults.aDocuments, listedHeadingCount=0, firstListedHeading=true,
+          j;
 
       oW15yResults.PageScore.bUsesHeadings=false;
       oW15yResults.PageScore.bHasALevelOneHeading=false;
@@ -7360,12 +7362,15 @@ ys: 'whys'
       oW15yResults.PageScore.bHasMultipleHeadings=false;
       oW15yResults.PageScore.bHasTooManyLevelOneHeadings=false;
       oW15yResults.PageScore.bHasEnoughHeadingsForContent=true;
+      oW15yResults.PageScore.bNotAllHeadingsHaveMeaningfulText=false;
+      oW15yResults.PageScore.bNotAllHeadingsInASectionAreUnique=false;
+      
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         for (i = 0; i < aHeadingsList.length; i++) {
           //aHeadingsList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aHeadingsList[i].node, aDocumentsList);
           aHeadingsList[i].stateDescription = blr.W15yQC.fnGetNodeState(aHeadingsList[i].node);
-          if (aHeadingsList[i].level == null || aHeadingsList[i].level<1) {
+          if (aHeadingsList[i].level == null || aHeadingsList[i].level<1) { // TODO: QA This - what happens if level>6?
             aHeadingsList[i].level=2; // JAWS defaults to level 2 if ARIA heading level is not specified
           }
           if (blr.W15yQC.dominantAriaRoles.test(aHeadingsList[i].inheritedRoles)) {  // TODO: QA This!
@@ -7415,6 +7420,7 @@ ys: 'whys'
           if(aHeadingsList[i].listedByAT==true) {
             if(firstListedHeading==true) {
               firstListedHeading=false;
+              
               if(oW15yResults.PageScore.bUsesHeadings==true && blr.W15yQC.bFirstHeadingMustBeLevel1==true) {
                 previousHeadingLevel = 0;
               } else {
@@ -7422,6 +7428,16 @@ ys: 'whys'
               }
             }
 
+            for (j=i+1;j<aHeadingsList.length;j++) {
+              if (aHeadingsList[j].level<aHeadingsList[i].level) {
+                break; // End of section
+              }
+              if(aHeadingsList[j].listedByAT==true && aHeadingsList[i].level==aHeadingsList[j].level &&
+                 blr.W15yQC.fnStringsEffectivelyEqual(aHeadingsList[i].effectiveLabel,aHeadingsList[j].effectiveLabel)) {
+                aHeadingsList[i].aSameTextAs.push(j+1);
+                aHeadingsList[j].aSameTextAs.push(i+1);
+              }
+            }
             if (aHeadingsList[i].level - previousHeadingLevel > 1) {
                 oW15yResults.PageScore.bHeadingHierarchyIsCorrect=false;
                 blr.W15yQC.fnAddNote(aHeadingsList[i], 'hSkippedLevel'); // QA: headings01.html
@@ -7429,8 +7445,9 @@ ys: 'whys'
             previousHeadingLevel = aHeadingsList[i].level;
           }
 
-          if (aHeadingsList[i].text == null && blr.W15yQC.fnStringHasContent(aHeadingsList.effectiveLabel)==false) {
+          if (blr.W15yQC.fnStringHasContent(aHeadingsList[i].effectiveLabel)==false) {
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtMissing'); // Not sure this can happen
+            oW15yResults.PageScore.bNotAllHeadingsHaveMeaningfulText=true;
           } else if (aHeadingsList[i].effectiveLabel.length && aHeadingsList[i].effectiveLabel.length > 0) {
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aHeadingsList[i].effectiveLabel)) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtOnlyASCII'); // QA: headings01.html
@@ -7449,6 +7466,10 @@ ys: 'whys'
             if(aDocumentsList[aHeadingsList[i].ownerDocumentNumber-1].idHashTable.getItem(aHeadingsList[i].node.getAttribute('id'))>1) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hIDNotUnique'); // QA: headings01.html
             }
+          }
+          if (aHeadingsList[i].aSameTextAs.length>0) {
+            blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingNotUniqueInSection', [aHeadingsList[i].aSameTextAs.toString()]); // TODO: QA This
+            oW15yResults.PageScore.bNotAllHeadingsInASectionAreUnique=true;
           }
         }
       }
@@ -9140,6 +9161,14 @@ ys: 'whys'
                 score=score-4;
                 sDesc=blr.W15yQC.fnJoin(sDesc,"Does not have multiple headings (-4).",' ');
               }
+              if(ps.bNotAllHeadingsHaveMeaningfulText==true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Not all headings have meaningful text (-4).",' ');
+              }
+              if(ps.bNotAllHeadingsInASectionAreUnique==true) {
+                score=score-4;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Not all headings of a given level are unique within their section (-4).",' ');
+              }
               if(ps.bHasEnoughHeadingsForContent!=true) {
                 score=score-4;
                 sDesc=blr.W15yQC.fnJoin(sDesc,"Does not have enough headings for content (-4).",' ');
@@ -9838,6 +9867,8 @@ ys: 'whys'
     this.bHeadingHierarchyIsCorrect=null;
     this.bHasEnoughHeadingsForContent=null;
     this.bHasMultipleHeadings=null;
+    this.bNotAllHeadingsHaveMeaningfulText=null;
+    this.bNotAllHeadingsInASectionAreUnique=null;
     this.bMainLandmarkContainsHeading=null;
     this.bUsesARIALandmarks=null;
     this.bHasMainLandmark=null;
@@ -9883,6 +9914,9 @@ ys: 'whys'
     bHasTooManyLevelOneHeadings: null,
     bHeadingHierarchyIsCorrect: null,
     bHasEnoughHeadingsForContent: null,
+    bHasMultipleHeadings: null,
+    bNotAllHeadingsInASectionAreUnique: null,
+    bNotAllHeadingsHaveMeaningfulText: null,
     bHasLandmarksOrMultipleHeadings: null,
     bMainLandmarkContainsHeading: null,
     bUsesARIALandmarks: null,
@@ -10089,9 +10123,18 @@ ys: 'whys'
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
+    this.ownerDocumentNumber = null;
     this.role = role;
     this.inheritedRoles = inheritedRoles;
+    this.state = null;
     this.level = level;
+    this.listedByAT = null;
+    this.aSameTextAs = [];
+    this.notes = null;
+    this.failed = false;
+    this.warning = false;
+    this.soundex=null;
+    this.stateDescription=null;
     this.effectiveLabel = effectiveLabel;
     this.effectiveLabelSource = effectiveLabelSource;
     this.text = text;
@@ -10108,6 +10151,7 @@ ys: 'whys'
     inheritedRoles: null,
     state: null,
     listedByAT: true,
+    aSameTextAs: [],
     notes: null,
     failed: false,
     warning: false,
