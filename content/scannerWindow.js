@@ -230,12 +230,6 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
     blr.W15yQC.bQuick = false; // Make sure this has been reset
-    if (blr.W15yQC.userExpertLevel<2) {
-      alert('Notice: Setting W15yQC user level to Expert. This is required for the scanner to run properly.');
-    }
-    blr.W15yQC.userExpertLevel=2;
-    Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
-    Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
@@ -1372,6 +1366,13 @@ blr.W15yQC.ScannerWindow = {
   setStateAsScanning: function() {
     // blr.W15yQC.fnLog('scanner-setStateAsScanning');
     blr.W15yQC.bQuick = false; // Make sure this has been reset
+    if (blr.W15yQC.userExpertLevel<2) {
+      blr.W15yQC.userExpertLevel=2;
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
+      alert('Notice: Setting W15yQC user level to Expert. This is required for the scanner to run properly.');
+    }
+
     blr.W15yQC.ScannerWindow.stateScanning = true;
     blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=false;
     blr.W15yQC.ScannerWindow.stateStopScanningRequested=false;
@@ -1402,7 +1403,7 @@ blr.W15yQC.ScannerWindow = {
       buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
       buttonAddNewURL=document.getElementById('button-addNewURL'),
       buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');
-
+    
     if(selectedRow==null) { selectedRow=-1;}
 
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
@@ -1603,6 +1604,7 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].contentType=iFrameDoc.contentType;
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Checking loaded URL.'+iFrameDoc.title);
         try {
+          blr.W15yQC.userExpertLevel=2;
           oW15yQCResults=blr.W15yQC.fnScannerInspect(iFrameDoc, blr.W15yQC.ScannerWindow);
           iFrame.setAttribute('src','about:blank');
           blr.W15yQC.ScannerWindow.inspectPageTitle(blr.W15yQC.ScannerWindow.stateCurrentIndex);

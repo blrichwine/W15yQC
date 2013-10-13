@@ -1565,6 +1565,7 @@ ys: 'whys'
         default:
           sLabel+=blr.W15yQC.fnGetString('menuLabelUELBasic');
           Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 0);
+          Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", false);
           break;
       }
       doc.getElementById('W15yQC_menuEntry_omUserLevel').setAttribute('label',sLabel);
