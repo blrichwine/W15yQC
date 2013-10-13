@@ -328,7 +328,7 @@ blr.W15yQC.ScannerWindow = {
     row.children[39].setAttribute('label',url.tablesWarnings);
     row.children[40].setAttribute('label',url.tablesFailures);
 
-    if (url.windowTitleNotUnique==true) {
+    if (url.windowTitleNotUnique==true || url.windowTitleNotMeaningful==true) {
       row.setAttribute('properties', 'failed');
     }
 
@@ -1313,12 +1313,24 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
-  inspectPageTitle: function(pti) { // Call when one URL is added
+  pageTitleDoesNotAppearToBeMeaningful: function(sTitle) {
+    if (blr.W15yQC.fnStringHasContent(sTitle)) {
+      sTitle=blr.W15yQC.fnCleanSpaces(sTitle);
+      if (/^(home|home *page|page|page *title|title)$/i.test(sTitle)) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  },
+  
+  inspectPageTitle: function(pti) { // Call when one URL is added, windowTitleNotMeaningful
     var i, sPageTitle, url;
     if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
       url=blr.W15yQC.ScannerWindow.urlList[pti];
       if (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize) {
         sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
+        blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(sPageTitle);
         if (blr.W15yQC.fnStringHasContent(sPageTitle)) {
           for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
             url=blr.W15yQC.ScannerWindow.urlList[i];
@@ -1346,6 +1358,7 @@ blr.W15yQC.ScannerWindow = {
         url=blr.W15yQC.ScannerWindow.urlList[i];
         if (url!=null && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize)) {
           sPageTitle=url.windowTitle;
+          blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(sPageTitle);
           if(blr.W15yQC.fnStringHasContent(sPageTitle)) {
             for (j=i+1;j<blr.W15yQC.ScannerWindow.urlList.length;j++) {
               if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[j].windowTitle)) {
@@ -1752,6 +1765,12 @@ blr.W15yQC.ScannerWindow = {
           } else {
             textbox.value = '';
           }
+          if (url.windowTitleNotMeaningful==true) {
+            textbox.value=textbox.value+"\nPage title does not appear to be meaningful.";
+          }
+          if (url.windowTitleNotUnique==true) {
+            textbox.value=textbox.value+"\nPage title is not unique.";
+          }
           textbox.value=textbox.value+"\n\nDepth:"+url.linkDepth+"\nSource:"+url.source;
         }
       }
@@ -2148,6 +2167,7 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
   this.contentType=null;
   this.windowTitle=null;
   this.windowTitleNotUnique=false;
+  this.windowTitleNotMeaningful=false;
   this.itemsCount=null;
   this.warningsCount=null;
   this.failuresCount=null;
@@ -2193,7 +2213,8 @@ blr.W15yQC.ProjectURL.prototype = {
   dateScanned: null,
   contentType: null,
   windowTitle: null,
-  windowTitleNotUnique: null,
+  windowTitleNotUnique: false,
+  windowTitleNotMeaningful: false,
   itemsCount: null,
   warningsCount: null,
   failuresCount: null,
