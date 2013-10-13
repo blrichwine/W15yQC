@@ -2084,7 +2084,7 @@ ys: 'whys'
       if(url1 != null) {
         url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
         if(bIgnoreWWW) { url1 = url1.replace(r3, '://'); }
-        url1 = url1.replace(r1, '');
+        //url1 = url1.replace(r1, '');
         url1 = url1.replace(r4, '');
 
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
@@ -2094,7 +2094,7 @@ ys: 'whys'
       if(url2 != null) {
         url2 = blr.W15yQC.fnNormalizeURL(docURL2, url2);
         if(bIgnoreWWW) { url2 = url2.replace(r3, '://'); }
-        url2 = url2.replace(r1, '');
+        //url2 = url2.replace(r1, '');
         url2 = url2.replace(r4, '');
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
           url2 = url2.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
