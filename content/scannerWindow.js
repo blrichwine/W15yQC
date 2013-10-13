@@ -328,10 +328,12 @@ blr.W15yQC.ScannerWindow = {
     row.children[39].setAttribute('label',url.tablesWarnings);
     row.children[40].setAttribute('label',url.tablesFailures);
 
-    if (url.windowTitleNotUnique==true || url.windowTitleNotMeaningful==true) {
+    if (url.windowTitleNotUnique==true) {
       row.setAttribute('properties', 'failed');
+    } else if (url.windowTitleNotMeaningful==true) {
+      row.setAttribute('properties', 'warning');
     }
-
+    
     if(bNew) {
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
@@ -554,6 +556,7 @@ blr.W15yQC.ScannerWindow = {
             blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
           }
         }
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('');
       }
     }
   },
@@ -1313,10 +1316,24 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
-  pageTitleDoesNotAppearToBeMeaningful: function(sTitle) {
+  urlAppearsToBeHomePage: function(sURL) {
+    return (/:\/\/[^\/]+(\/(~[^\/]+\/)?((index|home).[a-z]+))?$/i.test(sURL));
+  },
+  
+  wordCount: function(s) {    
+    if (blr.W15yQC.fnStringHasContent(s)) {
+      return blr.W15yQC.fnCleanSpaces(s).split(' ',10).length;
+    }
+    return 0;
+  },
+  
+  pageTitleDoesNotAppearToBeMeaningful: function(sURL, sTitle) {
     if (blr.W15yQC.fnStringHasContent(sTitle)) {
-      sTitle=blr.W15yQC.fnCleanSpaces(sTitle);
-      if (/^(home|home *page|page|page *title|title)$/i.test(sTitle)) {
+      sTitle=blr.W15yQC.fnCleanSpaces(sTitle.replace(/[^a-zA-Z0-9\s]/g,' '));
+      if (/^{*(block *title|default|default *page|default *title|default *page *title|home|home *page|main|main *page|main *page *content|page|page *title|redirect(ing)?|title|web *page|web *site|welcome)}*$/i.test(sTitle)) {
+        return true;
+      }
+      if (blr.W15yQC.ScannerWindow.urlAppearsToBeHomePage(sURL)==false && blr.W15yQC.ScannerWindow.wordCount(sTitle)<2) {
         return true;
       }
       return false;
@@ -1330,7 +1347,7 @@ blr.W15yQC.ScannerWindow = {
       url=blr.W15yQC.ScannerWindow.urlList[pti];
       if (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize) {
         sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
-        blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(sPageTitle);
+        blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(url.loc, sPageTitle);
         if (blr.W15yQC.fnStringHasContent(sPageTitle)) {
           for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
             url=blr.W15yQC.ScannerWindow.urlList[i];
@@ -1349,16 +1366,18 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotUnique=false;
       }
     }
+    blr.W15yQC.ScannerWindow.fnUpdateStatus('');
   },
 
   inspectPageTitles: function() { // Call when multiple URLs are added
     var i, j, sPageTitle, url, url2;
     if(blr.W15yQC.ScannerWindow.urlList!=null) {
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Inspecting page titles...');
       for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length-1;i++) {
         url=blr.W15yQC.ScannerWindow.urlList[i];
         if (url!=null && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize)) {
           sPageTitle=url.windowTitle;
-          blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(sPageTitle);
+          blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(url.loc, sPageTitle);
           if(blr.W15yQC.fnStringHasContent(sPageTitle)) {
             for (j=i+1;j<blr.W15yQC.ScannerWindow.urlList.length;j++) {
               if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[j].windowTitle)) {
@@ -1373,6 +1392,7 @@ blr.W15yQC.ScannerWindow = {
           blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=false;
         }
       }
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished inspecting page titles.');
     }
   },
 
