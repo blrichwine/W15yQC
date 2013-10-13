@@ -235,6 +235,9 @@
     *** FIX ASAP***
   -- Spider page titles
   -- What are meaningless page titles?
+  -- Failure: Missing 'Main' Landmark If ARIA Landmarks are used, there should be a 'Main' Landmark Really?, Should this be true if the only landmark is Application? http://test.cita.illinois.edu/aria/combobox/combobox3.php
+  -- Warning: The 'aria-autocomplete' attribute is unexpected on tag 'input'., Really? Doesn't seem to make sense. http://oaa-accessibility.org/example/12/
+  -- Warning: Element with ID='cb1-opt13' referenced by the aria-activedescendant attribute is not a descendent of the element., Should not happen if element is descendent of aria-owns, http://test.cita.illinois.edu/aria/combobox/combobox3.php
   -- need to add aria-describedby to getEffectiveLabel
   -- Project scanner does not work correctly unless in expert, non-quick mode.
   -- Log rejected links

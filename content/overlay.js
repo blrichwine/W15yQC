@@ -2765,7 +2765,7 @@ ys: 'whys'
         if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); } // TODO: Handle accented characters
         sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
 
-        if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
+        if (sText.length >= minLength) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           if (blr.W15yQC.fnAppearsToBeJunkText(sText)) { return false; }
           if (blr.W15yQC.fnAppearsToBeDefaultTableSummaryOrCaption(sText)) { return false; }
@@ -8936,7 +8936,7 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aTablesList[i], 'tblSummaryLooksLikeADefault'); //
             } else if(blr.W15yQC.fnAppearsToBeSummaryOrCaptionOnLayoutTable(aTablesList[i].summary) && aTablesList[i].bHasTHCells==false && aTablesList[i].bHasHeadersAttr==false) {
               blr.W15yQC.fnAddNote(aTablesList[i], 'tblSummaryLooksLikeLayout'); //
-            } else if(blr.W15yQC.fnIsMeaningfulTableSummaryOrCaption(aTablesList[i].summary)) {
+            } else if(blr.W15yQC.fnIsMeaningfulTableSummaryOrCaption(aTablesList[i].summary)==false) {
               blr.W15yQC.fnAddNote(aTablesList[i], 'tblSummaryNotMeaningful'); //
             }
           }
