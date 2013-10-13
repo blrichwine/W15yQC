@@ -230,6 +230,12 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
     blr.W15yQC.bQuick = false; // Make sure this has been reset
+    if (blr.W15yQC.userExpertLevel<2) {
+      alert('Notice: Setting W15yQC user level to Expert. This is required for the scanner to run properly.');
+    }
+    blr.W15yQC.userExpertLevel=2;
+    Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
+    Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
 
     blr.W15yQC.ScannerWindow.resetProjectToNew();
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
