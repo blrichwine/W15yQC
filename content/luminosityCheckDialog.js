@@ -403,7 +403,7 @@ blr.W15yQC.LuminosityCheckDialog = {
   },
 
   openColorsInContrastTool: function () {
-    var treebox, selectedRow, ak, fgC, bgC, newWin;
+    var treebox, selectedRow, ak, fgC, bgC, newWin, selectedIndex;
     treebox = document.getElementById('treebox');
     selectedRow = treebox.currentIndex;
     if (selectedRow != null && treebox.currentIndex >= 0) {
