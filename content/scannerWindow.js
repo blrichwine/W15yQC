@@ -1585,7 +1585,7 @@ blr.W15yQC.ScannerWindow = {
       Components.utils.forceShrinkingGC();
       // create new iFrame so we can get onload event notification
       // research blocking pop-ups from iframe
-      blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting for page to load: '+sURL);
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting for page to load: ('+blr.W15yQC.ScannerWindow.stateCurrentIndex+') '+sURL);
       blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=true;
       blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID=setTimeout(function () {
         blr.W15yQC.ScannerWindow.iFrameTimedOut();

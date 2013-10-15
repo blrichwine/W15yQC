@@ -780,6 +780,18 @@ ys: 'whys'
       return sNumber;
     },
 
+    fnFormatArrayAsList: function(a,def) {
+      var s;
+      if(a!=null && a.length && a.length>0) {
+        s=a.toString().replace(/(\w),(\w)/g,'$1, $2');
+      } else if (def!=null) {
+          s=def;
+      } else {
+        s='none';
+      }
+      return s;
+    },
+    
     fnCleanSpaces: function (str, bKeepNewLines) {
       if (str && str.replace) {
         if (bKeepNewLines) {
@@ -2957,8 +2969,8 @@ ys: 'whys'
           return true;
         }
         while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset' &&
-               window.getComputedStyle(node, null).getPropertyValue("display").toLowerCase() != 'none' &&
-               window.getComputedStyle(node, null).getPropertyValue("visibility").toLowerCase() != 'hidden' &&
+               (window.getComputedStyle(node, null)==null||(window.getComputedStyle(node, null).getPropertyValue("display").toLowerCase() != 'none' &&
+               window.getComputedStyle(node, null).getPropertyValue("visibility").toLowerCase() != 'hidden')) &&
                (node.hasAttribute('aria-hidden') == false || node.getAttribute('aria-hidden') == "false")) {
           node = node.parentNode;
         }
@@ -4724,6 +4736,7 @@ ys: 'whys'
                     blr.W15yQC.fnAddNote(no, 'ariaEmptyValueTextWValueNowWarning');  // TODO: QA This
                   }
                 }
+                break;
               default:
                 blr.W15yQC.fnAddNote(no, 'ariaUnrecognizedARIAAttribute', [attrName]); // TODO: QA This
                 break;
@@ -6326,6 +6339,7 @@ ys: 'whys'
       oW15yResults.PageScore.bHasMainLandmark=false;
       oW15yResults.PageScore.bMainLandmarkContainsHeading=false;
       oW15yResults.PageScore.bAllLandmarksUnique=true;
+      oW15yResults.PageScore.bLandmarksBesidesApplication=false;
 
       if (aARIALandmarksList != null && aARIALandmarksList.length && aARIALandmarksList.length>0) {
         oW15yResults.PageScore.bUsesARIALandmarks=true;
@@ -6334,6 +6348,9 @@ ys: 'whys'
         iContentInfoLandmarkCount = 0;
 
         for (i = 0; i < aARIALandmarksList.length; i++) {
+          if (/application/i.test(aARIALandmarksList[i].role)==false) {
+            oW15yResults.PageScore.bLandmarksBesidesApplication=true;
+          }
           aARIALandmarksList[i].roleAndLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aARIALandmarksList[i].effectiveLabel, aARIALandmarksList[i].role, ' '));
           aARIALandmarksList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aARIALandmarksList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aARIALandmarksList[i].roleAndLabel) : '';
         }
@@ -6397,7 +6414,7 @@ ys: 'whys'
             }
           }
         }
-        if(iMainLandmarkCount < 1) {
+        if(iMainLandmarkCount < 1 && oW15yResults.PageScore.bLandmarksBesidesApplication==true) {
           blr.W15yQC.fnAddPageLevelNote(aARIALandmarksList, 'ldmkMainLandmarkMissing'); // TODO: QA This
         } else if(iMainLandmarkCount > 1) {
           blr.W15yQC.fnAddPageLevelNote(aARIALandmarksList, 'ldmkMultipleMainLandmarks', [iMainLandmarkCount]); // TODO: QA This
@@ -6491,7 +6508,7 @@ ys: 'whys'
               } else if (lo.warning) {
                 sClass = 'warning';
               }
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', '', sNotes], sClass);
             }
           }
         }
@@ -8160,6 +8177,16 @@ ys: 'whys'
       return aLinksList;
     },
 
+    fnThreeConsecutiveInts: function(s1,s2,s3) {
+      var re=/^\d+ \d+ \d+$/;
+      if (re.test(s1+' '+s2+' '+s3)) {
+        if ((parseInt(s1)+1)==parseInt(s2) && (parseInt(s2)+1)==parseInt(s3)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
       var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, skipStatusUpdateCounter=1;
@@ -8237,8 +8264,14 @@ ys: 'whys'
           } else if (linkText.match(/^link to /i)) { // TODO: Make functions for testing for this.
             blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtBeginWithLink'); //
           } else if (blr.W15yQC.fnIsMeaningfulLinkText(linkText) == false) {
-            oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
-            blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
+            if (aLinksList.length>2 && ((i>1 && blr.W15yQC.fnThreeConsecutiveInts(aLinksList[i-2].effectiveLabel,aLinksList[i-1].effectiveLabel,aLinksList[i].effectiveLabel)) ||
+                (i>0 && i+1<aLinksList.length && blr.W15yQC.fnThreeConsecutiveInts(aLinksList[i-1].effectiveLabel,aLinksList[i].effectiveLabel,aLinksList[i+1].effectiveLabel)) ||
+                (i+2<aLinksList.length && blr.W15yQC.fnThreeConsecutiveInts(aLinksList[i].effectiveLabel,aLinksList[i+1].effectiveLabel,aLinksList[i+2].effectiveLabel)))){
+              //found sequence of numbered links.
+            } else {
+              oW15yResults.PageScore.bAllLinksHaveMeaningfulText=false;
+              blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtNotMeaningful'); //
+            }
           }
           maxRect = blr.W15yQC.fnGetMaxNodeRectangleDimensions(aLinksList[i].node);
 
@@ -9177,12 +9210,11 @@ ys: 'whys'
               score=score-20;
               sDesc=blr.W15yQC.fnJoin(sDesc,"Does not use Headings (-20).",' ');
             }
-            if(ps.bUsesARIALandmarks==true) {
+            if(ps.bUsesARIALandmarks==true && ps.bLandmarksBesidesApplication==true) {
               if(ps.bHasMainLandmark!=true) {
                 score=score-4;
                 sDesc=blr.W15yQC.fnJoin(sDesc,"Uses ARIA Landmarks, but does not have a Main Landmark (-4).",' ');
-              }
-              if(ps.bMainLandmarkContainsHeading!=true) {
+              } else if(ps.bMainLandmarkContainsHeading!=true) {
                 score=score-4;
                 sDesc=blr.W15yQC.fnJoin(sDesc,"Main ARIA Landmark does not contain a heading (-4).",' ');
               }
@@ -9465,13 +9497,13 @@ ys: 'whys'
           sDesc=blr.W15yQC.fnJoin(sDesc,'Appears to have skip navigation link(s).',"\n");
         }
         if(ariaLandmarks.length>0) {
-          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following ARIA Landmarks: '+ariaLandmarks.keys().toString()+'.', "\n")
+          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following ARIA Landmarks: '+blr.W15yQC.fnFormatArrayAsList(ariaLandmarks.keys())+'.', "\n")
         }
         if(ariaRoles.length>0) {
-          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following ARIA Roles: '+ariaRoles.keys().toString()+'.', "\n")
+          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following ARIA Roles: '+blr.W15yQC.fnFormatArrayAsList(ariaRoles.keys())+'.', "\n")
         }
         if(invalidAriaRoles.length>0) {
-          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following invalid ARIA Roles: '+invalidAriaRoles.keys().toString()+'.', "\n")
+          sDesc=blr.W15yQC.fnJoin(sDesc, 'Page contains the following invalid ARIA Roles: '+blr.W15yQC.fnFormatArrayAsList(invalidAriaRoles.keys())+'.', "\n")
         }
       }
       oW15yQCReport.iDocumentCount=documentsCount;
@@ -9872,6 +9904,7 @@ ys: 'whys'
     this.bMainLandmarkContainsHeading=null;
     this.bUsesARIALandmarks=null;
     this.bHasMainLandmark=null;
+    this.bLandmarksBesidesApplication=null;
     this.bAllLandmarksUnique=null;
     this.bAllContentContainedInLandmark=null;
     this.bHasTables=null;
@@ -9921,6 +9954,7 @@ ys: 'whys'
     bMainLandmarkContainsHeading: null,
     bUsesARIALandmarks: null,
     bHasMainLandmark: null,
+    bLandmarksBesidesApplication: null,
     bAllLandmarksUnique: null,
     bAllContentContainedInLandmark: null,
     bHasTables: null,
