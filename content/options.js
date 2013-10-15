@@ -43,7 +43,7 @@ blr.W15yQC.options = {
   fnReadPrefs: function() {
     var sDomains, aEquivDomains, aDomainPair,
         tbc, url, i,
-        treeitem, treerow, treecell;
+        treeitem, treerow, treecell, row;
 
     tbc = document.getElementById('tEquivDomainsChildren');
 
@@ -80,9 +80,7 @@ blr.W15yQC.options = {
   },
 
   fnUpdatesPrefs: function() {
-    var sDomains='', aEquivDomains, aDomainPair,
-        tbc, url, i, treerows, treecells,
-        treeitem, treerow, treecell;
+    var sDomains='', tbc, i, treerows, treecells;
 
     tbc = document.getElementById('tEquivDomainsChildren');
     treerows = tbc.getElementsByTagName('treerow');
