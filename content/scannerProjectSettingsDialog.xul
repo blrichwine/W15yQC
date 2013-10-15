@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+      id="scannerProjectSettingsDialog"
+      title="Scanner Project Settings - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+			buttons="accept,cancel"
+			buttonlabelcancel="Cancel"
+			buttonlabelaccept="OK"
+			ondialogaccept="return blr.W15yQC.scannerProjectSettingsDialog.doOK();"
+			ondialogcancel="return true;"
+			onload="blr.W15yQC.scannerProjectSettingsDialog.init(this);">
+   <xul:script>
+			var blr=this.arguments[0];
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/scannerProjectSettingsDialog.js"/>
+	 <xul:vbox>
+			<xul:hbox align="center">
+				 <xul:label value="Project Title:" control="tbTitle"/><xul:textbox id="tbTitle" flex="1" style="min-width:50em" value="" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+			</xul:hbox>
+	 <xul:groupbox>
+			<xul:caption label="URLs Must Match"/>
+			<xul:label value="Must Match List (must match at least one of the these if set)" control="tMustMatchList"/>
+			<xul:tree enableColumnDrag="false" id="tMustMatchList" flex="1" seltype="single" rows="4" hidecolumnpicker="true" onselect="blr.W15yQC.scannerProjectSettingsDialog.updateControls();">
+				 <xul:treecols>
+						<xul:treecol ordinal="1" id="col-header-matchSpec"
+							 label=" Match Specification "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 flex="6"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-type"
+							 label=" Type "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 flex="1"
+							 sortDirection="" 
+							 onclick=""/>
+				 </xul:treecols>
+				 <xul:treechildren id="tMustMatchListChildren"/>
+			</xul:tree>
+			<xul:hbox>
+				 <xul:button id="button-addMustMatch"
+					 label="Add Must Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnAddMustMatch()"/>
+				 <xul:button id="button-editMustMatch"
+					 label="Edit Must Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnEditMustMatch()"/>
+				 <xul:button id="button-deleteMustMatch"
+					 label="Delete Must Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnDeleteMustMatch()"/>
+				 <xul:spacer flex="1"/>
+			</xul:hbox>
+	 </xul:groupbox>
+	 <xul:groupbox>
+			<xul:caption label="URLs Must Not Match"/>
+			<xul:label value="Must Not Match List (must not match any of the these)" control="tMustNotMatchList"/>
+			<xul:tree enableColumnDrag="false" id="tMustNotMatchList" flex="1" seltype="single" rows="4" hidecolumnpicker="true" onselect="blr.W15yQC.scannerProjectSettingsDialog.updateControls();">
+				 <xul:treecols>
+						<xul:treecol ordinal="1" id="col-header-matchSpec"
+							 label=" Match Specification "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 flex="6"
+							 sortDirection="" 
+							 onclick=""/>
+						<xul:splitter ordinal="2" class="tree-splitter" />
+						<xul:treecol  ordinal="3" id="col-header-type"
+							 label=" Type "
+							 hidden="false"
+							 style="text-align:left"
+							 fixed="false"
+							 flex="1"
+							 sortDirection="" 
+							 onclick=""/>
+				 </xul:treecols>
+				 <xul:treechildren id="tMustNotMatchListChildren"/>
+			</xul:tree>
+			<xul:hbox>
+				 <xul:button id="button-addMustNotMatch"
+					 label="Add Must Not Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnAddMustNotMatch()"/>
+				 <xul:button id="button-editMustNotMatch"
+					 label="Edit Must Not Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnEditMustNotMatch()"/>
+				 <xul:button id="button-deleteMustNotMatch"
+					 label="Delete Must Not Match"
+					 oncommand="blr.W15yQC.scannerProjectSettingsDialog.fnDeleteMustNotMatch()"/>
+				 <xul:spacer flex="1"/>
+			</xul:hbox>
+	 </xul:groupbox>
+			<xul:checkbox label="Process Pages for URLs" id="cbParseForLinks" checked="true"/>
+			<xul:hbox align="center">
+				 <xul:label value="Maximum URL Link Depth from Original URLs:" control="tbMaxLengthDepth"/>
+				 <xul:textbox id="tbMaxLengthDepth" style="width:6em" value="5000" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+				 <xul:spacer flex="1"/>
+			</xul:hbox>
+	 </xul:vbox>    
+</xul:dialog>

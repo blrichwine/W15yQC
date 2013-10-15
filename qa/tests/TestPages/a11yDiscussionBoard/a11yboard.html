@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+	<meta charset="utf-8">
+	<title>Accessible Discussion Board</title>
+	
+	<!-- Favorites Icon -->
+	<link rel="icon" href="https://dl.dropboxusercontent.com/favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="https://dl.dropboxusercontent.com/u/137779786/discussion_module_mockup/favicon.ico" type="image/x-icon">
+	
+	<!-- OAA Tree Styles -->
+	<link rel="stylesheet" href="a11yboard_files/oaa-treeview.css">
+	
+	<!-- jQuery UI Styles -->
+	<link rel="stylesheet" href="a11yboard_files/jquery_002.css">
+	<link rel="stylesheet" href="a11yboard_files/jquery.css">
+	<!--<link rel="stylesheet" href="./css/demos.css" />-->
+	
+	<!-- jQuery -->
+	<!--<script src="./js/jquery-1.8.2.js"></script>-->
+	<script src="a11yboard_files/jquery-1.js"></script>
+	
+	<!-- Menubar, Modal -->
+	<script src="a11yboard_files/jquery_004.js"></script>
+	<script src="a11yboard_files/jquery_012.js"></script>
+	<script src="a11yboard_files/jquery_006.js"></script>
+	<script src="a11yboard_files/jquery_008.js"></script>
+	
+	<!-- Menubar -->
+	<script src="a11yboard_files/jquery.js"></script>
+	<script src="a11yboard_files/jquery_007.js"></script>
+	
+	<!-- Dialog -->
+	<script src="a11yboard_files/jquery_005.js"></script>
+	<script src="a11yboard_files/jquery_010.js"></script>
+	<script src="a11yboard_files/jquery_011.js"></script>
+	<script src="a11yboard_files/jquery_002.js"></script>
+	
+	<!-- DatePicker -->
+	<script src="a11yboard_files/jquery_003.js"></script>
+	
+	<!-- Selectmenu -->
+	<!--<script src="./js/jquery-ui/jquery.ui.selectmenu.js"></script>-->
+	
+	<!-- Accessible Select element -->
+	<!--<script src="./js/jquery.accessible.select.js"></script>-->
+	
+	<!-- OAA TreeView -->
+	<script src="a11yboard_files/oaa-jquery-treeview.js"></script>
+	
+	<!-- Collapser (http://www.aakashweb.com/jquery-plugins/collapser/) -->
+	<script src="a11yboard_files/jquery_009.js"></script>
+	
+	<!-- Discussion Board scripts -->
+	<script src="a11yboard_files/discussion_board.js"></script>
+	<script src="a11yboard_files/discussion_board-threads.js"></script>
+	<script src="a11yboard_files/discussion_board-messages.js"></script>
+	
+	<!-- jQuery Initialization -->
+	<script>
+	$(function() {
+		function menubarAlertOnSelect(event, ui) {
+			alert("Fire menubar event");
+		}
+		
+		$("#discussionBoardForumOptionsMenu").menubar({
+			//autoExpand: true,
+			menuIcon: true,
+			buttons: true,
+			position: {
+				within: $("#nonExistentID").add(window).first()
+			},
+			select: menubarAlertOnSelect
+		});
+		
+		$("#discussionBoardForumOptionsMenuDisplay").menubar({
+			//autoExpand: true,
+			menuIcon: true,
+			buttons: true,
+			position: {
+				within: $("#nonExistentID").add(window).first()
+			},
+			select: menubarAlertOnSelect
+		});
+		
+		$("#discussionBoardForumOptionsMenuFilter").menubar({
+			//autoExpand: true,
+			menuIcon: true,
+			buttons: true,
+			position: {
+				within: $("#nonExistentID").add(window).first()
+			},
+			select: menubarAlertOnSelect
+		});
+		
+		$("#discussionBoardForumOptionsMenuManage").menubar({
+			//autoExpand: true,
+			menuIcon: true,
+			buttons: true,
+			position: {
+				within: $("#nonExistentID").add(window).first()
+			},
+			select: menubarAlertOnSelect
+		});
+		
+		
+		//Prepare modal dialog contents
+		$( "#discussionBoardSearchFormAdvancedDialogContents" ).dialog({
+			autoOpen: false,
+			modal: true,
+			dialogClass: "modalAdvancedSearchDialog",
+			buttons: {
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				},
+				"Perform Search": function() {
+					alert("I should perform an advanced search");
+					$( this ).dialog( "close" );
+				}
+			}
+		});
+		
+		$( "#discussionBoardSearchFormAdvancedDialogOpener" ).click(function() {
+			$( "#discussionBoardSearchFormAdvancedDialogContents" ).dialog( "open" );
+		});
+		
+		$( "#discussionBoardSearchFormAdvancedDialog-ByDateNewer" ).datepicker({ maxDate: "+0D" });
+		$( "#discussionBoardSearchFormAdvancedDialog-ByDateOlder" ).datepicker({ maxDate: "+0D" });
+		
+		//Prepare Forum select menu
+		//$("#discussionBoardNavPaneForumsListing").selectmenu();
+		
+		//Prepare Thread Listing tree view
+		var treeviewApp = new treeview('discussionBoardNavPaneThreadListing');
+		
+		
+		//Not working when passing in children of container; need to investigate further
+		/*
+		$.fn.equalizeHeights = function() {
+			var maxHeight = this.map(function(i,e) {
+				return $(e).height();
+			}).get();
+			
+			return this.height( Math.max.apply(this, maxHeight) );
+		};
+		
+		function makeHeightsEqual(elemID) {
+			//$("#" + elemID + ":children").equalizeHeights();
+			//alert($("#" + elemID).children().length + " child elements");
+		}
+		
+		//CSS'd this for now, though it may have broken the display in IE...will investigate if there's time
+		//makeHeightsEqual("discussionBoardContentContainer");
+		*/
+	});
+	</script>
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="a11yboard_files/discussion_board.css">
+</head>
+<body>
+
+<!--
+<header role="banner" aria-label="">
+
+</header>
+
+<nav role="navigation" aria-label="Main">
+	<ul>
+		<li>Menu Item #1</li>
+		<li>Menu Item #2</li>
+		<li>Menu Item #3</li>
+	</ul>
+</nav>
+-->
+
+<!-- SECTION: MAIN DISCUSSION BOARD -->
+<h1 id="discussionBoardHeading">Accessible Discussion Board</h1>
+<section id="discussionBoardContainer" role="main" aria-labelledby="discussionBoardHeading">
+	
+	<!-- SECTION: BREADCRUMBS NAVIGATION MENU -->
+	<!--
+		NOTES:
+		1) Truncate to certain number of characters (ellipses at end)
+		2) Tooltip with full link text
+		3) BG images for arrows
+	-->
+	<nav id="discussionBoardBreadcrumbsContainer" role="navigation" aria-label="Breadcrumbs">
+		<ul id="discussionBoardBreadcrumbs">
+			<li><a href="">My home</a></li>
+			<li><a href="">My courses</a></li>
+			<li><a href="">This course</a></li>
+			<li><a href="">This discussion board</a></li>
+			<li><a href="">This Forum (e.g. Week #2 Discussion)</a></li>
+			<li><a href="">This thread (e.g. Sample Thread 1)</a></li>
+		</ul>
+	</nav> <!-- END NAV#discussionBoardBreadcrumbsContainer -->
+	
+	<div id="discussionBoardToolsContainer">
+		
+		<!-- SECTION: FORUM OPTIONS NAVIGATION MENU -->
+		<nav id="discussionBoardForumOptions" role="navigation" aria-label="Forum Options">
+			
+			<!--<a href="#" onclick="alert('TO DO: Show Forum Options Menu Toolbar');">Forum Options</a>-->
+			<!--
+			<ul id="discussionBoardForumOptionsMenu" class="menubar">
+				<li>
+					<a href="#ForumOptions">Forum Options</a>
+					<ul>
+						<li><a href="#ForumOptions-Create">Create</a></li>
+					</ul>
+				</li>
+			</ul>
+			-->
+			
+			<!-- Forum Options Menu: Display -->
+			<ul role="menubar" id="discussionBoardForumOptionsMenuDisplay" class="menubar ui-menubar ui-widget-header ui-helper-clearfix">
+				<li role="presentation" class="ui-menubar-item">
+					<a role="menuitem" class="ui-state-default ui-button-text-icon-secondary ui-button ui-widget ui-button-text-only" aria-haspopup="true" href="#ForumOptions-Display"><span class="ui-button-text">Display<span class="ui-button-icon-secondary ui-icon ui-icon-triangle-1-s"></span></span></a>
+					<ul aria-expanded="false" aria-hidden="true" style="display: none;" tabindex="0" role="menu" class="ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-1">
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-2" href="#ForumOptions-Display-GridView">Grid view</a></li>
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-3" href="#ForumOptions-Display-ListView">List view</a></li>
+					</ul>
+				</li>
+			</ul> <!-- END UL#discussionBoardForumOptionsMenuDisplay -->
+			
+			<!-- Forum Options Menu: Filter -->
+			<ul role="menubar" id="discussionBoardForumOptionsMenuFilter" class="menubar ui-menubar ui-widget-header ui-helper-clearfix">
+				<li role="presentation" class="ui-menubar-item">
+					<a role="menuitem" class="ui-state-default ui-button-text-icon-secondary ui-button ui-widget ui-button-text-only" aria-haspopup="true" href="#ForumOptions-Filter"><span class="ui-button-text">Filter<span class="ui-button-icon-secondary ui-icon ui-icon-triangle-1-s"></span></span></a>
+					<ul aria-expanded="false" aria-hidden="true" style="display: none;" tabindex="0" role="menu" class="ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-4">
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-5" href="#ForumOptions-Filter-ShowAll">Show all</a></li>
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-6" href="#ForumOptions-Filter-PublishedOnly">Published only</a></li>
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-7" href="#ForumOptions-Filter-HiddenOnly">Hidden only</a></li>
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-8" href="#ForumOptions-Filter-LockedOnly">Locked only</a></li>
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-9" href="#ForumOptions-Filter-UnavailableOnly">Unavailable only</a></li>
+						<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-10" href="#ForumOptions-Filter-DraftsOnly">Drafts only</a></li>
+					</ul>
+				</li>
+			</ul> <!-- END UL#discussionBoardForumOptionsMenuFilter -->
+			
+			<!-- Forum Options Menu: Manage -->
+			<ul role="menubar" id="discussionBoardForumOptionsMenuManage" class="menubar ui-menubar ui-widget-header ui-helper-clearfix">
+				<li role="presentation" class="ui-menubar-item">
+					<a role="menuitem" class="ui-state-default ui-button-text-icon-secondary ui-button ui-widget ui-button-text-only" aria-haspopup="true" href="#ForumOptions-Manage"><span class="ui-button-text">Manage<span class="ui-button-icon-secondary ui-icon ui-icon-triangle-1-s"></span></span></a>
+					<ul aria-expanded="false" aria-hidden="true" style="display: none;" tabindex="0" role="menu" class="ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-11">
+						<li role="presentation" class="ui-menu-item">
+							<a aria-haspopup="true" role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-12" href="#ForumOptions-PostingOptions"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span>Posting options</a>
+							<ul aria-labelledby="ui-id-12" aria-expanded="false" aria-hidden="true" role="menu" style="display: none;" class="ui-menu ui-widget ui-widget-content ui-corner-all">
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-17" href="#ForumOptions-PostingOptions-AllowAnon">Allow anonymous Posts</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-18" href="#ForumOptions-PostingOptions-AllowAuthorDeleteOwn">Allow Author to Delete Own Posts</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-19" href="#ForumOptions-PostingOptions-AllowAuthorEditOwnPublished">Allow Author to Edit Own Published Posts</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-20" href="#ForumOptions-PostingOptions-AllowTagging">Allow Post Tagging</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-21" href="#ForumOptions-PostingOptions-AllowReplyWithQuote">Allow Users to Reply with Quote</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-22" href="#ForumOptions-PostingOptions-AllowFileAttach">Allow File Attachments</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-23" href="#ForumOptions-PostingOptions-AllowCreateNewThreads">Allow Members to Create New Threads</a></li>
+							</ul>
+						</li>
+						<li role="presentation" class="ui-menu-item">
+							<a aria-haspopup="true" role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-13" href="#ForumOptions-SubscriptionOptions"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span>Subscription options</a>
+							<ul aria-labelledby="ui-id-13" aria-expanded="false" aria-hidden="true" role="menu" style="display: none;" class="ui-menu ui-widget ui-widget-content ui-corner-all">
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-24" href="#ForumOptions-SubscriptionOptions-DisableSubscriptions">Do not allow  subscriptions</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-25" href="#ForumOptions-SubscriptionOptions-SubscribeInitially">Subscribe initially</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-26" href="#ForumOptions-SubscriptionOptions-ForceSubscriptions">Subscribe forever (forced subscription)</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-27" href="#ForumOptions-SubscriptionOptions-AllowMembersSubscribeThreads">Allow members to subscribe to threads</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-28" href="#ForumOptions-SubscriptionOptions-AllowMembersSubscribeForum">Allow members to subscribe to forum</a></li>
+							</ul>
+						</li>
+						<li role="presentation" class="ui-menu-item">
+							<a aria-haspopup="true" role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-14" href="#ForumOptions-ReplyOptions"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span>Reply options</a>
+							<ul aria-labelledby="ui-id-14" aria-expanded="false" aria-hidden="true" role="menu" style="display: none;" class="ui-menu ui-widget ui-widget-content ui-corner-all">
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-29" href="#ForumOptions-ReplyOptions-IncludeBody">Include body of post in the email</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-30" href="#ForumOptions-ReplyOptions-IncludeLink">Include link to post</a></li>
+							</ul>
+						</li>
+						<li role="presentation" class="ui-menu-item">
+							<a aria-haspopup="true" role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-15" href="#ForumOptions-GradingOptions"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span>Rating and grading options</a>
+							<ul aria-labelledby="ui-id-15" aria-expanded="false" aria-hidden="true" role="menu" style="display: none;" class="ui-menu ui-widget ui-widget-content ui-corner-all">
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-31" href="#ForumOptions-GradingOptions-AllowMembersRate">Allow Members to Rate Posts</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-32" href="#ForumOptions-GradingOptions-ForceModeration">Force Moderation of Posts</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-33" href="#ForumOptions-GradingOptions-ToggleGrading">Grading On/Off</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-34" href="#ForumOptions-GradingOptions-PointsPossible">Points Possible</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-35" href="#ForumOptions-GradingOptions-GradeThreads">Grade Threads</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-36" href="#ForumOptions-GradingOptions-CollectAndGrade">Collect and Grade</a></li>
+							</ul>
+						</li> 
+						<li role="presentation" class="ui-menu-item">
+							<a aria-haspopup="true" role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-16" href="#ForumOptions-ThreadManagement"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span>Thread management</a>
+							<ul aria-labelledby="ui-id-16" aria-expanded="false" aria-hidden="true" role="menu" style="display: none;" class="ui-menu ui-widget ui-widget-content ui-corner-all">
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-37" href="#ForumOptions-ThreadManagement-MarkRead">Mark as Read</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-38" href="#ForumOptions-ThreadManagement-MarkUnread">Mark as Unread</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-39" href="#ForumOptions-ThreadManagement-SetFlag">Set Flag</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-40" href="#ForumOptions-ThreadManagement-ClearFlag">Clear Flag</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-41" href="#ForumOptions-ThreadManagement-Publish">Publish</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-42" href="#ForumOptions-ThreadManagement-Hide">Hide</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-43" href="#ForumOptions-ThreadManagement-MakeUnavailable">Make Unavailable</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-44" href="#ForumOptions-ThreadManagement-Lock">Lock</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-45" href="#ForumOptions-ThreadManagement-Unlock">Unlock</a></li>
+								<li role="presentation" class="ui-menu-item"><a role="menuitem" tabindex="-1" class="ui-corner-all" id="ui-id-46" href="#ForumOptions-ThreadManagement-ChangeAuthor">Change Author</a></li>
+							</ul>
+						</li>
+					</ul> 
+				</li>
+			</ul> <!-- END UL#discussionBoardForumOptionsMenuManage -->
+			
+		</nav> <!-- END NAV#discussionBoardForumOptions -->
+		
+		<!-- SECTION: SEARCH -->
+		<form id="discussionBoardSearchForm" method="get" action="search.html" onsubmit="alert('Submitting the search form would perform a search for: ' + this.q.value); return false;" role="search" aria-label="Search">
+			<label for="discussionBoardQ" class="element-invisible">Search discussion board</label>
+			<input name="q" id="discussionBoardQ" title="Search discussion board" type="search">
+			<button type="submit" name="searchType" value="simple">Search</button>
+			<!--<a href="#" onclick="alert('TO DO: Show Advanced Search modal dialog box');">Advanced<span class='element-invisible'> search options</span></a>-->
+			<a href="#" id="discussionBoardSearchFormAdvancedDialogOpener">Advanced<span class="element-invisible">&nbsp;search options</span> »</a>
+			
+			<!-- Advanced Search Modal Dialog Contents -->
+			
+			
+		</form> <!-- END FORM#discussionBoardSearchForm -->
+		
+	</div> <!-- END DIV#discussionBoardToolsContainer -->
+	
+	<div id="discussionBoardContentContainer">
+		
+		<!-- SECTION: FORUM/THREAD NAVIGATION (LEFT PANE) -->
+		<section id="discussionBoardNavPane" role="navigation" aria-label="Forum">
+			
+			<form id="discussionBoardNavPaneForums" method="get" action="">
+				<label for="discussionBoardNavPaneForumsListing">Forum Selection</label>
+				<select id="discussionBoardNavPaneForumsListing" name="forum" accesskey="1">
+					<option selected="selected" value="forum_001">Week 1 Discussion (no unread posts)</option>
+					<option value="forum_002">Week 2 Discussion (1 unread post)</option>
+					<option value="forum_003">Week 3 Discussion (72 unread posts)</option>
+					<option value="forum_004">Week 4 Discussion (3 unread posts)</option>
+				</select>
+				<!--<button type='submit' name='action' value='select_forum'>Go</button>-->
+			</form>
+			
+			<div id="discussionBoardNavPaneThreads" aria-live="assertive">
+				
+				<div id="discussionBoardNavPaneThreadsNotifications"></div>
+				
+				<ul id="discussionBoardNavPaneThreadListing" class="tree root-level" role="tree" aria-labelledby="discussionBoardNavPaneForumsListing" treeview-accesskey="2">
+					<li id="discussionBoardNavPaneThreadListing-Forum001-Thread1" class="tree-parent" role="treeitem" tabindex="0" accesskey="2" aria-expanded="false"><img class="headerImg" src="a11yboard_files/contracted.gif" alt="Group collapsed"><span>Morning Coffee (3<span class="element-invisible">&nbsp;unread posts</span>)</span>
+						<ul aria-hidden="true" style="display: none;" id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Group" role="group">
+							<li id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Reply1" class="tree-parent" role="treeitem" tabindex="-1" aria-expanded="false"><img class="headerImg" src="a11yboard_files/contracted.gif" alt="Group collapsed"><span>Re: Morning Coffee</span>
+								<ul aria-hidden="true" style="display: none;" id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Reply1-Group" role="group">
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Reply1-Reply1" class="tree-parent" role="treeitem" tabindex="-1" aria-expanded="false"><img class="headerImg" src="a11yboard_files/contracted.gif" alt="Group collapsed"><span>Evening Cappuccino</span>
+										<ul aria-hidden="true" style="display: none;" id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Reply1-Reply1-Group" role="group">
+											<li id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Reply1-Reply1-Reply1" role="treeitem" tabindex="-1">Tea</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li id="discussionBoardNavPaneThreadListing-Forum001-Thread1-Reply2" role="treeitem" tabindex="-1">Re: Morning Coffee</li>
+						</ul>
+					</li>
+					
+					<!-- For reference: http://www.intriguing.com/mp/_scripts/bridge.php -->
+					<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2" class="tree-parent" role="treeitem" tabindex="-1" aria-expanded="false"><img class="headerImg" src="a11yboard_files/contracted.gif" alt="Group collapsed"><span>Bridge of Death: 3 Questions</span> <!-- He who would cross the Bridge of Death must answer me these questions three, ere the other side he see -->
+						<ul aria-hidden="true" style="display: none;" id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Group" role="group">
+							<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1" class="tree-parent" role="treeitem" tabindex="-1" aria-expanded="false"><img class="headerImg" src="a11yboard_files/contracted.gif" alt="Group collapsed"><span>Not afraid, ask me your questions</span>
+								<ul aria-hidden="true" style="display: none;" id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Group" role="group">
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply1" role="treeitem" tabindex="-1">Question 1</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply2" role="treeitem" tabindex="-1">Re: Question 1</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply3" role="treeitem" tabindex="-1">Question 2</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply4" role="treeitem" tabindex="-1">Re: Question 2</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply5" role="treeitem" tabindex="-1">Question 3</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply6" role="treeitem" tabindex="-1">Re: Question 3</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply7" role="treeitem" tabindex="-1">SUCCESS!</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply1-Reply8" role="treeitem" tabindex="-1">Thank you</li>
+								</ul>
+							</li>
+							<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2" class="tree-parent" role="treeitem" tabindex="-1" aria-expanded="false"><img class="headerImg" src="a11yboard_files/contracted.gif" alt="Group collapsed"><span>That's EASY!</span>
+								<ul aria-hidden="true" style="display: none;" id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Group" role="group">
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply1" role="treeitem" tabindex="-1">Question 1</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply2" role="treeitem" tabindex="-1">Re: Question 1</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply3" role="treeitem" tabindex="-1">Question 2</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply4" role="treeitem" tabindex="-1">Re: Question 2</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply5" role="treeitem" tabindex="-1">Question 3</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply6" role="treeitem" tabindex="-1">Re: Question 3</li>
+									<li id="discussionBoardNavPaneThreadListing-Forum001-Thread2-Reply2-Reply7" role="treeitem" tabindex="-1">FAILURE!</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul> <!-- END UL#discussionBoardNavPaneThreadListing-->
+				
+			</div> <!-- END DIV#discussionBoardNavPaneThreads-->
+			
+		</section> <!-- END SECTION#discussionBoardNavPane -->
+		
+		<!-- SECTION: MESSAGE REGION (RIGHT PANE) -->
+		<section id="discussionBoardMessagePane" role="region" aria-label="Message" aria-live="assertive">
+			
+			<div id="discussionBoardMessagePaneToolsContainer">
+				<label for="discussionBoardMessagePaneTools-ThreadMode">Display Thread Mode:</label>
+				<select id="discussionBoardMessagePaneTools-ThreadMode">
+					<option selected="selected" name="default">Default</option>
+					<option name="collapse_all">Collapse All</option>
+					<option name="expand_all">Expand All</option>
+				</select>
+			</div> <!-- END DIV#discussionBoardMessagePaneToolsContainer -->
+			
+			<div id="discussionBoardMessagePaneContents">
+				<div id="discussionBoardMessagePaneContentsNotifications">« Please select a forum and thread to view in this pane</div>
+				<!--<ul id="discussionBoardMessagePaneContentsThreadListing" tabindex="0"></ul>-->
+				<div id="discussionBoardMessagePaneContentsThreadListing" tabindex="0"></div>
+			</div> <!-- END DIV#discussionBoardMessagePaneContents -->
+			
+		</section> <!-- END SECTION#discussionBoardMessagePane -->
+	</div> <!-- END DIV#discussionBoardContentContainer -->
+	
+</section> <!-- END SECTION#discussionBoardContainer -->
+
+<!--
+<footer role="contentinfo" aria-label="Footer">
+
+</footer>
+-->
+
+
+<div aria-labelledby="ui-id-47" aria-describedby="discussionBoardSearchFormAdvancedDialogContents" role="dialog" tabindex="-1" style="display: none; position: absolute;" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front modalAdvancedSearchDialog ui-dialog-buttons ui-draggable ui-resizable"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-id-47">Advanced Search Dialog</span><button title="close" aria-disabled="false" role="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">close</span></button></div><div class="ui-dialog-content ui-widget-content" id="discussionBoardSearchFormAdvancedDialogContents">
+				<label for="discussionBoardSearchFormAdvancedDialog-SearchAnywhere">Find words anywhere in the post:</label> <input id="discussionBoardSearchFormAdvancedDialog-SearchAnywhere" type="text">
+				<label for="discussionBoardSearchFormAdvancedDialog-ExactPhrase">Find exact phrase in the post:</label> <input id="discussionBoardSearchFormAdvancedDialog-ExactPhrase" type="text">
+				<label for="discussionBoardSearchFormAdvancedDialog-ExcludePhrase">Exclude the following words:</label> <input id="discussionBoardSearchFormAdvancedDialog-ExcludePhrase" type="text">
+				<label for="discussionBoardSearchFormAdvancedDialog-ByDateOlder">Find posts OLDER than:</label> <input class="hasDatepicker" id="discussionBoardSearchFormAdvancedDialog-ByDateOlder" type="text">
+				<label for="discussionBoardSearchFormAdvancedDialog-ByDateNewer">Find posts NEWER than:</label> <input class="hasDatepicker" id="discussionBoardSearchFormAdvancedDialog-ByDateNewer" type="text">
+				<label for="discussionBoardSearchFormAdvancedDialog-SpecificForum">Search specific forum(s):</label>
+				<select id="discussionBoardSearchFormAdvancedDialog-SpecificForum">
+					<option selected="selected" name="all">All Forums</option>
+					<option name="forum_001">Week 1 Discussion</option>
+					<option name="forum_002">Week 2 Discussion</option>
+					<option name="forum_003">Week 3 Discussion</option>
+					<option name="forum_004">Week 4 Discussion</option>
+				</select>
+				<label for="discussionBoardSearchFormAdvancedDialog-MessageSubject">Search message subject:</label> <input id="discussionBoardSearchFormAdvancedDialog-MessageSubject" type="text">
+				<label for="discussionBoardSearchFormAdvancedDialog-MessageAuthor">Search message author:</label> <input id="discussionBoardSearchFormAdvancedDialog-MessageAuthor" type="text">
+			</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button aria-disabled="false" role="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="button"><span class="ui-button-text">Cancel</span></button><button aria-disabled="false" role="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="button"><span class="ui-button-text">Perform Search</span></button></div></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-n"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-e"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-s"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-w"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se ui-icon-grip-diagonal-se"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-sw"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-ne"></div><div style="z-index: 1000;" class="ui-resizable-handle ui-resizable-nw"></div></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div></body></html>

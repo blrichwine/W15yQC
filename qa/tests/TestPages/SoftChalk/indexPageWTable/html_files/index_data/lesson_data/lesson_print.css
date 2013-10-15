@@ -1,0 +1,65 @@
+/*
+ * SoftChalk LessonBuilder StyleSheet (C)2006-2008
+ * SoftChalk LLC, www.softchalk.com
+ *
+ * BANNER STYLE FOR PRINT MEDIA
+ */
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #fff;
+	font-size: 1em !important;
+	text-align: left;
+}
+
+div {
+	position: static !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	width: 100% !important;
+	background-color: #fff !important;
+	color: #000 !important;
+	border: 0px none !important;
+}
+
+p, h1, h2, h3, hr, li {
+	color: #000 !important;
+}
+
+a, a:link, a:visited {
+	color: #000 !important;
+	background-color: transparent !important;
+}
+
+table {
+	border-color: #000 !important;
+	background-color: #fff !important;
+	color: #000 !important;
+}
+
+table td {
+	border-color: #000 !important;
+	background-color: #fff !important;
+	color: #000 !important;
+}
+
+table th {
+	border-color: #000 !important;
+	background-color: #fff !important;
+	color: #000 !important;
+}
+
+#banner p {
+	font-size: 12pt !important;
+}
+
+#banner p.line2 {
+	font-size: 10pt !important;
+	font-weight: normal !important;
+}
+
+#photo, #nav, #sidebar, .nav2, .top, #footer, #footer2, #report, #div45dfWo9jkDyQp5jZd, #ds45dfWo9jkDyQp5jZd, #floatingscore {
+	display: none !important;
+}

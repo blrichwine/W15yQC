@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="fragment" content="!">
+        <meta charset="utf-8">
+        <meta name="description" content="CourseNetworking is an academic social networking site. It is a different product and fills a different niche in the educational landscape.">
+        <title>history - CN Search - CourseNetworking</title>
+        <script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/main.js" data-requiremodule="main" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/home.js" data-requiremodule="views/site/index/home" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/init.js" data-requiremodule="views/node-apps/init" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/socket.js" data-requiremodule="socketio" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/now.js" data-requiremodule="nowjs" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/index.js" data-requiremodule="views/user/home/index" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/index_002.js" data-requiremodule="views/user/edit-profile/index" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/controller.js" data-requiremodule="views/search/controller" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><!-- base href="http://thecn.com/" -->
+        <!--[if IE]><script type="text/javascript">
+            // Fix for IE ignoring relative base tags.
+            (function() {
+                var baseTag = document.getElementsByTagName('base')[0];
+                baseTag.href = baseTag.href;
+            })();
+        </script><![endif]-->
+        <link rel="stylesheet" href="history%20-%20CN%20Search%20-%20CourseNetworking_files/jquery-ui-1.css" id="jqueryUi_style"><link rel="stylesheet" href="history%20-%20CN%20Search%20-%20CourseNetworking_files/jquery.css" id="fancybox_style"><link href="history%20-%20CN%20Search%20-%20CourseNetworking_files/cn.css" rel="stylesheet">
+    </head>
+    <body style="margin-right: 0px;" class="cn-windows">
+        <div id="fb-root"></div>
+        <div id="wrapper"><div class="wrap-web wrap-home" id="wrap_home">
+    <!-- head -->
+    <div class="head" id="block_head"><div class="block-head"><div class="head">
+	<div class="center web-fixed-width">
+		<h1 class="l-float sidebar-fixed-width">
+			<a class="logo text-hide" href="" title="Go to CN home">
+				theCN logo
+			</a>
+		</h1>
+		<div class="r-float content-fixed-width">
+			<div class="l-float" id="block_search_box"><div class="block-search"><input class="search_input always_allow" placeholder="Search..." type="text">
+<a id="search_bt" class="text-hide bt-search always_allow" href="javascript:;">Search</a></div></div>
+			<div class="l-float" id="block_alert_box"><div class="block-alert"><div class="block-alert-item-wrap block_alert_item_wrap"><div class="item _item"><div class="head _head">
+    <a class="text-hide icon-alert icon-alert-chat load_message always_allow" href="javascript:;" data-type="chat">
+        chat
+    </a>
+    <div class="alert-box-item-count-wrap alert_box_item_count_wrap">
+        
+    </div>
+</div>
+<div class="main chat-main _main">
+
+</div>
+</div><div class="item _item"><div class="head _head">
+    <a class="text-hide icon-alert icon-alert-colleague load_message always_allow" href="javascript:;" data-type="request">
+        colleague
+    </a>
+    <div class="alert-box-item-count-wrap alert_box_item_count_wrap">
+        
+    </div>
+</div>
+<div class="main colleague-main _main">
+
+</div>
+</div><div class="item _item"><div class="head _head">
+    <a class="text-hide icon-alert icon-alert-email load_message always_allow" href="javascript:;" data-type="email">
+        email
+    </a>
+    <div class="alert-box-item-count-wrap alert_box_item_count_wrap">
+        
+    </div>
+</div>
+<div class="main email-main _main">
+
+</div>
+</div><div class="item _item"><div class="head _head">
+    <a class="text-hide icon-alert icon-alert-notification load_message always_allow" href="javascript:;" data-type="notification">
+        notification
+    </a>
+    <div style="display: block;" class="alert-box-item-count-wrap alert_box_item_count_wrap"><b>1
+</b></div>
+</div>
+<div class="main notification-main _main">
+
+</div>
+</div>
+    
+    <div class="item" title="RememberIt">
+        <div class="head no-border-r">
+            <a class="text-hide icon-alert icon-alert-remember" href="http://thecn.com/content/remember">
+                remember
+            </a>
+    <!--		 <b>8</b> -->
+        </div>
+        <div class="main">
+
+        </div>
+    </div>
+    <div class="clear"></div>
+</div></div></div>
+			<div class="r-float" id="block_master_menu"><div class="block-master-menu"><div class="item item-course">
+    <div class="title">
+        <a class="show_my_courses icon-arrow-down sub-menu sub-course always_allow" href="javascript:;">
+            Courses
+        </a>
+    </div>
+</div>
+<div class="item">
+    <div class="title">
+        <a href="http://thecn.com/user">
+            Home
+        </a>
+    </div>
+</div>
+<div class="item item-settings">
+    <div class="title">
+        <a class="show_my_settings icon-arrow-down sub-menu sub-set always_allow" href="javascript:;">
+            Brian Richwine
+        </a>
+    </div>
+</div>
+<div class="clear"></div></div></div>
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+</div></div>
+    <!-- /head -->
+
+    <!-- main -->
+    <div class="main">
+
+        <!-- center -->
+        <div class="center">
+            <div class="web-fixed-width">
+                <div class="l-float" id="block_sidebar"><div class="sidebar-home sidebar-web sidebar-fixed-width"><div class="top" id="block_section_profile"><div class="block-section-profile"><div class="sidebar l-float">
+	<a href="http://thecn.com/BR17">
+        <img class="avatar_url_50a0a502b5ba4c242400002f" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Brian Richwine">
+    </a>
+    <div style="position: relative;" id="block_upload_avatar_button_box"><a style="position: relative; z-index: 0;" id="upload_avatar" class="have_not_flash" href="javascript:;">(<u>upload photo</u>)</a><div class="plupload_list"></div><div class="plupload html5" style="position: absolute; background: none repeat scroll 0% 0% transparent; width: 69px; height: 10px; overflow: hidden; z-index: -1; opacity: 0; top: 0px; left: 0px;" id="p17nr5uspt6pqob014od1jif16ds7_html5_container"><input id="p17nr5uspt6pqob014od1jif16ds7_html5" style="font-size: 999px; position: absolute; width: 100%; height: 100%;" accept="image/bmp,image/jpeg,image/png,image/gif" multiple="multiple" type="file"></div></div>
+</div>
+<div class="content l-float">
+	<div class="top">
+		<a href="http://thecn.com/BR17" title="Brian Richwine"><b>Brian Richwine</b></a>
+		<a href="http://thecn.com/user/edit">(<u>edit</u>)</a>
+	</div>
+	<div class="bottom">
+		<div class="l-float anar-wrap">
+			<div class="head">
+				<span>CN#</span> <b>BR17</b>
+			</div>
+			<div class="main">
+				<a class="anar-18-20 load_about_anar_window" href="javascript:;">105</a>
+			</div>
+		</div>
+		<!-- <div class="r-float online-wrap">
+			<div class="block-online-opera">
+				<div class="head">
+					<span class="icon-onlie-opera icon-onlie-opera-on">Online</span>
+				</div>
+				<div class="main">
+					<ul>
+						<li>
+							<span class="icon-onlie-opera icon-onlie-opera-away">Away</span>
+						</li>
+						<li>
+							<span class="icon-onlie-opera icon-onlie-opera-busy">Busy</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div> -->
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="clear"></div></div></div>
+<div class="bottom">
+	<div class="box" id="block_social_network"><div class="social-network block-list-type-one"><dl>
+	<dt>
+		<b>SOCIAL NETWORK</b>
+		<a class="icon-mark text-hide load_hint_social_networking_window" href="javascript:;" title="About CN Social Network">
+            About CN Social Network
+        </a>
+	</dt>
+	<dd>
+		<a class="always_allow" href="http://thecn.com/user/contents/followers">Followers</a>
+		<span><a href="http://thecn.com/user/social/followers">0</a></span>
+		<div class="clear"></div>
+	</dd>
+	<dd>
+		<a class="always_allow" href="http://thecn.com/user/contents/following">Following</a>
+		<span><a href="http://thecn.com/user/social/following">0</a></span>
+		<div class="clear"></div>
+	</dd>
+	<dd>
+		<a class="always_allow" href="http://thecn.com/user/contents/colleagues">Colleagues</a>
+		<span><a href="http://thecn.com/user/social/colleagues">0</a></span>
+		<div class="clear"></div>
+	</dd>
+	<dd id="block_create_personal_list">
+		<a class="create_personal_list" href="javascript:;">Create a Personal Network</a>
+		<div class="clear"></div>
+	</dd>
+	<dd>
+		<a id="invite_friends" href="javascript:;">Invite Friends to CN</a>
+		<div class="clear"></div>
+	</dd>
+    <dd>
+		<a id="load_invite_status" href="javascript:;">Invitation Status</a>
+		<div class="clear"></div>
+	</dd>
+</dl>
+</div></div>
+<!--	<div class="box" id="block_apps_box">
+		
+	</div>-->
+	<div class="box" id="block_member_wall"><div class="block-member-wall">
+	<div class="head">
+		<span class="l-float">MOST RECENT</span>
+		<span class="right r-float">
+			<i class="icon-online"></i>
+			<b>STATUS:</b>
+			<a id="member_wall_refresh_btn" href="javascript:;">ONLINE</a>
+		</span>
+		<div class="clear"></div>
+	</div>
+	<div class="main">
+		<div class="top">
+			<ul style="display: block;" id="block_member_wall_list"><li><a class="avatar show_card" href="http://thecn.com/FD16" data-online="true" data-id="FD16" data-type="cn_number">
+	<img class="avatar_url_5102bbd0b5ba4c9941000015" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/11836217d43b5404efc08472e2f0f016.jpg" alt="Felicia  Delgado">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/FD16" data-type="cn_number" data-id="FD16"><b>FD16</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/SH74" data-online="true" data-id="SH74" data-type="cn_number">
+	<img class="avatar_url_512557f0b5ba4c9030000001" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Sarah Hanks">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/SH74" data-type="cn_number" data-id="SH74"><b>SH74</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/KS28" data-online="true" data-id="KS28" data-type="cn_number">
+	<img class="avatar_url_50512f3db5ba4c3476000007" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/10a5573a03c7b586fdf8bd84adf4fc7c.jpg" alt="Key$ha♔♡ Malik $tyle$">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/KS28" data-type="cn_number" data-id="KS28"><b>KS28</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/CT20" data-online="true" data-id="CT20" data-type="cn_number">
+	<img class="avatar_url_50eb8f45b5ba4cd60a000004" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/10c69ce3b0d3e623a9c900663e5b75dc.jpg" alt="Chynna Triska">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/CT20" data-type="cn_number" data-id="CT20"><b>CT20</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/AF31" data-online="true" data-id="AF31" data-type="cn_number">
+	<img class="avatar_url_50ef366fb5ba4ce82c000020" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Amy Fuel">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/AF31" data-type="cn_number" data-id="AF31"><b>AF31</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/AA86" data-online="true" data-id="AA86" data-type="cn_number">
+	<img class="avatar_url_510b06f0b5ba4cbe0e0007c9" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/c85fd730e42af85ec700d3b0d8aaf0f4.jpg" alt="Abdulaziz Alhrabi">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/AA86" data-type="cn_number" data-id="AA86"><b>AA86</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/MS99" data-online="true" data-id="MS99" data-type="cn_number">
+	<img class="avatar_url_5109c7f1b5ba4cbc5a0005d9" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/1786591250741d919eacda3209577f0b.JPG" alt="Min Suh">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/MS99" data-type="cn_number" data-id="MS99"><b>MS99</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/BP30" data-online="true" data-id="BP30" data-type="cn_number">
+	<img class="avatar_url_5110433db5ba4c1b43000008" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/bc6808de3ca06ae6c911ba4340232b7e.JPG" alt="Brandon Peoples">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/BP30" data-type="cn_number" data-id="BP30"><b>BP30</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/AB99" data-online="true" data-id="AB99" data-type="cn_number">
+	<img class="avatar_url_5112d114b5ba4cd84c000001" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/9d6bcdeeb5381d208013e34d36475298.jpg" alt="Angie Bailey">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/AB99" data-type="cn_number" data-id="AB99"><b>AB99</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/AB69" data-online="true" data-id="AB69" data-type="cn_number">
+	<img class="avatar_url_50f6bdbdb5ba4c8702000001" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/dfe83ef2735f734a7f1af78964d9455a.jpg" alt="Andre  Bradley ">
+    <span class="icon-online">online</span>
+</a>
+<a class="show_card" href="http://thecn.com/AB69" data-type="cn_number" data-id="AB69"><b>AB69</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/SM82" data-online="false" data-id="SM82" data-type="cn_number">
+	<img class="avatar_url_5111ca9ab5ba4cb31c000001" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Samuel Manning">
+</a>
+<a class="show_card" href="http://thecn.com/SM82" data-type="cn_number" data-id="SM82"><b>SM82</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/CT45" data-online="false" data-id="CT45" data-type="cn_number">
+	<img class="avatar_url_51361828b5ba4c7109000005" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="ChiehLin  Tsai">
+</a>
+<a class="show_card" href="http://thecn.com/CT45" data-type="cn_number" data-id="CT45"><b>CT45</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/TE21" data-online="false" data-id="TE21" data-type="cn_number">
+	<img class="avatar_url_51108a1fb5ba4cf656000002" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/dbcc9280a9525e80dca792ece7821cb6.jpg" alt="Taulby Edmondson">
+</a>
+<a class="show_card" href="http://thecn.com/TE21" data-type="cn_number" data-id="TE21"><b>TE21</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/AY16" data-online="false" data-id="AY16" data-type="cn_number">
+	<img class="avatar_url_51170a8bb5ba4c627500002d" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/6adcd31398ac181e7d12cc296abb47be.JPG" alt="Aimen Younis">
+</a>
+<a class="show_card" href="http://thecn.com/AY16" data-type="cn_number" data-id="AY16"><b>AY16</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/AH83" data-online="false" data-id="AH83" data-type="cn_number">
+	<img class="avatar_url_51105e31b5ba4c3c4a000023" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/ec662ef3c31ac9025b9aa9e636ba53e4.PNG" alt="Adam Hughes">
+</a>
+<a class="show_card" href="http://thecn.com/AH83" data-type="cn_number" data-id="AH83"><b>AH83</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/CH71" data-online="false" data-id="CH71" data-type="cn_number">
+	<img class="avatar_url_5135e091b5ba4ce37b000014" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/874b4465a24522b0fce3bc7248cfcd8c.JPG" alt="Hsini Chen">
+</a>
+<a class="show_card" href="http://thecn.com/CH71" data-type="cn_number" data-id="CH71"><b>CH71</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/SB61" data-online="false" data-id="SB61" data-type="cn_number">
+	<img class="avatar_url_5102bbceb5ba4cf840000017" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/09b60bfedd2fae68062556286a4e7551.JPG" alt="Samuel Joe Brummer">
+</a>
+<a class="show_card" href="http://thecn.com/SB61" data-type="cn_number" data-id="SB61"><b>SB61</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/YW11" data-online="false" data-id="YW11" data-type="cn_number">
+	<img class="avatar_url_503e90d1f8d746dc5a000005" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Yun Wu">
+</a>
+<a class="show_card" href="http://thecn.com/YW11" data-type="cn_number" data-id="YW11"><b>YW11</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/ME28" data-online="false" data-id="ME28" data-type="cn_number">
+	<img class="avatar_url_511815f2b5ba4cbd15000008" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/1aa93e102b290c88ac62e1d272076124.JPG" alt="Mike Ekoniak">
+</a>
+<a class="show_card" href="http://thecn.com/ME28" data-type="cn_number" data-id="ME28"><b>ME28</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/CC96" data-online="false" data-id="CC96" data-type="cn_number">
+	<img class="avatar_url_51253febb5ba4c0c2c000067" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/4239e615accbe96daa2e14188d982934.jpg" alt="Catharine Cowan">
+</a>
+<a class="show_card" href="http://thecn.com/CC96" data-type="cn_number" data-id="CC96"><b>CC96</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/GS24" data-online="false" data-id="GS24" data-type="cn_number">
+	<img class="avatar_url_50f5651cb5ba4cfd41000001" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Garland Shaw">
+</a>
+<a class="show_card" href="http://thecn.com/GS24" data-type="cn_number" data-id="GS24"><b>GS24</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/RS60" data-online="false" data-id="RS60" data-type="cn_number">
+	<img class="avatar_url_51129ce0b5ba4cb041000004" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/7fbac3c6a144b83abc93767b37da3d33.png" alt="Raul Saucedo">
+</a>
+<a class="show_card" href="http://thecn.com/RS60" data-type="cn_number" data-id="RS60"><b>RS60</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/IV10" data-online="false" data-id="IV10" data-type="cn_number">
+	<img class="avatar_url_5112646fb5ba4c8237000006" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/e9c584ef9b73ec000d67bd175dca144a.jpg" alt="Ivette Valenzuela">
+</a>
+<a class="show_card" href="http://thecn.com/IV10" data-type="cn_number" data-id="IV10"><b>IV10</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/SW32" data-online="false" data-id="SW32" data-type="cn_number">
+	<img class="avatar_url_50eda871b5ba4c2052000007" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/c0dd95fd89eeb529527f81aaaaf0cc1d.JPG" alt="Stephanie Wilhite">
+</a>
+<a class="show_card" href="http://thecn.com/SW32" data-type="cn_number" data-id="SW32"><b>SW32</b></a>
+</li><li><a class="avatar show_card" href="http://thecn.com/SH70" data-online="false" data-id="SH70" data-type="cn_number">
+	<img class="avatar_url_510afd96b5ba4c040e0001c3" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/gender.png" alt="Sean Henrici">
+</a>
+<a class="show_card" href="http://thecn.com/SH70" data-type="cn_number" data-id="SH70"><b>SH70</b></a>
+</li></ul>
+		</div>
+		<div class="bottom">
+			<a id="member_wall_show_more_btn" href="javascript:;">SHOW MORE</a>
+		</div>
+	</div>
+</div></div>
+</div></div></div>
+                <div class="l-float" id="block_content"><div class="content-web content-fixed-width"><div class="block-search-wrap">
+	<div class="head" id="block_search_app"><div class="block-box-type-four block-search-app"><div class="block-box-head head">
+    <h3>Search theCN.com</h3>
+    <div class="clear"></div>
+</div>
+<div class="main">
+    <input class="always_allow" id="input_search" value="history" placeholder="Type keyword here..." type="text">
+    <div class="operate">
+        <button class="bt-search-app  always_allow" data-type="user">
+            Search Members
+        </button>
+        <button class="bt-search-app  always_allow" data-type="content">
+            Search Posts
+        </button>
+        <button class="bt-search-app bt-search-app-on always_allow" data-type="course">
+            Search Courses
+        </button>
+        <button class="bt-search-app  always_allow" data-type="conexus">
+            Search Conexus
+        </button>
+        <input id="type_search" value="course" type="hidden">
+    </div>
+</div></div></div>
+	<div class="main">
+		<div class="block-box-type-one block-social-network">
+            <div class="block-box-head head">
+                <h3>CN Courses</h3>
+                <div class="clear"></div>
+            </div>
+            <div class="foot" id="block_search_list"><ul><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/8999114">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/52c2d2c89ebab565111b324f58f26f94.jpg" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/8999114" data-id="50e71805b5ba4cff34000003" data-type="course">
+                    History of Interiors and Furniture SP13 INTR 20400
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://www.iupui.edu/" target="_blank">
+                            IUPUI
+                        </a>
+                    </span>
+			</div>
+			<div class="main">8999114</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  Any CN member
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+			<ul>
+                
+				<li>
+                    <a class="flag"><img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/United-States-US-248.png" title="United States" alt="United States"></a>
+				</li>
+                
+				<!-- <li>
+					<a class="icon-top icon-top-remove delete" href="javascript:;">Remove</a>
+				</li> -->
+			</ul>
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/3207606">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/13308eb08817f9f12025a2e4dcc83277.jpg" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/3207606" data-id="50bcedbaf8d746ba36000000" data-type="course">
+                    MUS Z320 32366 History of Electronic Music
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://www.iupui.edu/" target="_blank">
+                            IUPUI
+                        </a>
+                    </span>
+			</div>
+			<div class="main">3207606</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  PIN
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+			<ul>
+                
+				<li>
+                    <a class="flag"><img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/United-States-US-248.png" title="United States" alt="United States"></a>
+				</li>
+                
+				<!-- <li>
+					<a class="icon-top icon-top-remove delete" href="javascript:;">Remove</a>
+				</li> -->
+			</ul>
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/9787047">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/eee11c7eba7e6306e7d605672e33dfe1.jpg" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/9787047" data-id="50991d8ef8d746927b000001" data-type="course">
+                    History of Electronic Music MUS Z320 32366
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://www.iupui.edu/" target="_blank">
+                            IUPUI
+                        </a>
+                    </span>
+			</div>
+			<div class="main">9787047</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  Email request
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+			<ul>
+                
+				<li>
+                    <a class="flag"><img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/United-States-US-248.png" title="United States" alt="United States"></a>
+				</li>
+                
+				<!-- <li>
+					<a class="icon-top icon-top-remove delete" href="javascript:;">Remove</a>
+				</li> -->
+			</ul>
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/7128104">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/default.png" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/7128104" data-id="504275ebb5ba4c1b1d00006e" data-type="course">
+                    American History
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://fhonw.k12.in.us/" target="_blank">
+                            First Hight School of Nowhere
+                        </a>
+                    </span>
+			</div>
+			<div class="main">7128104</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  Any CN member
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+			<ul>
+                
+				<li>
+                    <a class="flag"><img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/United-States-US-248.png" title="United States" alt="United States"></a>
+				</li>
+                
+				<!-- <li>
+					<a class="icon-top icon-top-remove delete" href="javascript:;">Remove</a>
+				</li> -->
+			</ul>
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/8128100">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/default.png" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/8128100" data-id="4fd638fab5ba4c0d4a000006" data-type="course">
+                    US History
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://www.danville.ki2.in.us/" target="_blank">
+                            Danville High School
+                        </a>
+                    </span>
+			</div>
+			<div class="main">8128100</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  No one
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/2195100">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/9214e5d7cff423f22a40089283c96bba.jpg" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/2195100" data-id="4fa98b3eb5ba4c767a000009" data-type="course">
+                    History of Interiors &amp; Furniture
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://iupui.edu/" target="_blank">
+                            iupui.edu
+                        </a>
+                    </span>
+			</div>
+			<div class="main">2195100</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  No one
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+			<ul>
+                
+				<li>
+                    <a class="flag"><img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/United-States-US-248.png" title="United States" alt="United States"></a>
+				</li>
+                
+				<!-- <li>
+					<a class="icon-top icon-top-remove delete" href="javascript:;">Remove</a>
+				</li> -->
+			</ul>
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/5148101">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/default.png" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/5148101" data-id="4f7ca266b5ba4c9843000000" data-type="course">
+                    History of Philanthropy
+                </a>
+                    <span>
+                        <a class="link_bypass" href="http://www.iupui.edu/" target="_blank">
+                            iupui.edu
+                        </a>
+                    </span>
+			</div>
+			<div class="main">5148101</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  Any CN member
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+		</td>
+	</tr>
+</tbody></table>
+</div></li><li><div class="block-items-view"> 
+<table>
+	<tbody><tr>
+		<td class="column-one">
+			<a class="c-logo" href="http://thecn.com/9128100">
+				<img src="history%20-%20CN%20Search%20-%20CourseNetworking_files/default.png" alt="">
+			</a>
+		</td>
+		<td class="column-two">
+			<div class="head">
+				<a class="show_card" href="http://thecn.com/9128100" data-id="4f68f49791d4080342000020" data-type="course">
+                    History 
+                </a>
+                    <span>
+                        <a class="link_bypass" target="_blank">
+                            11638
+                        </a>
+                    </span>
+			</div>
+			<div class="main">9128100</div>
+			<div class="foot">
+				<span>Access Setting:</span>
+				<strong>
+					  No one
+				</strong>
+			</div>
+		</td>
+		<td class="column-three">
+		</td>
+	</tr>
+</tbody></table>
+</div></li></ul></div>
+        </div>
+	</div>
+    <div class="foot" id="block_search_more_operation"></div>
+</div></div></div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <!-- /center -->
+        
+        <!-- bottom -->
+        <div id="block_foot"><div class="block-foot"><div class="head">
+	<div class="web-fixed-width">
+		<ul class="l-float">
+			<li>
+				<a class="text_terms_of_use" href="javascript:;">
+					Terms of Use
+				</a>
+			</li>
+			<li>
+				<a class="text_privacy_policy" href="javascript:;">
+					Privacy Policy
+				</a>
+			</li>
+			<li>
+				<a href="mailto:help@theCN.com">
+					help@theCN.com
+				</a>
+			</li>
+		</ul>
+		<p class="r-float">
+			Copyright © 2011-13.  CourseNetworking LLC.  All rights reserved.
+		</p>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="foot">
+	<div class="web-fixed-width">
+		<p class="r-float">
+			Rumi: V3.1.6 Beta,  Apr 3, 2013
+		</p>
+		<div class="clear"></div>
+	</div>
+</div></div></div></div></div></div>
+        <script src="history%20-%20CN%20Search%20-%20CourseNetworking_files/ga.js" async="" type="text/javascript"></script><script type="text/javascript" src="history%20-%20CN%20Search%20-%20CourseNetworking_files/require-jquery.js"></script>
+        <script type="text/javascript">
+            window.CN_DEBUG = false;
+            window.CN_API_HOST = '';
+            window.STATIC_FILE_HOST = 'http://d2z8znphybti6g.cloudfront.net/static/201304031700/';
+            window.CN_URL_ARGS = window.CN_DEBUG ? ('bust=' + new Date().getTime()) : '';
+            window.cn = (function() {
+                var _cache = {};
+                var _log = [];//Ex. [{"category":"chat", "message":"test message", "time":"2013-03-20 10:07"}]
+                var _err = [];//Ex. the same as log
+
+                var _logLog = function(message, category, collection) {
+                    var timeNow = new Date();
+                    collection.push({
+                        message: message,
+                        category: category ? category : "default",
+                        time: timeNow.getHours() + ":" + timeNow.getMinutes() + ":" + timeNow.getSeconds()
+                    });
+                };
+
+                var _formatLog = function(collection) {
+                    var alertMessage = '';
+                    for (var i = 0; i < collection.length; i++)
+                    {
+                        alertMessage += collection[i].time + " " + collection[i].category + ": " + collection[i].message;
+                        alertMessage += "\n";
+                    }
+
+                    return alertMessage;
+                };
+
+                return {
+                    get: function(key) {
+                        return _cache[key];
+                    },
+                    set: function(key, value) {
+                        _cache[key] = value;
+                    },
+                    log: function(message, category) {
+                        _logLog(message, category, _log);
+                        if (console && window.CN_DEBUG)
+                        {
+                            if (category)
+                                console.log("#" + category + "#: " + message);
+                            else
+                                console.log(message);
+                        }
+                    },
+                    error: function(message, category) {
+                        _logLog(message, category, _err);
+                        if (console && window.CN_DEBUG)
+                        {
+                            if (category)
+                                console.error("#" + category + "#: " + message);
+                            else
+                                console.error(message);
+                        }
+                    },
+                    showLog: function() {
+                        if (console)
+                            console.log(_formatLog(_log));
+                        else
+                            alert(_formatLog(_log));
+                    },
+                    showError: function() {
+                        if (console)
+                            console.log(_formatLog(_err));
+                        else
+                            alert(_formatLog(_err));
+                    },
+                    cleanLog: function() {
+                        _log = [];
+                    },
+                    cleanError: function() {
+                        _err = [];
+                    }
+                };
+            })();
+            window.CN_CONFIG = {
+                baseUrl: "http://d2z8znphybti6g.cloudfront.net/static/201304031700/js/",
+                urlArgs: window.CN_URL_ARGS,
+                waitSeconds: 15,
+                deps: ["main"],
+                paths: {
+                    //jquery: 'libs/jquery/jquery-min',
+                    jquery:  'empty:',
+                    json2: 'libs/json2/json2',
+                    underscore: [
+                        'libs/underscore/underscore-min',
+                        'http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.3/underscore-min'
+                    ],
+                    backbone: [
+                        'libs/backbone/backbone-min',
+                        'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min'
+                    ],
+                    mustache: [
+                        'libs/mustache/mustache',
+                        'http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min'
+                    ],
+                    text: 'libs/require/text',
+                    templates: '../templates',
+                    /* Backbone plugins */
+                    backboneLayoutManager: 'plugins/backbone.layoutmanager',
+                    /* Jquery plugins */
+                    jqueryUi: 'plugins/jquery.ui/require',
+                    jqueryScrollPagination: 'plugins/jquery.cn.scrollpagination',
+                    jquerySerializeObject: 'plugins/jquery.serializeObject.min',
+                    jqueryFancybox: 'ui/fancybox/source/require',
+                    jqueryFancyMedia: 'ui/fancybox/source/helpers/jquery.fancybox-media.min',
+                    jquerySharrre: 'plugins/jquery.sharrre/full',
+                    jcrop: 'ui/jcrop/js/jquery.Jcrop.min',
+                    jqueryAutoTextArea: 'plugins/jquery.cn.autoTextarea',
+                    plupload: 'ui/plupload/plupload',
+                    pluploadFull: 'ui/plupload/plupload.full',
+                    pluploadBrowserplus: 'ui/plupload/plupload.browserplus',
+                    pluploadFlash: 'ui/plupload/plupload.flash',
+                    pluploadGears: 'ui/plupload/plupload.gears',
+                    pluploadHtml4: 'ui/plupload/plupload.html4',
+                    pluploadHtml5: 'ui/plupload/plupload.html5',
+                    pluploadSilverlight: 'ui/plupload/plupload.silverlight',
+                    jwplayer: 'ui/jwplayer/jwplayer',
+                    jwplayerHtml5: 'ui/jwplayer/jwplayer.html5',
+                    amplify: 'plugins/cn-amplify/jquery.amplify.min',
+                    cookie: 'plugins/cn-amplify/cookie.min',
+                    cnamplify: 'plugins/cn-amplify/cn-amplify',
+                    editor: 'plugins/editor/editor',
+                    dateFormat: 'plugins/date.format',
+                    /* Node modules */
+                    nowjs: 'http://thecn.com:8080/nowjs/now', //'http://t3.com:8080/nowjs/now',
+                    socketio: 'http://thecn.com:8080/socket.io/socket.io'//'http://t3.com:8080/socket.io/socket.io'
+                },
+                shim: {
+                    'backbone': {
+                        deps: ['underscore', 'jquery'],
+                        exports: 'Backbone'
+                    },
+                    'underscore': {
+                        deps: ['jquery'],
+                        exports: '_'
+                    },
+                    'backboneLayoutManager': ['backbone'],
+                    'jqueryUi': ['jquery'],
+                    'jqueryScrollPagination': ['jquery'],
+                    'jquerySerializeObject': ['jquery'],
+                    'jqueryFancybox': ['jquery'],
+                    'jqueryFancyMedia': ['jquery', 'jqueryFancybox'],
+                    'jcrop': ['jquery'],
+                    'amplify': ['jquery', 'json2'],
+                    'cnamplify': ['jquery', 'json2', 'amplify', 'cookie'],
+                    'jqueryAutoTextArea': ['jquery'],
+                    'plupload': ['jquery'],
+                    'pluploadFull': ['jquery'],
+                    'pluploadBrowserplus': ['jquery', 'plupload'],
+                    'pluploadFlash': ['jquery', 'plupload'],
+                    'pluploadGears': ['jquery', 'plupload'],
+                    'pluploadHtml4': ['jquery', 'plupload'],
+                    'pluploadHtml5': ['jquery', 'plupload'],
+                    'pluploadSilverlight': ['jquery', 'plupload'],
+                    'jwplayer': ['jquery'],
+                    'jwplayerHtml5': ['jquery', 'jwplayer'],
+                    'nowjs': ['socketio']
+                },
+                facebook: {
+                    appId: '216000381800259'//cndev: 348431525260908 //thecn: 216000381800259
+                },
+                twitter: {
+                    appId: '2Zo2cstrfHtntlPuK4uhQ'//cndev MdsjWCQWmqmR4Qk6t71pPA //thecn: 2Zo2cstrfHtntlPuK4uhQ
+                },
+                nodeApps: {
+                    enable: true
+                }
+            };
+            window.CN_REQUIRE_ERROR = false;
+            require.config(window.CN_CONFIG);
+            requirejs.onError = function (err) {
+                if ('timeout'==err.requireType){
+                    var loadingElement = document.getElementById('loading_wrap');
+                    if( ! window.CN_REQUIRE_ERROR)
+                    {
+                        if(loadingElement)
+                        {
+                            window.CN_REQUIRE_ERROR = true;
+                            var url = window.location.href;
+                            var indexOfParam = url.indexOf('?');
+                            var reloadTime =1;
+                            if(indexOfParam>-1)
+                            {
+                                var paraString = url.substring(indexOfParam, url.length);
+                                var params = paraString.substr(1).split('&'); 
+                                var paraObj = {} 
+                                for(var i=0, len=params.length; len>i; i++)
+                                {
+                                     var j = params[i];
+                                     paraObj[j.substring(0, j.indexOf('='))] = j.substring(j.indexOf('=')+1, j.length); 
+                                }
+                                reloadTime = paraObj['reload'] = ('undefined'!=typeof(paraObj['reload'])) ? ( parseInt(paraObj['reload']) + 1) : 1;
+                                var tmps = [];  
+                                for (var key in paraObj)  
+                                    tmps.push(key + '=' + paraObj[key]);  
+                                url = url.replace(paraString, '?'+tmps.join('&'));
+                            }
+                            else
+                                url = url+'?reload='+reloadTime;
+ 
+                            if(4>reloadTime)
+                                window.location.href = url;
+                            else
+                                loadingElement.innerHTML = '<h1 style="font-size:18px;text-align: center; margin-top: 20px;">Server connection timeout, click <a href="javascript:;" onClick="document.location.reload(true)">here</a> to refresh your page now.</h1>';
+                        }
+                        else
+                        {
+                            if(confirm('Server connection timed out, please refresh your page to try again.'))
+                            {
+                                window.CN_REQUIRE_ERROR = true;
+                                window.location.reload();
+                            }
+                        }
+                    }
+                }
+            };
+        </script>
+        <script type="text/javascript">
+            if (!window.CN_DEBUG)
+            {
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', 'UA-29468807-1']);
+                _gaq.push(['_setDomainName', 'thecn.com']);
+                _gaq.push(['_trackPageview']);
+                (function() {
+                    var ga = document.createElement('script');
+                    ga.type = 'text/javascript';
+                    ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(ga, s);
+                })();
+            }
+        </script>
+    
+
+<div class="chat-form-minimize-wrap"><div class="l-float icon display-none _icon">
+    <a class="text-hide icon-alert icon-alert-chat " data-type="chat" href="javascript:;">CHATS</a>
+    <b class="number _number" data-status="false"></b>
+    <div class="clear"></div>
+</div>
+<div class="l-float list _list">
+    <ul class="_item">
+
+    </ul>
+</div>
+<div class="clear"></div></div></body></html>

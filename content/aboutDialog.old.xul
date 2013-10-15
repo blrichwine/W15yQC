@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:dialog
+	 id="aboutDialog"
+	 title="About - W15y Quick Check"
+	 xmlns:html="http://www.w3.org/1999/xhtml"
+	 xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	 ondialogaccept=""
+	 ondialogcancel=""
+	 buttons="accept" 
+	 onload="">
+	 <xul:vbox id="aboutDialog">
+			<xul:description value="W15y Quick Check" class="name"/>
+			<xul:description value="Version 1.0 - Beta 23" class="version"/>
+			<xul:description value="Released:" class="title"/>
+			<xul:description value="February 24, 2013" class="text"/>
+			<xul:description value="Author:" class="title"/>
+			<xul:description value="Brian Richwine" class="text"/>
+			<xul:description value="Homepage:" class="title"/>
+			<xul:description onclick="window.open('http://blrichwine.github.com/W15yQC/index.html')" class="url">http://blrichwine.github.com/W15yQC/index.html</xul:description>
+	 </xul:vbox>
+	 <xul:separator class="groove"/>
+</xul:dialog>

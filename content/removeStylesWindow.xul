@@ -9,14 +9,17 @@
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 			width="1200"
 			height="600"
+			onkeydown="blr.W15yQC.RemoveStylesWindow.windowOnKeyDown(this,event)"
+			onkeyup="blr.W15yQC.RemoveStylesWindow.windowOnKeyUp(event)"
 			onresize="blr.W15yQC.RemoveStylesWindow.forceMinSize(this)"
       onload="blr.W15yQC.RemoveStylesWindow.init(this)">
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/RemoveStylesWindow.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/removeStylesWindow.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
 			<xul:hbox id="top-toolbar" align="left">
+				 <xul:checkbox id="chkbox-showSemantics" label="Show Semantics" checked="false" oncommand="blr.W15yQC.RemoveStylesWindow.toggleShowSemantics()"/>
 				 <xul:button id="button-printReport"
 					 label="Print"
 					 oncommand="blr.W15yQC.RemoveStylesWindow.printReport()"/>

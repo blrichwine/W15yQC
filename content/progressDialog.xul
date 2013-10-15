@@ -6,6 +6,30 @@
 	 id="progressDialog"
 	 title="Report Progress - W15y Quick Check"
 	 xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	 <xul:script type="application/javascript">
+
+			function fnUpdateStatus(sLabel) {
+				document.getElementById('detailText').value=sLabel;
+				document.getElementById('percent').setAttribute('hidden','true');
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnUpdatePercentage(fPercentage) {
+				document.getElementById('percent').value=fPercentage;
+				document.getElementById('percent').setAttribute('hidden','false');
+				blr.W15yQC.fnDoEvents();
+			}
+
+			function fnUpdateProgress(sLabel, fPercentage) {
+				 document.getElementById('detailText').value=(sLabel==null ? '' : sLabel);
+				if(fPercentage != null) {
+				 document.getElementById('percent').value=fPercentage;
+				 document.getElementById('percent').setAttribute('hidden','false');
+				} else {
+					document.getElementById('percent').setAttribute('hidden','true');
+				}
+			}
+	 </xul:script>
 	 <xul:hbox id="w15yQCProgressDialog">
 			<xul:vbox flex="1" width="400" height="60" style="margin:10px">
 				 <xul:description id="titleText">Report Progress:</xul:description>
