@@ -105,6 +105,10 @@
 		 label="View Report"
 		 oncommand="blr.W15yQC.DocumentsDialog.generateReportHTML();"
 		 accesskey=""/>
+         <xul:button id="button-inspectElement"
+		     label="Inspect Element"
+		     oncommand="blr.W15yQC.DocumentsDialog.inspectElement();"
+		     accesskey=""/>
 	 <xul:button id="button-validateContents"
 		 label="Validate Document DOM"
 		 oncommand="blr.W15yQC.DocumentsDialog.validateDocumentContents();"

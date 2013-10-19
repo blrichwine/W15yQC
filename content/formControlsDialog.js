@@ -42,7 +42,6 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.FormControlsDialog = {
-  FirebugO: null,
   aDocumentsList: null,
   aFormsList: null,
   aFormControlsList: null,
@@ -356,11 +355,7 @@ blr.W15yQC.FormControlsDialog = {
   init: function (dialog) {
     var oW15yQCReport;
     blr.W15yQC.fnReadUserPrefs();
-
-    blr.W15yQC.FormControlsDialog.FirebugO = dialog.arguments[1];
-    if (blr.W15yQC.FormControlsDialog.FirebugO == null || !blr.W15yQC.FormControlsDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
-    }
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.FormControlsDialog.aDocumentsList = oW15yQCReport.aDocuments;
@@ -385,7 +380,6 @@ blr.W15yQC.FormControlsDialog = {
     blr.W15yQC.FormControlsDialog.aDocumentsList = null;
     blr.W15yQC.FormControlsDialog.aFormControlsList = null;
     blr.W15yQC.FormControlsDialog.aFormsList = null;
-    blr.W15yQC.FormControlsDialog.FirebugO = null;
     blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = null;
     blr.W15yQC.FormControlsDialog.aLastList = null;
     blr.W15yQC.FormControlsDialog.aDisplayOrder1 = null;
@@ -821,9 +815,8 @@ blr.W15yQC.FormControlsDialog = {
   },
 
 
-  showInFirebug: function () {
-    var treebox, aList, selectedRow, selectedIndex, order;
-    if (blr.W15yQC.FormControlsDialog.FirebugO != null) {
+  inspectElement: function () {
+    var treebox, aList, selectedRow, selectedIndex, order, node;
       try {
         if (blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length && blr.W15yQC.FormControlsDialog.aFormControlsList.length > 0) {
           if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
@@ -848,16 +841,11 @@ blr.W15yQC.FormControlsDialog = {
           if (blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
           }
-          aList[selectedIndex].node.ownerDocument.defaultView.focus();
-          void
-          function (arg) {
-            blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(aList[selectedIndex].node);
+          node=aList[selectedIndex].node;
+          node.ownerDocument.defaultView.focus();
+          blr.W15yQC.inspectNode(node);
         }
       } catch (ex) {}
-    }
   },
 
   moveToSelectedElement: function () {
@@ -906,7 +894,7 @@ blr.W15yQC.FormControlsDialog = {
   },
 
   generateReportHTML: function () {
-    blr.W15yQC.openHTMLReportWindow(blr.W15yQC.FormControlsDialog.FirebugO, 'forms');
+    blr.W15yQC.openHTMLReportWindow(false,'forms');
   }
 
 };

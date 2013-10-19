@@ -178,12 +178,7 @@ blr.W15yQC.FramesDialog = {
     var oW15yQCReport;
 
     blr.W15yQC.fnReadUserPrefs();
-    if (dialog != null && dialog.arguments && dialog.arguments.length > 1) {
-      blr.W15yQC.FramesDialog.FirebugO = dialog.arguments[1];
-    }
-    if (blr.W15yQC.FramesDialog.FirebugO == null || !blr.W15yQC.FramesDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
-    }
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
 
@@ -381,9 +376,8 @@ blr.W15yQC.FramesDialog = {
 
 
 
-  showInFirebug: function () {
-    var treebox, selectedRow, selectedIndex;
-    if (blr.W15yQC.FramesDialog.FirebugO != null && blr.W15yQC.FramesDialog.FirebugO.GlobalUI != null) {
+  inspectElement: function () {
+    var treebox, selectedRow, selectedIndex, node;
       try {
         if (blr.W15yQC.FramesDialog.aFramesList != null && blr.W15yQC.FramesDialog.aFramesList.length && blr.W15yQC.FramesDialog.aFramesList.length > 0) {
           treebox = document.getElementById('treebox');
@@ -393,16 +387,11 @@ blr.W15yQC.FramesDialog = {
           }
           selectedIndex=blr.W15yQC.FramesDialog.aDisplayOrder[selectedRow];
           blr.W15yQC.fnResetHighlights(blr.W15yQC.FramesDialog.aDocumentsList);
-          blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node.ownerDocument.defaultView.focus();
-          void
-          function (arg) {
-            blr.W15yQC.FramesDialog.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.FramesDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node);
+          node=blr.W15yQC.FramesDialog.aFramesList[selectedIndex].node;
+          node.ownerDocument.defaultView.focus();
+          blr.W15yQC.inspectNode(node);
         }
       } catch (ex) {}
-    }
   },
 
   moveToSelectedElement: function () {
@@ -427,7 +416,7 @@ blr.W15yQC.FramesDialog = {
   },
 
   generateReportHTML: function () {
-    blr.W15yQC.openHTMLReportWindow(blr.W15yQC.FramesDialog.FirebugO, 'frames');
+    blr.W15yQC.openHTMLReportWindow(false,'frames');
   }
 
 };

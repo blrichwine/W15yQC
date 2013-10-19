@@ -147,6 +147,7 @@ blr.W15yQC.DocumentsDialog = {
     var oW15yQCReport;
 
     blr.W15yQC.fnReadUserPrefs();
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.DocumentsDialog.aDocumentsList = oW15yQCReport.aDocuments;
@@ -320,7 +321,7 @@ blr.W15yQC.DocumentsDialog = {
 
 
   generateReportHTML: function () {
-    blr.W15yQC.openHTMLReportWindow(blr.W15yQC.DocumentsDialog.FirebugO, 'documents');
+    blr.W15yQC.openHTMLReportWindow(false,'documents');
   },
 
   validateDocumentContents: function () {
@@ -357,6 +358,19 @@ blr.W15yQC.DocumentsDialog = {
     }
   },
 
+  inspectElement: function () {
+    var treebox = document.getElementById('treebox'),
+      selectedRow = treebox.currentIndex, selectedIndex, node;
+    if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.DocumentsDialog.aDisplayOrder[selectedRow];
+      node = blr.W15yQC.DocumentsDialog.aDocumentsList[selectedIndex].doc.documentElement;
+      if (node!=null) {
+        //blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
+        blr.W15yQC.inspectNode(node);
+      }
+    }
+  },
+  
   validateDocumentURL: function () {
     var treebox = document.getElementById('treebox'),
       selectedRow = treebox.currentIndex, selectedIndex,

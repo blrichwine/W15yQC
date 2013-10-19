@@ -203,9 +203,9 @@
 					 label="View Report"
 					 oncommand="blr.W15yQC.FormControlsDialog.generateReportHTML();"
 					 accesskey=""/>
-				 <xul:button id="button-showInFirebug"
-					 label="Show in Firebug"
-					 oncommand="blr.W15yQC.FormControlsDialog.showInFirebug();"
+				 <xul:button id="button-inspectElement"
+					 label="Inspect Element"
+					 oncommand="blr.W15yQC.FormControlsDialog.inspectElement();"
 					 accesskey=""/>
 				 <xul:button id="button-moveToSelectedElement"
 					 label="Scroll To"

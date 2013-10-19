@@ -232,10 +232,17 @@
       Inspect the QA file for a verified date
       Compare the verify date with cutoff date
 
+  Integration with Firefox Inspector
+    -- Detecting if inspector is enabled:
+      pref("devtools.inspector.enabled", true);
+      
     *** FIX ASAP***
+  -- HTML report, inspector dialog should pass source document when called from inspector dialogs.
   -- Spider page titles
   -- What are meaningless page titles?
   -- Landmark nesting. Main landmark should not be nested in other landmarks.
+  -- how many landmarks is too many?
+  -- how deeply nested for landmarks is too much?
   -- Multiple heading page count rule should only apply when a minimum amount of content is present.
   -- Failure: Missing 'Main' Landmark If ARIA Landmarks are used, there should be a 'Main' Landmark Really?, Should this be true if the only landmark is Application? http://test.cita.illinois.edu/aria/combobox/combobox3.php
   -- Warning: The 'aria-autocomplete' attribute is unexpected on tag 'input'., Really? Doesn't seem to make sense. http://oaa-accessibility.org/example/12/

@@ -154,9 +154,9 @@
 					 label="Highlight Tables"
 					 oncommand="blr.W15yQC.TablesDialog.highlightTables();"
 					 accesskey=""/>
-				 <xul:button id="button-showInFirebug"
-					 label="Show in Firebug"
-					 oncommand="blr.W15yQC.TablesDialog.showInFirebug();"
+				 <xul:button id="button-inspectElement"
+					 label="Inspect Element"
+					 oncommand="blr.W15yQC.TablesDialog.inspectElement();"
 					 accesskey=""/>
 				 <xul:button id="button-moveToSelectedElement"
 					 label="Scroll To"

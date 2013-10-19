@@ -1,8 +1,19 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+
+<!-- 
+//
+// This file is part of W15yQC
+// 
+// Written by Brian Richwine (blrichwine at gmail dot com)
+//    
+-->
+
 <!DOCTYPE overlay SYSTEM "chrome://W15yQC/locale/overlay.dtd">
 <overlay id="W15yQC-overlay"
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+
   <script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
   <script type="application/x-javascript" src="chrome://W15yQC/content/highlighters.js"/>
   <stringbundleset id="stringbundleset">
@@ -12,28 +23,28 @@
     <menu class="menu-iconic" id="W15yQC_menu" label="&W15yQCLabel;" image="chrome://W15yQC/skin/W15yQCIcon16x16.png">
       <menupopup onpopupshowing="blr.W15yQC.fnInitMainMenuPopup(document)">
         <menuitem id="W15yQC_menuEntry_quickCheck" label="Quick Check"
-                  oncommand="blr.W15yQC.openHTMLReportWindow(true, window.top.content.document);"/>
+                  oncommand="blr.W15yQC.openHTMLReportWindow(true, '', window.top.content.document);"/>
         <menuitem id="W15yQC_menuEntry_fullReport" label="Full Report"
-                  oncommand="blr.W15yQC.openHTMLReportWindow(false, window.top.content.document);"/>
+                  oncommand="blr.W15yQC.openHTMLReportWindow(false, '', window.top.content.document);"/>
         <menuseparator/>
         <menuitem id="W15yQC_menuEntry_accessKeysDialog" accesskey="K" label="Access Keys"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('accessKeys');"/>
         <menuitem id="W15yQC_menuEntry_landmarksDialog" accesskey="A" label="ARIA Landmarks"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('ariaLandmarks',Firebug);});}else{blr.W15yQC.openDialog('ariaLandmarks',null);}}catch(ex){blr.W15yQC.openDialog('ariaLandmarks',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
         <menuitem id="W15yQC_menuEntry_documentsDialog" accesskey="D" label="Documents"
                   oncommand="blr.W15yQC.openDialog('documents');"/>
         <menuitem id="W15yQC_menuEntry_formControlsDialog" accesskey="C" label="Form Controls"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('formControls',Firebug);});}else{blr.W15yQC.openDialog('formControls',null);}}catch(ex){blr.W15yQC.openDialog('formControls',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('formControls');"/>
         <menuitem id="W15yQC_menuEntry_framesDialog" accesskey="F" label="Frames"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('frames',Firebug);});}else{blr.W15yQC.openDialog('frames',null);}}catch(ex){blr.W15yQC.openDialog('frames',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('frames');"/>
         <menuitem id="W15yQC_menuEntry_headingsDialog" accesskey="H" label="Headings"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('headings',Firebug);});}else{blr.W15yQC.openDialog('headings',null);}}catch(ex){blr.W15yQC.openDialog('headings',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('headings');"/>
         <menuitem id="W15yQC_menuEntry_imagesDialog" accesskey="I" label="Images"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('images',Firebug);});}else{blr.W15yQC.openDialog('images',null);}}catch(ex){blr.W15yQC.openDialog('images',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('images');"/>
         <menuitem id="W15yQC_menuEntry_linksDialog" accesskey="L" label="Links"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}else{blr.W15yQC.openDialog('links',null);}}catch(ex){blr.W15yQC.openDialog('links',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('links');"/>
         <menuitem id="W15yQC_menuEntry_tablesDialog" accesskey="T" label="Tables"
-                  oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('tables',Firebug);});}else{blr.W15yQC.openDialog('tables',null);}}catch(ex){blr.W15yQC.openDialog('tables',null);}"/>
+                  oncommand="blr.W15yQC.openDialog('tables');"/>
         <menu id="W15yQC_menuEntry_highlightersMenu" accesskey="g" label="Highlighters">
           <menupopup onpopupshowing="">
             <menuitem id="W15yQC_menuEntry_highlightLandmarks" accesskey="a" label="ARIA Landmarks"
@@ -63,9 +74,9 @@
             <menuitem id="W15yQC_menuEntry_focusHighlighter" accesskey="f" label="Focus Tracker"
                       oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
             <menuitem id="W15yQC_menuEntry_contrastCheckerDialog" accesskey="o" label="Contrast Checker"
-                      oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
+                      oncommand="blr.W15yQC.openDialog('lumCheck');"/>
             <menuitem id="W15yQC_menuEntry_idsChecker" accesskey="p" label="Problem IDs Checker"
-                      oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
+                      oncommand="blr.W15yQC.openDialog('idsCheck');"/>
           </menupopup>
         </menu>
         <menuseparator/>
@@ -93,19 +104,19 @@
   </toolbarpalette>
 
   <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="W15yTPB-HTMLQuickReport" label="&W15yQCLabel;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportWindow(true, window.top.content.document);" />
-    <toolbarbutton id="W15yTPB-HTMLFullReport" label="&W15yQCFullReport;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportWindow(false, window.top.content.document);" />
+    <toolbarbutton id="W15yTPB-HTMLQuickReport" label="&W15yQCLabel;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportWindow(true, '', window.top.content.document);" />
+    <toolbarbutton id="W15yTPB-HTMLFullReport" label="&W15yQCFullReport;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportWindow(false, '', window.top.content.document);" />
     <toolbarbutton id="W15yTPB-InspectorDialogs" label="Inspectors" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
-          <menuitem id="W15yTPBMI-AccessKeysDialog" accesskey="" label="Access Keys" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('accessKeys',Firebug);});}else{blr.W15yQC.openDialog('accessKeys',null);}}catch(ex){blr.W15yQC.openDialog('accessKeys',null);}"/>
-          <menuitem id="W15yTPBMI-LandmarksDialog" accesskey="" label="ARIA Landmarks" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('ariaLandmarks',Firebug);});}else{blr.W15yQC.openDialog('ariaLandmarks',null);}}catch(ex){blr.W15yQC.openDialog('ariaLandmarks',null);}"/>
+          <menuitem id="W15yTPBMI-AccessKeysDialog" accesskey="" label="Access Keys" oncommand="blr.W15yQC.openDialog('accessKeys');"/>
+          <menuitem id="W15yTPBMI-LandmarksDialog" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
           <menuitem id="W15yTPBMI-DocumentsDialog" accesskey="" label="Documents" oncommand="blr.W15yQC.openDialog('documents');"/>
-          <menuitem id="W15yTPBMI-FormsDialog" accesskey="" label="Forms" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('formControls',Firebug);});}else{blr.W15yQC.openDialog('formControls',null);}}catch(ex){blr.W15yQC.openDialog('formControls',null);}"/>
-          <menuitem id="W15yTPBMI-FramesDialog" accesskey="" label="Frames" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('frames',Firebug);});}else{blr.W15yQC.openDialog('frames',null);}}catch(ex){blr.W15yQC.openDialog('frames',null);}"/>
-          <menuitem id="W15yTPBMI-HeadingsDialog" accesskey="" label="Headings" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('headings',Firebug);});}else{blr.W15yQC.openDialog('headings',null);}}catch(ex){blr.W15yQC.openDialog('headings',null);}"/>
-          <menuitem id="W15yTPBMI-ImagesDialog" accesskey="" label="Images" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('images',Firebug);});}else{blr.W15yQC.openDialog('images',null);}}catch(ex){blr.W15yQC.openDialog('images',null);}"/>
-          <menuitem id="W15yTPBMI-LinksDialog" accesskey="" label="Links" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('links',Firebug);});}else{blr.W15yQC.openDialog('links',null);}}catch(ex){blr.W15yQC.openDialog('links',null);}"/>
-          <menuitem id="W15yTPBMI-TablesDialog" accesskey="" label="Tables" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('tables',Firebug);});}else{blr.W15yQC.openDialog('tables',null);}}catch(ex){blr.W15yQC.openDialog('tables',null);}"/>
+          <menuitem id="W15yTPBMI-FormsDialog" accesskey="" label="Forms" oncommand="blr.W15yQC.openDialog('formControls');"/>
+          <menuitem id="W15yTPBMI-FramesDialog" accesskey="" label="Frames" oncommand="blr.W15yQC.openDialog('frames');"/>
+          <menuitem id="W15yTPBMI-HeadingsDialog" accesskey="" label="Headings" oncommand="blr.W15yQC.openDialog('headings');"/>
+          <menuitem id="W15yTPBMI-ImagesDialog" accesskey="" label="Images" oncommand="blr.W15yQC.openDialog('images');"/>
+          <menuitem id="W15yTPBMI-LinksDialog" accesskey="" label="Links" oncommand="blr.W15yQC.openDialog('links');"/>
+          <menuitem id="W15yTPBMI-TablesDialog" accesskey="" label="Tables" oncommand="blr.W15yQC.openDialog('tables');"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Highlighters" label="Highlighters" type="menu" onmouseover="" class="toolbarbutton">
@@ -121,11 +132,11 @@
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Tools" label="Tools" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="blr.W15yQC.fnInitToolsToolbarMenuPopup(document)">
-          <menuitem id="W15yTPBMI-ContrastChecker" accesskey="" label="Contrast Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('lumCheck',Firebug);});}else{blr.W15yQC.openDialog('lumCheck',null);}}catch(ex){blr.W15yQC.openDialog('lumCheck',null);}"/>
+          <menuitem id="W15yTPBMI-ContrastChecker" accesskey="" label="Contrast Checker" oncommand="blr.W15yQC.openDialog('lumCheck');"/>
           <menuitem id="W15yTPBMI-ContrastTool" accesskey="" label="Contrast Tool" oncommand="blr.W15yQC.openDialog('contrast');"/>
           <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Semantic View" oncommand="blr.W15yQC.fnRemoveStyles();"/>
           <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
-          <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="try{if(Firebug){Firebug.GlobalUI.startFirebug(function(){blr.W15yQC.openDialog('idsCheck',Firebug);});}else{blr.W15yQC.openDialog('idsCheck',null);}}catch(ex){blr.W15yQC.openDialog('idsCheck',null);}"/>
+          <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="blr.W15yQC.openDialog('idsCheck');"/>
           <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Project Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
       </menupopup>
     </toolbarbutton>

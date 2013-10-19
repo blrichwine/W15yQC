@@ -100,9 +100,9 @@
 				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="10" flex="1" />
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
-				 <xul:button id="button-showInFirebug"
-					 label="Show in Firebug"
-					 oncommand="blr.W15yQC.badIDsDialog.showInFirebug();"
+				 <xul:button id="button-inspectElement"
+					 label="Inspect Element"
+					 oncommand="blr.W15yQC.badIDsDialog.inspectElement();"
 					 accesskey=""/>
 				 <xul:button id="button-moveToSelectedElement"
 					 label="Scroll To"

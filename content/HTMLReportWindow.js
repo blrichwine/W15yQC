@@ -42,7 +42,6 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.HTMLReportWindow = {
-  FirebugO: null,
   sReports: null,
   prompts: null,
   bCmdIsPressed: false,
@@ -57,7 +56,6 @@ blr.W15yQC.HTMLReportWindow = {
     blr.W15yQC.fnReadUserPrefs();
 
     if (dialog && dialog.arguments && dialog.arguments.length) {
-      if (dialog.arguments.length > 1) blr.W15yQC.HTMLReportWindow.FirebugO = dialog.arguments[1];
       if (dialog.arguments.length > 2) blr.W15yQC.HTMLReportWindow.sReports = dialog.arguments[2];
       if (dialog.arguments.length > 3) blr.W15yQC.HTMLReportWindow.bQuick = dialog.arguments[3];
       if (dialog.arguments.length > 4) blr.W15yQC.HTMLReportWindow.sourceDocument = dialog.arguments[4];
@@ -107,38 +105,6 @@ blr.W15yQC.HTMLReportWindow = {
       blr.W15yQC.HTMLReportWindow.rd = null;
       blr.W15yQC.HTMLReportWindow.sReports = null;
       blr.W15yQC.HTMLReportWindow.prompts = null;
-      blr.W15yQC.HTMLReportWindow.FirebugO = null;
-    }
-  },
-
-  showInFirebug: function () {
-    var treebox, aList, selectedRow;
-    if (blr.W15yQC.HTMLReportWindow.FirebugO != null) {
-      try {
-        if (blr.W15yQC.HTMLReportWindow.aFormControlsList != null && blr.W15yQC.HTMLReportWindow.aFormControlsList.length && blr.W15yQC.HTMLReportWindow.aFormControlsList.length > 0) {
-          if (blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus != null) {
-            treebox = blr.W15yQC.HTMLReportWindow.oLastTreeviewToHaveFocus;
-            aList = blr.W15yQC.HTMLReportWindow.aLastList;
-          } else {
-            treebox = document.getElementById('treebox2');
-            aList = blr.W15yQC.HTMLReportWindow.aFormControlsList;
-          }
-          selectedRow = treebox.currentIndex;
-          if (selectedRow == null || treebox.currentIndex < 0) {
-            selectedRow = 0;
-          }
-          if (blr.W15yQC.HTMLReportWindow.aDocumentsList != null) {
-            blr.W15yQC.fnResetHighlights(blr.W15yQC.HTMLReportWindow.aDocumentsList);
-          }
-          aList[selectedRow].node.ownerDocument.defaultView.focus();
-          void
-          function (arg) {
-            blr.W15yQC.HTMLReportWindow.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.HTMLReportWindow.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(aList[selectedRow].node);
-        }
-      } catch (ex) {}
     }
   },
 

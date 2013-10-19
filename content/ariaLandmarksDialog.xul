@@ -122,9 +122,9 @@
 					 label="Highlight Landmarks"
 					 oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.LandmarksDialog.aDocumentsList,blr.W15yQC.LandmarksDialog.aARIALandmarksList);"
 					 accesskey=""/>
-				 <xul:button id="button-showInFirebug"
-					 label="Show in Firebug"
-					 oncommand="blr.W15yQC.LandmarksDialog.showInFirebug();"
+				 <xul:button id="button-inspectElement"
+					 label="Inspect Element"
+					 oncommand="blr.W15yQC.LandmarksDialog.inspectElement();"
 					 accesskey=""/>
 				 <xul:button id="button-moveToSelectedElement"
 					 label="Scroll To"

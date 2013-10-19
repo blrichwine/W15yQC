@@ -145,9 +145,9 @@
 		 </xul:hbox>
 	 </xul:vbox>
 	 <xul:hbox id="box-button" align="right">
-			<xul:button id="button-showInFirebug"
-				label="Show in Firebug"
-				oncommand="blr.W15yQC.LuminosityCheckDialog.showInFirebug();"
+			<xul:button id="button-inspectElement"
+				label="Inspect Element"
+				oncommand="blr.W15yQC.LuminosityCheckDialog.inspectElement();"
 				accesskey=""/>
 			<xul:button id="button-moveToSelectedElement"
 				label="Scroll To"

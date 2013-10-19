@@ -46,7 +46,6 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.RemoveStylesWindow = {
-  FirebugO: null,
   bCmdIsPressed: false,
   aDocumentsList: null,
   aHeadingsList: null,
@@ -60,8 +59,7 @@ blr.W15yQC.RemoveStylesWindow = {
     var metaElements, i, styleElement, rd, if1;
 
     blr.W15yQC.fnReadUserPrefs();
-    blr.W15yQC.RemoveStylesWindow.FirebugO = dialog.arguments[1];
-    blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[2];
+    blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[1];
     blr.W15yQC.Highlighters.removeAllHighlights(blr.W15yQC.fnGetDocuments(blr.W15yQC.RemoveStylesWindow.srcDoc));
     if1 = document.getElementById("HTMLReportIFrame");
     blr.W15yQC.RemoveStylesWindow.rd = if1.contentDocument;

@@ -33,16 +33,15 @@
  */
 "use strict";
 
-if (!blr) {
-  var blr = {};
-}
+if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 /*
  * Object:  QuickW15yLandmarksDialog
  * Returns:
  */
+
+(function() {
 blr.W15yQC.LandmarksDialog = {
-  FirebugO: null,
   aDocumentsList: null,
   aARIALandmarksList: null,
   aDisplayOrder: [],
@@ -169,10 +168,7 @@ blr.W15yQC.LandmarksDialog = {
     var oW15yQCReport;
 
     blr.W15yQC.fnReadUserPrefs();
-    blr.W15yQC.LandmarksDialog.FirebugO = dialog.arguments[1];
-    if (blr.W15yQC.LandmarksDialog.FirebugO == null || !blr.W15yQC.AccessKeyDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
-    }
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.LandmarksDialog.aDocumentsList = oW15yQCReport.aDocuments;
@@ -188,7 +184,6 @@ blr.W15yQC.LandmarksDialog = {
     }
     blr.W15yQC.LandmarksDialog.aDocumentsList = null;
     blr.W15yQC.LandmarksDialog.aARIALandmarksList = null;
-    blr.W15yQC.LandmarksDialog.FirebugO = null;
     blr.W15yQC.LandmarksDialog.aDisplayOrder = null;
     blr.W15yQC.LandmarksDialog.sortColumns = null;
   },
@@ -253,7 +248,7 @@ blr.W15yQC.LandmarksDialog = {
 
   moveFocusToSelectedElement: function () {
     var treebox = document.getElementById('treebox'),
-      selectedRow = treebox.currentIndex, selectedIndex;
+      selectedRow = treebox.currentIndex, selectedIndex, nodeWindow, tab;
     if (selectedRow != null && treebox.currentIndex >= 0) {
       selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
       blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
@@ -261,6 +256,7 @@ blr.W15yQC.LandmarksDialog = {
     }
   },
 
+  
   highlightARIALandmarks: function () {
     blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
     blr.W15yQC.Highlighters.highlightARIALandmarks(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
@@ -393,34 +389,23 @@ blr.W15yQC.LandmarksDialog = {
   },
 
 
-  showInFirebug: function () {
-    var treebox, selectedRow;
-    if (blr.W15yQC.LandmarksDialog.FirebugO != null) {
-      try {
+  inspectElement: function () {
+    var treebox = document.getElementById('treebox'),
+      selectedRow = treebox.currentIndex, selectedIndex, node;
+    if (selectedRow != null && treebox.currentIndex >= 0) {
+      selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
+      node=blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node;
+      if (node!=null) {
         blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-        if (blr.W15yQC.LandmarksDialog.aARIALandmarksList != null && blr.W15yQC.LandmarksDialog.aARIALandmarksList.length && blr.W15yQC.LandmarksDialog.aARIALandmarksList.length > 0) {
-          treebox = document.getElementById('treebox');
-          selectedRow = treebox.currentIndex;
-          if (selectedRow == null || treebox.currentIndex < 0) {
-            selectedRow = 0;
-          }
-          selectedIndex=blr.W15yQC.LandmarksDialog.aDisplayOrder[selectedRow];
-          blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-          blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node.ownerDocument.defaultView.focus();
-          void
-          function (arg) {
-            blr.W15yQC.LandmarksDialog.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.LandmarksDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedIndex].node);
-        }
-      } catch (ex) {}
+        blr.W15yQC.inspectNode(node);
+      }
     }
   },
 
   generateReportHTML: function () {
     blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
-    blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LandmarksDialog.FirebugO, 'landmarks');
+    blr.W15yQC.openHTMLReportWindow(false,'landmarks');
   }
 
-};
+}
+})();

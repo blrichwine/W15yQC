@@ -43,7 +43,6 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.TableInspectorDialog = {
-  FirebugO: null,
   aDocumentsList: null,
   aFormsList: null,
   aFormControlsList: null,
@@ -252,7 +251,7 @@ blr.W15yQC.TableInspectorDialog = {
   init: function (dialog) {
     var aFormControlsLists;
     blr.W15yQC.fnReadUserPrefs();
-    blr.W15yQC.FormControlsDialog.FirebugO = dialog.arguments[1];
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
     blr.W15yQC.FormControlsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
     blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);
 
@@ -262,9 +261,6 @@ blr.W15yQC.TableInspectorDialog = {
     blr.W15yQC.fnAnalyzeFormControls(blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList, blr.W15yQC.FormControlsDialog.aDocumentsList);
 
     blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
-    if (blr.W15yQC.FormControlsDialog.FirebugO == null || !blr.W15yQC.FormControlsDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
-    }
   },
 
   cleanup: function () {
@@ -273,7 +269,6 @@ blr.W15yQC.TableInspectorDialog = {
       blr.W15yQC.FormControlsDialog.aDocumentsList = null;
       blr.W15yQC.FormControlsDialog.aFormControlsList = null;
       blr.W15yQC.FormControlsDialog.aFormsList = null;
-      blr.W15yQC.FormControlsDialog.FirebugO = null;
       blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = null;
       blr.W15yQC.FormControlsDialog.aLastList = null;
     }
@@ -413,9 +408,8 @@ blr.W15yQC.TableInspectorDialog = {
     }
   },
 
-  showInFirebug: function () {
-    var treebox, aList, selectedRow;
-    if (blr.W15yQC.FormControlsDialog.FirebugO != null) {
+  inspectElement: function () {
+    var treebox, aList, selectedRow, selectedIndex, node;
       try {
         if (blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length && blr.W15yQC.FormControlsDialog.aFormControlsList.length > 0) {
           if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
@@ -432,14 +426,9 @@ blr.W15yQC.TableInspectorDialog = {
           if (blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
             blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
           }
-          blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node.ownerDocument.defaultView.focus();
-          void
-
-          function (arg) {
-            blr.W15yQC.FormControlsDialog.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.FormControlsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node);
+          node=blr.W15yQC.FormControlsDialog.aLastList[selectedRow].node;
+          node.ownerDocument.defaultView.focus();
+          blr.W15yQC.inspectNode(node);
         }
       } catch (ex) {}
     }
@@ -477,7 +466,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   generateReportHTML: function () {
-    blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LinksDialog.FirebugO, 'tables');
+    blr.W15yQC.openHTMLReportWindow(false,'tables');
   }
 
 };

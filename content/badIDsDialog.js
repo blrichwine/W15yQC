@@ -41,7 +41,6 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.badIDsDialog = {
-  FirebugO: null,
   aDocumentsList: null,
   aBadIDsList: null,
   aDisplayOrder: [],
@@ -154,12 +153,7 @@ blr.W15yQC.badIDsDialog = {
     var oW15yQCReport, i;
 
     blr.W15yQC.fnReadUserPrefs();
-    if (dialog != null && dialog.arguments != null && dialog.arguments.length > 1) {
-      blr.W15yQC.badIDsDialog.FirebugO = dialog.arguments[1];
-    }
-    if (blr.W15yQC.badIDsDialog.FirebugO == null || !blr.W15yQC.badIDsDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
-    }
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.badIDsDialog.aDocumentsList = oW15yQCReport.aDocuments;
@@ -185,7 +179,6 @@ blr.W15yQC.badIDsDialog = {
     }
     blr.W15yQC.badIDsDialog.aDocumentsList = null;
     blr.W15yQC.badIDsDialog.aBadIDsList = null;
-    blr.W15yQC.badIDsDialog.FirebugO = null;
     blr.W15yQC.badIDsDialog.aDisplayOrder = null;
     blr.W15yQC.badIDsDialog.sortColumns = null;
   },
@@ -352,9 +345,8 @@ blr.W15yQC.badIDsDialog = {
   },
 
 
-  showInFirebug: function () {
-    var treebox, selectedRow, selectedIndex;
-    if (blr.W15yQC.badIDsDialog.FirebugO != null) {
+  inspectElement: function () {
+    var treebox, selectedRow, selectedIndex, node;
       try {
         if (blr.W15yQC.badIDsDialog.aBadIDsList != null && blr.W15yQC.badIDsDialog.aBadIDsList.length && blr.W15yQC.badIDsDialog.aBadIDsList.length > 0) {
           treebox = document.getElementById('treebox');
@@ -364,16 +356,11 @@ blr.W15yQC.badIDsDialog = {
           }
           selectedIndex=blr.W15yQC.badIDsDialog.aDisplayOrder[selectedRow];
           blr.W15yQC.fnResetHighlights(blr.W15yQC.badIDsDialog.aDocumentsList);
-          blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node.ownerDocument.defaultView.focus();
-          void
-          function (arg) {
-            blr.W15yQC.badIDsDialog.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.badIDsDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node);
+          node=blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node;
+          node.ownerDocument.defaultView.focus();
+          blr.W15yQC.inspectNode(node);
         }
       } catch (ex) {}
-    }
   },
 
   moveToSelectedElement: function () {

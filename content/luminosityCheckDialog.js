@@ -42,7 +42,6 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.LuminosityCheckDialog = {
-  FirebugO: null,
   aDocumentsList: null,
   aLumCheckList: null,
   iLastSelectedRow: 0,
@@ -203,15 +202,13 @@ blr.W15yQC.LuminosityCheckDialog = {
 
     dialog.fnUpdateProgress('Getting Elements...',null);
     blr.W15yQC.fnReadUserPrefs();
-    blr.W15yQC.LuminosityCheckDialog.FirebugO = dialog.arguments[1];
+    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
+
     blr.W15yQC.LuminosityCheckDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
     //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LuminosityCheckDialog.aDocumentsList); //http://stackoverflow.com/questions/1030747/how-to-set-a-xulrunner-main-windows-minimum-size
     blr.W15yQC.LuminosityCheckDialog.aLumCheckList = blr.W15yQC.fnGetLuminosityCheckElements(window.opener.parent._content.document);
     blr.W15yQC.fnAnalyzeLuminosityCheckElements(blr.W15yQC.LuminosityCheckDialog.aLumCheckList, blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
     blr.W15yQC.LuminosityCheckDialog.fnPopulateTree(blr.W15yQC.LuminosityCheckDialog.aDocumentsList, blr.W15yQC.LuminosityCheckDialog.aLumCheckList);
-    if (blr.W15yQC.LuminosityCheckDialog.FirebugO == null || !blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector) {
-      document.getElementById('button-showInFirebug').hidden = true;
-    }
 
     dialog.fnUpdateProgress('Ready',null);
     dialog.focus();
@@ -556,9 +553,8 @@ blr.W15yQC.LuminosityCheckDialog = {
   },
 
 
-  showInFirebug: function () {
-    var treebox, selectedRow;
-    if (blr.W15yQC.LuminosityCheckDialog.FirebugO != null) {
+  inspectElement: function () {
+    var treebox, selectedRow, selectedIndex, node;
       try {
         if (blr.W15yQC.LuminosityCheckDialog.aLumCheckList != null && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length && blr.W15yQC.LuminosityCheckDialog.aLumCheckList.length > 0) {
           treebox = document.getElementById('treebox');
@@ -568,21 +564,15 @@ blr.W15yQC.LuminosityCheckDialog = {
           }
           selectedIndex=blr.W15yQC.LuminosityCheckDialog.aDisplayOrder[selectedRow];
           blr.W15yQC.fnResetHighlights(blr.W15yQC.LuminosityCheckDialog.aDocumentsList);
-          blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedIndex].node.ownerDocument.defaultView.focus();
-          void
-
-          function (arg) {
-            blr.W15yQC.LuminosityCheckDialog.FirebugO.GlobalUI.startFirebug(function () {
-              blr.W15yQC.LuminosityCheckDialog.FirebugO.Inspector.inspectFromContextMenu(arg);
-            });
-          }(blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedIndex].node);
+          node=blr.W15yQC.LuminosityCheckDialog.aLumCheckList[selectedIndex].node;
+          node.ownerDocument.defaultView.focus();
+          blr.W15yQC.inspectNode(node);
         }
       } catch (ex) {}
-    }
   },
 
   generateReportHTML: function () {
-    // blr.W15yQC.openHTMLReportWindow(blr.W15yQC.LuminosityCheckDialog.FirebugO, 'luminosity');
+    // blr.W15yQC.openHTMLReportWindow(false,'luminosity');
   }
 
 };
