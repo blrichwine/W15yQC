@@ -108,6 +108,13 @@
       g. Verify the edit URL deletes the correct URL no matter how sorted
       h. Verify that the must match and must not match controls work correctly
       i. Run the scanner on several different sites and make sure it does not crash, it does not slow down, and no open/save dialogs appear
+    11. Options dialog
+      a. Test the saving of various options
+      b. Test that the various options have the right effect.
+      c. Dream up options that might cause conflicts, what happens then.
+      d. What are the default options that appear when 
+      
+      
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
       Documentation:
