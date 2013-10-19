@@ -25,18 +25,17 @@
  */
 "use strict";
 
-/*global blr: false, Components: false, Application: false */
-
-
-if (!blr) { var blr = {}; }
+if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 /*
  * Object:  W15yQC
  */
+(function() {
+
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 35',
-    releaseDate: 'September 08, 2013',
+    releaseVersion: '1.0 - Beta 36',
+    releaseDate: 'October 15, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -897,7 +896,11 @@ ys: 'whys'
       ldmkMultipleMainLandmarks: [true,2,0,true,null],
       ldmkMultipleBannerLandmarks: [false,1,0,true,null],
       ldmkMultipleContentInfoLandmarks: [false,1,0,true,null],
-
+      ldmkMainShouldNotBeNested: [false,2,0,false,null],
+      ldmkBannerShouldNotBeNested: [false,1,0,false,null],
+      ldmkLandmarkNameInLabel: [false,1,0,false,null],
+      ldmkMainStartsWithNav: [false,2,0,false,null],
+      
       ariaLmkAndLabelNotUnique: [true,2,0,false,null],
       ariaLmkNotUnique: [true,2,0,false,null],
       ariaHeadingMissingAriaLevel: [false,1,0,true,null],
@@ -1624,7 +1627,17 @@ ys: 'whys'
       }
     },
 
-    openDialog: function (sDialogName,firebugObj) {
+    inspectNode: function (node) {
+      let {devtools} = Cu.import("resource://gre/modules/devtools/Loader.jsm", {});
+      let gBrowser = window.gBrowser;
+      let tt = devtools.TargetFactory.forTab(gBrowser.selectedTab);
+      return gDevTools.showToolbox(tt, "inspector").then(function(toolbox) {
+        let inspector = toolbox.getCurrentPanel();
+        inspector.selection.setNode(node, "browser-context-menu");
+      }.bind(this));
+    },
+  
+    openDialog: function (sDialogName) {
       var dialogPath = null, dialogID = null, win;
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -1699,7 +1712,7 @@ ys: 'whys'
         if (dialogID != null) {
           blr.W15yQC.bQuick = false; // Make sure this has been reset
           blr.W15yQC.fnDoEvents();
-          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,firebugObj);
+          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr);
           blr.W15yQC.fnDoEvents();
           if(win!=null && win.focus) { win.focus(); }
           blr.W15yQC.fnDoEvents();
@@ -1707,7 +1720,7 @@ ys: 'whys'
       }
     },
 
-    openHTMLReportWindow: function (bQuick, firebugObj, sReports, sourceDocument) {
+    openHTMLReportWindow: function (bQuick, sReports, sourceDocument) {
       var dialogPath = 'chrome://W15yQC/content/HTMLReportWindow.xul', dialogID = 'HTMLReportWindow', win;
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -1717,7 +1730,7 @@ ys: 'whys'
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
-        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, firebugObj, sReports, bQuick, sourceDocument);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes', blr, null, sReports, bQuick, sourceDocument);
         if(win!=null && win.focus) { win.focus(); }
       }
     },
@@ -3738,6 +3751,75 @@ ys: 'whys'
       return blr.W15yQC.fnCleanSpaces(sStateDescription);
     },
 
+    fnGetDisplayableTextBetweenElements: function (rootNode, stopNode, iRecursion, aStopElements) {
+      // TODO: Vet this with JAWS
+      // TODO: How is this used? Getting the title and alt text isn't exactly displayable text. What should this function do? Do we need another one?
+      // TODO: QA THIS, rethink this...
+      // TODO: Gan we get this from Firefox? What about ARIA-label and other ARIA attribute?
+      // How does display:none, visibility:hidden, and aria-hidden=true affect child text collection?
+      var sNodeChildText = '',
+          sRecursiveText = null,
+          node;
+      if (rootNode != null) {
+        if (iRecursion == null) {
+          iRecursion = 0;
+        }
+        if (aStopElements==null) {
+          aStopElements=['option'];
+        }
+        for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
+          if (node===stopNode) {
+            break;
+          }
+          if (node.nodeType == 1 || node.nodeType == 3) { // Only pay attention to element and text nodes
+            if (node.tagName && ((node.contentWindow && node.contentWindow.document !== null) ||
+                              (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
+              // don't get frame contents, but instead check if it has a title attribute
+              if (node.hasAttribute('title')) {
+                sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, node.getAttribute('title'), ' ');
+              }
+            } else { // keep looking through current document
+              if (node.nodeType == 3 && node.nodeValue != null) { // text content
+                sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, node.nodeValue, ' ');
+              }
+              if (node.nodeType == 1 || node.nodeType == 3) {
+                sRecursiveText='';
+                if (iRecursion < 100 && (node.nodeType!=1 || (((iRecursion>0 && aStopElements!=null) ? aStopElements.indexOf(node.tagName.toLowerCase()) : -1) < 0 && blr.W15yQC.fnNodeIsHidden(node) == false))) {
+                  sRecursiveText = blr.W15yQC.fnGetDisplayableTextBetweenElements(node, iRecursion + 1, aStopElements);
+                }
+                if (blr.W15yQC.fnStringHasContent(sRecursiveText) == false && node.nodeType == 1) {
+                  sRecursiveText = node.getAttribute('aria-label');
+                  if(blr.W15yQC.fnStringHasContent(sRecursiveText)== false && node.hasAttribute('aria-labelledby')) {
+                    sRecursiveText = blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), node.ownerDocument);
+                  }
+                  if (blr.W15yQC.fnStringHasContent(sRecursiveText) == false && node.tagName != null && blr.W15yQC.fnCanTagHaveAlt(node.tagName) && node.hasAttribute('alt') == true) {
+                    sRecursiveText = blr.W15yQC.fnJoin(sNodeChildText, node.getAttribute('alt'));
+                  }
+                  if (blr.W15yQC.fnStringHasContent(sRecursiveText) == false && node.hasAttribute && node.hasAttribute('title')) {
+                    sRecursiveText = blr.W15yQC.fnJoin(sNodeChildText, node.getAttribute('title'));
+                  }
+                }
+                sNodeChildText = blr.W15yQC.fnJoin(sNodeChildText, sRecursiveText, ' ');
+              }
+            }
+          }
+        }
+
+        sNodeChildText = blr.W15yQC.fnCleanSpaces(sNodeChildText);
+
+        if ((iRecursion == null || iRecursion == 0) && (sNodeChildText == null || sNodeChildText.length == 0) && rootNode.hasAttribute && rootNode.tagName) {
+          if (blr.W15yQC.fnCanTagHaveAlt(rootNode.tagName) && rootNode.hasAttribute('alt') == true) {
+            sNodeChildText = blr.W15yQC.fnCleanSpaces(rootNode.getAttribute('alt'));
+          } else if (rootNode.hasAttribute('title')) {
+            sNodeChildText = blr.W15yQC.fnCleanSpaces(rootNode.getAttribute('title'));
+          }
+        }
+      }
+
+      return sNodeChildText;
+    },
+
+    
     fnGetDisplayableTextRecursively: function (rootNode, iRecursion, aStopElements) {
       // TODO: Vet this with JAWS
       // TODO: How is this used? Getting the title and alt text isn't exactly displayable text. What should this function do? Do we need another one?
@@ -6330,7 +6412,8 @@ ys: 'whys'
 
     fnAnalyzeARIALandmarks: function (oW15yResults) {
       var aARIALandmarksList=oW15yResults.aARIALandmarks, aDocumentsList=oW15yResults.aDocuments, iMainLandmarkCount, iBannerLandmarkCount,
-        iContentInfoLandmarkCount, i, sRoleAndLabel, aSameLabelText, aLabelAndRoleSoundSame, j, sRoleAndLabel2;
+        iContentInfoLandmarkCount, i, sRole, sRoleAndLabel, aSameLabelText, aLabelAndRoleSoundSame, j, sRoleAndLabel2,
+        node;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // TODO: Learn what is important to analyze in ARIA landmarks!
@@ -6357,7 +6440,8 @@ ys: 'whys'
 
         for (i = 0; i < aARIALandmarksList.length; i++) {
           blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i]);
-          if(aARIALandmarksList[i].role.toLowerCase() == 'main') {
+          sRole=blr.W15yQC.fnGetNodeAttribute(aARIALandmarksList[i].node,'role','').toLowerCase();
+          if(sRole == 'main') {
             oW15yResults.PageScore.bHasMainLandmark=true;
             if(aARIALandmarksList[i].node.getElementsByTagName('h1') ||
                aARIALandmarksList[i].node.getElementsByTagName('h2') ||
@@ -6368,12 +6452,43 @@ ys: 'whys'
               oW15yResults.PageScore.bMainLandmarkContainsHeading=true; // TODO: This wont find headings in sub frames
             }
             iMainLandmarkCount++;
-          } else if(aARIALandmarksList[i].role.toLowerCase() == 'banner') {
+            // Check nesting
+            node=aARIALandmarksList[i].node != null ? (aARIALandmarksList[i].node.parentNode ? aARIALandmarksList[i].node.parentNode : null) : null;
+            while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset') {
+              if (node.hasAttribute && node.hasAttribute('role')==true && blr.W15yQC.fnStringHasContent(node.getAttribute('role'))) {
+                  blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkMainShouldNotBeNested', [node.getAttribute('role')]);   // TODO QA This
+              }
+              node = node.parentNode?node.parentNode:null;
+            }
+          } else if(sRole == 'banner') {
             iBannerLandmarkCount++;
-          } if(aARIALandmarksList[i].role.toLowerCase() == 'contentinfo') {
+            // Check nesting
+            node=aARIALandmarksList[i].node != null ? (aARIALandmarksList[i].node.parentNode ? aARIALandmarksList[i].node.parentNode : null) : null;
+            while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset') {
+              if (node.hasAttribute && node.hasAttribute('role')==true && blr.W15yQC.fnStringHasContent(node.getAttribute('role'))) {
+                  blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkBannerShouldNotBeNested', [node.getAttribute('role')]);   // TODO QA This
+              }
+              node = node.parentNode?node.parentNode:null;
+            }            
+          } else if(sRole == 'contentinfo') {
             iContentInfoLandmarkCount++;
+          } else if (sRole == 'navigation') {
+            node=aARIALandmarksList[i].node != null ? (aARIALandmarksList[i].node.parentNode ? aARIALandmarksList[i].node.parentNode : null) : null;
+            while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset') {
+              if (node.hasAttribute && node.hasAttribute('role')==true && /\bmain\b/i.test(node.getAttribute('role'))==true &&
+                  blr.W15yQC.fnStringHasContent(blr.W15yQC.fnGetDisplayableTextBetweenElements(node,aARIALandmarksList[i].node))==false) {
+                  blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkMainStartsWithNav');   // TODO QA This
+              }
+              node = node.parentNode?node.parentNode:null;
+            }            
           }
           sRoleAndLabel = aARIALandmarksList[i].roleAndLabel;
+          if (blr.W15yQC.fnStringHasContent(sRole)) {
+            j = sRoleAndLabel.match(new RegExp(sRole, 'ig'));
+            if(j && j.length>2) {
+              blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkLandmarkNameInLabel');   // TODO QA This
+            }
+          }
 
           aSameLabelText = [];
           aLabelAndRoleSoundSame = [];
@@ -7496,6 +7611,7 @@ ys: 'whys'
     fnDisplayHeadingsResults: function (rd, aHeadingsList, bQuick) {
       var div, divContainer, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span,
         table, msgHash, tbody, sNotes, sClass;
+
       div = rd.createElement('div');
       divContainer = rd.createElement('div');
       innerDiv = rd.createElement('div');
@@ -9835,7 +9951,7 @@ ys: 'whys'
       }
     },
 
-    fnRemoveStyles: function (firebugObj) {
+    fnRemoveStyles: function () {
       var dialogPath = 'chrome://W15yQC/content/removeStylesWindow.xul', dialogID = 'RemoveStylesWindow', i, srcDoc, metaElements, win;
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -9846,7 +9962,7 @@ ys: 'whys'
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
         srcDoc = window.top.content.document;
-        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,firebugObj,srcDoc);
+        win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,toolbars=yes',blr,srcDoc);
         if(win!=null && win.focus) win.focus();
       }
     },
@@ -10677,5 +10793,5 @@ ys: 'whys'
     }
   }
 }
-
+})();
 blr.W15yQC.fnReadUserPrefs();
