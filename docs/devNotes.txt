@@ -49,6 +49,7 @@
       https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
 
+	  
  *
  * QA Tasks
  *   - Review text in HTML report for consistency
@@ -242,8 +243,14 @@
   Integration with Firefox Inspector
     -- Detecting if inspector is enabled:
       pref("devtools.inspector.enabled", true);
-      
+      https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
+	  
     *** FIX ASAP***
+  -- False failure whith AREA tags and alt attributes: https://www.indianactsi.org/
+  <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov		
+    Failure: Link text should not come solely from the 'alt' attribute. The 'alt' attribute is not valid on the link element and is not generally considered accessible.
+    Warning: 'alt' attributes are not valid on anchor elements. The contents will most likely be ignored by adaptive technologies.
+  -- List deprecated elements, font, blink,etc.
   -- HTML report, inspector dialog should pass source document when called from inspector dialogs.
   -- Spider page titles
   -- What are meaningless page titles?

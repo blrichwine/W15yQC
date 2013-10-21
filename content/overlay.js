@@ -35,7 +35,7 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 if (!blr.W15yQC) {
   blr.W15yQC = {
     releaseVersion: '1.0 - Beta 37',
-    releaseDate: 'October 19, 2013',
+    releaseDate: 'October 21, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -1627,16 +1627,18 @@ ys: 'whys'
       }
     },
 
+    // Based on exec Command_inspect function in https://mxr.mozilla.org/mozilla-central/source/browser/devtools/inspector/CmdInspect.jsm
+    // Loosely informed by DevTools API: https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
     inspectNode: function (node) {
-      let {devtools} = Cu.import("resource://gre/modules/devtools/Loader.jsm", {});
+      let {devtools} = Components.utils.import("resource://gre/modules/devtools/Loader.jsm", {});
       let gBrowser = window.gBrowser;
-      let tt = devtools.TargetFactory.forTab(gBrowser.selectedTab);
-      return gDevTools.showToolbox(tt, "inspector").then(function(toolbox) {
+      let target = devtools.TargetFactory.forTab(gBrowser.selectedTab);
+      return gDevTools.showToolbox(target, "inspector").then(function(toolbox) {
         let inspector = toolbox.getCurrentPanel();
         inspector.selection.setNode(node, "browser-context-menu");
       }.bind(this));
     },
-  
+      
     openDialog: function (sDialogName) {
       var dialogPath = null, dialogID = null, win;
 
