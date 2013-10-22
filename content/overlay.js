@@ -8362,7 +8362,7 @@ ys: 'whys'
                       blr.W15yQC.fnAddNote(aLinksList[i], 'lnkLinkMissingHrefValue'); // QA this. what if href=""
                 }
 
-        if(aLinksList[i].node.hasAttribute('alt')) {
+        if(aLinksList[i].node.hasAttribute('alt') && blr.W15yQC.fnCanTagHaveAlt(aLinksList[i].node.tagName)==false) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkHasInvalidAltAttribute'); //
         }
 
@@ -8461,7 +8461,7 @@ ys: 'whys'
         }
         if (/title attribute/i.test(aLinksList[i].effectiveLabelSource)) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextComesOnlyFromTitle'); // TODO: QA This!
-        } else if (/alt attribute/i.test(aLinksList[i].effectiveLabelSource)) {
+        } else if (/alt attribute/i.test(aLinksList[i].effectiveLabelSource) && blr.W15yQC.fnCanTagHaveAlt(aLinksList[i].node.tagName)==false) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextComesOnlyFromAlt'); // TODO: QA This!
         }
 

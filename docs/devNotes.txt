@@ -246,10 +246,6 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
-  -- False failure whith AREA tags and alt attributes: https://www.indianactsi.org/
-  <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov		
-    Failure: Link text should not come solely from the 'alt' attribute. The 'alt' attribute is not valid on the link element and is not generally considered accessible.
-    Warning: 'alt' attributes are not valid on anchor elements. The contents will most likely be ignored by adaptive technologies.
   -- List deprecated elements, font, blink,etc.
   -- HTML report, inspector dialog should pass source document when called from inspector dialogs.
   -- Spider page titles
@@ -720,6 +716,10 @@
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+    -- False failure whith AREA tags and alt attributes: https://www.indianactsi.org/ [10/21/2013]
+       <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov		
+       Failure: Link text should not come solely from the 'alt' attribute. The 'alt' attribute is not valid on the link element and is not generally considered accessible.
+       Warning: 'alt' attributes are not valid on anchor elements. The contents will most likely be ignored by adaptive technologies.
 
     -- Headings with role="presentation" are appearing in the heading lists. Should they? [Answer: No] [DONE 2013/09/13]
     -- ARIA Attributes with ID List- Failure if none exist. Warning if any are missing. Right now it is always a failure [8/17/2013]
