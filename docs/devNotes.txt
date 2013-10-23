@@ -498,6 +498,20 @@
           etext.illinois
           iu news
 
+HTML5 Elements to test
+  -- HEADER
+  -- NAV
+  -- SECTION
+  -- ARTICLE
+  -- ASIDE
+  -- FOOTER
+  -- HGROUP
+  -- ADDRESS
+  
+  Google structured data tool: http://www.google.com/webmasters/tools/richsnippets
+  Semantics: http://schema.org/docs/full.html
+  
+
 
       Sounds the same CNN vs. CNNi
         -- for all cap tokens, should they be separated into individual letters?
