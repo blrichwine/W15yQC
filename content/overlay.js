@@ -1379,6 +1379,7 @@ ys: 'whys'
         aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
         aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
         aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
+        aEl.setAttribute('onmouseup','blur();');
         spanEl=doc.createElement('span');
         spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
         spanEl.setAttribute('class','auralText');
@@ -5160,7 +5161,8 @@ ys: 'whys'
       styleRules += ".AIList li:hover { background: none repeat scroll 0 0 #D0DAFD; }";
       styleRules += "li.failed:hover { background: none repeat scroll 0 0 #E66F6F; }";
       styleRules += "li.warning:hover { background: none repeat scroll 0 0 #F1BD00; }";
-      styleRules += "#AIDocumentDetails div, #AIHeadingsList div { margin: 5px 20px 20px 20px; padding: 4px; min-width: 480px; border: 1px solid #CCCCCC; box-shadow: 0 1px 0 #FFFFFF inset;}";
+      styleRules += "div.ariaEl { margin: inherit !important; padding: inherit !important; min-width: inherit !important; border: none !important; box-shadow: none !important;}";
+      styleRules += ".AISection div { margin: 5px 20px 20px 20px; padding: 4px; min-width: 480px; border: 1px solid #CCCCCC; box-shadow: 0 1px 0 #FFFFFF inset;}";
       styleRules += "thead tr { background-color: #EEEEEE; border: 1px solid #CCCCCC; box-shadow: 0 1px 0 #FFFFFF inset; }";
       styleRules += "table { border-collapse: collapse; font-size: 12px; margin: 20px; text-align: left; min-width: 480px; border: 1px solid #CCCCCC; box-shadow: 0 1px 0 #FFFFFF inset;}";
       styleRules += "th { margin:0;color: #000; font-size: 13px; font-weight: normal; padding: 8px; border-right: none; border-left: 1px solid #FFFFFF; box-shadow: -1px 0 0 #DDDDDD;}";
@@ -5414,6 +5416,7 @@ ys: 'whys'
       var div, div2, element, sWindowTitle, sWindowURL;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentDetails');
+      div.setAttribute('class', 'AISection');
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnGetString('hrsWindowDetails'));
       div2 = rd.createElement('div');
       element = rd.createElement('h3');
@@ -5448,6 +5451,7 @@ ys: 'whys'
       var div, table, msgHash, tbody, i, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFramesList, 'hrsFrames', 'hrsNoFrames'));
 
@@ -6273,6 +6277,7 @@ ys: 'whys'
       var div, table, msgHash, tbody, i, dd, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aDocumentsList, 'hrsDocuments', 'hrsNoDocuments'));
 
@@ -6547,13 +6552,106 @@ ys: 'whys'
     },
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList, bQuick) {
-      var div, table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
-      div = rd.createElement('div');
+      var div, divContainer, innerDiv, list, previousHeadingLevel, previousDocument, sDoc, li, sNotesTxt, sMessage, span, nextLogicalLevel,
+        table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
+
+
+
+     div = rd.createElement('div');
+      divContainer = rd.createElement('div');
+      innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIARIALandmarksList');
+      div.setAttribute('class', 'AISection');
+      innerDiv.setAttribute('class', 'AIList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aARIALandmarksList,'hrsARIALandmarks','hrsNoARIALandmarks'));
 
       if (aARIALandmarksList && (aARIALandmarksList.length > 0 || (aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes && aARIALandmarksList.pageLevel.notes.length>0))) {
+        for(i=0;i<aARIALandmarksList.length;i++) {
+          if(aARIALandmarksList[i].ownerDocumentNumber>1) { bHasMultipleDocs=true; break; }
+        }
+        list = [];
+        list.push(rd.createElement('ul'));
+        previousHeadingLevel = 0;
+
+        previousDocument = null;
+        if (aARIALandmarksList && aARIALandmarksList.length && aARIALandmarksList.length > 0) { previousDocument = aARIALandmarksList[0].doc; }
+
+        for (i = 0; i < aARIALandmarksList.length; i++) {
+          sDoc = '';
+          if (i == 0 && bHasMultipleDocs==true) {
+            sDoc = 'Contained in doc #' + aARIALandmarksList[i].ownerDocumentNumber; // TODO i18n this!
+          }
+          nextLogicalLevel = parseInt(previousHeadingLevel,10) + 1;
+          for (j = nextLogicalLevel; j < aARIALandmarksList[i].level; j++) {
+            // Add "skipped" heading levels
+            li = rd.createElement('li');
+            if (i==0) {
+              li.setAttribute('style','display:none');
+            }
+            if (previousDocument != aARIALandmarksList[i].doc) {
+              blr.W15yQC.fnAddClass(li, 'newDocument');
+              sDoc = 'In doc #' + aARIALandmarksList[i].ownerDocumentNumber;
+              previousDocument = aARIALandmarksList[i].doc;
+            }
+            li.appendChild(rd.createTextNode("[h" + j + "] "+ blr.W15yQC.fnGetString('hrsMissingHeading')));
+            li.setAttribute('class', 'skippedHeadingLevel');
+            if (previousHeadingLevel > 0) {
+              list.push(rd.createElement('ul'));
+            }
+            list[list.length - 1].appendChild(li);
+            previousHeadingLevel = j;
+          }
+
+          li = rd.createElement('li');
+          if (previousDocument != aARIALandmarksList[i].doc) {
+            blr.W15yQC.fnAddClass(li, 'newDocument');
+            sDoc = 'In doc #' + aARIALandmarksList[i].ownerDocumentNumber; // TODO: i18n this
+            previousDocument = aARIALandmarksList[i].doc;
+          }
+          li.appendChild(rd.createTextNode(aARIALandmarksList[i].effectiveLabel));
+
+          sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aARIALandmarksList[i].notes);
+          sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aARIALandmarksList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
+          if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
+            span = rd.createElement('span');
+
+            span.appendChild(rd.createTextNode(' (' + sMessage + ')'));
+            span.setAttribute('class', 'headingNote');
+            li.appendChild(span);
+          }
+
+          if (aARIALandmarksList[i].failed) {
+            li.setAttribute('class', 'failed');
+          } else if (aARIALandmarksList[i].warning) {
+            li.setAttribute('class', 'warning');
+          }
+          if (aARIALandmarksList[i].nodeDescription != null) { li.setAttribute('title', aARIALandmarksList[i].nodeDescription); }
+
+          if (aARIALandmarksList[i].level > previousHeadingLevel && previousHeadingLevel > 0) {
+            list.push(rd.createElement('ul'));
+          } else {
+            while (aARIALandmarksList[i].level < previousHeadingLevel) {
+              list[list.length - 2].appendChild(list[list.length - 1]);
+              list.pop();
+              previousHeadingLevel--;
+            }
+          }
+          list[list.length - 1].appendChild(li);
+          previousHeadingLevel = parseInt(aARIALandmarksList[i].level,10);
+        }
+        while (list.length > 1) {
+          list[list.length - 2].appendChild(list[list.length - 1]);
+          list.pop();
+        }
+        innerDiv.appendChild(list[0]);
+        divContainer.appendChild(innerDiv);
+        div.appendChild(divContainer);
+
+
+
+// ------
+
         table = rd.createElement('table');
         table.setAttribute('id', 'AIIARIALandmarksTable');
 
@@ -6582,12 +6680,6 @@ ys: 'whys'
                       blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
                       blr.W15yQC.fnGetString('hrsTHRole'), blr.W15yQC.fnGetString('hrsTHState'),
                       blr.W15yQC.fnGetString('hrsTHNotes')];
-          for (i=0;i<aARIALandmarksList.length; i++) {
-            if (aARIALandmarksList[i].ownerDocumentNumber>1) {
-              bHasMultipleDocs=true;
-              break;
-            }
-          }
           if (bHasMultipleDocs==false) {
             colHeaders.splice(2,1);
           }
@@ -6631,7 +6723,7 @@ ys: 'whys'
         }
 
         table.appendChild(tbody);
-        div.appendChild(table);
+        divContainer.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIIARIALandmarksTable');
       } else {
         blr.W15yQC.fnAppendPElementTo(div, blr.W15yQC.fnGetString('hrsNoARIALandmarksDetected'));
@@ -6714,7 +6806,8 @@ ys: 'whys'
       div = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIARIAElementsList');
-      div.setAttribute('class', 'AIList');
+      div.setAttribute('class', 'AISection');
+      innerDiv.setAttribute('class', 'AIList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aARIAElementsList,'hrsARIAEls','hrsNoARIAEls'));
 
@@ -6756,6 +6849,7 @@ ys: 'whys'
             previousDocument = aARIAElementsList[i].doc;
           }
           divARIAEl = rd.createElement('div');
+          divARIAEl.setAttribute('class','ariaEl');
           divWidth = 600-aARIAElementsList[i].level*15;
           divARIAEl.setAttribute('style','float:left;width:'+divWidth+'px');
           divARIAEl.appendChild(rd.createTextNode(aARIAElementsList[i].nodeDescription));
@@ -7171,6 +7265,7 @@ ys: 'whys'
     fnDisplayImagesResults: function (rd, aImagesList, bQuick) {
       var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aImagesList,'hrsImages','hrsNoImages'));
 
@@ -7376,6 +7471,7 @@ ys: 'whys'
       var div, table, msgHash, tbody, i, ak, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aAccessKeysList,'hrsAccessKeys','hrsNoAccessKeys'));
 
@@ -7618,7 +7714,8 @@ ys: 'whys'
       divContainer = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIHeadingsList');
-      div.setAttribute('class', 'AIList');
+      div.setAttribute('class', 'AISection');
+      innerDiv.setAttribute('class', 'AIList');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aHeadingsList,'hrsHeadings','hrsNoHeadings', bQuick));
 
@@ -7747,7 +7844,7 @@ ys: 'whys'
 
         table.appendChild(tbody);
         divContainer.appendChild(table);
-        blr.W15yQC.fnMakeTableSortable(div, rd, 'AIFramesTable');
+        blr.W15yQC.fnMakeTableSortable(div, rd, 'AIHeadingsTable');
       }
 
       } else {
@@ -8098,6 +8195,7 @@ ys: 'whys'
       var div, table, msgHash, tbody, i, fce, sNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormsList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFormsList,'hrsForms','hrsNoForms'));
 
@@ -8137,6 +8235,7 @@ ys: 'whys'
 
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormControlsList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aFormControlsList,'hrsFormsCtrls','hrsNoFormCtrls'));
 
@@ -8575,6 +8674,7 @@ ys: 'whys'
       var div, table, msgHash, tbody, i, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aLinksList,'hrsLinks','hrsNoLinks'));
 
@@ -9183,6 +9283,7 @@ ys: 'whys'
 
       div = rd.createElement('div');
       div.setAttribute('id', 'AITablesList');
+      div.setAttribute('class', 'AISection');
 
       blr.W15yQC.fnAppendExpandContractHeadingTo(div, blr.W15yQC.fnMakeHeadingCountsString(aTablesList,'hrsTables','hrsNoTables'));
 
