@@ -6656,7 +6656,7 @@ ys: 'whys'
         table.setAttribute('id', 'AIIARIALandmarksTable');
 
         if (bQuick) {
-          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           // Elements
@@ -6666,13 +6666,14 @@ ys: 'whys'
             for(j=1; j<lo.level; j++) {
               sPadding += '&nbsp;';
             }
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
             sClass = '';
             if (lo.failed) {
               sClass = 'failed';
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel, sNotes], sClass);
           }
         } else {
           colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
