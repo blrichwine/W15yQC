@@ -6611,7 +6611,7 @@ ys: 'whys'
           }
           li.appendChild(rd.createTextNode(aARIALandmarksList[i].effectiveLabel));
 
-          sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aARIALandmarksList[i].notes);
+          sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aARIALandmarksList[i]);
           sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aARIALandmarksList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
           if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
             span = rd.createElement('span');
@@ -7768,7 +7768,7 @@ ys: 'whys'
             }
             li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].effectiveLabel));
 
-            sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i].notes);
+            sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i]);
             sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
             if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
               span = rd.createElement('span');
