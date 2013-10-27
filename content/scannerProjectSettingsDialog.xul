@@ -99,8 +99,23 @@
 	 </xul:groupbox>
 			<xul:checkbox label="Process Pages for URLs" id="cbParseForLinks" checked="true"/>
 			<xul:hbox align="center">
+				 <xul:label value="Maximum # of URLs:" control="tbMaxURLCount"/>
+				 <xul:textbox id="tbMaxURLCount" style="width:6em" value="5000" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+				 <xul:spacer flex="1"/>
+			</xul:hbox>
+			<xul:hbox align="center">
 				 <xul:label value="Maximum URL Link Depth from Original URLs:" control="tbMaxLengthDepth"/>
 				 <xul:textbox id="tbMaxLengthDepth" style="width:6em" value="5000" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+				 <xul:spacer flex="1"/>
+			</xul:hbox>
+			<xul:hbox align="center">
+				 <xul:label value="Page Load Filter (milliseconds):" control="tbPageLoadFilter"/>
+				 <xul:textbox id="tbPageLoadFilter" style="width:6em" value="1000" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
+				 <xul:spacer flex="1"/>
+			</xul:hbox>
+			<xul:hbox align="center">
+				 <xul:label value="Page Load Time Limit (milliseconds):" control="tbPageLoadTimeLimit"/>
+				 <xul:textbox id="tbPageLoadTimeLimit" style="width:6em" value="20000" onblur="blr.W15yQC.scannerProjectSettingsDialog.checkFields()"/>
 				 <xul:spacer flex="1"/>
 			</xul:hbox>
 	 </xul:vbox>    

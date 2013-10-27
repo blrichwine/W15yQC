@@ -60,6 +60,21 @@
 					<xul:menupopup id="edit-popup">
 						<xul:menuitem label="Overall Report"/>
 						<xul:menuitem label="View URL" oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
+	 					<xul:menu label="Show Columns" id="showCols-menu">
+								<xul:menupopup id="showCols-menupopup">
+							          <xul:menuitem label="All Counts" oncommand="blr.W15yQC.ScannerWindow.showAllCounts()"/>
+							          <xul:menuitem label="All Warnings" oncommand="blr.W15yQC.ScannerWindow.showAllWarnings()"/>
+							          <xul:menuitem label="All Failures" oncommand="blr.W15yQC.ScannerWindow.showAllFailures()"/>
+								</xul:menupopup>
+						</xul:menu>
+	 					<xul:menu label="Hide Columns" id="hideCols-menu">
+								<xul:menupopup id="hideCols-menupopup">
+							          <xul:menuitem label="All Counts" oncommand="blr.W15yQC.ScannerWindow.hideAllCounts()"/>
+							          <xul:menuitem label="All Warnings" oncommand="blr.W15yQC.ScannerWindow.hideAllWarnings()"/>
+							          <xul:menuitem label="All Failures" oncommand="blr.W15yQC.ScannerWindow.hideAllFailures()"/>
+							          <xul:menuitem label="All Category Cols" oncommand="blr.W15yQC.ScannerWindow.hideAllCategoryCols()"/>
+								</xul:menupopup>
+						</xul:menu>
 					</xul:menupopup>
 				</xul:menu>
 			</xul:menubar>

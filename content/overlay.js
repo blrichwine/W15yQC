@@ -1351,7 +1351,7 @@ ys: 'whys'
     },
 
     fnHasClass: function (ele, cls) {
-      return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+      return ele!=null && ele.className ? (new RegExp('\\b' + cls + '\\b','i')).test(ele.className) : false;
     },
 
     fnAddClass: function (ele, cls) {
@@ -1832,7 +1832,8 @@ ys: 'whys'
       }
     },
 
-    highlightElement: function (node, highlightBGColor,idCounter) { // TODO: Improve the MASKED routine to not indicate empty links as MASKED
+    // TODO: Investigate how Mozilla's inspector tool highlights elements.
+    highlightElement: function (node, highlightBGColor,idCounter) {
       // https://developer.mozilla.org/en/DOM/element.getClientRects
       var origNode, div, box, scrollLeft, scrollTop, x, y, w, h, l, t, o, rect, rects, i, bSetTimeouts=false, tagName=null, bEmptyElement=false, doc;
       if(highlightBGColor==null) { highlightBGColor='yellow'; }
@@ -2809,45 +2810,6 @@ ys: 'whys'
       return false;
     },
 
-    fnIsMeaningfulText: function (sText, minLength) { // TODO: Where is this used? Should it be a specific instance?
-      if (minLength == null) { minLength = 3; } // TODO: Make this a pref parameter
-      if(sText != null && sText.toLowerCase) {
-        if(blr.W15yQC.bEnglishLocale) { sText = sText.replace(/[^a-zA-Z0-9\s]/g, ' '); }
-        sText = blr.W15yQC.fnCleanSpaces(sText).toLowerCase();
-        // Meaningful but short word exceptions:
-        if(sText == 'go' || sText == 'faq' || sText == 'map') { return true; }
-
-        if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
-          if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
-          switch (sText.toLowerCase()) {
-          case 'click':
-          case 'click here':
-          case 'click here for more':
-          case 'click here to find out more':
-          case 'even more':
-          case 'here':
-          case 'more':
-          case 'read':
-          case 'read more':
-          case 'read more here':
-          case 'see':
-          case 'see here':
-          case 'seehere':
-          case 'touch':
-          case 'press':
-          case 'tap':
-          case 'touch here':
-          case 'press here':
-          case 'tap here':
-          case 'x':
-            return false;
-          }
-          if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
-        }
-      }
-      return false;
-    },
-
     fnCanTagHaveAlt: function (tagname) {
       switch (tagname.toLowerCase()) {
       case 'img':
@@ -3680,6 +3642,9 @@ ys: 'whys'
 
           } else if (sTagName == 'iframe' || sTagName == 'frame') { // JAWS 14 FF19 Win8: ignore doc title, title attribute, aria-labelledby, aria-label
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','title','aria-labelledby', 'aria-label'],iRecursion,aStopElements,aElements);
+
+          } else if (sTagName == 'article' || sTagName == 'aside' || sTagName == 'header' || sTagName == 'footer' || sTagName == 'nav' || sTagName == 'section') { // TODO: QA This
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first', 'aria', 'title'],iRecursion,aStopElements,aElements);
 
           } else if (blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
             if(/^(button|checkbox|columnheader|directory|gridcell|heading|landmark|link|listitem|menuitem|menuitemcheckbox|menuitemradio|option|radio|row|rowgroup|rowheader|section|sectionhead|tab|treeitem)/.test(sRole)==true) {
@@ -5790,8 +5755,27 @@ ys: 'whys'
                         oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
                     }
                   }
-
+  
                   switch (sTagName) {
+                    case 'article': // http://blog.paciellogroup.com/2011/03/html5-accessibility-chops-section-elements/
+                    case 'aside':
+                    case 'header':
+                    case 'nav':
+                    case 'section':
+                        //// Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                        //ARIALandmarkLevel = 1;
+                        //for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
+                        //  if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
+                        //    ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
+                        //    break;
+                        //  }
+                        //}
+                        //aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                        //effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' region',' '));
+                        //effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 Region', ', '));
+                        //oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
+                        //oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
+                      break;
                     case 'area':
                       xPath = blr.W15yQC.fnGetElementXPath(node);
                       nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);

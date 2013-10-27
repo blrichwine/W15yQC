@@ -47,6 +47,11 @@ blr.W15yQC.scannerProjectSettingsDialog = {
     document.getElementById('tbTitle').value=blr.W15yQC.ScannerWindow.sProjectTitle;
     document.getElementById('cbParseForLinks').checked=blr.W15yQC.ScannerWindow.parseForLinks==true;
     document.getElementById('tbMaxLengthDepth').value=blr.W15yQC.ScannerWindow.maximumURLDepth;
+    
+    document.getElementById('tbMaxURLCount').value=blr.W15yQC.ScannerWindow.maximumURLCount;
+    document.getElementById('tbPageLoadFilter').value=blr.W15yQC.ScannerWindow.pageLoadFilter;
+    document.getElementById('tbPageLoadTimeLimit').value=blr.W15yQC.ScannerWindow.pageLoadTimeLimit;
+    
 
     if(blr.W15yQC.ScannerWindow.urlMustMatchList != null) {
       for(i=0;i<blr.W15yQC.ScannerWindow.urlMustMatchList.length;i++) {
@@ -227,6 +232,10 @@ blr.W15yQC.scannerProjectSettingsDialog = {
       blr.W15yQC.ScannerWindow.sProjectTitle=blr.W15yQC.fnTrim(document.getElementById('tbTitle').value);
       blr.W15yQC.ScannerWindow.parseForLinks=document.getElementById('cbParseForLinks').checked;
       blr.W15yQC.ScannerWindow.maximumURLDepth=parseInt(document.getElementById('tbMaxLengthDepth').value);
+
+      blr.W15yQC.ScannerWindow.maximumURLCount=parseInt(document.getElementById('tbMaxURLCount').value);
+      blr.W15yQC.ScannerWindow.pageLoadFilter=parseInt(document.getElementById('tbPageLoadFilter').value);
+      blr.W15yQC.ScannerWindow.pageLoadTimeLimit=parseInt(document.getElementById('tbPageLoadTimeLimit').value);
 
       blr.W15yQC.ScannerWindow.urlMustMatchList=[];
       blr.W15yQC.ScannerWindow.urlMustMatchListType=[];

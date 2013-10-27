@@ -984,7 +984,11 @@ blr.W15yQC.ScannerWindow = {
       if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0 && blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet==true) {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Project loaded.');
       } else {
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('No project loaded.');
+        if (bOpenedOK) {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Empty project loaded.');
+        } else {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('No project loaded.');
+        }
       }
       blr.W15yQC.ScannerWindow.updateControlStates();
     }
@@ -2158,7 +2162,120 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
+  
+  showAllCounts: function() {
+    document.getElementById('col-header-results-text').hidden=false;
+    document.getElementById('col-header-results-d').hidden=false;
+    document.getElementById('col-header-results-items').hidden=false;
+    document.getElementById('col-header-results-text').hidden=false;
+    document.getElementById('col-header-results-d').hidden=false;
+    document.getElementById('col-header-results-F').hidden=false;
+    document.getElementById('col-header-results-h').hidden=false;
+    document.getElementById('col-header-results-al').hidden=false;
+    document.getElementById('col-header-results-a').hidden=false;
+    document.getElementById('col-header-results-l').hidden=false;
+    document.getElementById('col-header-results-i').hidden=false;
+    document.getElementById('col-header-results-fc').hidden=false;
+    document.getElementById('col-header-results-ak').hidden=false;
+    document.getElementById('col-header-results-t').hidden=false;
+  },
 
+  showAllWarnings: function() {
+    document.getElementById('col-header-results-warnings').hidden=false;
+    document.getElementById('col-header-results-fw').hidden=false;
+    document.getElementById('col-header-results-hw').hidden=false;
+    document.getElementById('col-header-results-alw').hidden=false;
+    document.getElementById('col-header-results-aw').hidden=false;
+    document.getElementById('col-header-results-lw').hidden=false;
+    document.getElementById('col-header-results-iw').hidden=false;
+    document.getElementById('col-header-results-fcw').hidden=false;
+    document.getElementById('col-header-results-akw').hidden=false;
+    document.getElementById('col-header-results-tw').hidden=false;
+  },
+
+  showAllFailures: function() {
+    document.getElementById('col-header-results-failures').hidden=false;
+    document.getElementById('col-header-results-ff').hidden=false;
+    document.getElementById('col-header-results-hf').hidden=false;
+    document.getElementById('col-header-results-alf').hidden=false;
+    document.getElementById('col-header-results-af').hidden=false;
+    document.getElementById('col-header-results-lf').hidden=false;
+    document.getElementById('col-header-results-if').hidden=false;
+    document.getElementById('col-header-results-fcf').hidden=false;
+    document.getElementById('col-header-results-akf').hidden=false;
+    document.getElementById('col-header-results-tf').hidden=false;
+  },
+
+  hideAllCounts: function() {
+    document.getElementById('col-header-results-text').hidden=true;
+    document.getElementById('col-header-results-d').hidden=true;
+    document.getElementById('col-header-results-F').hidden=true;
+    document.getElementById('col-header-results-h').hidden=true;
+    document.getElementById('col-header-results-al').hidden=true;
+    document.getElementById('col-header-results-a').hidden=true;
+    document.getElementById('col-header-results-l').hidden=true;
+    document.getElementById('col-header-results-i').hidden=true;
+    document.getElementById('col-header-results-fc').hidden=true;
+    document.getElementById('col-header-results-ak').hidden=true;
+    document.getElementById('col-header-results-t').hidden=true;
+  },
+
+  hideAllWarnings: function() {
+    document.getElementById('col-header-results-fw').hidden=true;
+    document.getElementById('col-header-results-hw').hidden=true;
+    document.getElementById('col-header-results-alw').hidden=true;
+    document.getElementById('col-header-results-aw').hidden=true;
+    document.getElementById('col-header-results-lw').hidden=true;
+    document.getElementById('col-header-results-iw').hidden=true;
+    document.getElementById('col-header-results-fcw').hidden=true;
+    document.getElementById('col-header-results-akw').hidden=true;
+    document.getElementById('col-header-results-tw').hidden=true;
+  },
+
+  hideAllFailures: function() {
+    document.getElementById('col-header-results-ff').hidden=true;
+    document.getElementById('col-header-results-hf').hidden=true;
+    document.getElementById('col-header-results-alf').hidden=true;
+    document.getElementById('col-header-results-af').hidden=true;
+    document.getElementById('col-header-results-lf').hidden=true;
+    document.getElementById('col-header-results-if').hidden=true;
+    document.getElementById('col-header-results-fcf').hidden=true;
+    document.getElementById('col-header-results-akf').hidden=true;
+    document.getElementById('col-header-results-tf').hidden=true;
+  },
+
+  hideAllCategoryCols: function() {
+    document.getElementById('col-header-results-text').hidden=true;
+    document.getElementById('col-header-results-d').hidden=true;
+    document.getElementById('col-header-results-F').hidden=true;
+    document.getElementById('col-header-results-h').hidden=true;
+    document.getElementById('col-header-results-al').hidden=true;
+    document.getElementById('col-header-results-a').hidden=true;
+    document.getElementById('col-header-results-l').hidden=true;
+    document.getElementById('col-header-results-i').hidden=true;
+    document.getElementById('col-header-results-fc').hidden=true;
+    document.getElementById('col-header-results-ak').hidden=true;
+    document.getElementById('col-header-results-t').hidden=true;
+    document.getElementById('col-header-results-fw').hidden=true;
+    document.getElementById('col-header-results-hw').hidden=true;
+    document.getElementById('col-header-results-alw').hidden=true;
+    document.getElementById('col-header-results-aw').hidden=true;
+    document.getElementById('col-header-results-lw').hidden=true;
+    document.getElementById('col-header-results-iw').hidden=true;
+    document.getElementById('col-header-results-fcw').hidden=true;
+    document.getElementById('col-header-results-akw').hidden=true;
+    document.getElementById('col-header-results-tw').hidden=true;
+    document.getElementById('col-header-results-ff').hidden=true;
+    document.getElementById('col-header-results-hf').hidden=true;
+    document.getElementById('col-header-results-alf').hidden=true;
+    document.getElementById('col-header-results-af').hidden=true;
+    document.getElementById('col-header-results-lf').hidden=true;
+    document.getElementById('col-header-results-if').hidden=true;
+    document.getElementById('col-header-results-fcf').hidden=true;
+    document.getElementById('col-header-results-akf').hidden=true;
+    document.getElementById('col-header-results-tf').hidden=true;
+  },
+  
   windowOnKeyDown: function() {
 
   },

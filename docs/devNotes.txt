@@ -246,6 +246,8 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- QA: fnGetFormControlLabelTagText
+  -- QA: fnGetEffectiveLabel, // TODO: Does an implicit label really preempt any explicit labels?
   -- List deprecated elements, font, blink,etc.
   -- HTML report, inspector dialog should pass source document when called from inspector dialogs.
   -- Spider page titles
