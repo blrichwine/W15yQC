@@ -16,9 +16,9 @@
    </xul:script>
 	 <xul:vbox id="aboutDialog">
 			<xul:description value="W15y Quick Check" class="name"/>
-			<xul:description id="ver" value="Version 1.0 - Beta 24" class="version"/>
+			<xul:description id="ver" value="Version 1.0 - Beta 39" class="version"/>
 			<xul:description value="Released:" class="title"/>
-			<xul:description id="rd" value="February 24, 2013" class="text"/>
+			<xul:description id="rd" value="January 26, 2014" class="text"/>
 			<xul:description value="Author:" class="title"/>
 			<xul:description value="Brian Richwine" class="text"/>
 			<xul:description value="Homepage:" class="title"/>

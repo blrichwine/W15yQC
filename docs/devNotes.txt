@@ -246,7 +246,6 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
-    -- Removing highlights leaves trash behind... clean that up!
 
 	-- SAVE SETTINGS TO FILE. How to set defaults automatically?
   -- CONFIG for Page Score paramenters
@@ -744,6 +743,7 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+    -- Removing highlights leaves trash behind... clean that up! [01/26/2014]
     -- False failure whith AREA tags and alt attributes: https://www.indianactsi.org/ [10/21/2013]
        <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov		
        Failure: Link text should not come solely from the 'alt' attribute. The 'alt' attribute is not valid on the link element and is not generally considered accessible.
