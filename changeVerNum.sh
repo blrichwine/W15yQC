@@ -2,9 +2,9 @@
 echo Updating W15yQC Beta Version number from $1 to $2
 releaseDate=$(date "+%B %d, %Y")
 
-sed -e "s/releaseVersion: '1.0 - Beta $1'/releaseVersion: '1.0 - Beta $2'/" -e "s/releaseDate: '[a-zA-Z0-9 ,]*'/releaseDate: '$releaseDate'/" <~/Dropbox/dev/W15yQC/content/overlay.js >~/Dropbox/dev/W15yQC/content/overlay.new.js
-mv ~/Dropbox/dev/W15yQC/content/overlay.js ~/Dropbox/dev/W15yQC/content/overlay.old.js
-mv ~/Dropbox/dev/W15yQC/content/overlay.new.js ~/Dropbox/dev/W15yQC/content/overlay.js
+#sed -e "s/releaseVersion: '1.0 - Beta $1'/releaseVersion: '1.0 - Beta $2'/" -e "s/releaseDate: '[a-zA-Z0-9 ,]*'/releaseDate: '$releaseDate'/" <~/Dropbox/dev/W15yQC/content/overlay.js >~/Dropbox/dev/W15yQC/content/overlay.new.js
+#mv ~/Dropbox/dev/W15yQC/content/overlay.js ~/Dropbox/dev/W15yQC/content/overlay.old.js
+#mv ~/Dropbox/dev/W15yQC/content/overlay.new.js ~/Dropbox/dev/W15yQC/content/overlay.js
 
 sed "s/b$1<\/em:version>/b$2<\/em:version>/" <~/Dropbox/dev/W15yQC/install.rdf >~/Dropbox/dev/W15yQC/install.new.rdf
 mv ~/Dropbox/dev/W15yQC/install.rdf ~/Dropbox/dev/W15yQC/install.old.rdf

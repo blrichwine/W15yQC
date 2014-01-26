@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 37',
-    releaseDate: 'October 21, 2013',
+    releaseVersion: '1.0 - Beta 38',
+    releaseDate: 'October 27, 2013',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -854,6 +854,15 @@ ys: 'whys'
       return s;
     },
 
+    fnRemoveElementFromChain: function(el) {
+      if (el!==null && el.parentNode) {
+        while (el.firstChild!==null) {
+          el.parentNode.insertBefore(el.firstChild,el);
+        }
+        el.parentNode.removeChild(el);
+      }
+    },
+    
     // Severity Levels: 0=notice, 1=warning, 2=failure
     // Expert Levels: 0=Basic, 1=Advanced, 2=Expert
     noteDetails: { // [Quick, Severity, Expert level, hasExplanation, URL]

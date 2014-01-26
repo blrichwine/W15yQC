@@ -246,6 +246,18 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+    -- Removing highlights leaves trash behind... clean that up!
+
+	-- SAVE SETTINGS TO FILE. How to set defaults automatically?
+  -- CONFIG for Page Score paramenters
+  -- banner-image, page level item column counts, https://www.iu.edu/~wmtest/home.php
+  -- Reveal language changes in semantic view
+  -- Add missing ID list detection to problem IDs dialog
+  -- Add sequenced number detection to form control labels?
+  -- Change Missing Heading text in HTML display to be italic and add dashes before and after
+  -- Add don't perform sounds like checking on more than XX items config feature
+  -- Add number of links checked out of xx links on inspecting links status (after % complete)
+  -- When running HTML report from an inspect dialog don't collapse the section even if the pref is to do so.
   -- QA: fnGetFormControlLabelTagText
   -- QA: fnGetEffectiveLabel, // TODO: Does an implicit label really preempt any explicit labels?
   -- List deprecated elements, font, blink,etc.

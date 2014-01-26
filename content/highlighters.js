@@ -137,6 +137,7 @@ blr.W15yQC.Highlighters = {
     }
   },
 
+  
   removeListHighlights: function (aDocumentsList) {
     var doc, i, styleElement = null, infoElements;
     if (aDocumentsList != null && aDocumentsList.length > 0) {
@@ -150,6 +151,10 @@ blr.W15yQC.Highlighters = {
           infoElements = doc.getElementsByClassName('w15yqcListInsert');
           while (infoElements != null && infoElements.length > 0) {
             infoElements[0].parentNode.removeChild(infoElements[0]);
+          }
+          infoElements = doc.getElementsByClassName('w15yqcListBorder');
+          while (infoElements != null && infoElements.length > 0) {
+            blr.W15yQC.fnRemoveElementFromChain(infoElements[0]);
           }
         }
       }
@@ -208,9 +213,21 @@ blr.W15yQC.Highlighters = {
     }
   },
 
+  scrubHeadingHighlightClass: function(sClassName, doc) {
+    var infoElements = doc.getElementsByClassName(sClassName), sClass='';
+    while (infoElements != null && infoElements.length > 0) {
+      sClass=blr.W15yQC.fnCleanSpaces(infoElements[0].className.replace(/\bw15yqcH\d\s*/,'','ig'));
+      if (blr.W15yQC.fnStringHasContent(sClass)) {
+        infoElements[0].className=sClass;
+      } else {
+        infoElements[0].removeAttribute('class');
+      }
+    }
+  },
+  
   removeHeadingHighlights: function (aDocumentsList) {
     var doc, i, styleElement = null,
-      infoElements = null;
+      infoElements = null, sClass='';
     if (aDocumentsList != null && aDocumentsList.length > 0) {
       for (i = 0; i < aDocumentsList.length; i++) {
         doc = aDocumentsList[i].doc;
@@ -227,6 +244,12 @@ blr.W15yQC.Highlighters = {
           while (infoElements != null && infoElements.length > 0) {
             infoElements[0].parentNode.removeChild(infoElements[0]);
           }
+          blr.W15yQC.Highlighters.scrubHeadingHighlightClass('w15yqcH1',doc);
+          blr.W15yQC.Highlighters.scrubHeadingHighlightClass('w15yqcH2',doc);
+          blr.W15yQC.Highlighters.scrubHeadingHighlightClass('w15yqcH3',doc);
+          blr.W15yQC.Highlighters.scrubHeadingHighlightClass('w15yqcH4',doc);
+          blr.W15yQC.Highlighters.scrubHeadingHighlightClass('w15yqcH5',doc);
+          blr.W15yQC.Highlighters.scrubHeadingHighlightClass('w15yqcH6',doc);
         }
       }
     }
@@ -288,6 +311,19 @@ blr.W15yQC.Highlighters = {
       }
     }
   },
+  
+   
+  scrubLandmarkHighlightClass: function(sClassName, doc) {
+    var infoElements = doc.getElementsByClassName(sClassName), sClass='';
+    while (infoElements != null && infoElements.length > 0) {
+      sClass=blr.W15yQC.fnCleanSpaces(infoElements[0].className.replace(/\bw15yqc\w*\b\s*/,'','ig'));
+      if (blr.W15yQC.fnStringHasContent(sClass)) {
+        infoElements[0].className=sClass;
+      } else {
+        infoElements[0].removeAttribute('class');
+      }
+    }
+  },
 
   removeARIALandmarkHighlights: function (aDocumentsList) {
     var doc, i, styleElement = null,
@@ -304,6 +340,7 @@ blr.W15yQC.Highlighters = {
           while (infoElements != null && infoElements.length > 0) {
             infoElements[0].parentNode.removeChild(infoElements[0]);
           }
+          blr.W15yQC.Highlighters.scrubLandmarkHighlightClass('w15yqcARIALandmark', doc);
         }
       }
     }
@@ -533,6 +570,19 @@ blr.W15yQC.Highlighters = {
     return isDataTable;
   },
 
+
+  scrubTableHighlightClass: function(sClassName, doc) {
+    var infoElements = doc.getElementsByClassName(sClassName), sClass='';
+    while (infoElements != null && infoElements.length > 0) {
+      sClass=blr.W15yQC.fnCleanSpaces(infoElements[0].className.replace(/\bw15yqc\w*\b\s*/,'','ig'));
+      if (blr.W15yQC.fnStringHasContent(sClass)) {
+        infoElements[0].className=sClass;
+      } else {
+        infoElements[0].removeAttribute('class');
+      }
+    }
+  },
+  
   removeTableHighlights: function (aDocumentsList) {
     var doc, i, styleElement = null,
       infoElements = null,
@@ -549,14 +599,8 @@ blr.W15yQC.Highlighters = {
           while (infoElements != null && infoElements.length > 0) {
             infoElements[0].parentNode.removeChild(infoElements[0]);
           }
-          tables = doc.getElementsByClassName('w15yqcIsDataTable');
-          while (tables != null && tables.length > 0) {
-            tables[0].className = tables[0].className.replace(/\bw15yqcIsDataTable\b\s?/, '');
-          }
-          tables = doc.getElementsByClassName('w15yqcIsNotDataTable');
-          while (tables != null && tables.length > 0) {
-            tables[0].className = tables[0].className.replace(/\bw15yqcIsNotDataTable\b\s?/, '');
-          }
+          blr.W15yQC.Highlighters.scrubTableHighlightClass('w15yqcIsDataTable',doc);
+          blr.W15yQC.Highlighters.scrubTableHighlightClass('w15yqcIsNotDataTable',doc);
         }
       }
     }
