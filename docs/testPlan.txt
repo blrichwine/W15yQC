@@ -1,0 +1,119 @@
+
+*
+* Sanity Check
+*
+*
+   1. Run files through the quick HTML report
+      a. Files with items that should and shouldn't be listed by AT (headings, links, images, form controls, etc.)
+   2. Run files through the full HTML report
+      a. Files that have items for every section and enable every column of the table displays
+      b. Files that have items for every section and hide every posible hidden column from various table displays
+   3. Run files through each inspector dialog
+      a. Look for each type of value to be displayed in appropriate column
+      b. Sort the table display various ways and verify correct item is displayed when a row is selected
+      c. Verify the element highlighting is working as expected
+      d. Verify each of the other buttons are working as expected.
+   4. Run files through each highlighter type
+      a. Verify the correct elements get highlighted
+      b. Look for errors and warnings in the browser error logs
+      c. Make sure the highlighter toggle works
+      d. Make sure the install all feature works
+      e. Make sure the remove all feature works
+   5. Run the contrast checker tool through various files
+      a. Verify the results
+      b. Sort the table and verify the correct results are displayed when a row is selected
+      c. Verify the highlight feature is working correctly.
+      d. Verify the correct values get passed to the contrast tool
+      e. Verify the other button features work as expected
+   6. Play with the color contrast tool and verify that the features work as expected
+      a. verify the results
+   7. Run various pages through the Semantic View tool
+      a. Make sure all expected content is displayed.
+      b. Make sure content that should be missing is not displayed.
+      c. Make sure form control highlighting works
+      d. Make sure semantic highlighting works
+   8. Focus Tracker
+   9. Problem ID Checker
+      a. Verify the results
+      b. Sort the table and verify the correct results are displayed when a row is selected
+      c. Verify the highlight feature is working correctly.
+   10. Project Scanner
+      a. Load project files and verify they load correctly.
+      b. Import sitemaps and verify they load correctly.
+      c. File Save As a project file and verify it saves correctly
+      d. Export a project as csv and verify it exports correctly
+      e. Verify the function of the project settings dialog
+      f. Verify the delete URL deletes the correct URL no matter how sorted
+      g. Verify the edit URL deletes the correct URL no matter how sorted
+      h. Verify that the must match and must not match controls work correctly
+      i. Run the scanner on several different sites and make sure it does not crash, it does not slow down, and no open/save dialogs appear
+    11. Options dialog
+      a. Test the saving of various options
+      b. Test that the various options have the right effect.
+      c. Dream up options that might cause conflicts, what happens then.
+      d. What are the default options that appear when 
+      
+      
+
+
+ QA Steps to perform before releases
+   1) Check version info is correct
+       - Examine 'version' variable in blr.W15yQC
+       - Run HTML Report and examine report footer
+       - Examine version info in About dialog
+   2) Run through QA Test pages and check for expected results
+   3) Run HTML report on major websites to verify no unexpected results or behavior
+       - cnn.com
+       - iub.edu
+       - indiana.edu
+       - nightly2.sakaiproject.org servers
+       - iupui.edu
+       - iuadapts.indiana.edu
+       - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
+       - compare results on running against FAE on several pages (link text, form control text, headings)
+    4) Run through the Mozilla extension validator
+    5) Run through a spell checker
+
+ Steps to perform to issue release
+    1) Upload to download section on github
+    2) Update download links on the website
+    2) Upload to Mozilla
+
+ Steps to perform after a release
+    1) Search google for new release by file name, by description text, on multiple computers
+    2) Download new release from web site and install in multiple firefox versions
+        - Verify basic functionality (sanity checks)
+        - Verify version number is correct
+
+
+      Compare inspector results against challenging websites, make sure page description makes sense
+        Challenging website list:
+          cnn.com
+          google search home page
+          google search results
+          google news
+          google groups various pages
+          google mail
+          google drive
+          google spreadsheet
+          sakai
+          blackboard
+          canvas
+          desire2learn
+          oncourse
+          open accessibility examples
+          thecn
+          courseload
+          coursesmart
+          etext.illinois
+          iu news
+
+  *** QA Tools
+    Perl script to check for QA status
+      Scan overlay.properties file for entries
+      Ignore entries on ignore.properties.lst
+      Check for presence of property in the noteDetails array
+      Check for presence in rest of overlay.js file and report function and note the line and function
+      Check for presence of a QA file
+      Inspect the QA file for a verified date
+      Compare the verify date with cutoff date

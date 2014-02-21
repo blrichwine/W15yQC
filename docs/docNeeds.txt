@@ -1,0 +1,213 @@
+
+ * TODO:
+      Documentation:
+          What to look for in an A11y tool:
+               http://www.karlgroves.com/2013/06/28/choosing-an-automated-accessibility-testing-tool-13-questions-you-should-ask/
+          Other Protocols:
+               http://www.w3.org/WAI/eval/preliminary.html
+          Screenshots
+          FAQ
+            EXAMPLES:
+              http://www.downloadhelper.net/faq.php#how-install
+            Can W15yQC work with Firebug?
+            How do I install W15yQC
+            What is ___.xpi
+            How do I uninstall W15yQC
+            I cannot find the W15yQC toolbar button. Where is it?
+            One of the W15yQC keyboard shortcuts overrides a shortcut used by another important extension of mine. What can I do?
+            Tips and Tricks
+          Screencasts to make:
+            Installing: http://screencast.com/t/vQWcAIoU3YB
+
+            Configuring icons
+            Setting options
+            Uninstalling
+            Using contrast tools
+            Using an inspector dialog
+
+
+  *** FAQ Entries
+    -- Why do some links not appear in the list?
+    --
+  
+  
+  
+	  video and support page for the color chooser tool
+	  video and support page for the contrast inspect tool
+	  video and support page for the problem ID tool
+	  video and support page for the focus tracker tool
+	  video and support page for the remove styles / semantic view, document how you can disable CSS in the browser to see how that looks
+	  video and support page for keyboard accessibility checks
+	  video and support page for inspectors
+	  video and support page for site inspector
+	  video and support page for full inspection
+	  video and support page for the
+
+
+Simple protocol development:
+      Accessibility Quick Checks:
+         Page title
+         Page language
+         Frame Titles
+         ARIA Landmarks
+         Skip Navigation
+         Page Headings
+         Links
+         Form Labels
+
+      According to Penn State:
+        Image ALT Tag Tips
+        Page or Document Title
+        Headings and Subheadings
+        Link Text
+        Table Headers and Captions
+        Form Design Considerations
+        Contrast or Luminosity/Brightness
+        Color Issues
+        Fonts and Text Layout
+        Text Reading Order
+        Charts & Accessibility
+
+
+Background for Phase II features:
+
+Are there any decent enterprise accessibility testing tools?
+
+I am the only full time accessibility tester along with a part time person in our organization. We have a huge backlog of applications that need tested and an ever growing list of new ones. We test mobile applications and desktop applications. As far as the newly developed applications, we are doing pretty well keeping up. We have a good process with great tools and great resources. Our problem lies with our huge list of applications that were developed before accessibility was implemented. In addition, other departments and organizations want their applications scanned. We looked at IBM's Rational Policy Tester and after many testing trials, decided against it. We still had to manually sort through so much noise, it wasn't really saving us much time. The scans ran fast so applications that had hundreds of pages would scan fast (the ones it would work on) which was great but then to go through the reports and deciding what was truly real issues and what wasn't took a lot of time. Also, we had many applications that we had trouble getting to run and some that wouldn't run at all. It also showed many duplicate errors under different names. We would also like something we could run on a schedule to use as an auditing tool. I feel there probably isn't a solution out there to do what I'm asking but I thought I would throw this question out there to see what the group thought. I know there is Rational Policy Tester, Deque, Compliance Sheriff, SortSite and SSBart. We've seen Rational and SortSite but not the others. Just to be clear, we were wanting one that crawls through all the pages of the application.
+Let me know if you have any ideas on how to handle a large number of applications when you are only 1 1/2 people. :)
+15 days ago
+
+    Like
+    Comment
+    Follow
+    Flag
+    More
+
+Duarte Morais, Maile George and 1 other like this
+
+15 comments
+Olga Dosis
+
+Follow Olga
+
+Olga Dosis • Hello,
+
+I recommended in the College I work in some tools. One of which is free, the other tool that is used has a night crawler that asses pages over a 24 hour period and provides a report of the accessibility gaps. Send me an email and we can chat further about this.
+13 days ago • Like
+
+Olaf Drümmer
+
+OlafUnfollow
+
+Olaf Drümmer • @Olga
+.. and you'd rather not mention in this discussion group which tools you recommend(ed)?
+12 days ago • Like
+
+Follow Gerry
+
+Gerry Neustatl • I am really keen to hear which tools you have recommended too. Any chance you can share? Thanks in advance.
+11 days ago • Like
+
+    • Reply privately
+    • Flag as inappropriate
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • I would recommend checking out SSBBARTGROUP's Accessibility Management Platform (AMP). It will reveal the low hanging fruit without duplication and manually guides you through the things that should be looked at and verified. Works well for Mobile, Web, MAC and PDF accessibility and educates your team.
+10 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • If you are interested in detecting ARIA and contrast violations check out Deque's Worldspace Fire-Eyes Firefox Firebug Addon. While not for automated testing it is very helpful all the same. I use both everyday!
+10 days ago • Like
+
+1
+
+Follow Gerry
+
+Gerry Neustatl • Thank you Kare
+10 days ago • Like
+
+Jeff Orchard
+
+Follow Jeff
+
+Jeff Orchard • I create work tickets after an analysis in Excel, so a CSV export with useful fields is the first thing I look for in any tool. A 100-page output in HTML, on the other hand, is a dismal waste of time.
+
+The AMP is $1,500/yr, so it must be really good, right? The demo provides a CSV export but the fields don't include the WCAG 2 sufficient criteria code (e.g., 1.3.1 Info and Relationship) or the technical solutions and failures. I wonder if a licensed copy allows those fields to be tailored? I expect adding the WCAG 2 categories would be trivial, but you never know ...
+10 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • The full version provides much more and allows you to export different violation reports by priority, by standard or by instance etc. One of the features I like most about AMP is you don't have to maintain all those rouge spreadsheets which quickly become outdated. AMP allows you to track and monitor compliance over time. You can even create rules to check for specific violations in your code and customize Global (Site-wide) and Pattern (project specific) violations to be turned on or off - further reducing the noise in your reports. There is also a Toolbox of browser addons for Firefox, an Explorer Bar for IE as well as a desktop app that allows you to spider your sites and automate these audits. The staff at SSB Bart Group was very helpful and allowed us to demo the full version before purchasing.
+9 days ago • Like
+
+1
+
+Jeff Orchard
+
+Follow Jeff
+
+Jeff Orchard • Thanks Kare. The problem with the spreadsheet approach is indeed the trace between reports. I've been considering some Excel kung-fu for matching incidents across reports, but if AMP does this out of the box it's a big checkmark in its column.
+
+I'll see if the SSBBG will also allow me to test the full version. That's quite the price for a solo consultant.
+9 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • In this case, you do get what you pay for and it is well worth the expense just in the time it saves trying to monitor compliance over time.
+9 days ago • Like
+
+Kathi Gorrell
+
+Follow Kathi
+
+Kathi Gorrell • Thank you Kare for the information about SSBart. I think we will look at getting a trial version of it. Anyone try Deque?
+7 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • That is SSB Bart Group ( https://amp.ssbbartgroup.com/register/ ).
+Don't miss SSB Bart Group's free ACE training series all month! ( https://ace.ssbbartgroup.com/ )
+7 days ago • Like
+
+Wes Dillon
+
+Follow Wes
+
+Wes Dillon • Hello - I am the sales rep for Deque's WorldSpace tool - happy to answer any questions in detail - 603.205.4543
+
+WorldSpace Sync is an enterprise scanning tool that has a suite of tools and applications that can be used by Developers, QA & for reporting on compliance status. FireEyes is one of the extensions that can be used by Dev & QA.
+
+Some features:
+- The tool can test against the Federal Government standard of Section 508 or the International standard of WCAG 2.0
+- The tool is completely configurable and you can scan a single page, a collection of pages or the entire site or application.
+- Ability to do web-application scripting. you can define a script and it can intelligently scan an application.
+- Scheduled or nightly scans - you can schedule scans whenever convenient for you.
+2 days ago • Like
+
+1
+
+Richard Morton (@accessibleweb)
+
+Follow Richard
+
+Richard Morton (@accessibleweb) • Kare, if the https://ace.ssbbartgroup.com/ courses are free why does the registration form say "Once you have registered we will contact you by phone to get your payment information"?
+1 day ago • Like
+
+Jeff Orchard
+
+Follow Jeff
+
+Jeff Orchard • Wes, can the WorldSpace tool match errors across reports, even after a line number shift? A commercial tool that matches errors from a fresh report to errors that have already been analyzed, and via them to the work ticket number, is an expense worth considering. It’s a complete waste of time to wade through issues that have already been ticketed but not yet fixed!
+1 day ago • Like

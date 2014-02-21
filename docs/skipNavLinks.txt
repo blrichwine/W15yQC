@@ -1,0 +1,29 @@
+
+    *** Self Maintaining Skip Navigation Links ***
+    1. Two versions
+       a. jQuery
+       b. javaScript only
+    2. Missing Target Response Choices
+       a. Simply disappear
+       b. Display a message (visually) that it is broken
+       c. Move to alternate target
+    3. Target type
+       a. Absolute
+          i. named anchor
+         ii. element with ID
+        iii. first ARIA main landmark
+         iv. XPATH
+       b. Relative
+          i. completely relative
+         ii. relative to a fix
+    4. Use of CSS
+       a. Generate CSS copy copy 'n pasting
+       b. Inline with the HTML code (style="")
+    5. javaScript behavior
+       a. Install link w/JavaScript - if noscript, no link
+       b. Fall back to standard skip link
+    6. Style - multiple skins to choose from
+       a. Appear at top of page as a block element (push page content down)
+       b. Appear as popup overlay that floats over location (x, y offset)
+       c. Always visible
+

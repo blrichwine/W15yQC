@@ -1,0 +1,522 @@
+
+
+ DoD
+
+
+ *    - Determine phased developement / roadmap
+ *      - Rules
+ *      - Features
+ *         - Table structure inspector
+ *         - ARIA menu analyzer
+ *         - ARIA treeview analyzer
+ *      - Support, A11y education
+ *         - Video for using the program
+ *         - Video for QA'ng A11y
+ *         - Video for checking special features
+ *           - Menus
+ *           - Slideshows
+ *           - Audio players
+ *           - Video players
+ *           - Select elements
+ *           - Configuring OS/Browswer for Keyboard A11y Testing
+ *      - Coding tech
+ *    - Develop QA files for Phase I
+ *    - Develop to the QA files
+ *    - Once QA'd for Phase I, host the project
+ *
+ *    - TODO Before publishing to gitHub:
+ *        - User docs / for wiki
+ *           - Tool mission statement
+ *              - explain tool's goals
+ *              - who is the tool for - no w15y aware dev, manager, w15y professional
+ *              - why to use
+ *           - Installation instructions
+ *           - Basic / Getting started user instructions
+ *           - Simple non-W15y professional accessibility checking protocol
+ *           - help for error messages in basic user level
+                - checkpoints
+                - compliance ref and standards
+                - additional resources
+                - frequently asked questions
+ *    - Rules to Add:
+ *      - HTML5 nav element best practice
+ *      - ARIA describedAt?
+ *      -longdesc must have a valid URI
+ *         - Look for linkchecker extensions
+ *         - can we tell if ff is online?
+ *         - timeouts?
+ *      - longdesc content should be appropriate: text
+ *        - ID defns:
+ *          - http://www.w3schools.com/tags/att_standard_id.asp (not accurate)
+ *          - http://www.w3.org/TR/html401/types.html#type-name
+ *      - Keyboard Accessibility
+ *         - focusable elements with mouseovers should also have onfocus handlers OA18
+ *         - focusable elements with onmouseout handlers should also have onblur handlers OA19
+ *         - every onclick handler should be on a focusable element OA20
+ *         - onchange event handler should not be on a select element OA21
+ *         - non-form / non-anchor elements with eventhandlers have appropriate ARIA roles OA73
+ *         - elements with mouse handlers have keyboard handlers OA74
+ *         - check that enabled elements with ACTIVE-DECENDANT have valid tab index OA75
+ *         - Check that elements without 'aria-activedescendant' that have roles requiring a container have focusable children OA76
+ *         - Check that elements without 'aria-activedescendant' that have roles requiring a container have key event handlers OA77
+ *         - Accesskey attribute values should be unique OA23
+ *         - Accesskey attribute values should not interfere with IE shortcuts OA24
+ *         - The blink and marquee elements must not be used OA25
+ *      - th cells in "odd" places should have scope attributes
+ *      - Complex tables must
+ *         - th cells must have valid, unique ids on them
+ *         - td cells in the "content zone" must have header attributes on them
+ *      - Layout tables:
+ *         - should not be nested?
+ *         - should have role="presentation"
+ *      - IDs refered to by headers attribute must:
+ *         - be valid
+ *         - exist in the document
+ *         - contain text
+ *      - focusable elements should have visible focus (outline)
+ *      - Each input element with type=text | password | checkbox | radio | file and each select and textarea element should either be referenced by the for attribute of a label element via its id attribute, or have a title attribute.
+ *      - Each button element must contain content.
+ *      - Effective labels should be unique.
+ *      - Do not use font element
+ *      - Do not use I U B elements (html 4)
+ *      - ARIA
+ *        - valid ID refs
+ *        - valid hierarchy (valid roles, properties, required child roles, valid parent roles, required props and states not empty and valid values, ARIA- attrs valid)
+ *      - DATA TABLES
+ *        - QUESTIONS:
+ *          - If a cell has both row and column headers which does JAWS read first? What about multiple row or column headers are they all read aloud?
+ *          - what about the datatable attribute?
+ *          - what about ARIA roles?
+ *        - Is a data table if
+ *          - contains caption
+ *          - contains a table summary
+ *          - contains th
+ *          - contains headers attribute
+ *          - contains thead element
+ *
+ *        - must use a caption element or summary attribute
+ *        - must use TH elements in either all columns or all rows that are non-empty
+ *        - all non-empty cells must have header text available to describe them.
+ *        - Summary attribute content must be unique
+ *        - Summary attribute content must be meaningful
+ *        - Summary attribute content shouldn't include "layout"
+ *        - complex tables must use header attributes
+ *        - Do not use nested tables
+ *       - COMPLEX DATA TABLES
+ *         - is complex table if has:
+ *           - rowspan attribute
+ *           - colspan attribute
+ *           - unequal number of columns in rows
+ *           - multiple th values in a given row (other than column headers)
+ *           - multiple th values in a given column (other than row headers)
+ *        - warn on complex table
+ *        - all td cells should have headers attribute
+ *        -
+ *       - Malformed table if
+ *         - with colspan and rowspan attributes taken into consideration the number of cells per row or column don't add up
+ *       - Warn about
+ *         - th not in the first column or row that is missing a scope attribute
+ *
+ *
+ *    - List of triggered manual checks to suggest:
+ *      - Alt text must describe content or purpose of an image OA
+ *      - audio without any video needs a transcript with speak information
+ *      - video with no audio track needs text description of the video's content
+ *      - video with audio needs synchronized captions for the hearing impaired, audio description for the visually impaired (extended audio description if required)
+ *      - Live audio requires realtime captioning with speaker information
+ *      - Instructions should not be dependent upon sensory information (size, location, sound, color)
+ *      - Color is not the only means of conveying information
+ *      - Verify multimedia does not begin automatically when the page loads
+ *      - luminosity contrast > minimum of 3 for large text, 4.5 for other text
+ *      - verify images aren't being used to stylize text
+ *
+ *    - Redundant links were not being flagged when href="#". Put in a check for this, what other
+ *      similar checks need to be performed? Anything with href and onclick? Check for attached
+ *      event handlers?
+ *    - Make a phased implementation of this! Determine which TODO items go in which phase so we can publish a version!
+ *    - Make a protocol for inspecting a traditional web page using this tool. Document using videos!
+ *
+ *    -TODO: Vet these
+ *      -fnGetDisplayableTextRecursively
+ *    - CODE INSPECTIONS
+ *       - Use method to get node attributes
+ *    - READ and Learn
+ *      - http://www.w3.org/TR/wai-aria/roles#textalternativecomputation
+ *    - RESEARCH
+ *       Do HTML Entities work in alt text?
+ *    - Document Checks
+ *    - Code Fixes:
+ *      - Recursive functions should call arguments.callee(...) instead of the named function
+ *    - Form Controls:
+ *      - Respect HTML5 attributes?
+ *        - form
+ *        - required
+ *      - Add label column (from label tags)
+ *      - Add "Effective Label" column
+ *      - Add ARIA Description column
+ *      - Add form control type (input[type=text], textarea, etc.)
+ *      - Add JAWS label (combobox, etc.) and add to effective label
+ *      - What are the ARIA form control roles? What should be listed there?
+ *      - What about non-landmark ARIA List?
+ *
+ *    - Detect links, references to WCAG techniques, etc in warning/error messages and make them active when displayed.
+ *    - Make effective label routine that:
+ *       - Vet results for link labeling
+ *       - Checks for ARIA role / labels first since that seems to take priority over tag
+ *       - Determines what a screen-reader will announce for any element (link, heading, form control (including legend))
+ *    - Include child text on appropriate element descriptions (button, etc.)
+ *    - Validate documents in WAI Validator
+ *       - Create assumed doctype from document values and paste that in when using DOM for source
+ *    - Invoke WAVE from DOM? <Why? The WAVE tool bar can do this.>
+ *    - Find non-link, button elements that have onclicks without appropriate role values
+ *    - HTML5 Outliner view
+ *    - Long description attribute on images, frames, others (look it up)?
+ *    - Effective Label for images
+ *    - Test alt attribute for image filename formats and flag them as possibly meaningless.
+ *    - Test longdesc attribute: link works, has text content, etc.
+ *    - Note images used in links
+ *    - Note elements with background images
+ *    - Check checkbox labels, doesn't appear to pick up title attribute (check all on worksite setup)
+ *    - Update state description to include Hidden with info incase we decide to offer the option
+ *    - Put in a page footer with optional config settings, date/time, version of tool, author of tool, etc.
+ *    - failed to find explict label for textarea for short-description field in form on defining new site.
+ *    - legend + ascii symbols are not caught. joe brought it up. <check if fixed or not>
+ *    - Check that radio buttons have other radio buttons with the same name attribute value in the same form
+ *    - Get ARIA attribute checks routine fleshed out
+ *       + If same role and label, give warning
+ *    - Understand if the hidden element routine is working [Create QA files to test this]
+ *    - Make table headings unique so the sort links are unique and indicate current sort status in text
+ *      If a input element has an implicit label, how does the child text work for the label if the input element has a title attribute or other text on it?
+ *      Child text for various tags, child images, child input elements (including type=image, buttons, etc.), child text with hidden elements
+ *
+ *    - Internationalize?
+ */
+
+
+      ** New spider checks:
+        - symbols [done]
+        - table summaries [done]
+        - table captions [done]
+        - Link texts [done]
+        - button texts
+        - axis values [done]
+      ** Problem ID dialog
+        - List valid ID rules: http://stackoverflow.com/questions/70579/what-are-valid-values-for-the-id-attribute-in-html
+        - list why an ID is invalid (what characters make it invalid and what position it is in)
+      *** Feature Expansion ***
+        ** Page Summary
+        ** Page Review History
+        ** Manual Page Review Checks
+        ** Storage of Page Results
+        ** Data table inspector
+           - Scroll to and Highlight table
+           - List table results
+           - List Summary, Caption
+           - List table features
+              - dimensions, complex?, rowspans, colspans?, row/col collisions?, nested tables?
+              - use of theader, tfooter, th's w or wo scope, axis, headers attributes
+              - list of axis values (case insensitive?)
+           - list cell features / issues
+           - Table cell navigator (scroll to cell, highlight cell [use color for errors] and related cells (headers), list cell features in dialog box, show cell coding w/xpath, show in firebug)
+           - table cell validity checks
+           - if on a cell that is being used as a header (even if a td that is targeted with a headers attribute) highlight all of the cells it applies to.
+        ** Table highlight feature
+           - extend table highlight feature to have two modes (basic, extended)
+           - extended mode reveals headings for cell, summary, caption, thead rows, tfoot rows, th cells vs td cells, if cell has scope, highlight the border of the scope direction
+           - basic mode -- distinguish between datatables and layout tables
+        ** New Data table checks
+           - handle scope=colgroup, provide warning if not provided
+           - data table if contains axis, abbr
+           - make sure axis value is valid (well, probably can't do this. axis is csv cdata)
+           - make sure scope values are valid
+           - warn on td cell having scope attribute
+           - recommended manual page checks
+              - axis values are valid
+              - summary is accurate
+              - caption value is accurate
+        ** Site indexer
+             Pages listed in a file
+             URL [depth 0=infinite, 1-...N] M:regex I:regex
+             Pages under a specific page
+             Pages that match a specific URL, URL Pattern
+             Max link depth
+             Pages that don't match a specific URL, URL Pattern
+             Max number of pages, max number of pages from one page
+             Summary of results
+             Store notes on checked pages
+             Share results with others (send results from site as a file...)
+             Ignore robots.txt, no index.file
+             Spider delay
+             Drop out certain checks for speed when spidering
+
+    *** Self Maintaining Skip Navigation Links ***
+    1. Two versions
+       a. jQuery
+       b. javaScript only
+    2. Missing Target Response Choices
+       a. Simply disappear
+       b. Display a message (visually) that it is broken
+       c. Move to alternate target
+    3. Target type
+       a. Absolute
+          i. named anchor
+         ii. element with ID
+        iii. first ARIA main landmark
+         iv. XPATH
+       b. Relative
+          i. completely relative
+         ii. relative to a fix
+    4. Use of CSS
+       a. Generate CSS copy copy 'n pasting
+       b. Inline with the HTML code (style="")
+    5. javaScript behavior
+       a. Install link w/JavaScript - if noscript, no link
+       b. Fall back to standard skip link
+    6. Style - multiple skins to choose from
+       a. Appear at top of page as a block element (push page content down)
+       b. Appear as popup overlay that floats over location (x, y offset)
+       c. Always visible
+
+
+  THINGS TO DO BEFORE MAKING WEB PAGE VIDEOS AND W15yQC Protocol Instructions:
+    -- Check table inspector TH default scope code
+    -- Add sorting to all Inspector dialogs [done]
+    -- Add page title tests to the site inspector tool and add a message about it in the URL summary
+    -- Make and debug Quick Check View with element type label where appropriate (button, checkbox, etc.)
+    -- Move the objectToString methods out of the inspect dialog scripts and into the overlay.js script [done]
+    -- Should frames have an effective label? Or, is it always just the title attribute? UNLIKELY!!! FIX This! [done]
+    -- clean up code that takes a node and requires a document to boot.
+
+
+  Restore Defaults option in Options Dialog
+  Align element objects
+    -- apply consistant order
+    -- shouldn't they all have state members?
+  Hidden documents are not noted as such (iframes tests, iframe with skip class-- how should it be handled?)
+    -- links and items in the hidden frame cannot be highlighted and are not listed as being hidden (state==null)
+  Verify table inspector
+    -- especially pay attention to the default th scope
+    -- move position of the labels in the table highlighters. Can they be the first content in the cells instead of the last? [DONE 5/18/2013]
+
+  What does various flash player content sound like to JAWS... youtube, etc. Is it all the same?
+  Create test pages for the remove styles view. Besure to include challenging ARIA content. Look for labels that repeat.
+  how does <cite> read?
+  List of ARIA roles to ignore and warn about not being well supported?
+	Generate a set of QA pages for quick sanity check testing. Use pages and a protocol to exercise the program an inspect for errors, unexpected results, and warnings.
+    Need to investigate the effective label on ARIA roles -- especially on div, spans, links, etc. Make a list. Spider for common aria roles.
+       - Headings
+       - buttons
+       - sliders
+       - etc.
+    **** What about nested fieldsets and legends. Do the legends stack? [No, they do not. Need to make sure we provide a warning.]
+    **** Add flag to allow ARIA to be sufficient for meeting labeling / text requiremnts(images, form fields, etc.)
+    **** Add flag to force empty columns to appear in inspector dialogs
+    **** Add flag to force empty columns to appear in HTML reports
+
+    **** Finish inherited role detection
+
+    ***** Check if implicit labels on a form control really preempt explicit labels (when both are present, and update fnGetEffectiveLabel routine)
+    ***** Make a QA file for elements that we don't think should get their label from a fieldset legend and verify against JAWS
+    MAJOR: Make a QA file for ARIA elements (on divs), and determine how they get their label (role=...)
+
+    ***** Should recursiveText function pick up title attributes on divs and spans?
+    Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
+    Begin major QA sequence.
+
+    Add Quick View that gives page summary features as reported by JAWS
+       - Info that JAWS reads when page loads
+       - Lists of the same info reported from the List Dialogs
+         * Frame titles
+         * ARIA Landmarks
+         * Headings
+         * Links
+         * Form Controls
+
+
+      Store which columns are visible and which are hidden
+      Add sort option for the inspectors
+      Unify inspectors to have effective label field and a description of where the label came from
+          - Access keys
+              Where does the label for an access key come from? Do tests to determine. Verify against QA pages. Is it always from the element's label that it is attached to?
+                - Accesskeys on links
+                - Accesskeys on buttons
+                - Accesskeys on ARIA features
+                   - ARIA button
+              Add label source. [Done: 4/28/2013]
+          - ARIA Landmarks
+              Determine how ARIA Landmark Labels are determined. Verify against QA pages.
+              Add label source. [Done]
+              Warn if non-generated to spec.
+          - Documents
+              Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
+          - Images
+            Added support for effective label and effective label source to the inspector dialog [Done: 4/28/2013]
+          - Links
+              Distinguish between link text and the effective label [Done: 4/28/2013]
+          - Forms
+              Move Effective Label column to the left [Done: 4/28/2013]
+              Add form control type
+                input[type=button], button, ARIA button, etc.
+              Add Label Source [Done: 4/28/2013]
+          - Frames OK
+          - Headings
+             Add label source --FIX IT RIGHT AWAY-- , effective label does not seem to be working on the ARIA headings
+             Add heading type
+                h1, h2, ..., h6, ARIA heading
+
+HTML5 Elements to test
+  -- HEADER
+  -- NAV
+  -- SECTION
+  -- ARTICLE
+  -- ASIDE
+  -- FOOTER
+  -- HGROUP
+  -- ADDRESS
+  
+  Google structured data tool: http://www.google.com/webmasters/tools/richsnippets
+  Semantics: http://schema.org/docs/full.html
+  
+
+Background for Phase II features:
+
+Are there any decent enterprise accessibility testing tools?
+
+I am the only full time accessibility tester along with a part time person in our organization. We have a huge backlog of applications that need tested and an ever growing list of new ones. We test mobile applications and desktop applications. As far as the newly developed applications, we are doing pretty well keeping up. We have a good process with great tools and great resources. Our problem lies with our huge list of applications that were developed before accessibility was implemented. In addition, other departments and organizations want their applications scanned. We looked at IBM's Rational Policy Tester and after many testing trials, decided against it. We still had to manually sort through so much noise, it wasn't really saving us much time. The scans ran fast so applications that had hundreds of pages would scan fast (the ones it would work on) which was great but then to go through the reports and deciding what was truly real issues and what wasn't took a lot of time. Also, we had many applications that we had trouble getting to run and some that wouldn't run at all. It also showed many duplicate errors under different names. We would also like something we could run on a schedule to use as an auditing tool. I feel there probably isn't a solution out there to do what I'm asking but I thought I would throw this question out there to see what the group thought. I know there is Rational Policy Tester, Deque, Compliance Sheriff, SortSite and SSBart. We've seen Rational and SortSite but not the others. Just to be clear, we were wanting one that crawls through all the pages of the application.
+Let me know if you have any ideas on how to handle a large number of applications when you are only 1 1/2 people. :)
+15 days ago
+
+    Like
+    Comment
+    Follow
+    Flag
+    More
+
+Duarte Morais, Maile George and 1 other like this
+
+15 comments
+Olga Dosis
+
+Follow Olga
+
+Olga Dosis • Hello,
+
+I recommended in the College I work in some tools. One of which is free, the other tool that is used has a night crawler that asses pages over a 24 hour period and provides a report of the accessibility gaps. Send me an email and we can chat further about this.
+13 days ago • Like
+
+Olaf Drümmer
+
+OlafUnfollow
+
+Olaf Drümmer • @Olga
+.. and you'd rather not mention in this discussion group which tools you recommend(ed)?
+12 days ago • Like
+
+Follow Gerry
+
+Gerry Neustatl • I am really keen to hear which tools you have recommended too. Any chance you can share? Thanks in advance.
+11 days ago • Like
+
+    • Reply privately
+    • Flag as inappropriate
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • I would recommend checking out SSBBARTGROUP's Accessibility Management Platform (AMP). It will reveal the low hanging fruit without duplication and manually guides you through the things that should be looked at and verified. Works well for Mobile, Web, MAC and PDF accessibility and educates your team.
+10 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • If you are interested in detecting ARIA and contrast violations check out Deque's Worldspace Fire-Eyes Firefox Firebug Addon. While not for automated testing it is very helpful all the same. I use both everyday!
+10 days ago • Like
+
+1
+
+Follow Gerry
+
+Gerry Neustatl • Thank you Kare
+10 days ago • Like
+
+Jeff Orchard
+
+Follow Jeff
+
+Jeff Orchard • I create work tickets after an analysis in Excel, so a CSV export with useful fields is the first thing I look for in any tool. A 100-page output in HTML, on the other hand, is a dismal waste of time.
+
+The AMP is $1,500/yr, so it must be really good, right? The demo provides a CSV export but the fields don't include the WCAG 2 sufficient criteria code (e.g., 1.3.1 Info and Relationship) or the technical solutions and failures. I wonder if a licensed copy allows those fields to be tailored? I expect adding the WCAG 2 categories would be trivial, but you never know ...
+10 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • The full version provides much more and allows you to export different violation reports by priority, by standard or by instance etc. One of the features I like most about AMP is you don't have to maintain all those rouge spreadsheets which quickly become outdated. AMP allows you to track and monitor compliance over time. You can even create rules to check for specific violations in your code and customize Global (Site-wide) and Pattern (project specific) violations to be turned on or off - further reducing the noise in your reports. There is also a Toolbox of browser addons for Firefox, an Explorer Bar for IE as well as a desktop app that allows you to spider your sites and automate these audits. The staff at SSB Bart Group was very helpful and allowed us to demo the full version before purchasing.
+9 days ago • Like
+
+1
+
+Jeff Orchard
+
+Follow Jeff
+
+Jeff Orchard • Thanks Kare. The problem with the spreadsheet approach is indeed the trace between reports. I've been considering some Excel kung-fu for matching incidents across reports, but if AMP does this out of the box it's a big checkmark in its column.
+
+I'll see if the SSBBG will also allow me to test the full version. That's quite the price for a solo consultant.
+9 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • In this case, you do get what you pay for and it is well worth the expense just in the time it saves trying to monitor compliance over time.
+9 days ago • Like
+
+Kathi Gorrell
+
+Follow Kathi
+
+Kathi Gorrell • Thank you Kare for the information about SSBart. I think we will look at getting a trial version of it. Anyone try Deque?
+7 days ago • Like
+
+Kare Romanski
+
+Follow Kare
+
+Kare Romanski • That is SSB Bart Group ( https://amp.ssbbartgroup.com/register/ ).
+Don't miss SSB Bart Group's free ACE training series all month! ( https://ace.ssbbartgroup.com/ )
+7 days ago • Like
+
+Wes Dillon
+
+Follow Wes
+
+Wes Dillon • Hello - I am the sales rep for Deque's WorldSpace tool - happy to answer any questions in detail - 603.205.4543
+
+WorldSpace Sync is an enterprise scanning tool that has a suite of tools and applications that can be used by Developers, QA & for reporting on compliance status. FireEyes is one of the extensions that can be used by Dev & QA.
+
+Some features:
+- The tool can test against the Federal Government standard of Section 508 or the International standard of WCAG 2.0
+- The tool is completely configurable and you can scan a single page, a collection of pages or the entire site or application.
+- Ability to do web-application scripting. you can define a script and it can intelligently scan an application.
+- Scheduled or nightly scans - you can schedule scans whenever convenient for you.
+2 days ago • Like
+
+1
+
+Richard Morton (@accessibleweb)
+
+Follow Richard
+
+Richard Morton (@accessibleweb) • Kare, if the https://ace.ssbbartgroup.com/ courses are free why does the registration form say "Once you have registered we will contact you by phone to get your payment information"?
+1 day ago • Like
+
+Jeff Orchard
+
+Follow Jeff
+
+Jeff Orchard • Wes, can the WorldSpace tool match errors across reports, even after a line number shift? A commercial tool that matches errors from a fresh report to errors that have already been analyzed, and via them to the work ticket number, is an expense worth considering. It’s a complete waste of time to wade through issues that have already been ticketed but not yet fixed!
+1 day ago • Like

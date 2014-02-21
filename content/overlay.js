@@ -175,6 +175,7 @@ course: 'coarse',
 crewed: 'crude',
 cruise: 'crews',
 cs: 'seas',
+d: 'dee',
 damn: 'dam',
 damned: 'dammed',
 daze: 'days',
@@ -239,6 +240,7 @@ freeze: 'frees',
 frieze: 'frees',
 fur: 'fir',
 further: 'farther',
+g: 'gee',
 gaze: 'gays',
 gilled: 'gild',
 gnaw: 'nor',
@@ -284,10 +286,12 @@ indispensible: 'indispensable',
 indespensible: 'indispensable',
 inn: 'in',
 isle: 'ill',
+j: 'jay',
 jeans: 'genes',
 judgment: 'judgement',
 judgemant: 'judgement',
 judgmant: 'judgement',
+k: 'kay',
 knead: 'need',
 kneaded: 'needed',
 kneed: 'need',
@@ -420,7 +424,7 @@ purr: 'per',
 q: 'cue',
 quay: 'key',
 queue: 'cue',
-r: 'ah',
+r: 'are',
 raise: 'rays',
 raised: 'razed',
 raze: 'rays',
@@ -962,6 +966,7 @@ ys: 'whys'
       imgAltTxtIsDecorative: [true,1,0,false,null],
       imgAltTxtIncludesImageTxt: [true,1,0,false,null],
       imgAltLengthTooLong: [true,1,0,true,null],
+      imgEffectiveLabelDiffThanTitle: [false,1,1,false,null],
       imgIDNotValid: [false,1,0,false,null],
       imgIDNotUnique: [false,2,0,false,null],
       imgAltTxtOnlyASCII: [true,2,0,false,null],
@@ -985,6 +990,7 @@ ys: 'whys'
       hHeadingNotUniqueInSection: [true,2,1,false,null],
       hHeadingRoleOverriddenByInheritedRole: [true,1,1,false,null],
       hHeadingRoleOverriddenByRoleAttr: [true,1,1,false,null],
+      hChildOfSectioningElementWOLevel: [false,1,1,true,null],
       hIDNotValid: [false,1,1,false,null],
       hIDNotUnique: [false,2,1,false,null],
 
@@ -1277,6 +1283,16 @@ ys: 'whys'
       return false;
     },
 
+    fnElementIsChildOfSectioningElement: function(el) {
+      while(el!=null && el.parentNode!=null && el.tagName.toLowerCase()!='body') {
+        el=el.parentNode;
+        if (el!=null && /^(article|aside|nav|section)$/i.test(el.tagName)) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
     fnFirstChildElementIs: function(node, sElementTagName) {
       var nodeStack=[], n;
       sElementTagName=sElementTagName.toLowerCase();
@@ -2119,7 +2135,8 @@ ys: 'whys'
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
       var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
       bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
-
+      var bFlag=/big.*index\.shtml/i.test(url1) && /big.*index\.shtml/i.test(url2);
+      var bMsg="Orig:"+url1+' '+url2;
       if(url1 != null) {
         url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
         if(bIgnoreWWW) { url1 = url1.replace(r3, '://'); }
@@ -2141,8 +2158,13 @@ ys: 'whys'
       }
 
       if(url1!=url2 && url1!=null && url2!=null) {
-        url1=url1.replace(r2,'');
-        url2=url2.replace(r2,'');
+        url1 = url1.replace(r2,'');
+        url1 = url1.replace(r4, '');
+        url2 = url2.replace(r2,'');
+        url2 = url2.replace(r4, '');
+      }
+      if (bFlag) {
+        // alert(bMsg+' now:'+url1+' '+url2); // TODO: finish debugging this. why isn't index.shtml getting replaced above?
       }
       return (url1 == url2);
     },
@@ -2391,6 +2413,10 @@ ys: 'whys'
 
       WordString = WordString.toUpperCase();
 
+      if (WordString.length<2) {
+        return WordString;
+      }
+      
       /* Clean and tidy
        */
       WordStr = WordString;
@@ -6711,7 +6737,7 @@ ys: 'whys'
               } else if (lo.warning) {
                 sClass = 'warning';
               }
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
             }
           }
         }
@@ -7239,7 +7265,10 @@ ys: 'whys'
             if(aImagesList[i].effectiveLabel && aImagesList[i].effectiveLabel.length && aImagesList[i].effectiveLabel.length>100) {
               blr.W15yQC.fnAddNote(aImagesList[i], 'imgAltLengthTooLong'); // QA imageTests01.html
             }
-
+            if (blr.W15yQC.fnStringHasContent(aImagesList[i].effectiveLabel)==true && blr.W15yQC.fnStringHasContent(aImagesList[i].title)==true &&
+                blr.W15yQC.fnStringsEffectivelyEqual(aImagesList[i].effectiveLabel,aImagesList[i].title)==false) {
+              blr.W15yQC.fnAddNote(aImagesList[i], 'imgEffectiveLabelDiffThanTitle'); // QA imageTests01.html
+            }
             aImagesList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aImagesList[i].node, aImagesList[i]);
 
             if(aImagesList[i].node != null && aImagesList[i].node.hasAttribute('id')==true) {
@@ -7694,6 +7723,11 @@ ys: 'whys'
           if (aHeadingsList[i].aSameTextAs.length>0) {
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingNotUniqueInSection', [aHeadingsList[i].aSameTextAs.toString()]); // TODO: QA This
             oW15yResults.PageScore.bNotAllHeadingsInASectionAreUnique=true;
+          }
+          
+          if (aHeadingsList[i].node != null && blr.W15yQC.fnIsValidPositiveInt(aHeadingsList[i].node.getAttribute('aria-level'))==false &&
+              blr.W15yQC.fnElementIsChildOfSectioningElement(aHeadingsList[i].node)==true) {
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hChildOfSectioningElementWOLevel'); // QA: headings01.html
           }
         }
       }
@@ -8388,6 +8422,16 @@ ys: 'whys'
       return aLinksList;
     },
 
+    fnThreeConsecutiveLetters: function(s1,s2,s3) {
+      var re=/^[a-z0-9] [a-z0-9] [a-z0-9]$/i;
+      if (s1!=null && s2!=null && s3!=null && re.test(s1+' '+s2+' '+s3)) {
+        if ( (s1.charCodeAt(0)+1)==(s2.charCodeAt(0)) && (s2.charCodeAt(0)+1)==(s3.charCodeAt(0)) ) {
+          return true;
+        }
+      }
+      return false;
+    },
+    
     fnThreeConsecutiveInts: function(s1,s2,s3) {
       var re=/^\d+ \d+ \d+$/;
       if (re.test(s1+' '+s2+' '+s3)) {
@@ -8395,9 +8439,9 @@ ys: 'whys'
           return true;
         }
       }
-      return false;
+      return blr.W15yQC.fnThreeConsecutiveLetters(s1,s2,s3);
     },
-    
+ 
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
       var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, skipStatusUpdateCounter=1;
@@ -9725,7 +9769,7 @@ ys: 'whys'
 
 
     fnDisplayPageSummary: function(rd, oW15yQCReport, bQuick) {
-      var div, div2=null, element;
+      var div, div2=null, element, h2;
 
       div=rd.getElementById('AIDocumentDetails');
       if (div!=null) {
@@ -9763,6 +9807,11 @@ ys: 'whys'
 
         element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
         div2.appendChild(element);
+        h2=div.getElementsByTagName('h2');
+        if (h2 != null && h2.length>0) {
+          h2=h2[0];
+          h2.appendChild(rd.createTextNode(' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)'));
+        }
       }
     },
 

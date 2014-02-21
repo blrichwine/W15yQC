@@ -49,99 +49,9 @@
       https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
 
-	  
- *
- * QA Tasks
- *   - Review text in HTML report for consistency
- *      - Column headers in tables
- *   - Review text in Dialog Box tables for consistency
- *   - Review overlay.properties file and verify:
-        - check spelling
-        - each note entry is also in the overlay.js object of note entries and the [] values are correct
-        - review each note for consistency.
-        - separate statements from explanations
-
-*
-* Sanity Check
-*
-*
-   1. Run files through the quick HTML report
-      a. Files with items that should and shouldn't be listed by AT (headings, links, images, form controls, etc.)
-   2. Run files through the full HTML report
-      a. Files that have items for every section and enable every column of the table displays
-      b. Files that have items for every section and hide every posible hidden column from various table displays
-   3. Run files through each inspector dialog
-      a. Look for each type of value to be displayed in appropriate column
-      b. Sort the table display various ways and verify correct item is displayed when a row is selected
-      c. Verify the element highlighting is working as expected
-      d. Verify each of the other buttons are working as expected.
-   4. Run files through each highlighter type
-      a. Verify the correct elements get highlighted
-      b. Look for errors and warnings in the browser error logs
-      c. Make sure the highlighter toggle works
-      d. Make sure the install all feature works
-      e. Make sure the remove all feature works
-   5. Run the contrast checker tool through various files
-      a. Verify the results
-      b. Sort the table and verify the correct results are displayed when a row is selected
-      c. Verify the highlight feature is working correctly.
-      d. Verify the correct values get passed to the contrast tool
-      e. Verify the other button features work as expected
-   6. Play with the color contrast tool and verify that the features work as expected
-      a. verify the results
-   7. Run various pages through the Semantic View tool
-      a. Make sure all expected content is displayed.
-      b. Make sure content that should be missing is not displayed.
-      c. Make sure form control highlighting works
-      d. Make sure semantic highlighting works
-   8. Focus Tracker
-   9. Problem ID Checker
-      a. Verify the results
-      b. Sort the table and verify the correct results are displayed when a row is selected
-      c. Verify the highlight feature is working correctly.
-   10. Project Scanner
-      a. Load project files and verify they load correctly.
-      b. Import sitemaps and verify they load correctly.
-      c. File Save As a project file and verify it saves correctly
-      d. Export a project as csv and verify it exports correctly
-      e. Verify the function of the project settings dialog
-      f. Verify the delete URL deletes the correct URL no matter how sorted
-      g. Verify the edit URL deletes the correct URL no matter how sorted
-      h. Verify that the must match and must not match controls work correctly
-      i. Run the scanner on several different sites and make sure it does not crash, it does not slow down, and no open/save dialogs appear
-    11. Options dialog
-      a. Test the saving of various options
-      b. Test that the various options have the right effect.
-      c. Dream up options that might cause conflicts, what happens then.
-      d. What are the default options that appear when 
-      
-      
+    
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
-      Documentation:
-          What to look for in an A11y tool:
-               http://www.karlgroves.com/2013/06/28/choosing-an-automated-accessibility-testing-tool-13-questions-you-should-ask/
-          Other Protocols:
-               http://www.w3.org/WAI/eval/preliminary.html
-          Screenshots
-          FAQ
-            EXAMPLES:
-              http://www.downloadhelper.net/faq.php#how-install
-            Can W15yQC work with Firebug?
-            How do I install W15yQC
-            What is ___.xpi
-            How do I uninstall W15yQC
-            I cannot find the W15yQC toolbar button. Where is it?
-            One of the W15yQC keyboard shortcuts overrides a shortcut used by another important extension of mine. What can I do?
-            Tips and Tricks
-          Screencasts to make:
-            Installing: http://screencast.com/t/vQWcAIoU3YB
-
-            Configuring icons
-            Setting options
-            Uninstalling
-            Using contrast tools
-            Using an inspector dialog
 
       ** New spider checks:
         - symbols [done]
@@ -199,46 +109,6 @@
              Spider delay
              Drop out certain checks for speed when spidering
 
-    *** Self Maintaining Skip Navigation Links ***
-    1. Two versions
-       a. jQuery
-       b. javaScript only
-    2. Missing Target Response Choices
-       a. Simply disappear
-       b. Display a message (visually) that it is broken
-       c. Move to alternate target
-    3. Target type
-       a. Absolute
-          i. named anchor
-         ii. element with ID
-        iii. first ARIA main landmark
-         iv. XPATH
-       b. Relative
-          i. completely relative
-         ii. relative to a fix
-    4. Use of CSS
-       a. Generate CSS copy copy 'n pasting
-       b. Inline with the HTML code (style="")
-    5. javaScript behavior
-       a. Install link w/JavaScript - if noscript, no link
-       b. Fall back to standard skip link
-    6. Style - multiple skins to choose from
-       a. Appear at top of page as a block element (push page content down)
-       b. Appear as popup overlay that floats over location (x, y offset)
-       c. Always visible
-
-  *** FAQ Entries
-    -- Why do some links not appear in the list?
-    --
-  *** QA Tools
-    Perl script to check for QA status
-      Scan overlay.properties file for entries
-      Ignore entries on ignore.properties.lst
-      Check for presence of property in the noteDetails array
-      Check for presence in rest of overlay.js file and report function and note the line and function
-      Check for presence of a QA file
-      Inspect the QA file for a verified date
-      Compare the verify date with cutoff date
 
   Integration with Firefox Inspector
     -- Detecting if inspector is enabled:
@@ -246,8 +116,25 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
-
-	-- SAVE SETTINGS TO FILE. How to set defaults automatically?
+  -- Set appropriate default values
+      * Ignore www
+      * Advanced level
+      * ...
+  -- Add Page must have at least one Level 1 heading option, page level check
+  -- If PDFs are present, warn if no link to download adobe pdf reader is present.
+  -- Detect fieldsets that do not have any form controls in them and warn against inappropriate use of semantic elements
+  -- URL normalizer is not detecting index.shtml as the same as a default index page  www.d.com/ vs. www.d.com/index.shtml should be a match
+  -- Detect links that open in new windows, target="_blank" that do not have "opens in a new window" in the effective label"
+  -- legend element must be first child of fieldset element?
+  -- Does value attribute work as label on input type="image"? Should this be a warning?
+  -- HTML5 INFO: https://carmenwiki.osu.edu/display/10292/HTML5+Accessibility+Code+Examples
+  -- Warn on TH elements that don't have a scope attribute and the scope would be unclear.
+  -- Add an option to require scope attribute on all TH cells
+  -- Can we detect server-side image maps? Do we indicate a failure on this?
+  -- Add manual check for alternate to image maps (select, list of links, etc.)
+  -- RESEARCH: Does the caption element have any purpose in labeling form controls?  [calstate] -- NO!
+  -- Nested Fieldsets and legends. Are these working? QA THIS!!
+  -- SAVE SETTINGS TO FILE. How to set defaults automatically?
   -- CONFIG for Page Score paramenters
   -- banner-image, page level item column counts, https://www.iu.edu/~wmtest/home.php
   -- Reveal language changes in semantic view
@@ -263,6 +150,7 @@
   -- HTML report, inspector dialog should pass source document when called from inspector dialogs.
   -- Spider page titles
   -- What are meaningless page titles?
+       * Home, About, Contact, Title, Website, web site, web page, page, page title, 
   -- Landmark nesting. Main landmark should not be nested in other landmarks.
   -- how many landmarks is too many?
   -- how deeply nested for landmarks is too much?
@@ -437,25 +325,6 @@
     Can we get text to wrap in a cell of the trees? Especially for element description fields, table captions, table summaries, determine the others...
     Begin major QA sequence.
 
-    Add Quick View that gives page summary features as reported by JAWS
-       - Info that JAWS reads when page loads
-       - Lists of the same info reported from the List Dialogs
-         * Frame titles
-         * ARIA Landmarks
-         * Headings
-         * Links
-         * Form Controls
-
-	  video and support page for the color chooser tool
-	  video and support page for the contrast inspect tool
-	  video and support page for the problem ID tool
-	  video and support page for the focus tracker tool
-	  video and support page for the remove styles / semantic view, document how you can disable CSS in the browser to see how that looks
-	  video and support page for keyboard accessibility checks
-	  video and support page for inspectors
-	  video and support page for site inspector
-	  video and support page for full inspection
-	  video and support page for the
 
 
       Store which columns are visible and which are hidden
@@ -489,27 +358,6 @@
              Add heading type
                 h1, h2, ..., h6, ARIA heading
 
-      Compare inspector results against challenging websites, make sure page description makes sense
-        Challenging website list:
-          cnn.com
-          google search home page
-          google search results
-          google news
-          google groups various pages
-          google mail
-          google drive
-          google spreadsheet
-          sakai
-          blackboard
-          canvas
-          desire2learn
-          oncourse
-          open accessibility examples
-          thecn
-          courseload
-          coursesmart
-          etext.illinois
-          iu news
 
 HTML5 Elements to test
   -- HEADER
@@ -743,6 +591,12 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+    -- Suppress metaphone checks on tokens less than 2 chars in length. Or, why does it say "a" and "s" sound the same? Spell out the sounds of single letters [02/21/2014]
+    -- Detect a series of a, b, c, d, e, f... links and let them be meaningful [02/21/2014]
+    -- Warn if images have title attributes that are different than the effective label. [02/19/2014]
+    -- Warn if heading is contained in an HTML5 sectioning element and does not have an explicit aria-level value [02/19/2014]
+    -- Added page score to Window Details heading in full reports to make it more visible [02/19/2014]
+    -- Display bug in ARIA results, Full report: http://news.indiana.edu/releases/iu/2014/02/philip-seymour-hoffman-marathon-iu-cinema.shtml [02/19/2014]
     -- Removing highlights leaves trash behind... clean that up! [01/26/2014]
     -- False failure whith AREA tags and alt attributes: https://www.indianactsi.org/ [10/21/2013]
        <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov		
@@ -852,123 +706,7 @@ FIXED:
  *          - it has an aria-labelledby that contains text
         - Links that have link text, no name give warning that the link won't show up as a link in AT because it doesn't have a HREF value. [done, needs QA]
 
- DoD
 
-
- *    - Determine phased developement / roadmap
- *      - Rules
- *      - Features
- *         - Table structure inspector
- *         - ARIA menu analyzer
- *         - ARIA treeview analyzer
- *      - Support, A11y education
- *         - Video for using the program
- *         - Video for QA'ng A11y
- *         - Video for checking special features
- *           - Menus
- *           - Slideshows
- *           - Audio players
- *           - Video players
- *           - Select elements
- *           - Configuring OS/Browswer for Keyboard A11y Testing
- *      - Coding tech
- *    - Develop QA files for Phase I
- *    - Develop to the QA files
- *    - Once QA'd for Phase I, host the project
- *
- *    - TODO Before publishing to gitHub:
- *        - User docs / for wiki
- *           - Tool mission statement
- *              - explain tool's goals
- *              - who is the tool for - no w15y aware dev, manager, w15y professional
- *              - why to use
- *           - Installation instructions
- *           - Basic / Getting started user instructions
- *           - Simple non-W15y professional accessibility checking protocol
- *           - help for error messages in basic user level
-                - checkpoints
-                - compliance ref and standards
-                - additional resources
-                - frequently asked questions
- *    - Rules to Add:
- *      - HTML5 nav element best practice
- *      - ARIA describedAt?
- *      -longdesc must have a valid URI
- *         - Look for linkchecker extensions
- *         - can we tell if ff is online?
- *         - timeouts?
- *      - longdesc content should be appropriate: text
- *        - ID defns:
- *          - http://www.w3schools.com/tags/att_standard_id.asp (not accurate)
- *          - http://www.w3.org/TR/html401/types.html#type-name
- *      - Keyboard Accessibility
- *         - focusable elements with mouseovers should also have onfocus handlers OA18
- *         - focusable elements with onmouseout handlers should also have onblur handlers OA19
- *         - every onclick handler should be on a focusable element OA20
- *         - onchange event handler should not be on a select element OA21
- *         - non-form / non-anchor elements with eventhandlers have appropriate ARIA roles OA73
- *         - elements with mouse handlers have keyboard handlers OA74
- *         - check that enabled elements with ACTIVE-DECENDANT have valid tab index OA75
- *         - Check that elements without 'aria-activedescendant' that have roles requiring a container have focusable children OA76
- *         - Check that elements without 'aria-activedescendant' that have roles requiring a container have key event handlers OA77
- *         - Accesskey attribute values should be unique OA23
- *         - Accesskey attribute values should not interfere with IE shortcuts OA24
- *         - The blink and marquee elements must not be used OA25
- *      - th cells in "odd" places should have scope attributes
- *      - Complex tables must
- *         - th cells must have valid, unique ids on them
- *         - td cells in the "content zone" must have header attributes on them
- *      - Layout tables:
- *         - should not be nested?
- *         - should have role="presentation"
- *      - IDs refered to by headers attribute must:
- *         - be valid
- *         - exist in the document
- *         - contain text
- *      - focusable elements should have visible focus (outline)
- *      - Each input element with type=text | password | checkbox | radio | file and each select and textarea element should either be referenced by the for attribute of a label element via its id attribute, or have a title attribute.
- *      - Each button element must contain content.
- *      - Effective labels should be unique.
- *      - Do not use font element
- *      - Do not use I U B elements (html 4)
- *      - ARIA
- *        - valid ID refs
- *        - valid hierarchy (valid roles, properties, required child roles, valid parent roles, required props and states not empty and valid values, ARIA- attrs valid)
- *      - DATA TABLES
- *        - QUESTIONS:
- *          - If a cell has both row and column headers which does JAWS read first? What about multiple row or column headers are they all read aloud?
- *          - what about the datatable attribute?
- *          - what about ARIA roles?
- *        - Is a data table if
- *          - contains caption
- *          - contains a table summary
- *          - contains th
- *          - contains headers attribute
- *          - contains thead element
- *
- *        - must use a caption element or summary attribute
- *        - must use TH elements in either all columns or all rows that are non-empty
- *        - all non-empty cells must have header text available to describe them.
- *        - Summary attribute content must be unique
- *        - Summary attribute content must be meaningful
- *        - Summary attribute content shouldn't include "layout"
- *        - complex tables must use header attributes
- *        - Do not use nested tables
- *       - COMPLEX DATA TABLES
- *         - is complex table if has:
- *           - rowspan attribute
- *           - colspan attribute
- *           - unequal number of columns in rows
- *           - multiple th values in a given row (other than column headers)
- *           - multiple th values in a given column (other than row headers)
- *        - warn on complex table
- *        - all td cells should have headers attribute
- *        -
- *       - Malformed table if
- *         - with colspan and rowspan attributes taken into consideration the number of cells per row or column don't add up
- *       - Warn about
- *         - th not in the first column or row that is missing a scope attribute
- *
  *
  *    - List of triggered manual checks to suggest:
  *      - Alt text must describe content or purpose of an image OA
@@ -1044,202 +782,3 @@ FIXED:
  *    - Internationalize?
  */
 
-
- QA Steps to perform before releases
-   1) Check version info is correct
-       - Examine 'version' variable in blr.W15yQC
-       - Run HTML Report and examine report footer
-       - Examine version info in About dialog
-   2) Run through QA Test pages and check for expected results
-   3) Run HTML report on major websites to verify no unexpected results or behavior
-       - cnn.com
-       - iub.edu
-       - indiana.edu
-       - nightly2.sakaiproject.org servers
-       - iupui.edu
-       - iuadapts.indiana.edu
-       - examine results of running on: http://webaim.org/blog/four-keys-to-accessibility/, of running on wave beta results
-       - compare results on running against FAE on several pages (link text, form control text, headings)
-    4) Run through the Mozilla extension validator
-    5) Run through a spell checker
-
- Steps to perform to issue release
-    1) Upload to download section on github
-    2) Update download links on the website
-    2) Upload to Mozilla
-
- Steps to perform after a release
-    1) Search google for new release by file name, by description text, on multiple computers
-    2) Download new release from web site and install in multiple firefox versions
-        - Verify basic functionality (sanity checks)
-        - Verify version number is correct
-
-
-
-Simple protocol development:
-      Accessibility Quick Checks:
-         Page title
-         Page language
-         Frame Titles
-         ARIA Landmarks
-         Skip Navigation
-         Page Headings
-         Links
-         Form Labels
-
-      According to Penn State:
-        Image ALT Tag Tips
-        Page or Document Title
-        Headings and Subheadings
-        Link Text
-        Table Headers and Captions
-        Form Design Considerations
-        Contrast or Luminosity/Brightness
-        Color Issues
-        Fonts and Text Layout
-        Text Reading Order
-        Charts & Accessibility
-
-
-Background for Phase II features:
-
-Are there any decent enterprise accessibility testing tools?
-
-I am the only full time accessibility tester along with a part time person in our organization. We have a huge backlog of applications that need tested and an ever growing list of new ones. We test mobile applications and desktop applications. As far as the newly developed applications, we are doing pretty well keeping up. We have a good process with great tools and great resources. Our problem lies with our huge list of applications that were developed before accessibility was implemented. In addition, other departments and organizations want their applications scanned. We looked at IBM's Rational Policy Tester and after many testing trials, decided against it. We still had to manually sort through so much noise, it wasn't really saving us much time. The scans ran fast so applications that had hundreds of pages would scan fast (the ones it would work on) which was great but then to go through the reports and deciding what was truly real issues and what wasn't took a lot of time. Also, we had many applications that we had trouble getting to run and some that wouldn't run at all. It also showed many duplicate errors under different names. We would also like something we could run on a schedule to use as an auditing tool. I feel there probably isn't a solution out there to do what I'm asking but I thought I would throw this question out there to see what the group thought. I know there is Rational Policy Tester, Deque, Compliance Sheriff, SortSite and SSBart. We've seen Rational and SortSite but not the others. Just to be clear, we were wanting one that crawls through all the pages of the application.
-Let me know if you have any ideas on how to handle a large number of applications when you are only 1 1/2 people. :)
-15 days ago
-
-    Like
-    Comment
-    Follow
-    Flag
-    More
-
-Duarte Morais, Maile George and 1 other like this
-
-15 comments
-Olga Dosis
-
-Follow Olga
-
-Olga Dosis • Hello,
-
-I recommended in the College I work in some tools. One of which is free, the other tool that is used has a night crawler that asses pages over a 24 hour period and provides a report of the accessibility gaps. Send me an email and we can chat further about this.
-13 days ago • Like
-
-Olaf Drümmer
-
-OlafUnfollow
-
-Olaf Drümmer • @Olga
-.. and you'd rather not mention in this discussion group which tools you recommend(ed)?
-12 days ago • Like
-
-Follow Gerry
-
-Gerry Neustatl • I am really keen to hear which tools you have recommended too. Any chance you can share? Thanks in advance.
-11 days ago • Like
-
-    • Reply privately
-    • Flag as inappropriate
-
-Kare Romanski
-
-Follow Kare
-
-Kare Romanski • I would recommend checking out SSBBARTGROUP's Accessibility Management Platform (AMP). It will reveal the low hanging fruit without duplication and manually guides you through the things that should be looked at and verified. Works well for Mobile, Web, MAC and PDF accessibility and educates your team.
-10 days ago • Like
-
-Kare Romanski
-
-Follow Kare
-
-Kare Romanski • If you are interested in detecting ARIA and contrast violations check out Deque's Worldspace Fire-Eyes Firefox Firebug Addon. While not for automated testing it is very helpful all the same. I use both everyday!
-10 days ago • Like
-
-1
-
-Follow Gerry
-
-Gerry Neustatl • Thank you Kare
-10 days ago • Like
-
-Jeff Orchard
-
-Follow Jeff
-
-Jeff Orchard • I create work tickets after an analysis in Excel, so a CSV export with useful fields is the first thing I look for in any tool. A 100-page output in HTML, on the other hand, is a dismal waste of time.
-
-The AMP is $1,500/yr, so it must be really good, right? The demo provides a CSV export but the fields don't include the WCAG 2 sufficient criteria code (e.g., 1.3.1 Info and Relationship) or the technical solutions and failures. I wonder if a licensed copy allows those fields to be tailored? I expect adding the WCAG 2 categories would be trivial, but you never know ...
-10 days ago • Like
-
-Kare Romanski
-
-Follow Kare
-
-Kare Romanski • The full version provides much more and allows you to export different violation reports by priority, by standard or by instance etc. One of the features I like most about AMP is you don't have to maintain all those rouge spreadsheets which quickly become outdated. AMP allows you to track and monitor compliance over time. You can even create rules to check for specific violations in your code and customize Global (Site-wide) and Pattern (project specific) violations to be turned on or off - further reducing the noise in your reports. There is also a Toolbox of browser addons for Firefox, an Explorer Bar for IE as well as a desktop app that allows you to spider your sites and automate these audits. The staff at SSB Bart Group was very helpful and allowed us to demo the full version before purchasing.
-9 days ago • Like
-
-1
-
-Jeff Orchard
-
-Follow Jeff
-
-Jeff Orchard • Thanks Kare. The problem with the spreadsheet approach is indeed the trace between reports. I've been considering some Excel kung-fu for matching incidents across reports, but if AMP does this out of the box it's a big checkmark in its column.
-
-I'll see if the SSBBG will also allow me to test the full version. That's quite the price for a solo consultant.
-9 days ago • Like
-
-Kare Romanski
-
-Follow Kare
-
-Kare Romanski • In this case, you do get what you pay for and it is well worth the expense just in the time it saves trying to monitor compliance over time.
-9 days ago • Like
-
-Kathi Gorrell
-
-Follow Kathi
-
-Kathi Gorrell • Thank you Kare for the information about SSBart. I think we will look at getting a trial version of it. Anyone try Deque?
-7 days ago • Like
-
-Kare Romanski
-
-Follow Kare
-
-Kare Romanski • That is SSB Bart Group ( https://amp.ssbbartgroup.com/register/ ).
-Don't miss SSB Bart Group's free ACE training series all month! ( https://ace.ssbbartgroup.com/ )
-7 days ago • Like
-
-Wes Dillon
-
-Follow Wes
-
-Wes Dillon • Hello - I am the sales rep for Deque's WorldSpace tool - happy to answer any questions in detail - 603.205.4543
-
-WorldSpace Sync is an enterprise scanning tool that has a suite of tools and applications that can be used by Developers, QA & for reporting on compliance status. FireEyes is one of the extensions that can be used by Dev & QA.
-
-Some features:
-- The tool can test against the Federal Government standard of Section 508 or the International standard of WCAG 2.0
-- The tool is completely configurable and you can scan a single page, a collection of pages or the entire site or application.
-- Ability to do web-application scripting. you can define a script and it can intelligently scan an application.
-- Scheduled or nightly scans - you can schedule scans whenever convenient for you.
-2 days ago • Like
-
-1
-
-Richard Morton (@accessibleweb)
-
-Follow Richard
-
-Richard Morton (@accessibleweb) • Kare, if the https://ace.ssbbartgroup.com/ courses are free why does the registration form say "Once you have registered we will contact you by phone to get your payment information"?
-1 day ago • Like
-
-Jeff Orchard
-
-Follow Jeff
-
-Jeff Orchard • Wes, can the WorldSpace tool match errors across reports, even after a line number shift? A commercial tool that matches errors from a fresh report to errors that have already been analyzed, and via them to the work ticket number, is an expense worth considering. It’s a complete waste of time to wade through issues that have already been ticketed but not yet fixed!
-1 day ago • Like
