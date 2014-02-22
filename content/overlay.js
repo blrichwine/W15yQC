@@ -983,6 +983,7 @@ ys: 'whys'
 
       hSkippedLevel: [true,2,1,false,null],
       hShouldNotBeMultipleLevel1Headings: [true,2,1,false,null],
+      hNoLevel1Heading: [true,2,1,false,null],
       hTxtMissing: [true,2,1,false,null],
       hTxtOnlyASCII: [true,2,1,false,null],
       hTxtNotMeaninfgul: [true,1,1,false,null],
@@ -5258,16 +5259,23 @@ ys: 'whys'
         iDisplayedCount=iListedCount;
         iDisplayedWarningsCount=iListedWarningsCount;
         iDisplayedFailuresCount=iListedFailuresCount;
+        if(listObj!=null && listObj.pageLevel) {
+          if(listObj.pageLevel.failed) {
+            iDisplayedFailuresCount++;
+          } else if(listObj.pageLevel.warning) {
+            iDisplayedWarningsCount++;
+          }
+        }
       } else {
         iDisplayedCount=listObj==null?0:listObj.length;
         iDisplayedWarningsCount=(listObj==null)?0:listObj.warningCount;
         iDisplayedFailuresCount=(listObj==null)?0:listObj.failedCount;
       }
-
+      
       if(listObj!=null && (iDisplayedWarningsCount>0 || iDisplayedFailuresCount>0)) {
         try{
           if(iDisplayedWarningsCount==1) {
-            s=' (1 warning, ';
+            s=' (1 with warning, ';
           } else {
             s=' ('+iDisplayedWarningsCount.toString()+' with warnings, '; // TODO: i18n this!
           }
@@ -7732,12 +7740,17 @@ ys: 'whys'
           }
         }
       }
+      if (oW15yResults.PageScore.bHasALevelOneHeading!==true &&
+          Application.prefs.getValue('extensions.W15yQC.getElements.mustHaveLevel1Heading',false)==true) {
+        blr.W15yQC.fnAddPageLevelNote(aHeadingsList, 'hNoLevel1Heading'); // TODO: QA This
+      }
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aHeadingsList);
     },
 
     fnDisplayHeadingsResults: function (rd, aHeadingsList, bQuick) {
-      var div, divContainer, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span,
-        table, msgHash, tbody, sNotes, sClass;
+      var div, divContainer, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i,
+        sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span,
+        table, msgHash, tbody, sNotes, sClass, lo;
 
       div = rd.createElement('div');
       divContainer = rd.createElement('div');
@@ -7871,6 +7884,27 @@ ys: 'whys'
           }
         }
 
+        
+        // Page Level
+        if(aHeadingsList.pageLevel && aHeadingsList.pageLevel.notes) {
+          for (i = 0; i < aHeadingsList.pageLevel.notes.length; i++) {
+            lo = aHeadingsList.pageLevel;
+            sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+            sClass = '';
+            if (lo.failed) {
+              sClass = 'failed';
+            } else if (lo.warning) {
+              sClass = 'warning';
+            }
+            if(bQuick) {
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', sNotes], sClass);
+            } else {
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', sNotes], sClass);
+            }
+          }
+        }
+        
+        
         table.appendChild(tbody);
         divContainer.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIHeadingsTable');
