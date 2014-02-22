@@ -1048,6 +1048,7 @@ ys: 'whys'
       lnkTargetDoesNotAppearValid: [true,1,0,false,null],
       lnkHasBothOCandOK: [false,2,0,false,null],
       lnkHasInvalidAltAttribute: [false,1,0,false,null],
+      lnkOpensInANewWindowWOWarning: [false,1,1,true,null],
       lnkTargetIDisNotUnique: [false,2,0,false,null],
       lnkTargetIDNotValid: [false,1,0,false,null],
       lnkServerSideImageMap: [false,2,0,false,null],
@@ -2132,11 +2133,11 @@ ys: 'whys'
       return sUrl;
     },
 
-    fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+    fnURLsAreEqual: function (docURL1, url1, docURL2, url2) { // TODO: Create a QA file that tests these.
+      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.([spx]?html?|cfm|cgi|pl|php[34]?|aspx?)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
       bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
-      var bFlag=/big.*index\.shtml/i.test(url1) && /big.*index\.shtml/i.test(url2);
-      var bMsg="Orig:"+url1+' '+url2;
+//      var bFlag=/big.*index\.shtml/i.test(url1) && /big.*index\.shtml/i.test(url2);
+//      var bMsg="Orig:"+url1+' '+url2;
       if(url1 != null) {
         url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
         if(bIgnoreWWW) { url1 = url1.replace(r3, '://'); }
@@ -2157,15 +2158,15 @@ ys: 'whys'
         }
       }
 
-      if(url1!=url2 && url1!=null && url2!=null) {
+      if(url1!=url2 && url1!=null && url2!=null && (r2.test(url1)==false || r2.test(url2)==false)) { // TODO: Check for default page on one of the URLs and not the other
         url1 = url1.replace(r2,'');
         url1 = url1.replace(r4, '');
         url2 = url2.replace(r2,'');
         url2 = url2.replace(r4, '');
       }
-      if (bFlag) {
-        // alert(bMsg+' now:'+url1+' '+url2); // TODO: finish debugging this. why isn't index.shtml getting replaced above?
-      }
+      //if (bFlag) {
+      // alert(bMsg+' now:'+url1+' '+url2); // TODO: finish debugging this. why isn't index.shtml getting replaced above?
+      //}
       return (url1 == url2);
     },
 
@@ -8592,10 +8593,27 @@ ys: 'whys'
           }
         }
 
+        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('target')==true && /_blank/i.test(aLinksList[i].node.getAttribute('target')) &&
+            /opens (in )?(a )?new window/i.test(aLinksList[i].effectiveLabel)==false) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkOpensInANewWindowWOWarning'); // QA This
+        }
+
+        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('onclick')==true && /window\.open\(/.test(aLinksList[i].node.getAttribute('onclick')) &&
+            /opens (in )?(a )?new window/i.test(aLinksList[i].effectiveLabel)==false) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkOpensInANewWindowWOWarning'); // QA This
+        }
+
+
+        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('href')==true && /javascript.*window\.open\(/i.test(aLinksList[i].node.getAttribute('href')) &&
+            /opens (in )?(a )?new window/i.test(aLinksList[i].effectiveLabel)==false) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkOpensInANewWindowWOWarning'); // QA This
+        }
+
         if(blr.W15yQC.fnStringHasContent(aLinksList[i].title) && blr.W15yQC.fnStringsEffectivelyEqual(aLinksList[i].title, linkText)==false) {
           oW15yResults.PageScore.bNoLinksHaveTitleTextDiffThanLinkText=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTitleTxtDiffThanLinkTxt'); // TODO: QA This!
         }
+
         if (/title attribute/i.test(aLinksList[i].effectiveLabelSource)) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextComesOnlyFromTitle'); // TODO: QA This!
         } else if (/alt attribute/i.test(aLinksList[i].effectiveLabelSource) && blr.W15yQC.fnCanTagHaveAlt(aLinksList[i].node.tagName)==false) {
