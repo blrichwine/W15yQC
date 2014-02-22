@@ -116,15 +116,15 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- Add HTML5 sectioning elements to the page description.
+  -- list the doctype(s) in the page description
   -- Set appropriate default values
       * Ignore www
       * Advanced level
       * ...
-  -- Add Page must have at least one Level 1 heading option, page level check
   -- If PDFs are present, warn if no link to download adobe pdf reader is present.
   -- Detect fieldsets that do not have any form controls in them and warn against inappropriate use of semantic elements
   -- URL normalizer is not detecting index.shtml as the same as a default index page  www.d.com/ vs. www.d.com/index.shtml should be a match
-  -- Detect links that open in new windows, target="_blank" that do not have "opens in a new window" in the effective label"
   -- legend element must be first child of fieldset element?
   -- Does value attribute work as label on input type="image"? Should this be a warning?
   -- HTML5 INFO: https://carmenwiki.osu.edu/display/10292/HTML5+Accessibility+Code+Examples
@@ -591,6 +591,9 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+    -- Added a doctype description to the window details section [02/22/2014]
+    -- Add Page must have at least one Level 1 heading option, page level check [02/22/2014]
+    -- Detect links that open in new windows, target="_blank" that do not have "opens in a new window" in the effective label" [02/21/2014]
     -- Suppress metaphone checks on tokens less than 2 chars in length. Or, why does it say "a" and "s" sound the same? Spell out the sounds of single letters [02/21/2014]
     -- Detect a series of a, b, c, d, e, f... links and let them be meaningful [02/21/2014]
     -- Warn if images have title attributes that are different than the effective label. [02/19/2014]

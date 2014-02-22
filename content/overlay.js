@@ -858,6 +858,19 @@ ys: 'whys'
       return s;
     },
 
+    fnGetDoctypeString: function (doc) {
+      var dt;
+      if(doc!=null && doc.doctype) {
+        dt=doc.doctype;
+        return '<!DOCTYPE ' + dt.name
+         + (dt.publicId ? ' PUBLIC "' + dt.publicId + '"' : '')
+         + (!dt.publicId && dt.systemId ? ' SYSTEM' : '') 
+         + (dt.systemId ? ' "' + dt.systemId + '"' : '')
+         + '>';
+      }
+      return '';
+    },
+    
     fnRemoveElementFromChain: function(el) {
       if (el!==null && el.parentNode) {
         while (el.firstChild!==null) {
@@ -5422,7 +5435,7 @@ ys: 'whys'
     },
 
     fnDisplayWindowDetails: function (rd, oW15yQCReport) {
-      var div, div2, element, sWindowTitle, sWindowURL;
+      var div, div2, element, sWindowTitle, sWindowURL, sMainDocType, sMainDocTypeDesc='';
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentDetails');
       div.setAttribute('class', 'AISection');
@@ -5435,9 +5448,11 @@ ys: 'whys'
       if(oW15yQCReport != null) {
         sWindowTitle = oW15yQCReport.sWindowTitle;
         sWindowURL = oW15yQCReport.sWindowURL;
+        sMainDocType= blr.W15yQC.fnGetDoctypeString(oW15yQCReport.aDocuments[0].doc);
       } else {
         sWindowTitle = window.top.content.document.title;
         sWindowURL = window.top.content.document.URL;
+        sMainDocType= blr.W15yQC.fnGetDoctypeString(window.top.content.document);
       }
 
       element = rd.createElement('p');
@@ -5452,6 +5467,85 @@ ys: 'whys'
       element.appendChild(rd.createTextNode(sWindowURL));
       div2.appendChild(element);
 
+      element = rd.createElement('h3');
+      switch (sMainDocType) {
+        case '<!DOCTYPE html>':
+          sMainDocTypeDesc='HTML5';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">':
+          sMainDocTypeDesc='XHTML 1.0 Strict';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">':
+          sMainDocTypeDesc='XHTML 1.0 Transitional';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">':
+          sMainDocTypeDesc='XHTML 1.0 Frameset';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">':
+          sMainDocTypeDesc='XHTML 1.1';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">':
+          sMainDocTypeDesc='XHTML Basic 1.1';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">':
+          sMainDocTypeDesc='HTML 4.01 Strict';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">':
+          sMainDocTypeDesc='HTML 4.01 Transitional';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">':
+          sMainDocTypeDesc='HTML 4.01 Frameset';
+          break;
+        case '<!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">':
+          sMainDocTypeDesc='MathML 2.0';
+          break;
+        case '<!DOCTYPE math SYSTEM "http://www.w3.org/Math/DTD/mathml1/mathml.dtd">':
+          sMainDocTypeDesc='MathML 1.01';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">':
+          sMainDocTypeDesc='XHTML+MathML+SVG';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">':
+          sMainDocTypeDesc='XHTML+MathML+SVG Profile (XHTML As the Host Language)';
+          break;
+        case '<!DOCTYPE svg:svg PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">':
+          sMainDocTypeDesc='XHTML+MathML+SVG Profile (SVG As the Host Language)';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">':
+          sMainDocTypeDesc='HTML 2.0';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">':
+          sMainDocTypeDesc='HTML 3.2';
+          break;
+        case '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">':
+          sMainDocTypeDesc='XHTML Basic 1.0';
+          break;
+        case '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">':
+          sMainDocTypeDesc='SVG 1.1 Full';
+          break;
+        case '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">':
+          sMainDocTypeDesc='SVG 1.0';
+          break;
+        case '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Basic//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-basic.dtd">':
+          sMainDocTypeDesc='SVG 1.1 Basic';
+          break;
+        case '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">':
+          sMainDocTypeDesc='SVG 1.1 Tiny';
+          break;
+        case '':
+          sMainDocTypeDesc='Missing';
+          break;
+        default:
+          sMainDocTypeDesc='Unrecognized';
+          break;
+      }
+      element.appendChild(rd.createTextNode(blr.W15yQC.fnGetString('hrsMainDocType')+' ('+sMainDocTypeDesc+')'));
+      div2.appendChild(element);
+
+      element = rd.createElement('p');
+      element.appendChild(rd.createTextNode(sMainDocType));
+      div2.appendChild(element);
+      
       div.appendChild(div2);
       rd.body.appendChild(div);
     },
