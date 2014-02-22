@@ -136,6 +136,23 @@ blr.W15yQC.options = {
       blr.W15yQC.options.fnUpdatesPrefs();
       blr.W15yQC.options.fnReadPrefs();
     }
+  },
+  
+  fnResetDefaults: function() {
+    // Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", "");
+    Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
+    Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
+    Application.prefs.setValue("extensions.W15yQC.HTMLReport.collapsedByDefault", true);
+    Application.prefs.setValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", false);
+    Application.prefs.setValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls", true);
+    Application.prefs.setValue("extensions.W15yQC.getElements.includeHiddenElements", false);
+    Application.prefs.setValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", false);
+    Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
+    Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
+    Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+    Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
+    Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
+    Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
   }
 
 };
