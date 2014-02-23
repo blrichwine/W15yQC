@@ -7120,11 +7120,15 @@ ys: 'whys'
             } else { // keep looking through current document
               if (node.tagName && blr.W15yQC.fnNodeIsHidden(node) == false) {
                 tagName = node.tagName.toLowerCase();
-                if(tagName != 'script' && tagName != 'style' && tagName != 'option' && blr.W15yQC.fnElementHasOwnContent(node)) {
+                if(tagName != 'script' && tagName != 'style' && tagName != 'option' && (blr.W15yQC.fnElementHasOwnContent(node)||tagName=='input')) {
                   aColors = blr.W15yQC.fnGetColorValues(node);
                   xPath = blr.W15yQC.fnGetElementXPath(node);
                   nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                  sText = blr.W15yQC.fnElementsOwnContent(node);
+                  if (tagName=='input' && node.getAttribute('type')=='button' && blr.W15yQC.fnStringHasContent(node.getAttribute('value'))) {
+                    sText = node.getAttribute('value');
+                  } else {
+                    sText = blr.W15yQC.fnElementsOwnContent(node);
+                  }
                   if(aColors != null) {
                     fgColor = [aColors[0], aColors[1], aColors[2]];
                     fgC = blr.W15yQC.fnGetColorString(parseInt(fgColor[0], 10) * 65536 + parseInt(fgColor[1], 10) * 256 + parseInt(fgColor[2], 10));
@@ -8726,13 +8730,13 @@ ys: 'whys'
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkOpensInANewWindowWOWarning'); // QA This
         }
 
-        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('onclick')==true && /window\.open\(/.test(aLinksList[i].node.getAttribute('onclick')) &&
+        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('onclick')==true && /(window\.open|popupUrl)\(/.test(aLinksList[i].node.getAttribute('onclick')) &&
             /opens (in )?(a )?new window/i.test(aLinksList[i].effectiveLabel)==false) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkOpensInANewWindowWOWarning'); // QA This
         }
 
 
-        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('href')==true && /javascript.*window\.open\(/i.test(aLinksList[i].node.getAttribute('href')) &&
+        if (aLinksList[i].node!=null && aLinksList[i].node.hasAttribute('href')==true && /javascript.*(window\.open|popupUrl)\(/i.test(aLinksList[i].node.getAttribute('href')) &&
             /opens (in )?(a )?new window/i.test(aLinksList[i].effectiveLabel)==false) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkOpensInANewWindowWOWarning'); // QA This
         }
