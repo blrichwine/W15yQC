@@ -398,7 +398,7 @@ blr.W15yQC.ScannerWindow = {
   urlIsBlackListed: function(sURL) {
     if(sURL!=null) {
       if(/javascript:/i.test(sURL) || /^\s*(tel|mailto):/i.test(sURL) ||
-         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpeg|mpg|m4v|mp4|pdf|ppt|pptx|ram|rar|svg|tif|tiff|wmx|zip)$/i.test(sURL)) {
+         /\/\/.+\.[a-z]+\/.+\.(asx|avi|com|css|dmg|doc|docx|exe|gif|iso|jpg|jpeg|js|mov|mp3|mpeg|mpg|m4v|mp4|pdf|ppt|pptx|ram|rar|svg|tif|tiff|wmx|xls|xlsx|zip)$/i.test(sURL)) {
         if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('url is black listed'); }
         return true;
       }

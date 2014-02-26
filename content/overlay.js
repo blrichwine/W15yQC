@@ -2102,11 +2102,12 @@ ys: 'whys'
     },
 
     fnNormalizeURL: function(docURL, sUrl) {
-      var firstPart,
+      var firstPart, m,
           r2=/\/\.\//g,
           r3=/([^\/])\/[^\.\/][^\/]*\/\.\.\//g,
-          r4=/(:\/\/[^\/]+\/)\.\.(\/(.*))?$/;
-
+          r4=/(:\/\/[^\/]+\/)\.\.(\/(.*))?$/,
+          r5=/^([a-z]+:\/\/[^\/]+\/.*?)(\/[^\/]+\/+\.\.\/+)(.*$)/i,
+          r6=/^([a-z]+:\/\/[^\/]+\/.*?)(\/\/)(.*$)/i;
       if(/^\s*(tel|mailto):/i.test(sUrl)==false) {
         if(docURL != null && sUrl != null && sUrl.length>0) {
           docURL = blr.W15yQC.fnTrim(docURL);
@@ -2117,6 +2118,7 @@ ys: 'whys'
                 sUrl=firstPart[1]+sUrl;
               }
           }
+
           if ( sUrl.match(/^[a-z-]+:\/\//) == null ) {
             firstPart = docURL.match(/^(file:\/\/)([^?]*[\/\\])?/);
             if(firstPart != null) {
@@ -2124,10 +2126,10 @@ ys: 'whys'
             } else {
               firstPart = docURL.match(/^([a-z-]+:\/\/)([^\/\\]+[^\/\\])([^?]*[\/\\])?/);
               if(firstPart != null) {
-                if(sUrl.match(/^[\/\\]/) != null) {
+                if(sUrl.match(/^[\/\\]/) != null || (typeof firstPart[3] == 'undefined')) {
                   sUrl = firstPart[1]+firstPart[2]+sUrl;
                 } else {
-                  sUrl = firstPart[1]+firstPart[2]+firstPart[3]+sUrl;
+                  sUrl = firstPart[1]+firstPart[2]+firstPart[3]+'/'+sUrl;
                 }
               }
             }
@@ -2135,28 +2137,34 @@ ys: 'whys'
         }
         if(sUrl != null) {
           sUrl = sUrl.replace(/\s/g,'%20');
+          sUrl = sUrl.replace(r4,'$1$3');
+          while(m=sUrl.match(r6)) {
+            sUrl=m[1]+'/'+m[3];
+          }
+          while(m=sUrl.match(r5)) {
+            sUrl=m[1]+'/'+m[3];
+          }
           sUrl = sUrl.replace(r3,'$1/');
           sUrl = sUrl.replace(r3,'$1/');
           sUrl = sUrl.replace(r3,'$1/');
           sUrl = sUrl.replace(r4,'$1$3');
           sUrl = sUrl.replace(r2, '/');
           sUrl = sUrl.replace(r2, '/');
-          sUrl = sUrl.replace(/([^\/:]\/)\/+/g, '/');
+          sUrl = sUrl.replace(/([^\/:]\/)\/+/g, '$1');
         }
       }
       return sUrl;
     },
 
-    fnURLsAreEqual: function (docURL1, url1, docURL2, url2) { // TODO: Create a QA file that tests these.
-      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.([spx]?html?|cfm|cgi|pl|php[34]?|aspx?)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
-      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
-//      var bFlag=/big.*index\.shtml/i.test(url1) && /big.*index\.shtml/i.test(url2);
-//      var bMsg="Orig:"+url1+' '+url2;
+
+    fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
+      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",true);
+
       if(url1 != null) {
         url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
         if(bIgnoreWWW) { url1 = url1.replace(r3, '://'); }
         //url1 = url1.replace(r1, '');
-        url1 = url1.replace(r4, '');
 
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
           url1 = url1.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
@@ -2166,23 +2174,19 @@ ys: 'whys'
         url2 = blr.W15yQC.fnNormalizeURL(docURL2, url2);
         if(bIgnoreWWW) { url2 = url2.replace(r3, '://'); }
         //url2 = url2.replace(r1, '');
-        url2 = url2.replace(r4, '');
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
           url2 = url2.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
         }
       }
 
-      if(url1!=url2 && url1!=null && url2!=null && (r2.test(url1)==false || r2.test(url2)==false)) { // TODO: Check for default page on one of the URLs and not the other
-        url1 = url1.replace(r2,'');
-        url1 = url1.replace(r4, '');
-        url2 = url2.replace(r2,'');
-        url2 = url2.replace(r4, '');
+      if(url1!=url2 && url1!=null && url2!=null && (r2.test(url1)==false || r2.test(url2)==false)) {
+        url1=url1.replace(r2,'');
+        url2=url2.replace(r2,'');
       }
-      //if (bFlag) {
-      // alert(bMsg+' now:'+url1+' '+url2); // TODO: finish debugging this. why isn't index.shtml getting replaced above?
-      //}
+      if(url1!=null) { url1 = url1.replace(r4, ''); }
+      if(url2!=null) { url2 = url2.replace(r4, ''); }
       return (url1 == url2);
-    },
+    },  
 
     fnLinkTextsAreDifferent: function(s1, s2) { // TODO: QA This function
       if(s1 == s2) { return false; }
@@ -5693,7 +5697,7 @@ ys: 'whys'
      *
      */
     fnGetElements: function (doc, progressWindow, total, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
-      var docNumber, node, sID, idCount, frameDocument, style, i,
+      var docNumber, node, sID, idCount, frameDocument, style, i, sSectioningElements='',
         sARIALabel, sRole, sFirstRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs, el,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
         sName, sAction, sMethod, parentFormNode, sTitle, sLegendText, sLabelTagText, sEffectiveLabelText, sARIADescriptionText, sStateDescription, sValue, frameTitle,

@@ -109,13 +109,22 @@
              Spider delay
              Drop out certain checks for speed when spidering
 
-
+<a href="search.cgi"><img src="../images/greenarrow.gif" alt="Search"></a>
   Integration with Firefox Inspector
     -- Detecting if inspector is enabled:
       pref("devtools.inspector.enabled", true);
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly.
+  -- Warn about input[type=image] that get alt text from value attribute.
+  -- Document errors do not appear to be included in the failures total listed in the scanner
+      : http://www.iuk.edu/academics/library/services/support_services.shtml
+  -- List URL for selected URL in scanner in the note window so it can be easily copied.
+  -- Open recent file feature appears to be broken in project scanner
+  -- Clicking delete URL on a URL in the IUK.project file appeared to delete most URLs not just the one selected
+  -- Generate list of pages w/o unique page titles, meaningful page titles, titles missing text
+  -- Add option to require title text, page text/markup in project scanner
   -- Add HTML5 sectioning elements to the page description.
   -- list the doctype(s) in the page description
   -- Set appropriate default values
@@ -591,6 +600,9 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED:
+    -- Project scanner is not avoiding spreadsheets (.xls, .xlsx) [02/25/2014]
+    -- Normalizer needs to deal with /../ to detect same links [02/25/2014]
+    -- Updated luminosity check routine to check input[type=button] elements
     -- Added a doctype description to the window details section [02/22/2014]
     -- Add Page must have at least one Level 1 heading option, page level check [02/22/2014]
     -- Detect links that open in new windows, target="_blank" that do not have "opens in a new window" in the effective label" [02/21/2014]
