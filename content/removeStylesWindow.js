@@ -197,7 +197,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 sRole = '';
               }
 
-              if (blr.W15yQC.fnIsARIALandmark(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
+              if (blr.W15yQC.fnIsARIALandmark(c) || blr.W15yQC.fnIsHTML5SectionElement(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
                   sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" ||
                   sRole == "note" || sRole == "list" || sRole == "img" || sRole == "grid" || sRole == "document" ||
                   sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
@@ -209,8 +209,11 @@ blr.W15yQC.RemoveStylesWindow = {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu.', ' ') + ' To navigate use the up and down arrow keys.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu.', ' ');
                 } else if (blr.W15yQC.fnIsARIALandmark(c)) {
-                  sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark. ';
-                  sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' landmark. ';
+                  sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' ARIA landmark. ';
+                  sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + ' ARIA landmark. ';
+                } else if (blr.W15yQC.fnIsHTML5SectionElement(c)) {
+                  sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.tagName, ' ') + ' HTML5 region. ';
+                  sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.tagName, ' ') + ' HTML5 region. ';
                 } else if (sRole == 'presentation') {
                   sEnteringLabel = '';
                   sExitingLabel = '';
@@ -223,7 +226,7 @@ blr.W15yQC.RemoveStylesWindow = {
                 if (sEnteringLabel > '') {
                   p = rd.createElement('p');
                   p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
-                  p.appendChild(rd.createTextNode('Entering ARIA ' + sEnteringLabel));
+                  p.appendChild(rd.createTextNode('Entering ' + sEnteringLabel));
                   div.appendChild(p);
                 }
                 div2 = rd.createElement('div');

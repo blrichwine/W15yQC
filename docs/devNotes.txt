@@ -116,6 +116,9 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- Debug HTML5 handling
+       -- required attribute Does it show up in state?
+       -- sectioning elements
   -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly.
   -- Warn about input[type=image] that get alt text from value attribute.
   -- Document errors do not appear to be included in the failures total listed in the scanner

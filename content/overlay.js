@@ -5890,7 +5890,7 @@ ys: 'whys'
                         aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
                         effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
                         effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
-                        oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
+                        oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
                         oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                         break;
                       default:
@@ -5898,25 +5898,33 @@ ys: 'whys'
                     }
                   }
   
-                  switch (sTagName) {
+                  switch (sTagName) { // TODO: Debug how to handle HTML5 elements! Explore how JAWS 15 in FF or NVDA reports these
                     case 'article': // http://blog.paciellogroup.com/2011/03/html5-accessibility-chops-section-elements/
+                    case 'section':
+                      //break;
                     case 'aside':
                     case 'header':
+                    case 'main':
                     case 'nav':
-                    case 'section':
-                        //// Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                        //ARIALandmarkLevel = 1;
-                        //for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
-                        //  if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
-                        //    ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
-                        //    break;
-                        //  }
-                        //}
-                        //aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                        //effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' region',' '));
-                        //effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 Region', ', '));
-                        //oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sRole, sState));
-                        //oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
+                    case 'footer':
+                        // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                        if (sFirstRole=='') {
+                          xPath = blr.W15yQC.fnGetElementXPath(node);
+                          nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                          ARIALandmarkLevel = 1;
+                          for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
+                            if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
+                              ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
+                              break;
+                            }
+                          }
+                          sState = blr.W15yQC.fnGetNodeState(node);
+                          aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                          effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' region',' '));
+                          effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 region element', ', '));
+                          oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
+                          oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
+                        }
                       break;
                     case 'area':
                       xPath = blr.W15yQC.fnGetElementXPath(node);
@@ -6484,6 +6492,10 @@ ys: 'whys'
       return (node != null && node.hasAttribute && node.hasAttribute('role') && blr.W15yQC.fnIsARIALandmarkRole(node.getAttribute('role')));
     },
 
+    fnIsHTML5SectionElement: function(node) {
+      return (node != null && node.hasAttribute && blr.W15yQC.fnIsARIALandmarkRole(node.getAttribute('role'))==false && /^(article|aside|footer|header|main|nav|section)$/i.test(node.tagName)==true);
+    },
+
     fnGetARIALandmarks: function (doc, rootNode, aARIALandmarksList, baseLevel) {
       var c, level, i, frameDocument, sTagName, sRole, xPath, nodeDescription, effectiveLabel, effectiveLabelSource, aLabel, sState;
       if (aARIALandmarksList == null) { aARIALandmarksList = []; }
@@ -6574,7 +6586,7 @@ ys: 'whys'
         for (i = 0; i < aARIALandmarksList.length; i++) {
           blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aARIALandmarksList[i].node, aARIALandmarksList[i]);
           sRole=blr.W15yQC.fnGetNodeAttribute(aARIALandmarksList[i].node,'role','').toLowerCase();
-          if(sRole == 'main') {
+          if(sRole == 'main' || aARIALandmarksList[i].node.tagName.toLowerCase()=='main') {
             oW15yResults.PageScore.bHasMainLandmark=true;
             if(aARIALandmarksList[i].node.getElementsByTagName('h1') ||
                aARIALandmarksList[i].node.getElementsByTagName('h2') ||
@@ -6582,7 +6594,7 @@ ys: 'whys'
                aARIALandmarksList[i].node.getElementsByTagName('h4') ||
                aARIALandmarksList[i].node.getElementsByTagName('h5') ||
                aARIALandmarksList[i].node.getElementsByTagName('h6')) {
-              oW15yResults.PageScore.bMainLandmarkContainsHeading=true; // TODO: This wont find headings in sub frames
+              oW15yResults.PageScore.bMainLandmarkContainsHeading=true; // TODO: This wont find headings in sub frames or ARIA headings
             }
             iMainLandmarkCount++;
             // Check nesting
