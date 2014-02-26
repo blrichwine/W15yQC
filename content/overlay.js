@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 41',
-    releaseDate: 'February 22, 2014',
+    releaseVersion: '1.0 - Beta 42',
+    releaseDate: 'February 25, 2014',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -7140,8 +7140,8 @@ ys: 'whys'
                   aColors = blr.W15yQC.fnGetColorValues(node);
                   xPath = blr.W15yQC.fnGetElementXPath(node);
                   nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                  if (tagName=='input' && node.getAttribute('type')=='button' && blr.W15yQC.fnStringHasContent(node.getAttribute('value'))) {
-                    sText = node.getAttribute('value');
+                  if (tagName=='input' && /^(button|submit)$/i.test(node.getAttribute('type'))==true && blr.W15yQC.fnStringHasContent(node.getAttribute('value'))) {
+                    sText = node.getAttribute('value'); // TODO: Enhance this to work with select elements, input text boxes, textareas, others.
                   } else {
                     sText = blr.W15yQC.fnElementsOwnContent(node);
                   }

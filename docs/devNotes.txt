@@ -602,7 +602,9 @@ HTML5 Elements to test
  *    - Allow configurable values that can be added to not meaningful exceptions (i.e. 'IU', etc.)
       - Allow configurable values that are listed as not meaningful
 
-FIXED:
+FIXED
+    -- Moving to beta 42. [02/25/2014]
+    -- Added early HTML5 Region support to ARIA Landmarks list and to the semantic view tool. Need to think this out. [02/25/2014]
     -- Project scanner is not avoiding spreadsheets (.xls, .xlsx) [02/25/2014]
     -- Normalizer needs to deal with /../ to detect same links [02/25/2014]
     -- Updated luminosity check routine to check input[type=button] elements
