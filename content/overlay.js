@@ -7136,12 +7136,18 @@ ys: 'whys'
             } else { // keep looking through current document
               if (node.tagName && blr.W15yQC.fnNodeIsHidden(node) == false) {
                 tagName = node.tagName.toLowerCase();
+                sText='';
                 if(tagName != 'script' && tagName != 'style' && tagName != 'option' && (blr.W15yQC.fnElementHasOwnContent(node)||tagName=='input')) {
                   aColors = blr.W15yQC.fnGetColorValues(node);
                   xPath = blr.W15yQC.fnGetElementXPath(node);
                   nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                  if (tagName=='input' && /^(button|submit)$/i.test(node.getAttribute('type'))==true && blr.W15yQC.fnStringHasContent(node.getAttribute('value'))) {
+                  if (tagName=='input' && /^button$/i.test(node.getAttribute('type'))==true && blr.W15yQC.fnStringHasContent(node.getAttribute('value'))) {
                     sText = node.getAttribute('value'); // TODO: Enhance this to work with select elements, input text boxes, textareas, others.
+                  } else if (tagName=='input' && /^submit$/i.test(node.getAttribute('type'))==true) {
+                    sText = node.getAttribute('value');
+                    if (!blr.W15yQC.fnStringHasContent(sText)) {
+                      sText="Submit";
+                    }
                   } else {
                     sText = blr.W15yQC.fnElementsOwnContent(node);
                   }
@@ -10786,6 +10792,7 @@ ys: 'whys'
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
+    this.ownerDocumentNumber = null;
     this.role = role;
     this.aSameLinkText= [];
     this.aSoundsTheSame= [];

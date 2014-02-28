@@ -519,28 +519,30 @@ blr.W15yQC.ScannerWindow = {
       if(blr.W15yQC.ScannerWindow.urlList==null) {
         blr.W15yQC.ScannerWindow.urlList = [];
       }
-      if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
-        sURL = blr.W15yQC.fnNormalizeURL(sDocURL,sURL);
-        if((blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
-            (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
-             !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && !blr.W15yQC.ScannerWindow.urlAlreadyInList(sURL)) {
-
-          url=new blr.W15yQC.ProjectURL(sURL, source, priority);
-          if(blr.W15yQC.ScannerWindow.stateScanning==true) {
-            url.linkDepth=parseInt(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth) + 1;
+      if (blr.W15yQC.fnStringHasContent(sURL)) {
+        if(blr.W15yQC.ScannerWindow.urlList.length <= blr.W15yQC.ScannerWindow.maximumURLCount) {
+          sURL = blr.W15yQC.fnNormalizeURL(sDocURL,sURL);
+          if(blr.W15yQC.fnStringHasContent(sURL) && (blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
+              (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
+               !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && !blr.W15yQC.ScannerWindow.urlAlreadyInList(sURL)) {
+  
+            url=new blr.W15yQC.ProjectURL(sURL, source, priority);
+            if(blr.W15yQC.ScannerWindow.stateScanning==true) {
+              url.linkDepth=parseInt(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth) + 1;
+            }
+            if(dontParseForLinks==null) {
+              dontParseForLinks=false;
+            }
+            url.dontParseForLinks=dontParseForLinks;
+            blr.W15yQC.ScannerWindow.sortIsInvalid=true;
+            blr.W15yQC.ScannerWindow.urlList.push(url);
+            blr.W15yQC.ScannerWindow.sortColumns=[''];
+            blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
+            blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
           }
-          if(dontParseForLinks==null) {
-            dontParseForLinks=false;
-          }
-          url.dontParseForLinks=dontParseForLinks;
-          blr.W15yQC.ScannerWindow.sortIsInvalid=true;
-          blr.W15yQC.ScannerWindow.urlList.push(url);
-          blr.W15yQC.ScannerWindow.sortColumns=[''];
-          blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
-          blr.W15yQC.ScannerWindow.projectHasUnsavedChanges=true;
+        } else {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
         }
-      } else {
-        blr.W15yQC.ScannerWindow.fnUpdateStatus('Maximum number of URLs reached.');
       }
     }
   },
@@ -551,9 +553,12 @@ blr.W15yQC.ScannerWindow = {
       if(oW15yQCResults.aLinks && oW15yQCResults.aLinks.length) {
         blr.W15yQC.ScannerWindow.fnUpdateStatus('Scanning page for URLs to add. '+oW15yQCResults.sWindowTitle);
         for(i=0;i<oW15yQCResults.aLinks.length;i++) {
+          if(i%50==0) { blr.W15yQC.fnDoEvents(); }
           if(oW15yQCResults.aLinks[i].href!=null) {
-            blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href,oW15yQCResults.sWindowURL,oW15yQCResults.sWindowURL,1.0);
-            blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
+            try {
+              blr.W15yQC.ScannerWindow.addUrlToProject(oW15yQCResults.aLinks[i].href, oW15yQCResults.aDocuments[oW15yQCResults.aLinks[i].ownerDocumentNumber-1].URL,oW15yQCResults.sWindowURL,1.0);
+              blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
+            } catch(ex) {alert(ex.toString());}
           }
         }
         blr.W15yQC.ScannerWindow.fnUpdateStatus('');
