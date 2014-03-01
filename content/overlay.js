@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 42',
-    releaseDate: 'February 25, 2014',
+    releaseVersion: '1.0 - Beta 43',
+    releaseDate: 'February 27, 2014',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -5688,7 +5688,7 @@ ys: 'whys'
     },
 
     /*
-     *
+     * TODO: Why are so many sTagName==X contained in an if sRole has content if block? Are the checks really being made?
      * Optimize this:
      *   parameter passing for config values instead of reading application prefs for each element
      *   elimindate redundant element checks (node.tagName, etc.)
@@ -5696,7 +5696,7 @@ ys: 'whys'
      *   Handle role="presentation" and see if that should make the element "hidden" or not (how to keep presentation role elements out of lists?)
      *
      */
-    fnGetElements: function (doc, progressWindow, total, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth) {
+    fnGetElements: function (doc, progressWindow, total, rootNode, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, bInScript, sInheritedRoles, nestingDepth) {
       var docNumber, node, sID, idCount, frameDocument, style, i, sSectioningElements='',
         sARIALabel, sRole, sFirstRole, sTagName, bFoundHeading, headingLevel, xPath, nodeDescription, sAnnouncedAs, el,
         text, title, target, href, sState, effectiveLabel, effectiveLabelSource, box, width, height, alt, src, sXPath, sFormDescription, sFormElementDescription, ownerDocumentNumber,
@@ -5731,6 +5731,7 @@ ys: 'whys'
           ARIALandmarkLevel=0;
           sInheritedRoles='';
           bAddedARIARole=false;
+          bInScript=false;
           sPreviousInheritedRoles='';
           oW15yResults.PageScore=new blr.W15yQC.PageScore();
           oW15yResults.PageScore.bAllContentContainedInLandmark=true;
@@ -5771,146 +5772,119 @@ ys: 'whys'
           }
 
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
-            bAddedARIARole=false;
-            sRole=null;
-            if (node.nodeType == 1 && node.tagName && node.hasAttribute) { // Only pay attention to element nodes
-              style = window.getComputedStyle(node, null);
-              if(style!=null) {
-                if(/justify/i.test(style.getPropertyValue('text-align'))) {
-                  oW15yResults.aDocuments[docNumber].hasFullJustifiedText=true;
-                }
-              }
-
-              if (node.hasAttribute('id') == true) {
-                sID = blr.W15yQC.fnTrim(node.getAttribute('id'));
-                idCount = 1;
-                if(oW15yResults.aDocuments[docNumber].idHashTable.hasItem(sID)) {
-                  idCount = oW15yResults.aDocuments[docNumber].idHashTable.getItem(sID)+1;
-                  oW15yResults.PageScore.bAllIDsAreUnique=false;
-                  oW15yResults.aDocuments[docNumber].IDsUnique = false;
-                  if(idCount == 2) {
-                    if(oW15yResults.aDocuments[docNumber].nonUniqueIDs.length<5) {
-                      oW15yResults.aDocuments[docNumber].nonUniqueIDs.push(sID);
-                    }
-                    oW15yResults.aDocuments[docNumber].nonUniqueIDsCount++;
+            if (node.localName==='script' || bInScript==true) { // Don't dig into script content
+              bInScript=true;
+            } else {
+              bAddedARIARole=false;
+              sRole=null;
+              if (node.nodeType == 1 && node.tagName && node.hasAttribute) { // Only pay attention to element nodes
+                style = window.getComputedStyle(node, null);
+                if(style!=null) {
+                  if(/justify/i.test(style.getPropertyValue('text-align'))) {
+                    oW15yResults.aDocuments[docNumber].hasFullJustifiedText=true;
                   }
                 }
-                oW15yResults.aDocuments[docNumber].idHashTable.setItem(sID, idCount);
-                if(blr.W15yQC.fnIsValidHtmlID(sID) == false) {
-                  oW15yResults.aDocuments[docNumber].IDsValid = false;
-                  if(idCount < 2 && oW15yResults.aDocuments[docNumber].invalidIDs.length<5) {
-                    oW15yResults.aDocuments[docNumber].invalidIDs.push(sID);
-                    oW15yResults.aDocuments[docNumber].invalidIDsCount++;
-                  }
-                }
-              }
-              blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[docNumber],node);
-
-              if (((node.contentWindow && node.contentWindow.document !== null) || (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
-                // document the frame
-                frameTitle = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
-                frameSrc = blr.W15yQC.fnGetNodeAttribute(node, 'src', null);
-                frameId = blr.W15yQC.fnGetNodeAttribute(node, 'id', null);
-                frameName = blr.W15yQC.fnGetNodeAttribute(node, 'name', null);
-                sRole = blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
-                xPath = blr.W15yQC.fnGetElementXPath(node);
-                nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                effectiveLabel=aLabel[0];
-                effectiveLabelSource=aLabel[1];
-
-                oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, effectiveLabel, effectiveLabelSource, frameSrc));
-                oW15yResults.aFrames[oW15yResults.aFrames.length-1].ownerDocumentNumber=docNumber+1;
-                // Document the new document
-                frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
-                // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
-                title=null;
-                el=null;
-                if (frameDocument.head!=null) {
-                  el=frameDocument.head.getElementsByTagName('TITLE');
-                  if (el!=null) {
-                    if (typeof el[0] != 'undefined') {
-                      title=blr.W15yQC.fnTrim(frameDocument.title+'');
-                    }
-                  }
-                }
-                oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, oW15yResults.aDocuments.length, title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
-                oW15yResults.aDocuments[oW15yResults.aDocuments.length-1].ownerDocumentNumber=docNumber+1;
-                if(frameDocument && frameDocument.body) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body); }
-                if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
-
-                // get frame contents
-                blr.W15yQC.fnGetElements(frameDocument, progressWindow, total, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, '', nestingDepth);
-              } else {
-                bAddedARIARole=false;
-                sRole='';
-                sFirstRole='';
-                if (node.nodeType == 1 && blr.W15yQC.fnNodeIsHidden(node) == false) {
-                  sARIALabel=null;
-                  sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
-                  if(blr.W15yQC.fnStringHasContent(sRole)) {
-                    sRole=sRole.toLowerCase();
-                    sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
-                  }
-                  sTagName = node.tagName.toLowerCase();
-                  if (blr.W15yQC.fnElementUsesARIA(node) == true) {
-                    while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1], node) == false) {
-                      ARIAElementStack.pop();
-                    }
-                    // Document ARIA Element: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    // TODO: Don't restrict this to just an ARIA label, other elements may be involved.
-                    sARIALabel = blr.W15yQC.fnGetNodeAttribute(node, 'aria-label', null);
-                    if (blr.W15yQC.fnStringHasContent(sARIALabel)==false) {
-                      sARIALabel = blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc);
-                    }
-                    sState = blr.W15yQC.fnGetNodeState(node);
-                    oW15yResults.aARIAElements.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, oW15yResults.aARIAElements.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
-                    oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
-                    ARIAElementStack.push(node);
-
-                    switch (sFirstRole) {
-                      case 'application':
-                      case 'banner':
-                      case 'complementary':
-                      case 'contentinfo':
-                      case 'form':
-                      case 'main':
-                      case 'navigation':
-                      case 'search':
-                        // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                        ARIALandmarkLevel = 1;
-                        for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
-                          if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
-                            ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
-                            break;
-                          }
-                        }
-                        aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
-                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
-                        oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
-                        oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
-                        break;
-                      default:
-                        oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
-                    }
-                  }
   
-                  switch (sTagName) { // TODO: Debug how to handle HTML5 elements! Explore how JAWS 15 in FF or NVDA reports these
-                    case 'article': // http://blog.paciellogroup.com/2011/03/html5-accessibility-chops-section-elements/
-                    case 'section':
-                      //break;
-                    case 'aside':
-                    case 'header':
-                    case 'main':
-                    case 'nav':
-                    case 'footer':
-                        // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                        if (sFirstRole=='') {
-                          xPath = blr.W15yQC.fnGetElementXPath(node);
-                          nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                if (node.hasAttribute('id') == true) {
+                  sID = blr.W15yQC.fnTrim(node.getAttribute('id'));
+                  idCount = 1;
+                  if(oW15yResults.aDocuments[docNumber].idHashTable.hasItem(sID)) {
+                    idCount = oW15yResults.aDocuments[docNumber].idHashTable.getItem(sID)+1;
+                    oW15yResults.PageScore.bAllIDsAreUnique=false;
+                    oW15yResults.aDocuments[docNumber].IDsUnique = false;
+                    if(idCount == 2) {
+                      if(oW15yResults.aDocuments[docNumber].nonUniqueIDs.length<5) {
+                        oW15yResults.aDocuments[docNumber].nonUniqueIDs.push(sID);
+                      }
+                      oW15yResults.aDocuments[docNumber].nonUniqueIDsCount++;
+                    }
+                  }
+                  oW15yResults.aDocuments[docNumber].idHashTable.setItem(sID, idCount);
+                  if(blr.W15yQC.fnIsValidHtmlID(sID) == false) {
+                    oW15yResults.aDocuments[docNumber].IDsValid = false;
+                    if(idCount < 2 && oW15yResults.aDocuments[docNumber].invalidIDs.length<5) {
+                      oW15yResults.aDocuments[docNumber].invalidIDs.push(sID);
+                      oW15yResults.aDocuments[docNumber].invalidIDsCount++;
+                    }
+                  }
+                }
+                blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[docNumber],node);
+  
+                if (((node.contentWindow && node.contentWindow.document !== null) || (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
+                  // document the frame
+                  frameTitle = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
+                  frameSrc = blr.W15yQC.fnGetNodeAttribute(node, 'src', null);
+                  frameId = blr.W15yQC.fnGetNodeAttribute(node, 'id', null);
+                  frameName = blr.W15yQC.fnGetNodeAttribute(node, 'name', null);
+                  sRole = blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
+                  xPath = blr.W15yQC.fnGetElementXPath(node);
+                  nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                  aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                  effectiveLabel=aLabel[0];
+                  effectiveLabelSource=aLabel[1];
+  
+                  oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, effectiveLabel, effectiveLabelSource, frameSrc));
+                  oW15yResults.aFrames[oW15yResults.aFrames.length-1].ownerDocumentNumber=docNumber+1;
+                  // Document the new document
+                  frameDocument = node.contentWindow ? node.contentWindow.document : node.contentDocument;
+                  // TODO: for blank/missing src attributes on frames, should this blank out the URL? Right now it reports the parent URL
+                  title=null;
+                  el=null;
+                  if (frameDocument.head!=null) {
+                    el=frameDocument.head.getElementsByTagName('TITLE');
+                    if (el!=null) {
+                      if (typeof el[0] != 'undefined') {
+                        title=blr.W15yQC.fnTrim(frameDocument.title+'');
+                      }
+                    }
+                  }
+                  oW15yResults.aDocuments.push(new blr.W15yQC.documentDescription(frameDocument, frameDocument.URL, oW15yResults.aDocuments.length, title, blr.W15yQC.fnGetDocumentLanguage(frameDocument), blr.W15yQC.fnGetDocumentDirection(frameDocument), doc.compatMode, blr.W15yQC.fnGetDocType(frameDocument)));
+                  oW15yResults.aDocuments[oW15yResults.aDocuments.length-1].ownerDocumentNumber=docNumber+1;
+                  if(frameDocument && frameDocument.body) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body); }
+                  if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
+  
+                  // get frame contents
+                  blr.W15yQC.fnGetElements(frameDocument, progressWindow, total, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, bInScript, '', nestingDepth);
+                } else { // Not a new frame
+                  bAddedARIARole=false;
+                  sRole='';
+                  sFirstRole='';
+                  if (blr.W15yQC.fnNodeIsHidden(node) == false) {
+                    sARIALabel=null;
+                    sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
+                    if(blr.W15yQC.fnStringHasContent(sRole)) {
+                      sRole=sRole.toLowerCase();
+                      sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
+                    }
+                    sTagName = node.tagName.toLowerCase();
+                    
+                    if (blr.W15yQC.fnElementUsesARIA(node) == true) {
+                      while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1], node) == false) {
+                        ARIAElementStack.pop();
+                      }
+                      // Document ARIA Element: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      // TODO: Don't restrict this to just an ARIA label, other elements may be involved.
+                      sARIALabel = blr.W15yQC.fnGetNodeAttribute(node, 'aria-label', null);
+                      if (blr.W15yQC.fnStringHasContent(sARIALabel)==false) {
+                        sARIALabel = blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc);
+                      }
+                      sState = blr.W15yQC.fnGetNodeState(node);
+                      oW15yResults.aARIAElements.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, oW15yResults.aARIAElements.length, ARIAElementStack.length+1, sRole, sARIALabel, sState));
+                      oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
+                      ARIAElementStack.push(node);
+  
+                      switch (sFirstRole) {
+                        case 'application':
+                        case 'banner':
+                        case 'complementary':
+                        case 'contentinfo':
+                        case 'form':
+                        case 'main':
+                        case 'navigation':
+                        case 'search':
+                          // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
                           ARIALandmarkLevel = 1;
                           for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
                             if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
@@ -5918,69 +5892,46 @@ ys: 'whys'
                               break;
                             }
                           }
-                          sState = blr.W15yQC.fnGetNodeState(node);
                           aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                          effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' region',' '));
-                          effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 region element', ', '));
+                          effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
+                          effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
                           oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
                           oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
-                        }
-                      break;
-                    case 'area':
-                      xPath = blr.W15yQC.fnGetElementXPath(node);
-                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
-                      effectiveLabel=aLabel[0];
-                      effectiveLabelSource=aLabel[1];
-                      box = node.getBoundingClientRect();
-                      if (box != null) {
-                        width = box.width;
-                        height = box.height;
+                          break;
+                        default:
+                          oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
                       }
-                      title = null;
-                      if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
-                      alt = null;
-                      if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
-                      src = null;
-                      if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
-                      oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
-                      oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
-                      if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
-                        oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
-                        if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
-                      }
-                      break;
-                    case 'canvas':
-                      // TODO: What to do here? Get alternative content? text?
-                      break;
-                    case 'img':
-                      // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
-                      xPath = blr.W15yQC.fnGetElementXPath(node);
-                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
-                      effectiveLabel=aLabel[0];
-                      effectiveLabelSource=aLabel[1];
-                      box = node.getBoundingClientRect();
-                      if (box != null) {
-                        width = box.width;
-                        height = box.height;
-                      }
-                      title = null;
-                      if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
-                      alt = null;
-                      if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
-                      src = null;
-                      if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
-                      oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
-                      oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
-                      if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
-                        oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
-                        if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
-                      }
-                      break;
-                    case 'input': // TODO: QA This!
-                      if (node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'image') {
-                        // Document image: node, nodeDescription, doc, orderNumber, src, alt, title, ariaLabel
+                    }
+    
+                    switch (sTagName) { // TODO: Debug how to handle HTML5 elements! Explore how JAWS 15 in FF or NVDA reports these
+                      case 'article': // http://blog.paciellogroup.com/2011/03/html5-accessibility-chops-section-elements/
+                      case 'section':
+                        //break;
+                      case 'aside':
+                      case 'header':
+                      case 'main':
+                      case 'nav':
+                      case 'footer':
+                          // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                          if (sFirstRole=='') {
+                            xPath = blr.W15yQC.fnGetElementXPath(node);
+                            nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                            ARIALandmarkLevel = 1;
+                            for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
+                              if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
+                                ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
+                                break;
+                              }
+                            }
+                            sState = blr.W15yQC.fnGetNodeState(node);
+                            aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                            effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' region',' '));
+                            effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 region element', ', '));
+                            oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
+                            oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
+                          }
+                        break;
+                      case 'area':
                         xPath = blr.W15yQC.fnGetElementXPath(node);
                         nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                         aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
@@ -5999,234 +5950,290 @@ ys: 'whys'
                         if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                         oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
                         oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
-                      }
-                      break;
-                  }
-                  if (node.hasAttribute('accesskey') == true) { // Document accesskey
-                    accessKey = node.getAttribute('accesskey');
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
-                    effectiveLabel=aLabel[0];
-                    effectiveLabelSource=aLabel[1];
-                    oW15yResults.aAccessKeys.push(new blr.W15yQC.accessKey(node, xPath, nodeDescription, doc, oW15yResults.aAccessKeys.length, sRole, accessKey, effectiveLabel, effectiveLabelSource));
-                    oW15yResults.aAccessKeys[oW15yResults.aAccessKeys.length-1].ownerDocumentNumber=docNumber+1;
-                  }
-
-                  bFoundHeading=false;
-                  if(sFirstRole=='heading') {
-                    bFoundHeading=true;
-                    if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
-                      headingLevel=parseInt(node.getAttribute('aria-level'));
-                    } else { // TODO: Look deeper at this. JAWS 13 seems to default to heading level 2 if not specified
-                      headingLevel=2;
+                        if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
+                          oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
+                          if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
+                        }
+                        break;
+                      case 'canvas':
+                        // TODO: What to do here? Get alternative content? text?
+                        break;
+                      case 'img':
+                        // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
+                        xPath = blr.W15yQC.fnGetElementXPath(node);
+                        nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                        aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                        effectiveLabel=aLabel[0];
+                        effectiveLabelSource=aLabel[1];
+                        box = node.getBoundingClientRect();
+                        if (box != null) {
+                          width = box.width;
+                          height = box.height;
+                        }
+                        title = null;
+                        if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
+                        alt = null;
+                        if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
+                        src = null;
+                        if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
+                        oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
+                        oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
+                        if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
+                          oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
+                          if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
+                        }
+                        break;
+                      case 'input': // TODO: QA This!
+                        if (node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'image') {
+                          // Document image: node, nodeDescription, doc, orderNumber, src, alt, title, ariaLabel
+                          xPath = blr.W15yQC.fnGetElementXPath(node);
+                          nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                          aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                          effectiveLabel=aLabel[0];
+                          effectiveLabelSource=aLabel[1];
+                          box = node.getBoundingClientRect();
+                          if (box != null) {
+                            width = box.width;
+                            height = box.height;
+                          }
+                          title = null;
+                          if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
+                          alt = null;
+                          if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
+                          src = null;
+                          if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
+                          oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
+                          oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
+                        }
+                        break;
                     }
-                  } else {
-                    switch (sTagName) {
-                    case 'h1':
-                    case 'h2':
-                    case 'h3':
-                    case 'h4':
-                    case 'h5':
-                    case 'h6':
-                      if (blr.W15yQC.fnNodeIsHidden(node) == false) {
-                        // Document heading
-                        bFoundHeading=true;
-                        headingLevel = sTagName.substring(1);
-                      }
-                      break;
-                    }
-                  }
-                  if(bFoundHeading==true) {
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                    effectiveLabel=aLabel[0];
-                    effectiveLabelSource=aLabel[1];
-                    text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
-                    oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, sInheritedRoles, headingLevel, effectiveLabel, effectiveLabelSource, text));
-                    oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) {
-                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
-                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
-                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
-                        blr.W15yQC.skipStatusUpdateCounter=5;
-                      }
-                    }
-                  }
-
-                  if (sTagName == 'form') {
-                    sXPath = blr.W15yQC.fnGetElementXPath(node);
-                    sFormDescription = blr.W15yQC.fnDescribeElement(node);
-                    ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(node, oW15yResults.aDocuments);
-                    sID = blr.W15yQC.fnGetNodeAttribute(node, 'id', null);
-                    sName = blr.W15yQC.fnGetNodeAttribute(node, 'name', null);
-                    sAction = blr.W15yQC.fnGetNodeAttribute(node, 'action', null);
-                    sMethod = blr.W15yQC.fnGetNodeAttribute(node, 'method', null);
-                    oW15yResults.aForms.push(new blr.W15yQC.formElement(node, sXPath, sFormDescription, doc, ownerDocumentNumber, oW15yResults.aForms.length + 1, sID, sName, sRole, sAction, sMethod));
-                    oW15yResults.aForms[oW15yResults.aForms.length-1].ownerDocumentNumber=docNumber+1;
-                  } else if ((blr.W15yQC.fnIsFormControlNode(node) || (bIncludeLabelControls == true && blr.W15yQC.bQuick != true && blr.W15yQC.fnIsLabelControlNode(node)))) {
-                    // Document the form control
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    sFormElementDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    parentFormNode = blr.W15yQC.fnGetParentFormElement(node);
-                    sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
-                    sTitle = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
-                    sLegendText = '';
-                    sLabelTagText = '';
-                    sEffectiveLabelText = '';
-                    if(blr.W15yQC.fnIsFormControlNode(node)) {
-                      sLegendText = blr.W15yQC.fnGetLegendText(node);
-                      sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node);
+                    if (node.hasAttribute('accesskey') == true) { // Document accesskey
+                      accessKey = node.getAttribute('accesskey');
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                       aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
                       effectiveLabel=aLabel[0];
                       effectiveLabelSource=aLabel[1];
+                      oW15yResults.aAccessKeys.push(new blr.W15yQC.accessKey(node, xPath, nodeDescription, doc, oW15yResults.aAccessKeys.length, sRole, accessKey, effectiveLabel, effectiveLabelSource));
+                      oW15yResults.aAccessKeys[oW15yResults.aAccessKeys.length-1].ownerDocumentNumber=docNumber+1;
+                    }
+  
+                    bFoundHeading=false;
+                    if(sFirstRole=='heading') {
+                      bFoundHeading=true;
+                      if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
+                        headingLevel=parseInt(node.getAttribute('aria-level'));
+                      } else { // TODO: Look deeper at this. JAWS 13 seems to default to heading level 2 if not specified
+                        headingLevel=2;
+                      }
                     } else {
+                      switch (sTagName) {
+                      case 'h1':
+                      case 'h2':
+                      case 'h3':
+                      case 'h4':
+                      case 'h5':
+                      case 'h6':
+                        if (blr.W15yQC.fnNodeIsHidden(node) == false) {
+                          // Document heading
+                          bFoundHeading=true;
+                          headingLevel = sTagName.substring(1);
+                        }
+                        break;
+                      }
+                    }
+                    if(bFoundHeading==true) {
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                      effectiveLabel=aLabel[0];
+                      effectiveLabelSource=aLabel[1];
+                      text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
+                      oW15yResults.aHeadings.push(new blr.W15yQC.headingElement(node, xPath, nodeDescription, doc, oW15yResults.aHeadings.length, sRole, sInheritedRoles, headingLevel, effectiveLabel, effectiveLabelSource, text));
+                      oW15yResults.aHeadings[oW15yResults.aHeadings.length-1].ownerDocumentNumber=docNumber+1;
+                      if(progressWindow) {
+                        blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                        if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                          progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                          blr.W15yQC.skipStatusUpdateCounter=5;
+                        }
+                      }
+                    }
+  
+                    if (sTagName == 'form') {
+                      sXPath = blr.W15yQC.fnGetElementXPath(node);
+                      sFormDescription = blr.W15yQC.fnDescribeElement(node);
+                      ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(node, oW15yResults.aDocuments);
+                      sID = blr.W15yQC.fnGetNodeAttribute(node, 'id', null);
+                      sName = blr.W15yQC.fnGetNodeAttribute(node, 'name', null);
+                      sAction = blr.W15yQC.fnGetNodeAttribute(node, 'action', null);
+                      sMethod = blr.W15yQC.fnGetNodeAttribute(node, 'method', null);
+                      oW15yResults.aForms.push(new blr.W15yQC.formElement(node, sXPath, sFormDescription, doc, ownerDocumentNumber, oW15yResults.aForms.length + 1, sID, sName, sRole, sAction, sMethod));
+                      oW15yResults.aForms[oW15yResults.aForms.length-1].ownerDocumentNumber=docNumber+1;
+                    } else if ((blr.W15yQC.fnIsFormControlNode(node) || (bIncludeLabelControls == true && blr.W15yQC.bQuick != true && blr.W15yQC.fnIsLabelControlNode(node)))) {
+                      // Document the form control
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      sFormElementDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      parentFormNode = blr.W15yQC.fnGetParentFormElement(node);
+                      sFormDescription = blr.W15yQC.fnDescribeElement(parentFormNode);
+                      sTitle = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
+                      sLegendText = '';
+                      sLabelTagText = '';
+                      sEffectiveLabelText = '';
+                      if(blr.W15yQC.fnIsFormControlNode(node)) {
+                        sLegendText = blr.W15yQC.fnGetLegendText(node);
+                        sLabelTagText = blr.W15yQC.fnGetFormControlLabelTagText(node);
+                        aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                        effectiveLabel=aLabel[0];
+                        effectiveLabelSource=aLabel[1];
+                      } else {
+                        switch(sTagName) {
+                          case 'fieldset':
+                            sLabelTagText = blr.W15yQC.fnGetLegendText(node);
+                            break;
+                          case 'legend':
+                          case 'label':
+                          default:
+                            sLabelTagText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
+                            break;
+                        }
+                        effectiveLabel = sLabelTagText;
+                        effectiveLabelSource = 'Label';
+                      }
+                      if(sTagName=='input' && node.hasAttribute('type')) {
+                        controlType='type='+node.getAttribute('type');
+                      } else {
+                        controlType='';
+                      }
+                      if(blr.W15yQC.fnStringHasContent(sRole)) { controlType=blr.W15yQC.fnJoin(controlType,'role='+sRole,', '); }
+                      if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
+                      controlType=sTagName+controlType;
+                      sAnnouncedAs=blr.W15yQC.fnJAWSAnnouncesControlAs(node);
+                      sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(node, doc);
+                      sStateDescription = blr.W15yQC.fnGetNodeState(node);
+                      sID = node.getAttribute('id');
+                      sName = node.getAttribute('name');
+                      sValue = node.getAttribute('value');
+  
+                      oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, controlType, sRole, sID, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sAnnouncedAs, sStateDescription, sValue));
+                      oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
+                    }
+  
+                    if(sTagName=='a') {  // document the link
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                      effectiveLabel=aLabel[0];
+                      effectiveLabelSource=aLabel[1];
+                      text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
+                      title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
+                      target = blr.W15yQC.fnGetNodeAttribute(node, 'target', null);
+                      href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
+                      sState = blr.W15yQC.fnGetNodeState(node);
+                      oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
+                      oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
+                      if(progressWindow) {
+                        blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                        if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                          progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                          blr.W15yQC.skipStatusUpdateCounter=5;
+                        }
+                      }
+                    } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                      effectiveLabel=aLabel[0];
+                      effectiveLabelSource=aLabel[1];
+                      text=aLabel[0];  // TODO: Vet this with JAWS!
+                      title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
+                      target = blr.W15yQC.fnGetNodeAttribute(node, 'target', null);
+                      href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
+                      sState = blr.W15yQC.fnGetNodeState(node);
+                      oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
+                      oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
+                      if(progressWindow) {
+                        blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
+                        if (blr.W15yQC.skipStatusUpdateCounter<1) {
+                          progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
+                          blr.W15yQC.skipStatusUpdateCounter=5;
+                        }
+                      }
+                    }
+                    if (sTagName == 'table') {
+                      // Document table
+                      if (nestingDepth == null) { nestingDepth = 0; }
+                      if(inTable != null || nestingDepth>0) {
+                        nestingDepth += 1;
+                      }
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
+                      tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(node, 'summary', null));
+                      inTable = oW15yResults.aTables.length;
+                      oW15yResults.aTables.push(new blr.W15yQC.table(node, xPath, nodeDescription, doc, oW15yResults.aTables.length, sRole, nestingDepth, title, tableSummary));
+                      oW15yResults.aTables[oW15yResults.aTables.length-1].ownerDocumentNumber=docNumber+1;
+                      if(tableSummary != null && tableSummary.length>0) {
+                        oW15yResults.aTables[inTable].isDataTable=true;
+                      }
+                    } else if(inTable != null) { // TODO: Is this necessary? Does the table analysis do this?
                       switch(sTagName) {
-                        case 'fieldset':
-                          sLabelTagText = blr.W15yQC.fnGetLegendText(node);
-                          break;
-                        case 'legend':
-                        case 'label':
-                        default:
-                          sLabelTagText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
-                          break;
-                      }
-                      effectiveLabel = sLabelTagText;
-                      effectiveLabelSource = 'Label';
-                    }
-                    if(sTagName=='input' && node.hasAttribute('type')) {
-                      controlType='type='+node.getAttribute('type');
-                    } else {
-                      controlType='';
-                    }
-                    if(blr.W15yQC.fnStringHasContent(sRole)) { controlType=blr.W15yQC.fnJoin(controlType,'role='+sRole,', '); }
-                    if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
-                    controlType=sTagName+controlType;
-                    sAnnouncedAs=blr.W15yQC.fnJAWSAnnouncesControlAs(node);
-                    sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(node, doc);
-                    sStateDescription = blr.W15yQC.fnGetNodeState(node);
-                    sID = node.getAttribute('id');
-                    sName = node.getAttribute('name');
-                    sValue = node.getAttribute('value');
-
-                    oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, controlType, sRole, sID, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sAnnouncedAs, sStateDescription, sValue));
-                    oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
-                  }
-
-                  if(sTagName=='a') {  // document the link
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
-                    effectiveLabel=aLabel[0];
-                    effectiveLabelSource=aLabel[1];
-                    text = blr.W15yQC.fnGetDisplayableTextRecursively(node);
-                    title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
-                    target = blr.W15yQC.fnGetNodeAttribute(node, 'target', null);
-                    href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
-                    sState = blr.W15yQC.fnGetNodeState(node);
-                    oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
-                    oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) {
-                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
-                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
-                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
-                        blr.W15yQC.skipStatusUpdateCounter=5;
-                      }
-                    }
-                  } else if(sTagName=='area') { // TODO: Any checks we need to do to make sure this is a valid area before including?
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
-                    effectiveLabel=aLabel[0];
-                    effectiveLabelSource=aLabel[1];
-                    text=aLabel[0];  // TODO: Vet this with JAWS!
-                    title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
-                    target = blr.W15yQC.fnGetNodeAttribute(node, 'target', null);
-                    href = blr.W15yQC.fnGetNodeAttribute(node, 'href', null);
-                    sState = blr.W15yQC.fnGetNodeState(node);
-                    oW15yResults.aLinks.push(new blr.W15yQC.linkElement(node, xPath, nodeDescription, doc, oW15yResults.aLinks.length, sRole, sState, effectiveLabel, effectiveLabelSource, text, title, target, href));
-                    oW15yResults.aLinks[oW15yResults.aLinks.length-1].ownerDocumentNumber=docNumber+1;
-                    if(progressWindow) {
-                      blr.W15yQC.skipStatusUpdateCounter=blr.W15yQC.skipStatusUpdateCounter-1;
-                      if (blr.W15yQC.skipStatusUpdateCounter<1) {
-                        progressWindow.fnUpdateProgress('Getting Elements: '+oW15yResults.aHeadings.length.toString()+' headings, '+oW15yResults.aLinks.length.toString()+' links', (oW15yResults.aLinks.length+oW15yResults.aHeadings.length)/total*100);
-                        blr.W15yQC.skipStatusUpdateCounter=5;
-                      }
-                    }
-                  }
-
-                  if (sTagName == 'table') {
-                    // Document table
-                    if (nestingDepth == null) { nestingDepth = 0; }
-                    if(inTable != null || nestingDepth>0) {
-                      nestingDepth += 1;
-                    }
-                    xPath = blr.W15yQC.fnGetElementXPath(node);
-                    nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
-                    title = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
-                    tableSummary = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetNodeAttribute(node, 'summary', null));
-                    inTable = oW15yResults.aTables.length;
-                    oW15yResults.aTables.push(new blr.W15yQC.table(node, xPath, nodeDescription, doc, oW15yResults.aTables.length, sRole, nestingDepth, title, tableSummary));
-                    oW15yResults.aTables[oW15yResults.aTables.length-1].ownerDocumentNumber=docNumber+1;
-                    if(tableSummary != null && tableSummary.length>0) {
-                      oW15yResults.aTables[inTable].isDataTable=true;
-                    }
-                  } else if(inTable != null) { // TODO: Is this necessary? Does the table analysis do this?
-                    switch(sTagName) {
-                      case 'th':
-                        oW15yResults.aTables[inTable].isDataTable=true;
-                        oW15yResults.aTables[inTable].bHasTHCells = true;
-                        if(node.hasAttribute('rowspan') || node.hasAttribute('colspan')) {
-                          oW15yResults.aTables[inTable].isComplex=true;
-                        }
-                        break;
-                      case 'caption':
-                        oW15yResults.aTables[inTable].isDataTable=true;
-                        oW15yResults.aTables[inTable].bHasCaption = true;
-                        if(oW15yResults.aTables[inTable].caption == null) {
-                          oW15yResults.aTables[inTable].caption = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
-                        } else {
-                          blr.W15yQC.fnAddNote(oW15yResults.aTables[inTable], 'tblMultipleCaptions'); // TODO: QA THIS
-                        }
-                        break;
-                      case 'td':
-                        if(node.hasAttribute('rowspan') || node.hasAttribute('colspan')) {
-                          oW15yResults.aTables[inTable].isComplex=true;
-                        }
-                        if(node.hasAttribute('headers')) {
+                        case 'th':
                           oW15yResults.aTables[inTable].isDataTable=true;
-                          oW15yResults.aTables[inTable].bHasHeadersAttr = true;
-                        }
-                        break;
-                      case 'tr':
-                        break;
+                          oW15yResults.aTables[inTable].bHasTHCells = true;
+                          if(node.hasAttribute('rowspan') || node.hasAttribute('colspan')) {
+                            oW15yResults.aTables[inTable].isComplex=true;
+                          }
+                          break;
+                        case 'caption':
+                          oW15yResults.aTables[inTable].isDataTable=true;
+                          oW15yResults.aTables[inTable].bHasCaption = true;
+                          if(oW15yResults.aTables[inTable].caption == null) {
+                            oW15yResults.aTables[inTable].caption = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursively(node));
+                          } else {
+                            blr.W15yQC.fnAddNote(oW15yResults.aTables[inTable], 'tblMultipleCaptions'); // TODO: QA THIS
+                          }
+                          break;
+                        case 'td':
+                          if(node.hasAttribute('rowspan') || node.hasAttribute('colspan')) {
+                            oW15yResults.aTables[inTable].isComplex=true;
+                          }
+                          if(node.hasAttribute('headers')) {
+                            oW15yResults.aTables[inTable].isDataTable=true;
+                            oW15yResults.aTables[inTable].bHasHeadersAttr = true;
+                          }
+                          break;
+                        case 'tr':
+                          break;
+                      }
                     }
                   }
-                }
-
-                if (node.firstChild != null) { // keep looking through current document
-                  if(blr.W15yQC.fnStringHasContent(sRole)) {
-                    if(blr.W15yQC.fnIsValidARIARole(sRole) && blr.W15yQC.fnIsARIALandmarkRole(sRole)!=true) {
-                      bAddedARIARole=true;
-                      sPreviousInheritedRoles=sInheritedRoles;
-                      sInheritedRoles=blr.W15yQC.fnJoin(sInheritedRoles,sRole,':');
+  
+                  if (node.firstChild != null) { // keep looking through current document
+                    if(blr.W15yQC.fnStringHasContent(sRole)) {
+                      if(blr.W15yQC.fnIsValidARIARole(sRole) && blr.W15yQC.fnIsARIALandmarkRole(sRole)!=true) {
+                        bAddedARIARole=true;
+                        sPreviousInheritedRoles=sInheritedRoles;
+                        sInheritedRoles=blr.W15yQC.fnJoin(sInheritedRoles,sRole,':');
+                      }
                     }
+                    blr.W15yQC.fnGetElements(doc, progressWindow, total, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, bInScript, sInheritedRoles, nestingDepth);
+                    if(bAddedARIARole==true) {
+                      sInheritedRoles=sPreviousInheritedRoles;
+                    }
+                    bAddedARIARole=false;
                   }
-                  blr.W15yQC.fnGetElements(doc, progressWindow, total, node, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, sInheritedRoles, nestingDepth);
-                  if(bAddedARIARole==true) {
-                    sInheritedRoles=sPreviousInheritedRoles;
+                  if(inTable != null && node.tagName.toLowerCase() == 'table') {
+                    inTable = null; // TODO: Does this need to be an array stack?
+                    if(nestingDepth>0) { nestingDepth += -1; }
                   }
-                  bAddedARIARole=false;
                 }
-                if(inTable != null && node.tagName.toLowerCase() == 'table') {
-                  inTable = null; // TODO: Does this need to be an array stack?
-                  if(nestingDepth>0) { nestingDepth += -1; }
+              } else if (node.nodeType == 3 && node.textContent && blr.W15yQC.fnStringHasContent(node.textContent)){
+                oW15yResults.iTextSize=oW15yResults.iTextSize+node.textContent.length;
+                if(ARIALandmarkLevel<1 && !bInScript) {
+                    oW15yResults.PageScore.bAllContentContainedInLandmark=false;
                 }
               }
-            } else if (node.nodeType == 3 && node.textContent && blr.W15yQC.fnStringHasContent(node.textContent)){
-              oW15yResults.iTextSize=oW15yResults.iTextSize+node.textContent.length;
-              if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
             }
           }
         }
