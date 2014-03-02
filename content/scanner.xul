@@ -58,7 +58,7 @@
 				</xul:menu>
 				<xul:menu id="edit-menu" label="View">
 					<xul:menupopup id="edit-popup">
-						<xul:menuitem label="Overall Report"/>
+						<xul:menuitem label="Overall Report" oncommand="blr.W15yQC.ScannerWindow.generateOverallReport()"/>
 						<xul:menuitem label="View URL" oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>
 	 					<xul:menu label="Show Columns" id="showCols-menu">
 								<xul:menupopup id="showCols-menupopup">

@@ -116,6 +116,7 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- Rethink: What are failures? What are warnings? What are manual checks?
   -- TODO: QA, would we catch an ARIA landmark on an iframe element? Should we be able to? It looks like fnGetElements doesn't check frame elements.
   -- URGENT: TODO: Why are so many sTagName==X contained in an if sRole has content if block? Are the checks really being made?
   -- Debug HTML5 handling
@@ -605,6 +606,8 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED
+    -- Improved effectively equal page title calculations [03/02/2014]
+    -- Added Overall report to the scanner tool [03/02/2014]
     -- Sped up inspectPageTitles method in the scanner by optimizing call to cleanSpaces by moving code into function and optimizing it [03/01/2014]
     -- Script text is being regarded as text outside of an ARIA landmark, when it shouldn't [03/01/2014]
     -- Moving to beta 42. [02/25/2014]

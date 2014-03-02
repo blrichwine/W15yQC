@@ -1356,14 +1356,15 @@ blr.W15yQC.ScannerWindow = {
     var i, sPageTitle, url;
     if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
       url=blr.W15yQC.ScannerWindow.urlList[pti];
-      if (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize) {
+      if (url.dateScanned!=null || url.itemsCount || url.windowTitle || url.textSize) {
         sPageTitle=blr.W15yQC.ScannerWindow.urlList[pti].windowTitle;
         blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(url.loc, sPageTitle);
         if (blr.W15yQC.fnStringHasContent(sPageTitle)) {
+          sPageTitle=sPageTitle.replace(/['"]/,'').replace(/[!\(\)_;:\/\\\|\?\^=]+/g, ' ').replace(/[\.,\+-]+([a-z\s]|$)/ig, '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
           for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
             url=blr.W15yQC.ScannerWindow.urlList[i];
-            if(i!=pti && (url.dateScanned || url.itemsCount || url.windowTitle || url.textSize || url.score)) {
-              if(blr.W15yQC.fnStringsEffectivelyEqual(sPageTitle,blr.W15yQC.ScannerWindow.urlList[i].windowTitle)) {
+            if(i!=pti && blr.W15yQC.fnStringHasContent(url.windowTitle)) {
+              if(sPageTitle==url.windowTitle.replace(/['"]/,'').replace(/[!\(\)_;:\/\\\|\?\^=]+/g, ' ').replace(/[\.,\+-]+([a-z\s]|$)/ig, '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase()) {
                 blr.W15yQC.ScannerWindow.urlList[pti].windowTitleNotUnique=true;
                 blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=true;
                 blr.W15yQC.ScannerWindow.updateUrlInTree(i);
@@ -1395,10 +1396,10 @@ blr.W15yQC.ScannerWindow = {
           sPageTitle=url.windowTitle;
           urll[i].windowTitleNotMeaningful=blr.W15yQC.ScannerWindow.pageTitleDoesNotAppearToBeMeaningful(url.loc, sPageTitle);
           if(blr.W15yQC.fnStringHasContent(sPageTitle)) {
-            sPageTitle=sPageTitle.replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
+            sPageTitle=sPageTitle.replace(/['"]/,'').replace(/[!\(\)_;:\/\\\|\?\^=]+/g, ' ').replace(/[\.,\+-]+([a-z\s]|$)/ig, '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
             for (j=i+1;j<ll;j++) {
               if (urll[j].windowTitle!=null) {
-                swt=urll[j].windowTitle.replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
+                swt=urll[j].windowTitle.replace(/['"]/,'').replace(/[!\(\)_;:\/\\\|\?\^=]+/g, ' ').replace(/[\.,\+-]+([a-z\s]|$)/ig, '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
                 if(sPageTitle==swt) {
                   blr.W15yQC.ScannerWindow.urlList[i].windowTitleNotUnique=true;
                   blr.W15yQC.ScannerWindow.urlList[j].windowTitleNotUnique=true;
@@ -1606,7 +1607,7 @@ blr.W15yQC.ScannerWindow = {
       Components.utils.forceShrinkingGC();
       // create new iFrame so we can get onload event notification
       // research blocking pop-ups from iframe
-      blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting for page to load: ('+blr.W15yQC.ScannerWindow.stateCurrentIndex+') '+sURL);
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting for page to load: ('+(1+blr.W15yQC.ScannerWindow.stateCurrentIndex)+') '+sURL);
       blr.W15yQC.ScannerWindow.stateWaitingOnUrlToLoad=true;
       blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID=setTimeout(function () {
         blr.W15yQC.ScannerWindow.iFrameTimedOut();
@@ -1812,7 +1813,7 @@ blr.W15yQC.ScannerWindow = {
           if (url.windowTitleNotUnique==true) {
             textbox.value=textbox.value+"\nPage title is not unique.";
           }
-          textbox.value=textbox.value+"\n\nDepth:"+url.linkDepth+"\nSource:"+url.source;
+          textbox.value=textbox.value+"\n\nURL: "+url.loc+"\nDepth: "+url.linkDepth+"\nSource: "+url.source;
         }
       }
     }
@@ -2303,8 +2304,16 @@ blr.W15yQC.ScannerWindow = {
 
   forceMinSize: function() {
 
-  }
+  },
 
+  generateOverallReport: function() {
+    var dialogID, dialogPath;
+    if(blr.W15yQC.ScannerWindow.urlList != null && blr.W15yQC.ScannerWindow.urlList.length>0) {
+        dialogID = 'overallScannerReport';
+        dialogPath = 'chrome://W15yQC/content/overallScannerReportWindow.xul';
+      window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr, blr.W15yQC.ScannerWindow);
+    }
+  }
 };
 
 blr.W15yQC.ProjectURL = function (loc, source, priority) {
