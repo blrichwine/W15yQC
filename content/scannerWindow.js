@@ -252,7 +252,7 @@ blr.W15yQC.ScannerWindow = {
     var treeview=document.getElementById('treebox');
     if(override==null) { override=false; }
     if(treeview != null && ((treeview.currentIndex && treeview.currentIndex<0) || override==true)) {
-      if(blr.W15yQC.ScannerWindow.urlList != null && row!=null && row<blr.W15yQC.ScannerWindow.urlList.length) {
+      if(blr.W15yQC.ScannerWindow.urlToRowMap != null && row!=null && row<blr.W15yQC.ScannerWindow.urlToRowMap.length) {
         try {
           if(treeview.focus) { treeview.focus(); }
           if(treeview.view) { treeview.view.selection.select(row); }
@@ -358,6 +358,9 @@ blr.W15yQC.ScannerWindow = {
       }
       if(blr.W15yQC.ScannerWindow.urlList != null) {
         blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
+        if (blr.W15yQC.ScannerWindow.urlList.length>200) {
+          blr.W15yQC.ScannerWindow.fnUpdateStatus('Updating URL Listing');
+        }
         for (i = 0; i < blr.W15yQC.ScannerWindow.urlList.length; i++) {
           if(bHideUnscannedURLs==false) {
             blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
@@ -369,6 +372,7 @@ blr.W15yQC.ScannerWindow = {
           }
         }
         blr.W15yQC.ScannerWindow.selectRow(0);
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('URL Listing updated.');
       }
     }
     blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox'));
@@ -1452,7 +1456,7 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-			buttonScanSelectedURL=document.getElementById('button-scanSelectedURL'),
+      buttonScanSelectedURL=document.getElementById('button-scanSelectedURL'),
       buttonStopScanning=document.getElementById('button-stopScanning'),
       buttonOpenSelectedURL=document.getElementById('button-openSelectedURL'),
       buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
@@ -1462,7 +1466,7 @@ blr.W15yQC.ScannerWindow = {
     if(selectedRow==null) { selectedRow=-1;}
 
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
-			buttonScanSelectedURL.disabled=true;
+      buttonScanSelectedURL.disabled=true;
       buttonOpenSelectedURL.disabled=true;
       buttonAddNewURL.disabled=true;
       buttonEditSelectedURL.disabled=true;
@@ -1478,7 +1482,7 @@ blr.W15yQC.ScannerWindow = {
       }
     } else {
       buttonStopScanning.label='Stop Scanning';
-			buttonScanSelectedURL.disabled=selectedRow<0;
+      buttonScanSelectedURL.disabled=selectedRow<0;
       buttonStopScanning.disabled=true;
       buttonAddNewURL.disabled=false;
       buttonOpenSelectedURL.disabled=selectedRow<0;
@@ -1517,7 +1521,8 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
         blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
         blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
-        blr.W15yQC.ScannerWindow.scanNextLink();
+        blr.W15yQC.ScannerWindow.showUnscannedURLs();
+        blr.W15yQC.ScannerWindow.scanNextLink(true);
       }
     }
   },
@@ -1538,14 +1543,15 @@ blr.W15yQC.ScannerWindow = {
         blr.W15yQC.ScannerWindow.stateCurrentIndex=-1;
         blr.W15yQC.ScannerWindow.stateScanningAllLinks=false;
         blr.W15yQC.ScannerWindow.stateScanningOneLink=false;
-        blr.W15yQC.ScannerWindow.scanNextLink();
+        blr.W15yQC.ScannerWindow.showUnscannedURLs();
+        blr.W15yQC.ScannerWindow.scanNextLink(true);
       }
     }
   },
 
-  scanNextLink: function() {
+  scanNextLink: function(bFirst) {
     // blr.W15yQC.fnLog('scanner-scanNextLink');
-    var treeview=document.getElementById('treebox');
+    var i,row=0,treeview=document.getElementById('treebox');
     clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
     Components.utils.forceShrinkingGC();
 
@@ -1553,16 +1559,28 @@ blr.W15yQC.ScannerWindow = {
       blr.W15yQC.bQuick = false; // Make sure this has been reset
       blr.W15yQC.ScannerWindow.updateControlStates();
 
-      blr.W15yQC.ScannerWindow.stateCurrentIndex++;
+      if (bFirst===true) {
+        row=0;
+      } else {
+        for(i=0;i<blr.W15yQC.ScannerWindow.urlToRowMap.length;i++) {
+          if (blr.W15yQC.ScannerWindow.urlToRowMap[i]==blr.W15yQC.ScannerWindow.stateCurrentIndex) {
+            row=i;
+            break;
+          }
+        }
+        row++;
+      }
+      blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[row];
 
-      if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true) {
-        while(blr.W15yQC.ScannerWindow.stateCurrentIndex < blr.W15yQC.ScannerWindow.urlList.length && blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].dateScanned!=null) {
-          blr.W15yQC.ScannerWindow.stateCurrentIndex++;
+      if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true && !blr.W15yQC.ScannerWindow.stateScanningOneLink) {
+        while(row < blr.W15yQC.ScannerWindow.urlToRowMap.length &&
+              blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlToRowMap[row]].dateScanned!=null) {
+          row++;
         }
       }
-
-      if(blr.W15yQC.ScannerWindow.stateCurrentIndex<blr.W15yQC.ScannerWindow.urlList.length) {
-        blr.W15yQC.ScannerWindow.selectRow(blr.W15yQC.ScannerWindow.stateCurrentIndex,true);
+      blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[row];
+      if(row<blr.W15yQC.ScannerWindow.urlToRowMap.length) {
+        blr.W15yQC.ScannerWindow.selectRow(row,true);
         blr.W15yQC.bQuick = false; // Make sure this has been reset
         blr.W15yQC.ScannerWindow.scanURL(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex]); // Should this be a timer driven call?
       } else {
@@ -1693,6 +1711,7 @@ blr.W15yQC.ScannerWindow = {
       }, 500);
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Waiting to load next URL');
     } else {
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished scanning URL.');
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();
     }
     Components.utils.forceShrinkingGC();
@@ -1906,7 +1925,7 @@ blr.W15yQC.ScannerWindow = {
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
-      selectedRow, selectedIndex, i, j;
+      selectedRow, selectedIndex, i;
 
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       if(textbox==null) {
@@ -1920,7 +1939,6 @@ blr.W15yQC.ScannerWindow = {
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
-        alert(blr.W15yQC.ScannerWindow.urlDisplayOrder+' - '+blr.W15yQC.ScannerWindow.urlToRowMap);
         blr.W15yQC.ScannerWindow.urlToRowMap.splice(selectedRow,1);
         blr.W15yQC.ScannerWindow.urlList.splice(selectedIndex,1);
         for(i=0;i<blr.W15yQC.ScannerWindow.urlToRowMap.length;i++) {
@@ -1938,7 +1956,6 @@ blr.W15yQC.ScannerWindow = {
             blr.W15yQC.ScannerWindow.urlDisplayOrder[i]--;
           }
         }
-        alert(blr.W15yQC.ScannerWindow.urlDisplayOrder+' - '+blr.W15yQC.ScannerWindow.urlToRowMap);
         blr.W15yQC.ScannerWindow.updateProjectDisplay();
         blr.W15yQC.ScannerWindow.selectRow(selectedIndex-1,true);
         blr.W15yQC.ScannerWindow.selectRow(selectedIndex,true);
@@ -2197,6 +2214,16 @@ blr.W15yQC.ScannerWindow = {
   hideUnscannedURLsCheckboxToggle: function() {
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.updateControlStates();
+  },
+  
+  showUnscannedURLs: function() {
+    var chkbx=document.getElementById('cbHideURLsNotYetScanned');
+    if (chkbx.checked===true) {
+      chkbx.checked=false;
+      blr.W15yQC.ScannerWindow.fnUpdateStatus('Unhiding unscanned URLs...');
+      blr.W15yQC.ScannerWindow.updateProjectDisplay();
+      blr.W15yQC.ScannerWindow.updateControlStates();
+    }
   },
   
   showAllCounts: function() {
