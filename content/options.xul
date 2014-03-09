@@ -5,7 +5,7 @@
 	type="prefwindow"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept, cancel"
-	style="min-height:300px;min-width:700px;max-height:300px;max-width:700px"
+	style="min-height:300px;min-width:800px;max-height:300px;max-width:800px"
 	title="W15yQC Web Accessibility Quick Check Options">
 
    <script>
@@ -27,6 +27,8 @@
       <preference id="honorARIA" name="extensions.W15yQC.getElements.honorARIA" type="bool"/>
       <preference id="ignoreWWW" name="extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW" type="bool"/>
       <preference id="testContrastMinSpec" name="extensions.W15yQC.testContrast.MinSpec" type="string"/>
+      <preference id="mandatoryCodeList" name="extensions.W15yQC.mandatoryCodeList" type="string"/>
+      <preference id="enableMandates" name="extensions.W15yQC.extensions.W15yQC.mandatesEnabled" type="bool"/>
       <preference id="rulesToExcludeList" name="extensions.W15yQC.rulesToExcludeList" type="string"/>
     </preferences>
 
@@ -36,6 +38,7 @@
 			<tab label="HTML Report"/>
 			<tab label="Inspector Dialogs"/>
 			<tab label="Analysis"/>
+			<tab label="Mandatory Code"/>
 			<tab label="Domains"/>
 			<tab label="Rules"/>
 		</tabs>
@@ -82,6 +85,63 @@
 								<menuitem label="WCAG 2 AAA" value="WCAG2 AAA"/>
 							</menupopup>
 						</menulist>
+					</hbox>
+			</tabpanel>
+
+			<tabpanel id="W15yQC_tab_Mandates" orient="vertical">
+					<label control="tMandates" value="Mandates:"/>
+					<tree enableColumnDrag="false" id="tMandates" flex="1" seltype="single" rows="5" hidecolumnpicker="true">
+						 <treecols>
+								<treecol ordinal="1" id="col-header-mandate-name"
+									 label=" Name "
+									 hidden="false"
+									 style="text-align:left"
+									 fixed="false"
+									 flex="10"
+									 sortDirection=""
+									 onclick=""/>
+								<splitter ordinal="2" class="tree-splitter" />
+								<treecol  ordinal="3" id="col-header-mandate-enabled"
+									 label=" Enabled "
+									 hidden="false"
+									 style="text-align:left"
+									 fixed="false"
+									 flex="1"
+									 sortDirection=""
+									 onclick=""/>
+								<splitter ordinal="4" class="tree-splitter" />
+								<treecol  ordinal="5" id="col-header-mandate-type"
+									 label=" Type "
+									 hidden="false"
+									 style="text-align:left"
+									 fixed="false"
+									 flex="1"
+									 sortDirection=""
+									 onclick=""/>
+								<splitter ordinal="6" class="tree-splitter" />
+								<treecol  ordinal="7" id="col-header-mandate-weight"
+									 label=" Weight "
+									 hidden="false"
+									 style="text-align:left"
+									 fixed="false"
+									 flex="1"
+									 sortDirection=""
+									 onclick=""/>
+						 </treecols>
+						 <treechildren id="tMandatesChildren"/>
+					</tree>
+					<checkbox label="Enable Mandates" preference="enableMandates"/>
+					<hbox>
+						 <button id="button-addMandate"
+							 label="Add Mandate"
+							 oncommand="blr.W15yQC.options.fnAddMandate()"/>
+						 <button id="button-editMandate"
+							 label="Edit Mandate"
+							 oncommand="blr.W15yQC.options.fnEditMandate()"/>
+						 <button id="button-deleteMandate"
+							 label="Delete Mandate"
+							 oncommand="blr.W15yQC.options.fnDeleteMandate()"/>
+						 <spacer flex="1"/>
 					</hbox>
 			</tabpanel>
 

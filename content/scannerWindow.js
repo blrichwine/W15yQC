@@ -248,7 +248,7 @@ blr.W15yQC.ScannerWindow = {
     }
   },
 
-  selectRow: function(row, override) {
+  selectRow: function(row, override, jocky) {
     var treeview=document.getElementById('treebox');
     if(override==null) { override=false; }
     if(treeview != null && ((treeview.currentIndex && treeview.currentIndex<0) || override==true)) {
@@ -256,7 +256,14 @@ blr.W15yQC.ScannerWindow = {
         try {
           if(treeview.focus) { treeview.focus(); }
           if(treeview.view) { treeview.view.selection.select(row); }
-          if(treeview.boxObject && treeview.boxObject.ensureRowIsVisible) {treeview.boxObject.ensureRowIsVisible(row);}
+          if(treeview.boxObject && treeview.boxObject.ensureRowIsVisible) {
+            if (jocky===true) {
+              if(row>0) {treeview.boxObject.ensureRowIsVisible(row-1);}
+              if(row<blr.W15yQC.ScannerWindow.urlToRowMap.length-1) {treeview.boxObject.ensureRowIsVisible(row+1);}
+            }
+            treeview.boxObject.ensureRowIsVisible(row);
+            if(treeview.view) { treeview.view.selection.select(row); }
+          }
         } catch(ex) {}
       }
     }
@@ -342,7 +349,7 @@ blr.W15yQC.ScannerWindow = {
     }
   },
 
-  updateProjectDisplay: function() {
+  updateProjectDisplay: function(rowToDisplay) {
     // blr.W15yQC.fnLog('scanner-updateProjectDisplay');
     var tbc, url, i, bHideUnscannedURLs=document.getElementById('cbHideURLsNotYetScanned').checked,
         textbox = document.getElementById('note-text');
@@ -350,6 +357,9 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.bUpdatingProject=true;
     textbox.value='';
     blr.W15yQC.ScannerWindow.urlToRowMap=[];
+    if (blr.W15yQC.ScannerWindow.urlList.length>200) {
+      //blr.W15yQC.ScannerWindow.fnUpdateStatus('Updating URL Listing');
+    }
     document.title=blr.W15yQC.fnJoin(blr.W15yQC.ScannerWindow.sProjectTitle,'Scanner - W15yQC', ' - ');
     tbc = document.getElementById('treeboxChildren');
     if (tbc != null) {
@@ -358,9 +368,6 @@ blr.W15yQC.ScannerWindow = {
       }
       if(blr.W15yQC.ScannerWindow.urlList != null) {
         blr.W15yQC.ScannerWindow.updateDisplayOrderArray();
-        if (blr.W15yQC.ScannerWindow.urlList.length>200) {
-          blr.W15yQC.ScannerWindow.fnUpdateStatus('Updating URL Listing');
-        }
         for (i = 0; i < blr.W15yQC.ScannerWindow.urlList.length; i++) {
           if(bHideUnscannedURLs==false) {
             blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlDisplayOrder[i]);
@@ -371,7 +378,11 @@ blr.W15yQC.ScannerWindow = {
             }
           }
         }
-        blr.W15yQC.ScannerWindow.selectRow(0);
+        if (rowToDisplay!=null && rowToDisplay<blr.W15yQC.ScannerWindow.urlToRowMap.length && rowToDisplay>=0) {
+          blr.W15yQC.ScannerWindow.selectRow(rowToDisplay,true,true);
+        } else {
+          blr.W15yQC.ScannerWindow.selectRow(0);
+        }
         blr.W15yQC.ScannerWindow.fnUpdateStatus('URL Listing updated.');
       }
     }
@@ -1797,6 +1808,20 @@ blr.W15yQC.ScannerWindow = {
     }
   },
 
+  openSelectedURLsSource: function() {
+    var treebox = document.getElementById('treebox'), selectedRow, selectedIndex, sURL;
+
+    blr.W15yQC.ScannerWindow.updateControlStates();
+    selectedRow = treebox.currentIndex;
+    if (selectedRow >= 0) {
+      selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
+      sURL=blr.W15yQC.ScannerWindow.urlList[selectedIndex].source;
+      if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
+        window.open(sURL);
+      }
+    }
+  },
+
   updateNotesField: function () {
     var treebox = document.getElementById('treebox'),
       iframeHolder = document.getElementById('iFrameHolder'),
@@ -1815,7 +1840,6 @@ blr.W15yQC.ScannerWindow = {
         }
 
         selectedRow = treebox.currentIndex;
-        blr.W15yQC.ScannerWindow.fnUpdateStatus(selectedRow+" - "+blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow]);
         if (blr.W15yQC.ScannerWindow.urlList != null && iframeHolder != null &&
             (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length)) {
 
@@ -1938,6 +1962,7 @@ blr.W15yQC.ScannerWindow = {
 
       selectedRow = treebox.currentIndex;
       if (blr.W15yQC.ScannerWindow.urlList != null && selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Deleting selected URL.');
         selectedIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow];
         blr.W15yQC.ScannerWindow.urlToRowMap.splice(selectedRow,1);
         blr.W15yQC.ScannerWindow.urlList.splice(selectedIndex,1);
@@ -1956,9 +1981,8 @@ blr.W15yQC.ScannerWindow = {
             blr.W15yQC.ScannerWindow.urlDisplayOrder[i]--;
           }
         }
-        blr.W15yQC.ScannerWindow.updateProjectDisplay();
-        blr.W15yQC.ScannerWindow.selectRow(selectedIndex-1,true);
-        blr.W15yQC.ScannerWindow.selectRow(selectedIndex,true);
+        blr.W15yQC.ScannerWindow.updateProjectDisplay(selectedRow);
+        blr.W15yQC.ScannerWindow.fnUpdateStatus('Deleted selected URL.');
       }
     }
     blr.W15yQC.ScannerWindow.bManualURLAdd=false;

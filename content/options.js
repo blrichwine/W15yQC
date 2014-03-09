@@ -137,6 +137,41 @@ blr.W15yQC.options = {
       blr.W15yQC.options.fnReadPrefs();
     }
   },
+
+  fnAddMandate: function() {
+    var sDomains, aEquivDomains, aDomainPair,
+        tbc, url, i, rows, row, d={d1:null,d2:null},
+        treeitem, treerow, treecell,
+        dialogID = 'addMandatesDialog',
+        dialogPath = 'chrome://W15yQC/content/addMandatesDialog.xul',
+        win;
+
+    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr,d);
+    if(d!=null && d.d1!=null && d.d2!=null) {
+      tbc = document.getElementById('tEquivDomainsChildren');
+      rows=tbc.getElementsByTagName('treerow').length;
+      treeitem=document.createElement('treeitem');
+      row=document.createElement('treerow');
+      row.setAttribute('id','Domains'+rows);
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',d.d1);
+      row.appendChild(treecell);
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',d.d2);
+      row.appendChild(treecell);
+      treeitem.appendChild(row);
+      tbc.appendChild(treeitem);
+    }
+    blr.W15yQC.options.fnUpdatesPrefs();
+  },
+  
+  fnEditMandate: function() {
+    
+  },
+  
+  fnDeleteMandate: function() {
+    
+  },
   
   fnResetDefaults: function() {
     // Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", "");
@@ -150,7 +185,9 @@ blr.W15yQC.options = {
     Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
     Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+    Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", true);
     Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
+    Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.mandatesEnabled", false);
     Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
     Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
   }
