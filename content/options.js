@@ -36,15 +36,18 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  */
 blr.W15yQC.options = {
 
+  mandates: [],
+  
   init: function() {
     blr.W15yQC.options.fnReadPrefs();
   },
 
   fnReadPrefs: function() {
     var sDomains, aEquivDomains, aDomainPair,
-        tbc, url, i,
+        tbc, url, i, m,
         treeitem, treerow, treecell, row;
 
+    blr.W15yQC.options.mandates=JSON.parse(Application.prefs.getValue("extensions.W15yQC.mandates","[]"));
     tbc = document.getElementById('tEquivDomainsChildren');
 
     if (tbc != null) {
@@ -75,6 +78,34 @@ blr.W15yQC.options = {
             }
           }
         }
+      }
+    }
+
+
+    tbc = document.getElementById('tMandatesChildren');
+
+    if (tbc != null) {
+      while (tbc.firstChild) {
+        tbc.removeChild(tbc.firstChild);
+      }
+    }
+    if (blr.W15yQC.options.mandates!==null) {
+      for(i=0;i<blr.W15yQC.options.mandates.length;i++) {
+        m=blr.W15yQC.options.mandates[i];
+        treeitem=document.createElement('treeitem');
+        row=document.createElement('treerow');
+        row.setAttribute('id','Mandate'+i);
+        treecell=document.createElement('treecell');
+        treecell.setAttribute('label',m.title);
+        row.appendChild(treecell);
+        treecell=document.createElement('treecell');
+        treecell.setAttribute('label',m.enabled);
+        row.appendChild(treecell);
+        treecell=document.createElement('treecell');
+        treecell.setAttribute('label',m.weight);
+        row.appendChild(treecell);
+        treeitem.appendChild(row);
+        tbc.appendChild(treeitem);      
       }
     }
   },
@@ -140,37 +171,68 @@ blr.W15yQC.options = {
 
   fnAddMandate: function() {
     var sDomains, aEquivDomains, aDomainPair,
-        tbc, url, i, rows, row, d={d1:null,d2:null},
+        tbc, url, i, rows, row, m={title:null,enabled:true,weight:null,showInReport:true},
         treeitem, treerow, treecell,
         dialogID = 'addMandatesDialog',
-        dialogPath = 'chrome://W15yQC/content/addMandatesDialog.xul',
-        win;
+        dialogPath = 'chrome://W15yQC/content/addMandatesDialog.xul';
 
-    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr,d);
-    if(d!=null && d.d1!=null && d.d2!=null) {
-      tbc = document.getElementById('tEquivDomainsChildren');
+    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr,m);
+    if(m!=null && m.title!=null && m.weight!=null) {
+      tbc = document.getElementById('tMandatesChildren');
       rows=tbc.getElementsByTagName('treerow').length;
       treeitem=document.createElement('treeitem');
       row=document.createElement('treerow');
-      row.setAttribute('id','Domains'+rows);
+      row.setAttribute('id','Mandate'+rows);
       treecell=document.createElement('treecell');
-      treecell.setAttribute('label',d.d1);
+      treecell.setAttribute('label',m.title);
       row.appendChild(treecell);
       treecell=document.createElement('treecell');
-      treecell.setAttribute('label',d.d2);
+      treecell.setAttribute('label',m.enabled);
+      row.appendChild(treecell);
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',m.weight);
       row.appendChild(treecell);
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
+      blr.W15yQC.options.mandates.push(m);
     }
-    blr.W15yQC.options.fnUpdatesPrefs();
+    Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
   
   fnEditMandate: function() {
-    
+    var i,num,num2,tbc, rows, row, m={},
+        treebox, treeitem, treerow, treecell, selectedRow, treecells,
+        dialogID = 'addMandatesDialog',
+        dialogPath = 'chrome://W15yQC/content/addMandatesDialog.xul';
+
+    treebox=document.getElementById('tMandates');
+    selectedRow = treebox!=null?treebox.currentIndex:null;
+    if (selectedRow!=null) {
+      m=blr.W15yQC.options.mandates[selectedRow];
+      window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr,m);
+      if(m!=null && m.title!=null && m.weight!=null) {
+        row=document.getElementById('Mandate'+selectedRow);
+        treecells=row.getElementsByTagName('treecell');
+        treecells[0].setAttribute('label',m.title);
+        treecells[1].setAttribute('label',m.enabled);
+        treecells[2].setAttribute('label',m.weight);
+        blr.W15yQC.options.mandates[selectedRow]=m;
+      }
+    }
+    Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
   
   fnDeleteMandate: function() {
-    
+    var treebox, selectedRow, row;
+
+    treebox=document.getElementById('tMandates');
+    selectedRow = treebox!=null?treebox.currentIndex:null;
+    if (selectedRow!=null) {
+      row=document.getElementById('Mandate'+selectedRow);
+      row.parentNode.parentNode.removeChild(row.parentNode);
+      blr.W15yQC.options.mandates.splice(selectedRow,1);
+    }
+    Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
   
   fnResetDefaults: function() {

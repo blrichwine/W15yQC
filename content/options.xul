@@ -89,6 +89,7 @@
 			</tabpanel>
 
 			<tabpanel id="W15yQC_tab_Mandates" orient="vertical">
+					<checkbox label="Enable Mandate Checking" preference="enableMandates"/>
 					<label control="tMandates" value="Mandates:"/>
 					<tree enableColumnDrag="false" id="tMandates" flex="1" seltype="single" rows="5" hidecolumnpicker="true">
 						 <treecols>
@@ -110,16 +111,7 @@
 									 sortDirection=""
 									 onclick=""/>
 								<splitter ordinal="4" class="tree-splitter" />
-								<treecol  ordinal="5" id="col-header-mandate-type"
-									 label=" Type "
-									 hidden="false"
-									 style="text-align:left"
-									 fixed="false"
-									 flex="1"
-									 sortDirection=""
-									 onclick=""/>
-								<splitter ordinal="6" class="tree-splitter" />
-								<treecol  ordinal="7" id="col-header-mandate-weight"
+								<treecol  ordinal="5"  id="col-header-mandate-weight"
 									 label=" Weight "
 									 hidden="false"
 									 style="text-align:left"
@@ -130,7 +122,6 @@
 						 </treecols>
 						 <treechildren id="tMandatesChildren"/>
 					</tree>
-					<checkbox label="Enable Mandates" preference="enableMandates"/>
 					<hbox>
 						 <button id="button-addMandate"
 							 label="Add Mandate"

@@ -27,7 +27,20 @@
 			<xul:label value="Text:" control="tbText"/>
 			<xul:textbox id="tbText" flex="1" style="min-width:50em" value="" onblur="blr.W15yQC.addEditMandateTestDialog.checkFields()"/>
 		</xul:hbox>
-		<xul:checkbox label="Treat Text as Regex" id="cbTreatAsRegex"/>
+		
+		<xul:hbox align="center">
+			<xul:label value="Match Type:" control="matchType"/>
+			<xul:menulist id="matchType">
+				<xul:menupopup>
+					<xul:menuitem label="String match" value="S"/>
+					<xul:menuitem label="Contains" value="C"/>
+					<xul:menuitem label="Begins with" value="B"/>
+					<xul:menuitem label="Ends with" value="E"/>
+					<xul:menuitem label="Regular expression" value="R"/>
+				</xul:menupopup>
+			</xul:menulist>
+		</xul:hbox>
+
 	</xul:vbox>
 	<xul:script>
 		//<![CDATA[
@@ -39,7 +52,7 @@
 			if(blr.W15yQC.fnStringHasContent(blr.W15yQC.addEditMandateTestDialog.d.text)) {
 				document.getElementById('tbText').value=blr.W15yQC.addEditMandateTestDialog.d.text;
 			}
-			document.getElementById('cbTreatAsRegex').checked=blr.W15yQC.addEditMandateTestDialog.d.bRegEx===true;
+			document.getElementById('matchType').value=blr.W15yQC.addEditMandateTestDialog.d.matchType>''?blr.W15yQC.addEditMandateTestDialog.d.matchType:'S';
 		}
 		//]]>
 	</xul:script>

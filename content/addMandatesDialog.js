@@ -41,7 +41,7 @@ if (!blr) {
  * Returns:
  */
 blr.W15yQC.addMandatesDialog = {
-  d: null,
+  m: null,
   ok: false,
 
   fnAddTest: function() {
@@ -71,11 +71,12 @@ blr.W15yQC.addMandatesDialog = {
       row.appendChild(treecell);
 
       treecell=document.createElement('treecell');
-      treecell.setAttribute('label',d.bRegEx?'R':'S');
+      treecell.setAttribute('label',d.matchType);
       row.appendChild(treecell);
 
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
+      document.getElementById('tbLogic').value=blr.W15yQC.fnJoin(document.getElementById('tbLogic').value,rows+1,'|');
     }
   },
 
@@ -92,43 +93,119 @@ blr.W15yQC.addMandatesDialog = {
       treecells=row.getElementsByTagName('treecell');
       d.xPath=treecells[1].getAttribute('label');
       d.text=treecells[2].getAttribute('label');
-      d.bRegEx=treecells[3].getAttribute('label')==='R';
+      d.matchType=treecells[3].getAttribute('label');
       window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr,d);
       if (d!==null && d.xPath!==null) {
         treecells[1].setAttribute('label',d.xPath);
         treecells[2].setAttribute('label',d.text);
-        treecells[3].setAttribute('label',d.bRegEx?'R':'S');
+        treecells[3].setAttribute('label',d.matchType);
       }
     }
   },
   
   fnDeleteTest: function() {
-    var tbc, rows, row, d={},
-        treebox, treeitem, treerow, treecell, selectedRow, treecells,
-        dialogID = 'addEditMandateTestDialog',
-        dialogPath = 'chrome://W15yQC/content/addEditMandateTestDialog.xul';
+    var i,num,num2,tbc, rows, row, d={},
+        treebox, treeitem, treerow, treecell, selectedRow, treecells;
 
     treebox=document.getElementById('tRules');
-    selectedRow = treebox.currentIndex;
+    selectedRow = treebox!=null?treebox.currentIndex:null;
     if (selectedRow!=null) {
       row=document.getElementById('Test'+selectedRow);
-      //TODO: Finish this
+      num=parseInt(row.getElementsByTagName('treecell')[0].getAttribute('label'));
+      row.parentNode.parentNode.removeChild(row.parentNode);
+      rows=treebox.getElementsByTagName('treerow');
+      for(i=0;i<rows.length;i++) {
+        rows[i].setAttribute('id','Test'+i);
+        rows[i].getElementsByTagName('treecell')[0].setAttribute('label',i+1);
+      }
     }
   },
   
-  checkFields: function() {
-    blr.W15yQC.addMandatesDialog.ok=/^[\w\-_]+(\.[\w\-_]+)+(\/[~\w\-_]+)*$/i.test(document.getElementById('tbDomain1').value) &&
-          /^[\w\-_]+(\.[\w\-_]+)+(\/[~\w\-_]+)*$/i.test(document.getElementById('tbDomain2').value);
+  logicIsValid: function() {
+    var sLogic=blr.W15yQC.fnCleanSpaces(document.getElementById('tbLogic').value), result, sMsg='', i, tbc, rows, re;
+    
+    document.getElementById('tbLogic').value=sLogic;
+    sLogic=sLogic.replace(/\bnot\b/ig,'!');
+    sLogic=sLogic.replace(/\band\b/ig,'&');
+    sLogic=sLogic.replace(/\bor\b/ig,'|');
+    if(/^[\d\s\(\)\&\|\!]+$/.test(sLogic)) {
+      sLogic=sLogic.replace(/\b\d+\b/g,'true'); // Just for test purposes
+      try {
+        result=eval(sLogic);
+      } catch(ex) {
+        sMsg='Syntax error in logic string.';
+      }
+    } else {
+        sMsg='Syntax error in logic string.';
+    }
+    sLogic=document.getElementById('tbLogic').value;
+    sLogic=' '+blr.W15yQC.fnCleanSpaces(sLogic.replace(/[^\d]+/g,' '))+' ';
+    tbc=document.getElementById('tMandatesChildren');
+    if (tbc!=null) {
+      rows=tbc.getElementsByTagName('treerow').length;
+      for(i=rows;i>=1;i--) {
+        re=new RegExp(" "+i+" ", 'g');
+        if (re.test(sLogic)) {
+          sLogic=sLogic.replace(re,' ');
+        } else {
+          sMsg=blr.W15yQC.fnJoin('Logic string missing test:'+i+'.',sMsg,' ');
+        }
+      }
+      if (blr.W15yQC.fnStringHasContent(sLogic)) {
+        sMsg=blr.W15yQC.fnJoin(sMsg,'Logic string has the following invalid numbers:'+blr.W15yQC.fnCleanSpaces(sLogic)+'.',' ');
+      }
+    }
+    return sMsg;
+  },
+  
+  checkFields: function(bAlert) {
+    var sMsg='', i;
+
+    document.getElementById('tbTitle').value=blr.W15yQC.fnCleanSpaces(document.getElementById('tbTitle').value);
+    document.getElementById('tbLogic').value=blr.W15yQC.fnCleanSpaces(document.getElementById('tbLogic').value);
+    document.getElementById('tbWeight').value=blr.W15yQC.fnCleanSpaces(document.getElementById('tbWeight').value);
+
+    if (document.getElementById('Test0')==null) {
+      sMsg=blr.W15yQC.fnJoin(sMsg,'You must enter at least one test condition.',' ');
+    }
+    if (!blr.W15yQC.fnStringHasContent(document.getElementById('tbTitle').value)) {
+      sMsg=blr.W15yQC.fnJoin(sMsg,'You must provide a title for this rule.',' ');
+    }
+    
+    
+    sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.addMandatesDialog.logicIsValid(),' ');
+      
+    i=parseInt(document.getElementById('tbWeight').value);
+    if (!/^[\d]+$/.test(document.getElementById('tbWeight').value) || i<0 || i>100) {
+      sMsg=blr.W15yQC.fnJoin(sMsg,'The weight value must be an integer between 0 and 100.',' ');
+    }
+    
+    if(sMsg=='') {
+      blr.W15yQC.addMandatesDialog.ok=true;
+    } else {
+      if(bAlert===true) { alert(sMsg); }
+      blr.W15yQC.addMandatesDialog.ok=false;
+    }
   },
 
   doOK: function() {
-    blr.W15yQC.addMandatesDialog.checkFields();
-    if(blr.W15yQC.addMandatesDialog.ok) {
-      blr.W15yQC.addMandatesDialog.d.d1=document.getElementById('tbDomain1').value;
-      blr.W15yQC.addMandatesDialog.d.d2=document.getElementById('tbDomain2').value;
+    var i, rows=document.getElementById('tMandatesChildren').getElementsByTagName('treerow'), treecells;
+    blr.W15yQC.addMandatesDialog.checkFields(true);
+    if(blr.W15yQC.addMandatesDialog.ok===true) {
+      blr.W15yQC.addMandatesDialog.m.title=document.getElementById('tbTitle').value;
+      blr.W15yQC.addMandatesDialog.m.logic=document.getElementById('tbLogic').value;
+      blr.W15yQC.addMandatesDialog.m.weight=document.getElementById('tbWeight').value;
+      blr.W15yQC.addMandatesDialog.m.enabled=document.getElementById('cbMandateEnabled').checked;
+      blr.W15yQC.addMandatesDialog.m.showInReport=document.getElementById('cbShowInReport').checked;
+      blr.W15yQC.addMandatesDialog.m.tests=[];
+      for(i=0;i<rows.length;i++) {
+        treecells=rows[i].getElementsByTagName('treecell');
+        blr.W15yQC.addMandatesDialog.m.tests.push({});
+        blr.W15yQC.addMandatesDialog.m.tests[i].xPath=treecells[1].getAttribute('label');
+        blr.W15yQC.addMandatesDialog.m.tests[i].text=treecells[2].getAttribute('label');
+        blr.W15yQC.addMandatesDialog.m.tests[i].matchType=treecells[3].getAttribute('label');
+      }
       return true;
-    } else {
-      alert('Values are not valid. Correct and try again, or cancel to exit.');
     }
     return false;
   },

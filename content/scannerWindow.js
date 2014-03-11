@@ -240,14 +240,6 @@ blr.W15yQC.ScannerWindow = {
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
 
-  cleanup: function (dialog) {
-    if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
-      clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
-      clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
-      clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
-    }
-  },
-
   selectRow: function(row, override, jocky) {
     var treeview=document.getElementById('treebox');
     if(override==null) { override=false; }
@@ -279,7 +271,7 @@ blr.W15yQC.ScannerWindow = {
       row=document.createElement('treerow');
       row.setAttribute('id','URL'+urlIndex);
       bNew=true;
-      for(i=0;i<41;i++) {
+      for(i=0;i<42;i++) {
         row.appendChild(document.createElement('treecell'));
       }
       if (blr.W15yQC.ScannerWindow.urlToRowMap==null) {
@@ -309,33 +301,35 @@ blr.W15yQC.ScannerWindow = {
     row.children[11].setAttribute('label',url.score);
     row.children[12].setAttribute('label',url.textSize);
     row.children[13].setAttribute('label',url.downloadsCount);
-    row.children[14].setAttribute('label',url.framesCount);
-    row.children[15].setAttribute('label',url.framesWarnings);
-    row.children[16].setAttribute('label',url.framesFailures);
-    row.children[17].setAttribute('label',url.headingsCount);
-    row.children[18].setAttribute('label',url.headingsWarnings);
-    row.children[19].setAttribute('label',url.headingsFailures);
-    row.children[20].setAttribute('label',url.ARIALandmarksCount);
-    row.children[21].setAttribute('label',url.ARIALandmarksWarnings);
-    row.children[22].setAttribute('label',url.ARIALandmarksFailures);
-    row.children[23].setAttribute('label',url.ARIAElementsCount);
-    row.children[24].setAttribute('label',url.ARIAElementsWarnings);
-    row.children[25].setAttribute('label',url.ARIAElementsFailures);
-    row.children[26].setAttribute('label',url.linksCount);
-    row.children[27].setAttribute('label',url.linksWarnings);
-    row.children[28].setAttribute('label',url.linksFailures);
-    row.children[29].setAttribute('label',url.imagesCount);
-    row.children[30].setAttribute('label',url.imagesWarnings);
-    row.children[31].setAttribute('label',url.imagesFailures);
-    row.children[32].setAttribute('label',url.formControlsCount);
-    row.children[33].setAttribute('label',url.formControlsWarnings);
-    row.children[34].setAttribute('label',url.formControlsFailures);
-    row.children[35].setAttribute('label',url.accessKeysCount);
-    row.children[36].setAttribute('label',url.accessKeysWarnings);
-    row.children[37].setAttribute('label',url.accessKeysFailures);
-    row.children[38].setAttribute('label',url.tablesCount);
-    row.children[39].setAttribute('label',url.tablesWarnings);
-    row.children[40].setAttribute('label',url.tablesFailures);
+    row.children[14].setAttribute('label',url.mandateFailuresCount);
+    
+    row.children[15].setAttribute('label',url.framesCount);
+    row.children[16].setAttribute('label',url.framesWarnings);
+    row.children[17].setAttribute('label',url.framesFailures);
+    row.children[18].setAttribute('label',url.headingsCount);
+    row.children[19].setAttribute('label',url.headingsWarnings);
+    row.children[20].setAttribute('label',url.headingsFailures);
+    row.children[21].setAttribute('label',url.ARIALandmarksCount);
+    row.children[22].setAttribute('label',url.ARIALandmarksWarnings);
+    row.children[23].setAttribute('label',url.ARIALandmarksFailures);
+    row.children[24].setAttribute('label',url.ARIAElementsCount);
+    row.children[25].setAttribute('label',url.ARIAElementsWarnings);
+    row.children[26].setAttribute('label',url.ARIAElementsFailures);
+    row.children[27].setAttribute('label',url.linksCount);
+    row.children[28].setAttribute('label',url.linksWarnings);
+    row.children[29].setAttribute('label',url.linksFailures);
+    row.children[30].setAttribute('label',url.imagesCount);
+    row.children[31].setAttribute('label',url.imagesWarnings);
+    row.children[32].setAttribute('label',url.imagesFailures);
+    row.children[33].setAttribute('label',url.formControlsCount);
+    row.children[34].setAttribute('label',url.formControlsWarnings);
+    row.children[35].setAttribute('label',url.formControlsFailures);
+    row.children[36].setAttribute('label',url.accessKeysCount);
+    row.children[37].setAttribute('label',url.accessKeysWarnings);
+    row.children[38].setAttribute('label',url.accessKeysFailures);
+    row.children[39].setAttribute('label',url.tablesCount);
+    row.children[40].setAttribute('label',url.tablesWarnings);
+    row.children[41].setAttribute('label',url.tablesFailures);
 
     if (url.windowTitleNotUnique==true) {
       row.setAttribute('properties', 'failed');
@@ -493,6 +487,28 @@ blr.W15yQC.ScannerWindow = {
     }
     return bCancel;
   },
+  
+  doClose: function() {
+    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
+        result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Exit without saving?");
+        if(!result) { return false; }
+      }
+      blr.W15yQC.ScannerWindow.cleanup();
+      window.close();
+      Components.utils.forceShrinkingGC();
+      return true;
+    }
+    Components.utils.forceShrinkingGC();
+    return false;
+  },
+
+  cleanup: function (dialog) {
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventTimeOutTimerID);
+    clearTimeout(blr.W15yQC.ScannerWindow.iFrameOnLoadEventFilterTimerID);
+    clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
+  },
 
   urlAlreadyInList: function(sURL) {
     var bIgnoreWWW=false, o, i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
@@ -597,6 +613,7 @@ blr.W15yQC.ScannerWindow = {
       url.score= oW15yQCResults.iScore;
       url.textSize= oW15yQCResults.iTextSize;
       url.downloadsCount= oW15yQCResults.iDocumentCount;
+      url.mandateFailuresCount= oW15yQCResults.iMandateFailuresCount;
 
       if(oW15yQCResults.aFrames && oW15yQCResults.aFrames.length>0) {
         url.framesCount=oW15yQCResults.aFrames.length;
@@ -853,6 +870,7 @@ blr.W15yQC.ScannerWindow = {
   openProject: function (f) {
     var fp, rv, file, sFileContents, fstream, cstream, str, read, i, bOpenedOK=false,
       properties, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches, urls;
+try{
     if(!blr.W15yQC.ScannerWindow.resetProjectToNew()) {
       blr.W15yQC.ScannerWindow.fnUpdatePercentage(0);
       if(/.+\.w15yqc$/.test(f) != true) {
@@ -964,6 +982,7 @@ blr.W15yQC.ScannerWindow = {
                 blr.W15yQC.ScannerWindow.urlList[i].score = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'score');
                 blr.W15yQC.ScannerWindow.urlList[i].textSize = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'text_size');
                 blr.W15yQC.ScannerWindow.urlList[i].downloadsCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'downloads_count');
+                blr.W15yQC.ScannerWindow.urlList[i].mandateFailuresCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'mandate_failures_count');
                 blr.W15yQC.ScannerWindow.urlList[i].framesCount = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_count');
                 blr.W15yQC.ScannerWindow.urlList[i].framesWarnings = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_warnings');
                 blr.W15yQC.ScannerWindow.urlList[i].framesFailures = blr.W15yQC.ScannerWindow.readDOMInt(urls[i],'frames_failures');
@@ -1014,6 +1033,7 @@ blr.W15yQC.ScannerWindow = {
       }
       blr.W15yQC.ScannerWindow.updateControlStates();
     }
+}catch(ex) {alert(ex.toString());}
   },
 
   saveProjectAs: function() {
@@ -1136,6 +1156,7 @@ blr.W15yQC.ScannerWindow = {
                 blr.W15yQC.ScannerWindow.writeXMLInt(url.score,'score',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLInt(url.textSize,'text_size',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLInt(url.downloadsCount,'downloads_count',converter,8);
+                blr.W15yQC.ScannerWindow.writeXMLInt(url.mandateFailuresCount,'mandate_failures_count',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLInt(url.framesCount,'frames_count',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLInt(url.framesWarnings,'frames_warnings',converter,8);
                 blr.W15yQC.ScannerWindow.writeXMLInt(url.framesFailures,'frames_failures',converter,8);
@@ -1215,7 +1236,7 @@ blr.W15yQC.ScannerWindow = {
 
           if(blr.W15yQC.ScannerWindow.urlList!=null && blr.W15yQC.ScannerWindow.urlList.length>0) {
 
-            converter.writeString('loc,windowDescription,priority,source,linkDepth,dateScanned,contentType,windowTitle,itemsCount,warningsCount,failuresCount,score,textSize,downloadsCount,framesCount,framesWarnings,framesFailures,headingsCount,headingsWarnings,headingsFailures,ARIALandmarksCount,ARIALandmarksWarnings,ARIALandmarksFailures,ARIAElementsCount,ARIAElementsWarnings,ARIAElementsFailures,linksCount,linksWarnings,linksFailures,imagesCount,imagesWarnings,imagesFailures,formControlsCount,formControlsWarnings,formControlsFailures,accessKeysCount,accessKeysWarnings,accessKeysFailures,tablesCount,tablesWarnings,tablesFailures\n');
+            converter.writeString('loc,windowDescription,priority,source,linkDepth,dateScanned,contentType,windowTitle,itemsCount,warningsCount,failuresCount,score,textSize,downloadsCount,mandateFailuresCount,framesCount,framesWarnings,framesFailures,headingsCount,headingsWarnings,headingsFailures,ARIALandmarksCount,ARIALandmarksWarnings,ARIALandmarksFailures,ARIAElementsCount,ARIAElementsWarnings,ARIAElementsFailures,linksCount,linksWarnings,linksFailures,imagesCount,imagesWarnings,imagesFailures,formControlsCount,formControlsWarnings,formControlsFailures,accessKeysCount,accessKeysWarnings,accessKeysFailures,tablesCount,tablesWarnings,tablesFailures\n');
             for(i=0;i<blr.W15yQC.ScannerWindow.urlList.length;i++) {
               url=blr.W15yQC.ScannerWindow.urlList[i];
               if(url!=null) {
@@ -1233,6 +1254,7 @@ blr.W15yQC.ScannerWindow = {
                 blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.score,',',converter);
                 blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.textSize,',',converter);
                 blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.downloadsCount,',',converter);
+                blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.mandateFailuresCount,',',converter);
                 blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.framesCount,',',converter);
                 blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.framesWarnings,',',converter);
                 blr.W15yQC.ScannerWindow.writeCSVEncodedString(url.framesFailures,',',converter);
@@ -1560,7 +1582,7 @@ blr.W15yQC.ScannerWindow = {
     }
   },
 
-  scanNextLink: function(bFirst) {
+  scanNextLink: function(bFirst, rowOverride) {
     // blr.W15yQC.fnLog('scanner-scanNextLink');
     var i,row=0,treeview=document.getElementById('treebox');
     clearTimeout(blr.W15yQC.ScannerWindow.scannerScanNextLinkTimerID);
@@ -1570,24 +1592,28 @@ blr.W15yQC.ScannerWindow = {
       blr.W15yQC.bQuick = false; // Make sure this has been reset
       blr.W15yQC.ScannerWindow.updateControlStates();
 
-      if (bFirst===true) {
-        row=0;
-      } else {
-        for(i=0;i<blr.W15yQC.ScannerWindow.urlToRowMap.length;i++) {
-          if (blr.W15yQC.ScannerWindow.urlToRowMap[i]==blr.W15yQC.ScannerWindow.stateCurrentIndex) {
-            row=i;
-            break;
+      if (rowOverride==null) {
+        if (bFirst===true) {
+          row=0;
+        } else {
+          for(i=0;i<blr.W15yQC.ScannerWindow.urlToRowMap.length;i++) {
+            if (blr.W15yQC.ScannerWindow.urlToRowMap[i]==blr.W15yQC.ScannerWindow.stateCurrentIndex) {
+              row=i;
+              break;
+            }
           }
-        }
-        row++;
-      }
-      blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[row];
-
-      if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true && !blr.W15yQC.ScannerWindow.stateScanningOneLink) {
-        while(row < blr.W15yQC.ScannerWindow.urlToRowMap.length &&
-              blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlToRowMap[row]].dateScanned!=null) {
           row++;
         }
+        blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[row];
+  
+        if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true && !blr.W15yQC.ScannerWindow.stateScanningOneLink) {
+          while(row < blr.W15yQC.ScannerWindow.urlToRowMap.length &&
+                blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlToRowMap[row]].dateScanned!=null) {
+            row++;
+          }
+        }
+      } else {
+        row=rowOverride;
       }
       blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[row];
       if(row<blr.W15yQC.ScannerWindow.urlToRowMap.length) {
@@ -1724,6 +1750,7 @@ blr.W15yQC.ScannerWindow = {
     } else {
       blr.W15yQC.ScannerWindow.fnUpdateStatus('Finished scanning URL.');
       blr.W15yQC.ScannerWindow.setStateAsNotScanning();
+      blr.W15yQC.ScannerWindow.updateNotesField();
     }
     Components.utils.forceShrinkingGC();
   },
@@ -1896,10 +1923,9 @@ blr.W15yQC.ScannerWindow = {
       if (selectedRow != null && selectedRow >= 0 && selectedRow < blr.W15yQC.ScannerWindow.urlList.length) {
         blr.W15yQC.bQuick = false; // Make sure this has been reset
         blr.W15yQC.ScannerWindow.setStateAsScanning();
-        blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[selectedRow]-1;
         blr.W15yQC.ScannerWindow.stateScanningOneLink=true;
         blr.W15yQC.ScannerWindow.stateScanningAllLinks=true;
-        blr.W15yQC.ScannerWindow.scanNextLink();
+        blr.W15yQC.ScannerWindow.scanNextLink(false,selectedRow);
       }
     }
   },
@@ -1987,21 +2013,6 @@ blr.W15yQC.ScannerWindow = {
     }
     blr.W15yQC.ScannerWindow.bManualURLAdd=false;
     blr.W15yQC.ScannerWindow.updateControlStates();
-  },
-
-  doClose: function() {
-    var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
-    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
-      if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
-        result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Exit without saving?");
-        return false;
-      }
-      window.close();
-      Components.utils.forceShrinkingGC();
-      return true;
-    }
-    Components.utils.forceShrinkingGC();
-    return false;
   },
 
   addSortColumn: function(index, ascending) {
@@ -2253,6 +2264,7 @@ blr.W15yQC.ScannerWindow = {
   showAllCounts: function() {
     document.getElementById('col-header-results-text').hidden=false;
     document.getElementById('col-header-results-d').hidden=false;
+    document.getElementById('col-header-results-mf').hidden=false;
     document.getElementById('col-header-results-items').hidden=false;
     document.getElementById('col-header-results-text').hidden=false;
     document.getElementById('col-header-results-d').hidden=false;
@@ -2282,6 +2294,7 @@ blr.W15yQC.ScannerWindow = {
 
   showAllFailures: function() {
     document.getElementById('col-header-results-failures').hidden=false;
+    document.getElementById('col-header-results-mf').hidden=false;
     document.getElementById('col-header-results-ff').hidden=false;
     document.getElementById('col-header-results-hf').hidden=false;
     document.getElementById('col-header-results-alf').hidden=false;
@@ -2406,6 +2419,7 @@ blr.W15yQC.ProjectURL = function (loc, source, priority) {
   this.score=null;
   this.textSize=null;
   this.downloadsCount=null;
+  this.mandateFailuresCount=null;
   this.accessKeysCount=null;
   this.accessKeysWarnings=null;
   this.accessKeysFailures=null;
@@ -2453,6 +2467,7 @@ blr.W15yQC.ProjectURL.prototype = {
   score: null,
   textSize: null,
   downloadsCount: null,
+  mandateFailuresCount: null,
   accessKeysCount: null,
   accessKeysWarnings: null,
   accessKeysFailures: null,

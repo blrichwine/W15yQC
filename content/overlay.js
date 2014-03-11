@@ -9583,7 +9583,121 @@ ys: 'whys'
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aBadIDsList);
       return aBadIDsList;
     },
+    
+    fnCheckMandates: function(oW15yQCReport) {
+      var mandates, i, j, k, m, results, doc, nodesSnapshot, el, text, bFound, sLogic, re, result, mo, sMsg='';
+      
+      if (oW15yQCReport!=null || !oW15yQCReport.iMandateFailuresCount) {
+        oW15yQCReport.iMandateFailuresCount=0;
+      }
 
+      if (oW15yQCReport!=null && oW15yQCReport.aDocuments!=null && Application.prefs.getValue('extensions.W15yQC.extensions.W15yQC.mandatesEnabled',false)) {
+        mandates=JSON.parse(Application.prefs.getValue("extensions.W15yQC.mandates","[]"));
+        if (mandates!=null) {
+          for (i=0;i<mandates.length;i++) {
+            m=mandates[i];
+            if (m.enabled==true && m.tests!=null && m.tests.length>0) {
+              doc=oW15yQCReport.aDocuments[0].doc;
+              results=[];
+              for (j=0;j<m.tests.length;j++) {
+                if (blr.W15yQC.fnStringHasContent(m.tests[i].xPath)) {
+                  nodesSnapshot = doc.evaluate(m.tests[i].xPath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+                  if (nodesSnapshot!=null && nodesSnapshot.snapshotLength>0) {
+                    bFound=false;
+                    for (k=0;k<nodesSnapshot.snapshotLength;k++) {
+                      el=nodesSnapshot.snapshotItem(k);
+                      if (blr.W15yQC.fnStringHasContent(m.tests[i].text)) {
+                        if (el.textContent.toLowerCase().indexOf(m.tests[i].text.toLowerCase())>=0) {
+                          bFound=true;
+                          break;
+                        }
+                      } else {
+                        bFound=true;
+                        break;
+                      }
+                    }
+                    results.push(bFound);
+                  } else {
+                    results.push(false);
+                  }
+                } else { // text only search, no xPath
+                  if (doc.textContent.toLowerCase().indexOf(m.tests[i].text.toLowerCase())>=0) {
+                    results.push(true);
+                  } else {
+                    results.push(false);
+                  }
+                }
+              }
+              if (results.length!=m.tests.length) {
+                alert('fnCheckMandates code logic failure -- results length does not match tests length.');
+                result=false;
+              } else {
+                // evaluate logic results
+                sLogic=m.logic;
+                sLogic=sLogic.replace(/\bnot\b/ig,'!');
+                sLogic=sLogic.replace(/\band\b/ig,'&');
+                sLogic=sLogic.replace(/\bor\b/ig,'|');
+                if(/^[\d\s\(\)\&\|\!]+$/.test(sLogic)) {
+                  for(j=m.tests.length;j>=1;j--) {
+                    re=new RegExp(j.toString(), 'g');
+                    if (re.test(sLogic)) {
+                      sLogic=sLogic.replace(re,results[j-1].toString());
+                    }
+                  }
+                  try {
+                    result=eval(sLogic);
+                  } catch(ex) {
+                    result=false;
+                    sMsg='Syntax error in logic string.';
+                  }
+                }
+              }
+              if(oW15yQCReport.aMandates==null) {
+                oW15yQCReport.aMandates=[];
+                oW15yQCReport.iMandateFailuresCount=0;
+              }
+              mo={title:m.title, result:result, weight:m.weight, message:sMsg};
+              oW15yQCReport.aMandates.push(mo);
+              if (!result) {
+                oW15yQCReport.iMandateFailuresCount++;
+              }
+            }
+          }
+        }
+      }
+    },
+
+    fnDisplayMandatesCheckResults: function (rd, aMandatesList, iMandateFailuresCount) {
+      var div, table, msgHash, tbody, i, sNotes, sClass, sSize;
+
+      if (aMandatesList!=null && aMandatesList.length>0) {
+        div = rd.createElement('div');
+        div.setAttribute('id', 'AIMandatesList');
+        div.setAttribute('class', 'AISection');
+  
+        blr.W15yQC.fnAppendExpandContractHeadingTo(div, aMandatesList.length+" Mandates ("+iMandateFailuresCount+" Failures)");
+  
+        if (aMandatesList && aMandatesList.length > 0) {
+          table = rd.createElement('table');
+          table.setAttribute('id', 'AIMandatesTable');
+          // TODO: Make summary and caption columns so they only appear when needed.
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHName'), blr.W15yQC.fnGetString('hrsTHResult')]);
+          tbody = rd.createElement('tbody');
+          for (i = 0; i < aMandatesList.length; i++) {
+            sClass = '';
+            if (!aMandatesList[i].result) {
+              sClass = 'failed';
+            }
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aMandatesList[i].title), aMandatesList[i].result?'Passed':'Failed'], sClass);
+          }
+          table.appendChild(tbody);
+          div.appendChild(table);
+          blr.W15yQC.fnMakeTableSortable(div, rd, 'AIMandatesTable');
+        }
+        rd.body.appendChild(div);
+      }
+    },
+    
     fnQuantify: function (count, s1, s2) {
       if(count == 1) {
         return '1 '+s1;
@@ -9593,7 +9707,7 @@ ys: 'whys'
     },
 
     fnComputeScore: function(oW15yQCReport) {
-      var score=100, ps, itemsCount=0, failures=0, warnings=0, sDesc='', offset=0;
+      var score=100, ps, itemsCount=0, failures=0, warnings=0, sDesc='', offset=0, i;
       if(oW15yQCReport!=null) {
         ps=oW15yQCReport.PageScore;
         if(ps!=null) {
@@ -9755,6 +9869,15 @@ ys: 'whys'
             }
           }
 
+          // Mandates
+          if (oW15yQCReport.aMandates!=null) {
+            for (i=0;i<oW15yQCReport.aMandates.length;i++) {
+              if (!oW15yQCReport.aMandates[i].result) {
+                score=score-oW15yQCReport.aMandates[i].weight;
+                sDesc=blr.W15yQC.fnJoin(sDesc,"Failed mandate '"+oW15yQCReport.aMandates[i].title+"' ("+(0-oW15yQCReport.aMandates[i].weight)+").",' ');
+              }
+            }
+          }
           itemsCount=0;
           failures=0;
           warnings=0;
@@ -10089,12 +10212,17 @@ ys: 'whys'
           blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
           blr.W15yQC.fnDisplayTableResults(reportDoc, oW15yQCReport.aTables);
         }
-
+try{
+        if(sReports=='' || sReports.indexOf('mandates')>=0) {
+          blr.W15yQC.fnCheckMandates(oW15yQCReport);
+          blr.W15yQC.fnDisplayMandatesCheckResults(reportDoc, oW15yQCReport.aMandates, oW15yQCReport.iMandateFailuresCount);
+        }
         if(sReports=='' || sReports.indexOf('pageSummary')>=0) {
           blr.W15yQC.fnDescribeWindow(oW15yQCReport);
           blr.W15yQC.fnComputeScore(oW15yQCReport);
           blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport);
         }
+} catch(ex) {alert(ex.toString());}
 
         if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
 
@@ -10174,7 +10302,10 @@ ys: 'whys'
         if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
 
         blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
-
+        
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Checking Mandates', 97); }
+        blr.W15yQC.fnCheckMandates(oW15yQCReport);
+        
         blr.W15yQC.fnDescribeWindow(oW15yQCReport);
         blr.W15yQC.fnComputeScore(oW15yQCReport);
         blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport, true);
@@ -10229,6 +10360,9 @@ ys: 'whys'
 
       if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
       blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
+
+      if(progressWindow!=null) { progressWindow.fnUpdateProgress('Checking Mandates', 97); }
+      blr.W15yQC.fnCheckMandates(oW15yQCReport);
 
       if(progressWindow!=null) progressWindow.fnUpdateProgress('Creating Page Description', 98);
       blr.W15yQC.fnDescribeWindow(oW15yQCReport);
@@ -10291,7 +10425,6 @@ ys: 'whys'
         if(win!=null && win.focus) win.focus();
       }
     },
-
 
     fnNonDOMIntegrityTests: function () {
       if (blr.W15yQC.fnMaxDecimalPlaces(10.234324, 2).toString() != "10.23") {
