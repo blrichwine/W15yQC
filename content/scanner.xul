@@ -13,7 +13,7 @@
 			onkeyup="blr.W15yQC.ScannerWindow.windowOnKeyUp(event)"
 			onresize="blr.W15yQC.ScannerWindow.forceMinSize(this)"
       onload="blr.W15yQC.ScannerWindow.init(this)"
-			onclose="blr.W15yQC.ScannerWindow.doClose(this)">
+			onclose="return blr.W15yQC.ScannerWindow.doClose()">
    <xul:script>
 			var blr=this.arguments[0];
    </xul:script>

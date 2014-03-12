@@ -187,6 +187,7 @@ blr.W15yQC.ScannerWindow = {
   stateCurrentIndex: 0,
   bManualURLAdd: false,
   bUpdatingProject: false,
+  bWindowClosing: false,
 
   reTitleNotMeaningful: /^{*(block *title|default|default *page|default *title|default *page *title|home|home *page|main|main *page|main *page *content|page|page *title|redirect(ing)?|title|web *page|web *site|welcome)}*$/i,
   
@@ -493,11 +494,17 @@ blr.W15yQC.ScannerWindow = {
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
       if(blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==true) {
         result = prompts.confirm(null, "Scanner Project Has Unsaved Changes", "Exit without saving?");
-        if(!result) { return false; }
+        if(!result) {
+          return false;
+        }
       }
+      
       blr.W15yQC.ScannerWindow.cleanup();
-      window.close();
       Components.utils.forceShrinkingGC();
+      if (!blr.W15yQC.ScannerWindow.bWindowClosing) {
+        window.close();
+      }
+      blr.W15yQC.ScannerWindow.bWindowClosing=true;
       return true;
     }
     Components.utils.forceShrinkingGC();
