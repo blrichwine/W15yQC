@@ -5772,6 +5772,7 @@ ys: 'whys'
           }
 
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
+            bInScript=false;
             if (node.localName==='script' || bInScript==true) { // Don't dig into script content
               bInScript=true;
             } else {
@@ -6235,6 +6236,7 @@ ys: 'whys'
                 }
               }
             }
+            bInScript=false;
           }
         }
       }

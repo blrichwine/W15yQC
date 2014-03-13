@@ -116,6 +116,20 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- Failure: marquee element
+  -- onclick elements must be focusable
+  -- onclick elements that are not inputs must have roles
+  -- video element -- how to check?
+  <video src="brave.webm">
+ <track kind=subtitles src=brave.en.vtt srclang=en label="English">
+ <track kind=captions src=brave.en.hoh.vtt srclang=en label="English for the Hard of Hearing">
+ <track kind=subtitles src=brave.fr.vtt srclang=fr lang=fr label="Franais">
+ <track kind=subtitles src=brave.de.vtt srclang=de lang=de label="Deutsch">
+</video>
+  -- audio element -- how to check?
+  -- embed element -- how to check?
+  -- object element -- how to check?
+  -- canvas element -- how to check?
   -- Rethink: What are failures? What are warnings? What are manual checks?
   -- TODO: QA, would we catch an ARIA landmark on an iframe element? Should we be able to? It looks like fnGetElements doesn't check frame elements.
   -- URGENT: TODO: Why are so many sTagName==X contained in an if sRole has content if block? Are the checks really being made?

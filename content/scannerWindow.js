@@ -518,9 +518,9 @@ blr.W15yQC.ScannerWindow = {
   },
 
   urlAlreadyInList: function(sURL) {
-    var bIgnoreWWW=false, o, i,j,r, url2, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+    var bIgnoreWWW=false, i,j,r, url2, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
     bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
-    if(blr.W15yQC.ScannerWindow.urlList!=null) { o=sURL;
+    if(blr.W15yQC.ScannerWindow.urlList!=null) {
       sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
       for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
         sURL = sURL.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
@@ -537,16 +537,14 @@ blr.W15yQC.ScannerWindow = {
           url2 = url2.replace('//'+blr.W15yQC.domainEq1[j],'//'+blr.W15yQC.domainEq2[j],'i');
         }
         url2 = url2.replace(r2,'');
-        url2 = url2.replace(r4, '');
+        url2 = url2.replace(r4,'');
 
         if(sURL==url2) {
           if(blr.W15yQC.ScannerWindow.bManualURLAdd==true) { alert('URL already in list'); }
-          if(/iu\.edu/.test(o)) { blr.W15yQC.fnLog('lt:url on list:'+o+"\n"+sURL); }
           return true;
         }
       }
     }
-    if(/iu\.edu/.test(o)) { blr.W15yQC.fnLog('lt:not url on list:'+o+"\n"+sURL); }
     return false;
   },
 
