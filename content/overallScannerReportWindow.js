@@ -215,7 +215,7 @@ try{
           }
         }
 
-        if (!blr.W15yQC.fnStringHasContent(list[i].windowTitle)) {
+        if (list[i].dateScanned!=null && !blr.W15yQC.fnStringHasContent(list[i].windowTitle)) {
           missingTitles.push(i);
         } else if(list[i].windowTitleNotUnique==true) {
           effectiveWindowTitle=list[i].windowTitle.replace(/['"]/,'').replace(/[!\(\)_;:\/\\\|\?\^=]+/g, ' ').replace(/[\.,\+-]+([a-z\s]|$)/ig, '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
@@ -309,7 +309,7 @@ try{
           a.appendChild(rd.createTextNode(list[missingTitles[i]].loc));
           li.appendChild(a);
           ul.appendChild(li);
-          if (j>=29 && l.length>35) {
+          if (i>=29 && missingTitles.length>35) {
             li=rd.createElement('li');
             li.appendChild(rd.createTextNode('Plus '+(missingTitles.length-i)+' more...'));
             ul.appendChild(li);
