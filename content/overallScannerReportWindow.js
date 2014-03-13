@@ -53,7 +53,7 @@ blr.W15yQC.OverallScannerReportWindow = {
 
     blr.W15yQC.OverallScannerReportWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
     blr.W15yQC.fnReadUserPrefs();
-
+try{
     if (dialog && dialog.arguments && dialog.arguments.length) {
       if (dialog.arguments.length > 1) {
         blr.W15yQC.OverallScannerReportWindow.sw = dialog.arguments[1];
@@ -70,6 +70,7 @@ blr.W15yQC.OverallScannerReportWindow = {
         }
       }
     }
+}catch(ex) {alert(ex);}
   },
 
   addPair: function(count, idx, maxLength, list) {
@@ -172,12 +173,13 @@ blr.W15yQC.OverallScannerReportWindow = {
   
   generateReport: function() {
     var i, j, l, list, llen, rd,
-        maxFailuresList=null, maxDocumentsList=null, maxFormControlsList=null,
+        maxFailuresList=null, maxDocumentsList=null, maxFormControlsList=null, mandateFailuresLists=null, failedMandateTitles=[], matches, mandateTitle,
         missingTitles=[], pagesWithNonUniqueTitles=0, pageScoreHistogram=[], effectiveNonUniqueTitles=[], nonUniqueTitles, effectiveWindowTitle, maxPSHValue,
         ul,li,a,ul2,li2,h, table, thead, tbody, tr, th, td, caption, span, fv, ev, w;
     rd=blr.W15yQC.OverallScannerReportWindow.rd;
     list=blr.W15yQC.OverallScannerReportWindow.urlList;
     nonUniqueTitles=new blr.W15yQC.HashTable();
+    mandateFailuresLists=new blr.W15yQC.HashTable();
     h=rd.createElement('h1');
     h.appendChild(rd.createTextNode('Overall Report'));
     rd.body.appendChild(h);
@@ -196,6 +198,22 @@ blr.W15yQC.OverallScannerReportWindow = {
 
         // Pages with the most failures
         if(list[i].failuresCount>0) { maxFailuresList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].failuresCount,i,30,maxFailuresList); }
+        
+        // Pages with mandate failures
+        if (list[i].mandateFailuresCount>0) {
+          matches=list[i].windowDescription.match(/Failed mandate '(.+?)'\s+\(/gi);
+          if (matches!=null) {
+            for(j=0;j<matches.length;j++) {
+              mandateTitle=matches[j].replace(/^[^']+'(.+)'\s+\($/,'$1');
+              if (!mandateFailuresLists.hasItem(mandateTitle)) {
+                mandateFailuresLists.setItem(mandateTitle,[i]);
+                failedMandateTitles.push(mandateTitle);
+              } else {
+                mandateFailuresLists.getItem(mandateTitle).push(i);
+              }          
+            }
+          }
+        }
 
         if (!blr.W15yQC.fnStringHasContent(list[i].windowTitle)) {
           missingTitles.push(i);
@@ -312,6 +330,39 @@ blr.W15yQC.OverallScannerReportWindow = {
           li=rd.createElement('li');
           l=nonUniqueTitles.getItem(effectiveNonUniqueTitles[i]);
           li.appendChild(rd.createTextNode(list[l[0]].windowTitle));
+          ul2=rd.createElement('ul');
+          for(j=0;j<l.length;j++) {
+            li2=rd.createElement('li');
+            a=rd.createElement('a');
+            a.setAttribute('href',list[l[j]].loc);
+            a.setAttribute('target','_blank');
+            a.appendChild(rd.createTextNode(list[l[j]].loc));
+            li2.appendChild(a);
+            ul2.appendChild(li2);
+            if (j>=29 && l.length>35) {
+              li2=rd.createElement('li');
+              li2.appendChild(rd.createTextNode('Plus '+(l.length-j)+' more...'));
+              ul2.appendChild(li2);
+              break;
+            }
+          }
+          li.appendChild(ul2);
+          ul.appendChild(li);
+        }
+        rd.body.appendChild(ul);
+      }
+      
+      if (mandateFailuresLists.length>0) {
+        h=rd.createElement('h2');
+        h.appendChild(rd.createTextNode('Pages with Mandate Failures'));
+        rd.body.appendChild(h);
+        failedMandateTitles.sort();
+        
+        ul=rd.createElement('ul');
+        for (i=0;i<failedMandateTitles.length;i++) {
+          li=rd.createElement('li');
+          l=mandateFailuresLists.getItem(failedMandateTitles[i]);
+          li.appendChild(rd.createTextNode(failedMandateTitles[i]));
           ul2=rd.createElement('ul');
           for(j=0;j<l.length;j++) {
             li2=rd.createElement('li');
