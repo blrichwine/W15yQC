@@ -54,7 +54,7 @@ blr.W15yQC.RemoveStylesWindow = {
   prompts: null,
   rd: null,
   srcDoc: null,
-
+  
   init: function (dialog) {
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[1];
@@ -191,7 +191,7 @@ try{
       }
     }
   },
-  
+
   fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
@@ -221,7 +221,7 @@ try{
         sTagName='';
         sRole='';
         sTagTypeAttr='';
-        if (c.nodeType == 1) { //alert(c.nodeType+' '+c.nodeName);
+        if (c.nodeType == 1) {
           if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             div = rd.createElement('div');
@@ -621,6 +621,9 @@ try{
 
   fnMoveTableContent: function(doc,t,el,fc) {
     var div, el2, sTagName;
+    if (!fc) {
+      fc=null;
+    }
     if (el!=null && el.firstChild!=null) {
 
       for (el=el.firstChild; el != null; el = el==null ? null : el.nextSibling) {
@@ -636,7 +639,7 @@ try{
             case 'tfoot':
             case 'tr':
                 // alert('recurse');
-                blr.W15yQC.RemoveStylesWindow.fnMoveTableContent(doc,t,el,fc);
+                fc=blr.W15yQC.RemoveStylesWindow.fnMoveTableContent(doc,t,el,fc);
                 break;
             case 'caption':
             case 'th':
@@ -652,6 +655,10 @@ try{
                     }
                     t.parentNode.insertBefore(div, t);
                 }
+                break;
+            case 'colgroup':
+            case 'col':
+                // ignore colgorups
                 break;
             default:
                 if (el!=null && el.nodeType==3 && blr.W15yQC.fnStringHasContent(el.textContent)) {
@@ -680,34 +687,33 @@ try{
   },
 
   fnLinearizeTables: function (doc, rootNode) {
-    var c, i, j, firstMoved, div, frameDocument, pn;
+    var c, i, j, firstMoved=null, div, frameDocument, pn;
     if (doc != null && doc.body) {
       if (rootNode == null) {
         rootNode = doc.body;
       }
       for (c = rootNode.firstChild; c != null; c = c == null ? null : c.nextSibling) {
-        if (c.nodeType == 1) {
-          if (c.nodeType == 1 && c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
+        if (c.nodeType == 1) { // TODO: Is this frame checking up-to-date with the one in getElements?
+          if (((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) &&
+              blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
             frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
             blr.W15yQC.fnLinearizeTables(frameDocument, frameDocument.body);
           } else { // keep looking through current document
-            if (c.hasAttribute && c.tagName && c.tagName.toLowerCase() == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
+            if (c.tagName.toLowerCase() == 'table' && blr.W15yQC.fnNodeIsHidden(c) == false) {
               if (blr.W15yQC.fnAppearsToBeALayoutTable(c) == true) {
                 firstMoved = blr.W15yQC.RemoveStylesWindow.fnMoveTableContent(doc,c,c);
                 //alert(c.innerHTML.replace(/\s+/,' '));
-                pn=c.parentNode;
-                pn.removeChild(c);
-
-                if (firstMoved != null && firstMoved.previousSibling != null) {
-                  c = firstMoved.previousSibling;
-                } else if(firstMoved != null) {
-                  c = firstMoved;
-                } else {
-                  c = pn;
+                if (firstMoved !== null) {
+                  pn=c.parentNode;
+                  pn.removeChild(c);
+                  if (firstMoved.previousSibling != null) {
+                    c = firstMoved.previousSibling;
+                  } else if(firstMoved != null) {
+                    c = firstMoved;
+                  } else {
+                    c = pn;
+                  }
                 }
-
-
-
               }
             }
             blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(doc, c);
