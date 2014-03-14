@@ -134,6 +134,61 @@ try{
       return false;
     },
 
+  processSVG: function(rd, appendNode, doc, rootNode, oValues, iLevel) {
+    var n, div, p, el, bDontDig, sTagName;
+    
+    if (doc != null && appendNode != null && rootNode != null) {
+      if (appendNode == null) {
+        appendNode = rd.body;
+      }
+      if (iLevel==null) {
+        div=rd.createElement('div');
+        div.setAttribute('style', 'border:thin solid black;margin: 3px 2px 3px 0px');
+        p=rd.createElement('p');
+        p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
+        p.appendChild(rd.createTextNode('Begin SVG'));
+        div.appendChild(p);
+        appendNode.appendChild(div);
+        appendNode=div;
+      }
+      for (n = rootNode.firstChild; n != null; n = n.nextSibling) {
+        if (n.nodeType==1 && n.tagName) {
+          bDontDig=false;
+          sTagName=n.tagName.toLowerCase();
+          switch(sTagName) {
+            case 'title':
+              el=rd.createElement('div');
+              el.appendChild(rd.createTextNode('Title: '+n.textContent));
+              appendNode.appendChild(el);
+              bDontDig=true;
+              break;
+            case 'desc':
+              el=rd.createElement('div');
+              el.appendChild(rd.createTextNode('Desc: '+n.textContent));
+              appendNode.appendChild(el);
+              bDontDig=true;
+              break;
+            case 'text':
+              el=rd.createElement('div');
+              el.appendChild(rd.createTextNode(n.textContent));
+              appendNode.appendChild(el);
+              bDontDig=true;
+              break;
+          }
+        }
+        if (!bDontDig) {
+          blr.W15yQC.RemoveStylesWindow.processSVG(rd, appendNode, doc, n, oValues, iLevel==null?1:iLevel+1);
+        }
+      }
+      if (iLevel==null) {
+        p=rd.createElement('p');
+        p.setAttribute('style', 'background-color:#eee;margin:0px;padding:0px 0px 0px 2px;border-bottom:thin solid #aaa');
+        p.appendChild(rd.createTextNode('End SVG'));
+        div.appendChild(p);
+      }
+    }
+  },
+  
   fnBuildRemoveStylesView: function (rd, appendNode, doc, rootNode, oValues) {
     var node, c, frameDocument, div, div2, p, thisFrameNumber, i, bInAriaBlock = false,
       sLabel, sEnteringLabel, sControlsLabelText, sControlsOtherText,
@@ -292,6 +347,10 @@ try{
                   node.setAttribute('aria-label', sLabel);
                 }
                 node.appendChild(rd.createTextNode(sLabel));
+              } else if (sTagName == 'svg') {
+                  bSkipElement = true;
+                  node = null;
+                  blr.W15yQC.RemoveStylesWindow.processSVG(rd, appendNode, doc, c, oValues);
               } else if (sRole == 'img' || sTagName == 'img') {
                 if (sRole=='presentation' || sTagName == 'img' && c.hasAttribute('alt') == true && c.getAttribute('alt') == "") { // Ignore if presentation role or alt=""
                   bSkipElement = true;
