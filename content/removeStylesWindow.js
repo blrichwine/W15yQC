@@ -158,18 +158,21 @@ try{
           switch(sTagName) {
             case 'title':
               el=rd.createElement('div');
+              el.setAttribute('style', 'margin: 0px 0px 0px 3px');
               el.appendChild(rd.createTextNode('Title: '+n.textContent));
               appendNode.appendChild(el);
               bDontDig=true;
               break;
             case 'desc':
               el=rd.createElement('div');
+              el.setAttribute('style', 'margin: 0px 0px 0px 3px');
               el.appendChild(rd.createTextNode('Desc: '+n.textContent));
               appendNode.appendChild(el);
               bDontDig=true;
               break;
             case 'text':
               el=rd.createElement('div');
+              el.setAttribute('style', 'margin: 0px 0px 0px 3px');
               el.appendChild(rd.createTextNode(n.textContent));
               appendNode.appendChild(el);
               bDontDig=true;
