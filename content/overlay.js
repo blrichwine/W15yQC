@@ -1292,8 +1292,15 @@ ys: 'whys'
       if(childNode != null && childNode.parentNode && childNode.parentNode != null && sParentTagName != null) {
         sParentTagName=sParentTagName.toLowerCase();
         var node=childNode.parentNode;
-        while(node!=null && node.tagName && node.tagName.toLowerCase() !== sParentTagName) { node=node.parentNode;}
-         if (node != null && node.tagName && node.tagName.toLowerCase()==sParentTagName) {return true;}
+        while(node!=null && node.tagName && node.tagName.toLowerCase() !== sParentTagName) {
+          node=node.parentNode;
+        }
+        if (node !=null && node.tagName) {
+          if (/presentation/i.test(node.getAttribute('role')) && /^(div|span)$/i.test(node.tagName)==false) {
+            // return false; // TODO: Test if this should be enabled!!!!
+          }
+          if (node.tagName.toLowerCase()==sParentTagName) {return true;}
+        }
       }
       return false;
     },
@@ -10073,7 +10080,7 @@ ys: 'whys'
 
 
     fnDisplayPageSummary: function(rd, oW15yQCReport, bQuick) {
-      var div, div2=null, element, h2;
+      var div, div2=null, element, h2, a, sLabel;
 
       div=rd.getElementById('AIDocumentDetails');
       if (div!=null) {
@@ -10113,8 +10120,16 @@ ys: 'whys'
         div2.appendChild(element);
         h2=div.getElementsByTagName('h2');
         if (h2 != null && h2.length>0) {
+          sLabel=' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)';
           h2=h2[0];
-          h2.appendChild(rd.createTextNode(' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)'));
+          a=h2.getElementsByTagName('a');
+          if (a != null && a.length>0) {
+            a=a[0];
+            a.setAttribute('onclick',a.getAttribute('onclick').replace("Window Details","Window Details"+sLabel));
+            a.appendChild(rd.createTextNode(' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)'));
+          } else {
+            h2.appendChild(rd.createTextNode(' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)'));
+          }
         }
       }
     },

@@ -56,15 +56,18 @@ blr.W15yQC.RemoveStylesWindow = {
   srcDoc: null,
 
   init: function (dialog) {
-    var metaElements, i, styleElement, rd, if1;
-
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[1];
+    window.setTimeout(blr.W15yQC.RemoveStylesWindow.run,10);
+  },
+
+  run: function() {
+try{
+    var metaElements, i, styleElement, rd, if1;
     blr.W15yQC.Highlighters.removeAllHighlights(blr.W15yQC.fnGetDocuments(blr.W15yQC.RemoveStylesWindow.srcDoc));
     if1 = document.getElementById("HTMLReportIFrame");
     blr.W15yQC.RemoveStylesWindow.rd = if1.contentDocument;
     rd = blr.W15yQC.RemoveStylesWindow.rd;
-
     blr.W15yQC.RemoveStylesWindow.prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
     metaElements = blr.W15yQC.RemoveStylesWindow.srcDoc.head.getElementsByTagName('meta');
     if (metaElements != null && metaElements.length > 0) {
@@ -83,8 +86,9 @@ blr.W15yQC.RemoveStylesWindow = {
     blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
     blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(rd);
     blr.W15yQC.RemoveStylesWindow.fnInstallFocusHighlighter();
+}catch(ex){alert(ex);}
   },
-
+  
   cleanup: function () {
     blr.W15yQC.RemoveStylesWindow.aDocumentsList = null;
     blr.W15yQC.RemoveStylesWindow.aHeadingsList = null;
@@ -136,6 +140,7 @@ blr.W15yQC.RemoveStylesWindow = {
       sExitingLabel, sRole, sTagName, sTagTypeAttr, level, bKeepStyle = false,
       box, width, height, borderStyle, bSkipElement = false, bSamePageLink=false, bDontDig=false,
       c2, href, hn;
+
     if (oValues == null) {
       oValues = {
         iNumberOfLinks: 0,
@@ -287,8 +292,8 @@ blr.W15yQC.RemoveStylesWindow = {
                   node.setAttribute('aria-label', sLabel);
                 }
                 node.appendChild(rd.createTextNode(sLabel));
-              } else if (sRole == 'img' || c.tagName.toLowerCase() == 'img') {
-                if (blr.W15yQC.fnStringsEffectivelyEqual(c.getAttribute('role'), 'presentation') == true || (c.hasAttribute('alt') == true && c.getAttribute('alt') == "")) { // Ignore if presentation role or alt=""
+              } else if (sRole == 'img' || sTagName == 'img') {
+                if (sRole=='presentation' || sTagName == 'img' && c.hasAttribute('alt') == true && c.getAttribute('alt') == "") { // Ignore if presentation role or alt=""
                   bSkipElement = true;
                   node = null;
                 } else {
@@ -319,12 +324,14 @@ blr.W15yQC.RemoveStylesWindow = {
 
                   node = rd.createElement('span');
                   bKeepStyle = true;
+                  borderStyle = 'border:1px solid black;';
+                  sLabel = blr.W15yQC.fnJoin('Image', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                   if (blr.W15yQC.fnElementIsChildOf(c, 'a')) {
-                    borderStyle = 'border:1px solid blue;';
-                    sLabel = blr.W15yQC.fnJoin('Image-Link', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                     c2 = appendNode;
-                    while (c2 != null && c2.tagName.toLowerCase() != 'a') { c2 = c2.parentNode; }
-                    if (c2 != null) {
+                    while (c2 != null && typeof c2.tagName != 'undefined' && /^(a|body|html)$/i.test(c2.tagName)===false) { c2 = c2.parentNode; }
+                    if (c2 != null && c2.tagName && /^a$/i.test(c2.tagName)) { 
+                      borderStyle = 'border:1px solid blue;';
+                      sLabel = blr.W15yQC.fnJoin('Image-Link', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                       div = rd.createElement('div');
                       div.setAttribute('style', 'margin:3px');
                       div2 = rd.createElement('div');
@@ -333,9 +340,6 @@ blr.W15yQC.RemoveStylesWindow = {
                       c2.parentNode.insertBefore(div, c2);
                       div2.appendChild(c2);
                     }
-                  } else {
-                    borderStyle = 'border:1px solid black;';
-                    sLabel = blr.W15yQC.fnJoin('Image', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                   }
                   node.setAttribute('style', 'display:table-cell;' + borderStyle + 'color:black;' + width + height + 'padding:1px;background-color:#e9e9e9 !important;text-decoration:none;color:black !important');
                   node.setAttribute('role', 'img');
@@ -494,7 +498,7 @@ blr.W15yQC.RemoveStylesWindow = {
         }
       }
     }
-    return appendNode.parentNode || appendNode;
+    return appendNode!=null?(appendNode.parentNode || appendNode):null;
   },
 
   fnInstallFocusHighlighter: function() {
