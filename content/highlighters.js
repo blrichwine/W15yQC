@@ -395,7 +395,9 @@ blr.W15yQC.Highlighters = {
           tables = doc.getElementsByTagName('table');
           if (tables != null) {
             for (tableIndex = 0; tableIndex < tables.length; tableIndex++) {
+              try{
               blr.W15yQC.Highlighters.addExtendedTableHighlights(doc, tables[tableIndex]);
+              }catch(ex) {}
             }
           }
 
@@ -404,8 +406,9 @@ blr.W15yQC.Highlighters = {
     }
   },
 
-  addExtendedTableHighlights: function (doc, table) {
-    var i, insert, sMsg, scope, nodeStack = [],
+  addExtendedTableHighlights: function (doc, table) { 
+    var i, j, k, rows, tcells=[],
+      insert, sMsg, scope, nodeStack = [],
       node, tagName,
       isDataTable = false,
       insertParents = [],
@@ -428,56 +431,24 @@ blr.W15yQC.Highlighters = {
         insert.appendChild(doc.createTextNode(table.getAttribute('summary')));
         table.parentNode.insertBefore(insert, table);
       }
-      node = table.firstChild;
-      while (node != null || nodeStack.length > 0) {
-        if (node == null) {
-          node = nodeStack.pop().nextSibling;
+      if (table.getElementsByTagName('caption').length>0) {
+        isDataTable=true;
+      }
+      rows=table.rows;
+      if (rows.length>0) {
+        for(i=0;i<rows.length;i++) {
+          tcells[i]=[];
+          for(j=0;j<rows[i].children.length;j++) {
+            tcells[i].push(rows[i].children[j]);
+          }
         }
-        if (node != null) {
-          if (node.nodeType == 1) { // Only pay attention to element nodes
-            tagName = node.tagName.toLowerCase();
-            if (tagName == 'caption' || tagName == 'col' || tagName == 'colgroup') {
-              isDataTable = true;
-            } else {
-              if (tagName == 'td') {
-                foundFirstRow = true;
-                if (blr.W15yQC.fnStringHasContent(node.getAttribute('headers')) || blr.W15yQC.fnStringHasContent(node.getAttribute('axis')) || blr.W15yQC.fnStringHasContent(node.getAttribute('abbr'))) {
-                  isDataTable = true;
-                  if (blr.W15yQC.fnStringHasContent(node.getAttribute('headers'))) {
-                    insert = doc.createElement('div');
-                    insert.className = 'w15yqcTHInsert';
-                    headers = node.getAttribute('headers').split(/\s/);
-                    headerText = '';
-                    for (i = 0; i < headers.length; i++) {
-                      header = doc.getElementById(headers[i].toString());
-                      if (header != null) {
-                        if (blr.W15yQC.fnStringHasContent(header.getAttribute('abbr'))) {
-                          headerText = headerText + ' ' + header.getAttribute('abbr');
-                        } else {
-                          headerText = headerText + ' ' + blr.W15yQC.fnGetDisplayableTextRecursively(header);
-                        }
-                      }
-                    }
-                    insert.appendChild(doc.createTextNode('Headers: ' + headerText));
-                    insertParents.push(node);
-                    insertEls.push(insert);
-                  }
-                }
-                firstCol = false;
-              } else if (tagName == 'th') {
+        for(i=0;i<tcells.length;i++) { 
+          for(j=0;j<tcells[i].length;j++) { 
+            node=tcells[i][j];
+            if (node!=null && node.nodeType==1) {
+              tagName=node.tagName.toLowerCase();
+              if (tagName=='th') {
                 isDataTable = true;
-                foundFirstRow = true;
-                nextRowCellIsAHeading = false;
-                nextSibling = node.nextSibling;
-                while (nextRowCellIsAHeading == false && nextSibling != null) {
-                  if (nextSibling.nodeType == 1 && nextSibling.tagName.toLowerCase() == 'th') {
-                    nextRowCellIsAHeading = true;
-                  } else if (nextSibling.nodeType != 1) {
-                    nextSibling = nextSibling.nextSibling;
-                  } else {
-                    nextSibling = null;
-                  }
-                }
                 insert = doc.createElement('div');
                 insert.className = 'w15yqcTHInsert';
                 sMsg = 'Header';
@@ -493,17 +464,42 @@ blr.W15yQC.Highlighters = {
                   } else if (scope == 'colgroup') {
                     sMsg = 'Column Group ' + sMsg;
                   }
-                } else if (firstCol && (hasMoreRows == false || nextRowCellIsAHeading == false)) {
+                } else if (j==0 && tcells[i].length>1 && tcells[i][j+1]!=null && tcells[i][j+1].tagName.toLowerCase()=='td') {
                   sMsg = 'Row ' + sMsg;
-                } else if (foundFirstRow == true && pastFirstRow == false) {
+                } else if (i==0 && tcells.length>1) {
                   sMsg = 'Column ' + sMsg;
                 }
                 insert.appendChild(doc.createTextNode(sMsg));
                 insertParents.push(node);
                 insertEls.push(insert);
-                firstCol = false;
+              } else if (tagName=='td') { 
+                if (blr.W15yQC.fnStringHasContent(node.getAttribute('headers')) ||
+                    blr.W15yQC.fnStringHasContent(node.getAttribute('axis')) ||
+                    blr.W15yQC.fnStringHasContent(node.getAttribute('abbr'))) {
+                  isDataTable = true;
+                  if (blr.W15yQC.fnStringHasContent(node.getAttribute('headers'))) {
+                    insert = doc.createElement('div');
+                    insert.className = 'w15yqcTHInsert';
+                    headers = node.getAttribute('headers').split(/\s/);
+                    headerText = '';
+                    for (k = 0; k < headers.length; k++) {
+                      header = doc.getElementById(headers[k].toString());
+                      if (header != null) {
+                        if (blr.W15yQC.fnStringHasContent(header.getAttribute('abbr'))) {
+                          headerText = headerText + ' ' + header.getAttribute('abbr');
+                        } else {
+                          headerText = headerText + ' ' + blr.W15yQC.fnGetDisplayableTextRecursively(header);
+                        }
+                      }
+                    }
+                    insert.appendChild(doc.createTextNode('Headers: ' + headerText));
+                    insertParents.push(node);
+                    insertEls.push(insert);
+                  }
+                }
               }
-              if (tagName == 'td' || tagName == 'th') {
+
+              if (tagName == 'td' || tagName == 'th') { 
                 sAxis = node.getAttribute('axis');
                 if (blr.W15yQC.fnStringHasContent(sAxis)) {
                   insert = doc.createElement('div');
@@ -512,7 +508,7 @@ blr.W15yQC.Highlighters = {
                   if (aAxisList != null && aAxisList.length > 1) {
                     insert.appendChild(doc.createTextNode('Axis Values: '));
                     ul = doc.createElement('ul');
-                    for (i = 0; i < aAxisList.length; i++) {
+                    for (k = 0; k < aAxisList.length; k++) {
                       li = doc.createElement('li');
                       li.appendChild(doc.createTextNode(aAxisList[i]));
                       ul.appendChild(li);
@@ -532,44 +528,25 @@ blr.W15yQC.Highlighters = {
                   node.appendChild(insert);
                 }
               }
+              
             }
-            if (node.firstChild != null && (tagName == 'tr' || tagName == 'thead' || tagName == 'tbody' || tagName == 'tfoot')) {
-              if (foundFirstRow == true) {
-                pastFirstRow = true;
-              }
-              firstCol = true;
-              hasMoreRows = false;
-              nextSibling = node.nextSibling;
-              while (hasMoreRows == false && nextSibling != null) {
-                if (nextSibling.nodeType == 1 && nextSibling.getElementsByTagName('tr') != null) {
-                  hasMoreRows = true;
-                } else {
-                  nextSibling = nextSibling.nextSibling;
-                }
-              }
-              nodeStack.push(node);
-              node = node.firstChild;
-            } else {
-              node = node.nextSibling;
-            }
-          } else {
-            node = node.nextSibling;
           }
         }
       }
-      for (i = 0; i < insertParents.length; i++) {
-        // insertParents[i].appendChild(insertEls[i]);
-        insertParents[i].insertBefore(insertEls[i],insertParents[i].firstChild);
+      
+      for (k = 0; k < insertParents.length; k++) {
+        insertParents[k].insertBefore(insertEls[k],insertParents[k].firstChild);
       }
+      
     }
     if (isDataTable) {
       table.className = 'w15yqcIsDataTable ' + table.className;
     } else {
       table.className = 'w15yqcIsNotDataTable ' + table.className;
     }
+    
     return isDataTable;
   },
-
 
   scrubTableHighlightClass: function(sClassName, doc) {
     var infoElements = doc.getElementsByClassName(sClassName), sClass='';

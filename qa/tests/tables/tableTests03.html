@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Table tests 01</title>
+  <style>
+/*	table {border: thin solid blue;}
+	th {border: thin solid black;}
+	td {border: thin dotted black;}
+*/	</style>
+</head>
+<body>
+<h1>Table Tests 01</h1>
+
+<h2>Table 20</h2>
+<p>Data table with combination of table headers and headers attributes.</p>
+<table border="1" cellpadding="4" summary="20This table has column headers and header attributes. All cells have either a header or headers attribute.">
+  <tr>
+    <th id="t20ha" scope="col" abbr="C1">Col 1</td>
+    <td id="t20h1" headers="t20ha">Col 2</td>
+    <th scope="col">Col 3</td>
+	</tr>
+  <tr>
+    <td>2,1</td>
+    <td headers="t20h1">2,2</td>
+    <td>2,3</td>
+	</tr>
+  <tr>
+    <td>3,1</td>
+    <td headers="t20h1">3,2</td>
+    <td>3,3</td>
+	</tr>
+</table>
+
+</body>
+</html>
