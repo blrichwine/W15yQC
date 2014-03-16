@@ -7135,7 +7135,12 @@ ys: 'whys'
           fgColor, fgC, bgColor, bgC, textSize, textWeight, bBgImage, lRatio;
       bWCAGTripleA=Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA")=="WCAG2 AAA";
 
-      if (node!=null) {
+      if (node!=null && node.nodeType==1 && !blr.W15yQC.fnNodeIsHidden(node) && !blr.W15yQC.fnNodeIsMasked(node)) {
+        if ((/^(a|h\d|button)$/i.test(node.tagName) && (node.childElementCount==1 &&
+            node.firstElementChild!=null && /img/i.test(node.firstElementChild.tagName) && !blr.W15yQC.fnElementHasOwnContent(node))) ||
+        (/^input$/i.test(node.tagName) && /^image$/i.test(node.getAttribute('type')))) {
+          return ['W','Check image for contrast issues.']
+        }
         aColors = blr.W15yQC.fnGetColorValues(node);
         if(aColors != null) {
           fgColor = [aColors[0], aColors[1], aColors[2]];
@@ -7186,8 +7191,6 @@ ys: 'whys'
           }
         }
       }
-      alert('returned null');
-      alert(blr.W15yQC.fnDescribeElement(node));
       return null;
     },
     
