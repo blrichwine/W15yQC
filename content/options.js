@@ -247,6 +247,7 @@ blr.W15yQC.options = {
     Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
     Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+    Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", true);
     Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
     Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.mandatesEnabled", false);

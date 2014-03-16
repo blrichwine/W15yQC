@@ -25,6 +25,7 @@
       <preference id="mustHaveLevel1Heading" name="extensions.W15yQC.getElements.mustHaveLevel1Heading" type="bool"/>
       <preference id="onlyOneLevel1Heading" name="extensions.W15yQC.getElements.onlyOneLevel1Heading" type="bool"/>
       <preference id="honorARIA" name="extensions.W15yQC.getElements.honorARIA" type="bool"/>
+      <preference id="suppressPassingCRNotes" name="extensions.W15yQC.testContrast.suppressPassingCRNotes" type="bool"/>
       <preference id="ignoreWWW" name="extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW" type="bool"/>
       <preference id="testContrastMinSpec" name="extensions.W15yQC.testContrast.MinSpec" type="string"/>
       <preference id="mandatoryCodeList" name="extensions.W15yQC.mandatoryCodeList" type="string"/>
@@ -86,6 +87,7 @@
 							</menupopup>
 						</menulist>
 					</hbox>
+				<checkbox label="Suppress passing contrast ratio notes" preference="suppressPassingCRNotes"/>
 			</tabpanel>
 
 			<tabpanel id="W15yQC_tab_Mandates" orient="vertical">

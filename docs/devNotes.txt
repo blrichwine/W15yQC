@@ -116,9 +116,11 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
-  -- Failure: marquee element
-  -- onclick elements must be focusable
-  -- onclick elements that are not inputs must have roles
+  -- Add misc section that includes:
+     - contrast ratio check
+     - Failure: marquee element
+     - onclick elements must be focusable
+     - onclick elements that are not inputs must have roles
   -- video element -- how to check?
   <video src="brave.webm">
  <track kind=subtitles src=brave.en.vtt srclang=en label="English">

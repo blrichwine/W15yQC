@@ -39,6 +39,7 @@ if (!blr.W15yQC) {
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
+    bSuppressPassingCRNotes: false,
     w15yqcPrevElWithFocus: null,
     w15yqcOriginalItemStyle: null,
     w15yqcOriginalItemPosition: null,
@@ -7165,37 +7166,23 @@ ys: 'whys'
             sTextDescription = 'bold and smaller than 14pt';
           }
 
-          if (lRatio - AAALimit > 3) {
-            sMeetsLimitText = 'handily meets AAA compliance.';
-          } else if (lRatio - AAALimit > 0.2) {
-            sMeetsLimitText = 'meets AAA compliance.';
-          } else if (lRatio >= AAALimit) {
-            sMeetsLimitText = 'just meets AAA compliance.';
-          } else if (AAALimit - lRatio < 0.2) {
-            sMeetsLimitText = 'handlily meets AA compliance while just missing AAA compliance.';
-          } else if (AALimit - lRatio < 1) {
-            sMeetsLimitText = 'is not close to meeting AA compliance.';
-          } else if (lRatio < AALimit) {
-            sMeetsLimitText = 'fails to meet AA compliance.';
-          } else if (lRatio - AALimit > 2) {
-            sMeetsLimitText = 'handlily meets AA compliance.';
-          } else if (lRatio - AALimit > 0.2) {
-            sMeetsLimitText = 'meets AA compliance.';
+          sMsg = ' WCAG' + (bWCAGTripleA?'AAA':'AA') + ' minimum contrast ratio for text that is ' + sTextDescription + '. (AA: ' + AALimit +
+            ':1, AAA: ' + AAALimit + ':1).';
+      
+          if ((bWCAGTripleA && lRatio<AAALimit) || lRatio<AALimit) {
+            sMsg=lRatio + ':1 fails '+sMsg;
           } else {
-            sMeetsLimitText = 'just meets AA compliance.';
+            sMsg=lRatio + ':1 meets '+sMsg;
           }
 
-          sMsg = ' WCAG' + (bWCAGTripleA?'AAA':'AA') + ' minimum contrast ratio for text that is ' + sTextDescription + '. (AA: ' + AALimit +
-            ':1, AAA: ' + AAALimit + ':1). The contrast ratio of ' + lRatio + ':1 ' + sMeetsLimitText;
-      
           if (bBgImage) {
-            sMsg = blr.W15yQC.fnJoin(sMsg, 'NOTICE: Element appears to be over a background image. Contrast results may be invalid.', ' ');
+            sMsg = blr.W15yQC.fnJoin('Element has a background image; Contrast results may be inaccurate.', sMsg, ' ');
           }
           
           if ((bWCAGTripleA && lRatio<AAALimit) || lRatio<AALimit) {
-            return [bBgImage?'W':'F', 'Fails '+sMsg];
+            return [bBgImage?'W':'F', sMsg];
           } else {
-            return [bBgImage?'W':'P', 'Meets '+sMsg];
+            return [bBgImage?'W':'P', sMsg];
           }
         }
       }
@@ -7892,7 +7879,7 @@ ys: 'whys'
           if (aCR!=null) {
             switch (aCR[0]) {
               case 'P':
-                blr.W15yQC.fnAddNote(aHeadingsList[i], 'elContrastRatioChkPassed', [aCR[1]]); // TODO: QA This
+                if(!blr.W15yQC.bSuppressPassingCRNotes) { blr.W15yQC.fnAddNote(aHeadingsList[i], 'elContrastRatioChkPassed', [aCR[1]]); } // TODO: QA This
                 break;
               case 'W':
                 blr.W15yQC.fnAddNote(aHeadingsList[i], 'elContrastRatioChkWarning', [aCR[1]]); // TODO: QA This
@@ -8293,7 +8280,7 @@ ys: 'whys'
           if (aCR!=null) {
             switch (aCR[0]) {
               case 'P':
-                blr.W15yQC.fnAddNote(aFormControlsList[i], 'elContrastRatioChkPassed', [aCR[1]]); // TODO: QA This
+                if(!blr.W15yQC.bSuppressPassingCRNotes) { blr.W15yQC.fnAddNote(aFormControlsList[i], 'elContrastRatioChkPassed', [aCR[1]]); } // TODO: QA This
                 break;
               case 'W':
                 blr.W15yQC.fnAddNote(aFormControlsList[i], 'elContrastRatioChkWarning', [aCR[1]]); // TODO: QA This
@@ -8761,7 +8748,7 @@ ys: 'whys'
         if (aCR!=null) {
           switch (aCR[0]) {
             case 'P':
-              blr.W15yQC.fnAddNote(aLinksList[i], 'elContrastRatioChkPassed', [aCR[1]]); // TODO: QA This
+              if(!blr.W15yQC.bSuppressPassingCRNotes) { blr.W15yQC.fnAddNote(aLinksList[i], 'elContrastRatioChkPassed', [aCR[1]]); } // TODO: QA This
               break;
             case 'W':
               blr.W15yQC.fnAddNote(aLinksList[i], 'elContrastRatioChkWarning', [aCR[1]]); // TODO: QA This
@@ -10523,6 +10510,7 @@ try{
       blr.W15yQC.bFirstHeadingMustBeLevel1 = Application.prefs.getValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", true);
       blr.W15yQC.bOnlyOneLevel1Heading = Application.prefs.getValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
       blr.W15yQC.bHonorARIA = Application.prefs.getValue("extensions.W15yQC.getElements.honorARIA", true);
+      blr.W15yQC.bSuppressPassingCRNotes = Application.prefs.getValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
 
       blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs = Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements",true);
 
