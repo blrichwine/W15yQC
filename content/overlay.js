@@ -994,6 +994,10 @@ ys: 'whys'
       akIDNotValid: [false,1,0,false,null],
       akIDNotUnique: [false,2,0,false,null],
 
+      elContrastRatioChkPassed: [false,0,0,false,null],
+      elContrastRatioChkWarning: [false,1,0,false,null],
+      elContrastRatioChkFailed: [true,2,0,false,null],
+
       hSkippedLevel: [true,2,1,false,null],
       hShouldNotBeMultipleLevel1Headings: [true,2,1,false,null],
       hNoLevel1Heading: [true,2,1,false,null],
@@ -7099,19 +7103,6 @@ ys: 'whys'
           }
         }
 
-        fgColor=style.getPropertyValue('color');
-        el2=el;
-        while(/transparent/i.test(fgColor) && el2.parentNode != null) {
-          el2=el2.parentNode;
-          if(el2.nodeType==1) {
-            style2 = window.getComputedStyle(el2, null);
-            if(style2!=null) {
-              fgColor=style2.getPropertyValue('background-color');
-            }
-          }
-        }
-        if(/transparent/i.test(fgColor)) { fgColor = 'rgb(0, 0, 0)'; }
-
         bgColor=style.getPropertyValue('background-color');
         el2=el;
         while(/transparent/i.test(bgColor) && el2.parentNode != null) {
@@ -7125,13 +7116,94 @@ ys: 'whys'
         }
         if(/transparent/i.test(bgColor)) { bgColor = 'rgb(255, 255, 255)'; }
 
+        fgColor=style.getPropertyValue('color');
+        if(/transparent/i.test(fgColor)) {
+          fgColor=bgColor;
+        }
+
         aFGColor = blr.W15yQC.fnParseCSSColorValues(fgColor);
         aBGColor = blr.W15yQC.fnParseCSSColorValues(bgColor);
         if(aFGColor != null && aBGColor != null) { return [aFGColor[0], aFGColor[1], aFGColor[2], aBGColor[0], aBGColor[1], aBGColor[2], textSize, textWeight, bBgImage]; }
+        // TODO: Upgrade this routine to handle alpha values. right now fnParseCSSColorValues returns null if the passed color has an alpha value.
       }
       return null;
     },
 
+    fnCheckElementLuminosity: function(node) {
+      var sMsg, aColors, bWCAGTripleA=false, AALimit, AAALimit, sTextDescription, sMeetsLimitText,
+          fgColor, fgC, bgColor, bgC, textSize, textWeight, bBgImage, lRatio;
+      bWCAGTripleA=Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA")=="WCAG2 AAA";
+
+      if (node!=null) {
+        aColors = blr.W15yQC.fnGetColorValues(node);
+        if(aColors != null) {
+          fgColor = [aColors[0], aColors[1], aColors[2]];
+          fgC = blr.W15yQC.fnGetColorString(parseInt(fgColor[0], 10) * 65536 + parseInt(fgColor[1], 10) * 256 + parseInt(fgColor[2], 10));
+          bgColor = [aColors[3], aColors[4], aColors[5]];
+          bgC = blr.W15yQC.fnGetColorString(parseInt(bgColor[0], 10) * 65536 + parseInt(bgColor[1], 10) * 256 + parseInt(bgColor[2], 10));
+          textSize = parseFloat( aColors[6] );
+          textWeight = parseInt( aColors[7] );
+          bBgImage = aColors[8];
+          lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
+          
+          
+          if (textSize >= 18) {
+            AALimit = 3.0;
+            AAALimit = 4.5;
+            sTextDescription = '18pt or larger';
+          } else if (textSize >= 14 && textWeight >= 700) {
+            AALimit = 3.0;
+            AAALimit = 4.5;
+            sTextDescription = 'bold and 14pt or larger';
+          } else if (textWeight < 700) {
+            AALimit = 4.5;
+            AAALimit = 7.0;
+            sTextDescription = 'not bold and is smaller than 18pt';
+          } else {
+            AALimit = 4.5;
+            AAALimit = 7.0;
+            sTextDescription = 'bold and smaller than 14pt';
+          }
+
+          if (lRatio - AAALimit > 3) {
+            sMeetsLimitText = 'handily meets AAA compliance.';
+          } else if (lRatio - AAALimit > 0.2) {
+            sMeetsLimitText = 'meets AAA compliance.';
+          } else if (lRatio >= AAALimit) {
+            sMeetsLimitText = 'just meets AAA compliance.';
+          } else if (AAALimit - lRatio < 0.2) {
+            sMeetsLimitText = 'handlily meets AA compliance while just missing AAA compliance.';
+          } else if (AALimit - lRatio < 1) {
+            sMeetsLimitText = 'is not close to meeting AA compliance.';
+          } else if (lRatio < AALimit) {
+            sMeetsLimitText = 'fails to meet AA compliance.';
+          } else if (lRatio - AALimit > 2) {
+            sMeetsLimitText = 'handlily meets AA compliance.';
+          } else if (lRatio - AALimit > 0.2) {
+            sMeetsLimitText = 'meets AA compliance.';
+          } else {
+            sMeetsLimitText = 'just meets AA compliance.';
+          }
+
+          sMsg = ' WCAG' + (bWCAGTripleA?'AAA':'AA') + ' minimum contrast ratio for text that is ' + sTextDescription + '. (AA: ' + AALimit +
+            ':1, AAA: ' + AAALimit + ':1). The contrast ratio of ' + lRatio + ':1 ' + sMeetsLimitText;
+      
+          if (bBgImage) {
+            sMsg = blr.W15yQC.fnJoin(sMsg, 'NOTICE: Element appears to be over a background image. Contrast results may be invalid.', ' ');
+          }
+          
+          if ((bWCAGTripleA && lRatio<AAALimit) || lRatio<AALimit) {
+            return [bBgImage?'W':'F', 'Fails '+sMsg];
+          } else {
+            return [bBgImage?'W':'P', 'Meets '+sMsg];
+          }
+        }
+      }
+      alert('returned null');
+      alert(blr.W15yQC.fnDescribeElement(node));
+      return null;
+    },
+    
     fnGetLuminosityCheckElements: function(doc, rootNode, aLumCheckList, parentsColor, parentsBGColor) { // TODO: What percentage of text is non-compliant?
       var node, frameDocument, tagName, aColors, xPath, nodeDescription, sText, sTextSize, sID, sClass,
         fgColor, fgC, bgColor, bgC, textWeight, bBgImage, fgLum, bgLum, lRatio;
@@ -7162,7 +7234,7 @@ ys: 'whys'
                   } else if (tagName=='input' && /^submit$/i.test(node.getAttribute('type'))==true) {
                     sText = node.getAttribute('value');
                     if (!blr.W15yQC.fnStringHasContent(sText)) {
-                      sText="Submit";
+                      sText="Submit"; // Default text used by firefox
                     }
                   } else {
                     sText = blr.W15yQC.fnElementsOwnContent(node);
@@ -7752,7 +7824,7 @@ ys: 'whys'
 
     fnAnalyzeHeadings: function (oW15yResults, progressWindow) {
       var i, previousHeadingLevel, aHeadingsList=oW15yResults.aHeadings, aDocumentsList=oW15yResults.aDocuments, listedHeadingCount=0, firstListedHeading=true,
-          j;
+          j, aCR;
 
       oW15yResults.PageScore.bUsesHeadings=false;
       oW15yResults.PageScore.bHasALevelOneHeading=false;
@@ -7815,6 +7887,22 @@ ys: 'whys'
               blr.W15yQC.fnDoEvents();
             }
           }
+
+          aCR=blr.W15yQC.fnCheckElementLuminosity(aHeadingsList[i].node);
+          if (aCR!=null) {
+            switch (aCR[0]) {
+              case 'P':
+                blr.W15yQC.fnAddNote(aHeadingsList[i], 'elContrastRatioChkPassed', [aCR[1]]); // TODO: QA This
+                break;
+              case 'W':
+                blr.W15yQC.fnAddNote(aHeadingsList[i], 'elContrastRatioChkWarning', [aCR[1]]); // TODO: QA This
+                break;
+              case 'F':
+              default:
+                blr.W15yQC.fnAddNote(aHeadingsList[i], 'elContrastRatioChkFailed', [aCR[1]]); // TODO: QA This
+            }
+          }
+
           if(aHeadingsList[i].listedByAT==true) {
             if(firstListedHeading==true) {
               firstListedHeading=false;
@@ -7947,7 +8035,7 @@ ys: 'whys'
 
             sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i]);
             sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
-            if (sMessage != null && sMessage.length != null && sMessage.length > 0) {
+            if ((aHeadingsList[i].failed || aHeadingsList[i].warning) && sMessage != null && sMessage.length != null && sMessage.length > 0) {
               span = rd.createElement('span');
 
               span.appendChild(rd.createTextNode(' (' + sMessage + ')'));
@@ -8137,9 +8225,10 @@ ys: 'whys'
     },
 
     fnAnalyzeFormControls: function (oW15yResults) {
+      try {
       var aFormsList=oW15yResults.aForms, aFormControlsList=oW15yResults.aFormControls, aDocumentsList=oW15yResults.aDocuments,
           i, j, aSameNames, subForms, aSameLabelText, aSoundsTheSame, bShouldntHaveBoth, nodeTagName, nodeTypeValue,
-          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist,
+          explictLabelsList, minDist, bCheckedLabel, sForValue, targetNode, iDist, aCR,
           bIsFormControl=false, iFormControlCount=0, iUnLabeledFormControlCount=0;
 
       oW15yResults.PageScore.bAllFormControlsAreLabeled=true;
@@ -8200,6 +8289,21 @@ ys: 'whys'
         }
 
         for (i = 0; i < aFormControlsList.length; i++) {
+          aCR=blr.W15yQC.fnCheckElementLuminosity(aFormControlsList[i].node);
+          if (aCR!=null) {
+            switch (aCR[0]) {
+              case 'P':
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'elContrastRatioChkPassed', [aCR[1]]); // TODO: QA This
+                break;
+              case 'W':
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'elContrastRatioChkWarning', [aCR[1]]); // TODO: QA This
+                break;
+              case 'F':
+              default:
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'elContrastRatioChkFailed', [aCR[1]]); // TODO: QA This
+            }
+          }
+
           bIsFormControl=!blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node);
           if(bIsFormControl==true && blr.W15yQC.fnFindImplicitLabelNode(aFormControlsList[i].node) != null) {
             blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); //
@@ -8388,6 +8492,10 @@ ys: 'whys'
         oW15yResults.PageScore.bMostFormControlsAreNotLabeled=true;
       }
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aFormControlsList);
+        
+      } catch(e) {
+        alert(e);
+      }
     },
 
     fnDisplayFormResults: function (rd, aFormsList) {
@@ -8614,7 +8722,7 @@ ys: 'whys'
     },
  
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
-      var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink,
+      var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink, aCR,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, skipStatusUpdateCounter=1;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
@@ -8649,6 +8757,20 @@ ys: 'whys'
         }
         if(aLinksList[i]==null || aLinksList[i].node==null || !aLinksList[i].node.hasAttribute) continue;
 
+        aCR=blr.W15yQC.fnCheckElementLuminosity(aLinksList[i].node);
+        if (aCR!=null) {
+          switch (aCR[0]) {
+            case 'P':
+              blr.W15yQC.fnAddNote(aLinksList[i], 'elContrastRatioChkPassed', [aCR[1]]); // TODO: QA This
+              break;
+            case 'W':
+              blr.W15yQC.fnAddNote(aLinksList[i], 'elContrastRatioChkWarning', [aCR[1]]); // TODO: QA This
+              break;
+            case 'F':
+            default:
+              blr.W15yQC.fnAddNote(aLinksList[i], 'elContrastRatioChkFailed', [aCR[1]]); // TODO: QA This
+          }
+        }
         aChildImages=aLinksList[i].node.getElementsByTagName('img');
         if(aChildImages != null && aChildImages.length>0) {
           for(j=0; j< aChildImages.length; j++) {
