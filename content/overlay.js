@@ -7131,7 +7131,7 @@ ys: 'whys'
     },
 
     fnCheckElementLuminosity: function(node) {
-      var sMsg, aColors, bWCAGTripleA=false, AALimit, AAALimit, sTextDescription, sMeetsLimitText,
+      var sMsg, aColors, bWCAGTripleA=false, AALimit, AAALimit, sTextDescription,
           fgColor, fgC, bgColor, bgC, textSize, textWeight, bBgImage, lRatio;
       bWCAGTripleA=Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA")=="WCAG2 AAA";
 

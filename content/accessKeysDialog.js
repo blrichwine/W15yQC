@@ -207,7 +207,7 @@ blr.W15yQC.AccessKeyDialog = {
   updateNotesField: function (bHighlightElement) {
     var treebox = document.getElementById('treebox'),
       textbox = document.getElementById('note-text'),
-      selectedRow, box, ak;
+      selectedRow, selectedIndex, box, ak;
 
     if (bHighlightElement === null) bHighlightElement = true;
 
