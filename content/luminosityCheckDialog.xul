@@ -3,17 +3,19 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
 <xul:dialog
-      id="colorContrastCheckResultsDialog"
-      title="Color Contrast Check Results - W15y Quick Check"
-      xmlns:html="http://www.w3.org/1999/xhtml"
-      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-      ondialogaccept="blr.W15yQC.LuminosityCheckDialog.cleanup();return true"
-      ondialogcancel="blr.W15yQC.LuminosityCheckDialog.cleanup();return true"
-      buttons=""
-			onresize="blr.W15yQC.LuminosityCheckDialog.forceMinSize(this)"
-			style="min-width:908px;padding:0px"
-      onload="fnDelayedInit()">
-   <xul:script>
+	id="colorContrastCheckResultsDialog"
+	title="Color Contrast Check Results - W15y Quick Check"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	ondialogaccept="blr.W15yQC.LuminosityCheckDialog.cleanup();return true"
+	ondialogcancel="blr.W15yQC.LuminosityCheckDialog.cleanup();return true"
+	onkeydown="blr.W15yQC.LuminosityCheckDialog.windowOnKeyDown(this,event)"
+	onkeyup="blr.W15yQC.LuminosityCheckDialog.windowOnKeyUp(event)"
+	buttons=""
+	onresize="blr.W15yQC.LuminosityCheckDialog.forceMinSize(this)"
+	style="min-width:908px;padding:0px"
+	onload="fnDelayedInit()">
+	<xul:script>
 			var blr=this.arguments[0];
 
 			function fnUpdateStatus(sLabel) {

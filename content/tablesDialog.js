@@ -46,6 +46,7 @@ blr.W15yQC.TablesDialog = {
   aTablesList: null,
   aDisplayOrder: [],
   sortColumns: [' Table Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -179,15 +180,22 @@ blr.W15yQC.TablesDialog = {
         }
       }
       if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
-      if (aTablesList.length == 1) {
-        blr.W15yQC.TablesDialog.updateNotesField([aDocumentsList, aTablesList], false);
-      }
     } else {
       textbox = document.getElementById('note-text');
       textbox.value = "No Table elements were detected.";
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -200,6 +208,7 @@ blr.W15yQC.TablesDialog = {
     blr.W15yQC.TablesDialog.aTablesList = oW15yQCReport.aTables;
     blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
     blr.W15yQC.TablesDialog.fnPopulateTree(blr.W15yQC.TablesDialog.aDocumentsList, blr.W15yQC.TablesDialog.aTablesList);
+    blr.W15yQC.TablesDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready',null);
   },
 
@@ -453,6 +462,33 @@ blr.W15yQC.TablesDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'tables');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.TablesDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.TablesDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.TablesDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.TablesDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 }

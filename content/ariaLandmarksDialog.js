@@ -46,7 +46,8 @@ blr.W15yQC.LandmarksDialog = {
   aARIALandmarksList: null,
   aDisplayOrder: [],
   sortColumns: [' Landmark Number (asc)'],
-
+  bCmdIsPressed:false,
+  
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
     blr.W15yQC.fnDoEvents();
@@ -164,6 +165,16 @@ blr.W15yQC.LandmarksDialog = {
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -176,6 +187,9 @@ blr.W15yQC.LandmarksDialog = {
     blr.W15yQC.fnAnalyzeARIALandmarks(oW15yQCReport);
 
     blr.W15yQC.LandmarksDialog.fnPopulateTree(blr.W15yQC.LandmarksDialog.aDocumentsList, blr.W15yQC.LandmarksDialog.aARIALandmarksList);
+    blr.W15yQC.LandmarksDialog.selectFirstRow();
+    dialog.fnUpdateProgress('Ready', null);
+
   },
 
   cleanup: function () {
@@ -405,6 +419,33 @@ blr.W15yQC.LandmarksDialog = {
   generateReportHTML: function () {
     blr.W15yQC.fnResetHighlights(blr.W15yQC.LandmarksDialog.aDocumentsList);
     blr.W15yQC.openHTMLReportWindow(false,'landmarks');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.LandmarksDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.LandmarksDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.LandmarksDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.LandmarksDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 }

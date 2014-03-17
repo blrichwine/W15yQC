@@ -46,6 +46,7 @@ blr.W15yQC.AccessKeyDialog = {
   aAccessKeysList: null,
   aDisplayOrder: [],
   sortColumns: [' Access Key Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -173,6 +174,17 @@ blr.W15yQC.AccessKeyDialog = {
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
+
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -187,6 +199,7 @@ blr.W15yQC.AccessKeyDialog = {
     blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
 
     blr.W15yQC.AccessKeyDialog.fnPopulateTree(blr.W15yQC.AccessKeyDialog.aDocumentsList, blr.W15yQC.AccessKeyDialog.aAccessKeysList);
+    blr.W15yQC.AccessKeyDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready', null);
   },
 
@@ -417,6 +430,33 @@ blr.W15yQC.AccessKeyDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'accesskeys');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.AccessKeyDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.AccessKeyDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.AccessKeyDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.AccessKeyDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };

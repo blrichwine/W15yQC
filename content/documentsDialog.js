@@ -45,6 +45,7 @@ blr.W15yQC.DocumentsDialog = {
   aDocumentsList: null,
   aDisplayOrder: [],
   sortColumns: [' Document Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -133,9 +134,6 @@ blr.W15yQC.DocumentsDialog = {
         }
 
         if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
-        if (aDocumentsList.length == 1) {
-          blr.W15yQC.DocumentsDialog.updateNotesField([aDocumentsList], false);
-        }
       }
     } else {
       textbox = document.getElementById('note-text');
@@ -143,6 +141,16 @@ blr.W15yQC.DocumentsDialog = {
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -153,6 +161,7 @@ blr.W15yQC.DocumentsDialog = {
     blr.W15yQC.DocumentsDialog.aDocumentsList = oW15yQCReport.aDocuments;
     blr.W15yQC.fnAnalyzeDocuments(oW15yQCReport);
     blr.W15yQC.DocumentsDialog.fnPopulateTree(blr.W15yQC.DocumentsDialog.aDocumentsList);
+    blr.W15yQC.DocumentsDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready',null);
   },
 
@@ -381,6 +390,33 @@ blr.W15yQC.DocumentsDialog = {
       if (URL != null) {
         window.open('http://validator.w3.org/check?uri=' + encodeURI(URL) + '&charset=%28detect+automatically%29&doctype=Inline&group=0');
       }
+    }
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.DocumentsDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.DocumentsDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.DocumentsDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.DocumentsDialog.bCmdIsPressed = false;
+        break;
     }
   }
 

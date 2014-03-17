@@ -47,7 +47,8 @@ blr.W15yQC.LuminosityCheckDialog = {
   iLastSelectedRow: 0,
   aDisplayOrder: [],
   sortColumns: [' Source Order Number (asc)'],
-
+  bCmdIsPressed:false,
+  
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
     document.getElementById('progressMeter').setAttribute('hidden','true');
@@ -573,6 +574,33 @@ blr.W15yQC.LuminosityCheckDialog = {
 
   generateReportHTML: function () {
     // blr.W15yQC.openHTMLReportWindow(false,'luminosity');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.LuminosityCheckDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.LuminosityCheckDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.LuminosityCheckDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.LuminosityCheckDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };

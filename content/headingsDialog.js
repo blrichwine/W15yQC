@@ -171,9 +171,6 @@ blr.W15yQC.HeadingsDialog = {
           tbc.appendChild(treeitem);
         }
         if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
-        if (aHeadingsList.length == 1) {
-          blr.W15yQC.HeadingsDialog.updateNotesField([aDocumentsList, aHeadingsList], false);
-        }
       }
     } else {
       textbox = document.getElementById('note-text');
@@ -181,6 +178,16 @@ blr.W15yQC.HeadingsDialog = {
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
     dialog.focus();
@@ -196,7 +203,7 @@ blr.W15yQC.HeadingsDialog = {
     blr.W15yQC.HeadingsDialog.aHeadingsList = oW15yQCReport.aHeadings;
     blr.W15yQC.fnAnalyzeHeadings(oW15yQCReport, dialog);
     blr.W15yQC.HeadingsDialog.fnPopulateTree(blr.W15yQC.HeadingsDialog.aDocumentsList, blr.W15yQC.HeadingsDialog.aHeadingsList);
-
+    blr.W15yQC.HeadingsDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready', null);
   },
 
@@ -427,6 +434,33 @@ blr.W15yQC.HeadingsDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'headings');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.HeadingsDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.HeadingsDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.HeadingsDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.HeadingsDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };

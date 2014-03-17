@@ -381,6 +381,33 @@ blr.W15yQC.badIDsDialog = {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.badIDsDialog.aDocumentsList);
       blr.W15yQC.fnMoveFocusToElement(blr.W15yQC.badIDsDialog.aBadIDsList[selectedIndex].node);
     }
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.badIDsDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.badIDsDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.badIDsDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.badIDsDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };

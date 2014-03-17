@@ -46,6 +46,7 @@ blr.W15yQC.ImagesDialog = {
   aImagesList: null,
   aDisplayOrder: [],
   sortColumns: [' Image Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -200,9 +201,6 @@ blr.W15yQC.ImagesDialog = {
         }
       }
       if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
-      if (aImagesList.length == 1) {
-        blr.W15yQC.ImagesDialog.updateNotesField([aDocumentsList, aImagesList], false);
-      }
     } else {
       textbox = document.getElementById('note-text');
       textbox.value = "No Image elements were detected.";
@@ -213,6 +211,16 @@ blr.W15yQC.ImagesDialog = {
 
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -225,6 +233,7 @@ blr.W15yQC.ImagesDialog = {
     blr.W15yQC.ImagesDialog.aImagesList = oW15yQCReport.aImages;
     blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
     blr.W15yQC.ImagesDialog.fnPopulateTree(blr.W15yQC.ImagesDialog.aDocumentsList, blr.W15yQC.ImagesDialog.aImagesList);
+    blr.W15yQC.ImagesDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready',null);
   },
 
@@ -466,6 +475,33 @@ blr.W15yQC.ImagesDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'images');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.ImagesDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.ImagesDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.ImagesDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.ImagesDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };

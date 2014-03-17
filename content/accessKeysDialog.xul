@@ -3,16 +3,18 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
 <xul:dialog
-      id="accessKeyResultsDialog"
-      title="Access Keys List - W15y Quick Check"
-      xmlns:html="http://www.w3.org/1999/xhtml"
-      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-      ondialogaccept="blr.W15yQC.AccessKeyDialog.cleanup()"
-      ondialogcancel="blr.W15yQC.AccessKeyDialog.cleanup()"
-      buttons=""
-			style="padding:0px"
-      onload="fnDelayedInit()">
-   <xul:script>
+	id="accessKeyResultsDialog"
+	title="Access Keys List - W15y Quick Check"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	ondialogaccept="blr.W15yQC.AccessKeyDialog.cleanup()"
+	ondialogcancel="blr.W15yQC.AccessKeyDialog.cleanup()"
+	onkeydown="blr.W15yQC.AccessKeyDialog.windowOnKeyDown(this,event)"
+	onkeyup="blr.W15yQC.AccessKeyDialog.windowOnKeyUp(event)"
+	buttons=""
+	style="padding:0px"
+	onload="fnDelayedInit()">
+	<xul:script>
 			var blr=this.arguments[0];
 
 			function fnUpdateStatus(sLabel) {

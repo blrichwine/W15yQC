@@ -188,7 +188,8 @@ blr.W15yQC.ScannerWindow = {
   bManualURLAdd: false,
   bUpdatingProject: false,
   bWindowClosing: false,
-
+  bCmdIsPressed: false,
+  
   reTitleNotMeaningful: /^{*(block *title|default|default *page|default *title|default *page *title|home|home *page|main|main *page|main *page *content|page|page *title|redirect(ing)?|title|web *page|web *site|welcome)}*$/i,
   
   fnUpdateStatus: function(sLabel) {
@@ -2381,12 +2382,33 @@ try{
     document.getElementById('col-header-results-tf').hidden=true;
   },
   
-  windowOnKeyDown: function() {
-
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.ScannerWindow.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.ScannerWindow.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            if (!blr.W15yQC.ScannerWindow.stateScanning) {
+              blr.W15yQC.ScannerWindow.cleanup();
+              dialog.close();
+            }
+        }
+        break;
+    }
   },
 
-  windowOnKeyUp: function() {
-
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.ScannerWindow.bCmdIsPressed = false;
+        break;
+    }
   },
 
   forceMinSize: function() {

@@ -46,6 +46,7 @@ blr.W15yQC.FramesDialog = {
   aDocumentsList: null,
   aDisplayOrder: [],
   sortColumns: [' Frame Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -164,9 +165,6 @@ blr.W15yQC.FramesDialog = {
           tbc.appendChild(treeitem);
         }
         if (bDontHideCols!=true) { blr.W15yQC.autoAdjustColumnWidths(document.getElementById('treebox')); }
-        if (aFramesList.length == 1) {
-          blr.W15yQC.FramesDialog.updateNotesField([aDocumentsList, aFramesList], false);
-        }
       }
     } else {
       textbox = document.getElementById('note-text');
@@ -174,6 +172,16 @@ blr.W15yQC.FramesDialog = {
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -188,6 +196,7 @@ blr.W15yQC.FramesDialog = {
     blr.W15yQC.FramesDialog.aFramesList = oW15yQCReport.aFrames;
     blr.W15yQC.fnAnalyzeFrameTitles(oW15yQCReport);
     blr.W15yQC.FramesDialog.fnPopulateTree(blr.W15yQC.FramesDialog.aDocumentsList, blr.W15yQC.FramesDialog.aFramesList);
+    blr.W15yQC.FramesDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready',null);
   },
 
@@ -417,6 +426,33 @@ blr.W15yQC.FramesDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'frames');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.FramesDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.FramesDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.FramesDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.FramesDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };

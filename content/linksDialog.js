@@ -46,6 +46,7 @@ blr.W15yQC.LinksDialog = {
   aLinksList: null,
   aDisplayOrder: [],
   sortColumns: [' Link Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -211,6 +212,16 @@ blr.W15yQC.LinksDialog = {
     }
   },
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
     dialog.focus();
@@ -231,10 +242,8 @@ blr.W15yQC.LinksDialog = {
     //blr.W15yQC.LinksDialog.aLinksList = blr.W15yQC.fnGetLinks(window.opener.parent._content.document);
     blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, dialog);
     blr.W15yQC.LinksDialog.fnPopulateTree(blr.W15yQC.LinksDialog.aDocumentsList, blr.W15yQC.LinksDialog.aLinksList);
-
+    blr.W15yQC.LinksDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready',null);
-    dialog.focus();
-    blr.W15yQC.LinksDialog.selectRow(0);
   },
 
 
@@ -478,5 +487,32 @@ blr.W15yQC.LinksDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'links');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.LinksDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.LinksDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.LinksDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.LinksDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 };

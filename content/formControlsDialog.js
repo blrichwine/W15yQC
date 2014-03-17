@@ -51,6 +51,7 @@ blr.W15yQC.FormControlsDialog = {
   sortColumns1: [' Form Number (asc)'],
   aDisplayOrder2: [],
   sortColumns2: [' Form Control Number (asc)'],
+  bCmdIsPressed:false,
 
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
@@ -342,7 +343,7 @@ blr.W15yQC.FormControlsDialog = {
 
   fnPopulateTree: function (aDocumentsList, aFormsList, aFormControlsList, bDontHideCols) {
     var textbox;
-    if (aDocumentsList==null || aDocumentsList.length==0 || aFormsList==null || aFormsList.length==0 || aFormControlsList==null || aFormControlsList.length==0) {
+    if ((aFormsList==null || aFormsList.length==0) && (aFormControlsList==null || aFormControlsList.length==0)) {
       textbox = document.getElementById('note-text');
       textbox.value = "No form elements were detected.";
     } else {
@@ -352,6 +353,17 @@ blr.W15yQC.FormControlsDialog = {
   },
 
 
+  selectFirstRow: function() {
+    var treebox = document.getElementById('treebox2');
+    try{
+      if (treebox!=null) {
+        treebox.view.selection.select(0);
+        treebox.getElementsByTagName('treerow')[0].focus();
+        //blr.W15yQC.LandmarksDialog.updateNotesField2(false);
+      }
+    } catch(ex) {}
+  },
+  
   init: function (dialog) {
     var oW15yQCReport;
     blr.W15yQC.fnReadUserPrefs();
@@ -366,6 +378,7 @@ blr.W15yQC.FormControlsDialog = {
     blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
 
     blr.W15yQC.FormControlsDialog.fnPopulateTree(blr.W15yQC.FormControlsDialog.aDocumentsList, blr.W15yQC.FormControlsDialog.aFormsList, blr.W15yQC.FormControlsDialog.aFormControlsList);
+    blr.W15yQC.FormControlsDialog.selectFirstRow();
     dialog.fnUpdateProgress('Ready',null);
   },
 
@@ -895,6 +908,33 @@ blr.W15yQC.FormControlsDialog = {
 
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'forms');
+  },
+  
+  windowOnKeyDown: function (dialog, evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.FormControlsDialog.bCmdIsPressed = true;
+        break;
+      case 27:
+        dialog.close();
+        break;
+      case 87:
+        if (blr.W15yQC.FormControlsDialog.bCmdIsPressed == true) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            blr.W15yQC.FormControlsDialog.cleanup();
+            dialog.close();
+        }
+        break;
+    }
+  },
+
+  windowOnKeyUp: function (evt) {
+    switch (evt.keyCode) {
+      case 224:
+        blr.W15yQC.FormControlsDialog.bCmdIsPressed = false;
+        break;
+    }
   }
 
 };
