@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 48',
-    releaseDate: 'March 16, 2014',
+    releaseVersion: '1.0 - Beta 49',
+    releaseDate: 'March 17, 2014',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -985,7 +985,7 @@ ys: 'whys'
       imgIDNotUnique: [false,2,0,false,null],
       imgAltTxtOnlyASCII: [true,2,0,false,null],
 
-      akConflict: [false,1,0,false,null],
+      akConflict: [true,1,0,false,null],
       akNoLabel: [true,2,0,false,null],
       akLabelOnlyASCII: [false,2,0,false,null],
       akLabelNotMeaningful: [true,1,0,false,null],
@@ -9205,6 +9205,7 @@ ys: 'whys'
       }
 
       for (i = 0; i < aTablesList.length; i++) {
+        blr.W15yQC.fnDoEvents();
         // Determine the max number of columns in a row
         // Determine the number of rows
         // Determine if each row has the same number of columns
@@ -9705,6 +9706,35 @@ ys: 'whys'
       return aBadIDsList;
     },
     
+    fnCheckMandateStringMatch: function(s,matchType,matchText) {
+      var re;
+
+      switch (matchType) {
+        case 'M':
+          return (s==matchText || (s==null && matchText=='') || blr.W15yQC.fnStringsEffectivelyEqual(s,matchText));
+          break;
+        case 'E':
+          return (s==matchText || (s==null && matchText=='') || s.toLowerCase().endsWith(matchText.toLowerCase()));
+          break;
+        case 'B':
+          return (s==matchText || (s==null && matchText=='') || s.toLowerCase().beginsWith(matchText.toLowerCase()));
+          break;
+        case 'RT':
+        case 'RC':
+          try {
+            re=new RegExp(matchText, 'i');
+            return re.test(s);
+          } catch(e) { alert(e);
+          }
+          break;
+        case 'C':
+        default:
+          return (s==matchText || (s==null && matchText=='') || s.toLowerCase().indexOf(matchText.toLowerCase())>=0);
+          break;
+      }
+      return false;
+    },
+    
     fnCheckMandates: function(oW15yQCReport) {
       var mandates, i, j, k, m, results, doc, nodesSnapshot, el, text, bFound, sLogic, re, result, mo, sMsg='';
       
@@ -9721,28 +9751,33 @@ ys: 'whys'
               doc=oW15yQCReport.aDocuments[0].doc;
               results=[];
               for (j=0;j<m.tests.length;j++) {
-                if (blr.W15yQC.fnStringHasContent(m.tests[i].xPath)) {
-                  nodesSnapshot = doc.evaluate(m.tests[i].xPath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-                  if (nodesSnapshot!=null && nodesSnapshot.snapshotLength>0) {
-                    bFound=false;
-                    for (k=0;k<nodesSnapshot.snapshotLength;k++) {
-                      el=nodesSnapshot.snapshotItem(k);
-                      if (blr.W15yQC.fnStringHasContent(m.tests[i].text)) {
-                        if (el.textContent.toLowerCase().indexOf(m.tests[i].text.toLowerCase())>=0) {
+                if (blr.W15yQC.fnStringHasContent(m.tests[j].xPath)) {
+                  if (m.tests[j].xPath=='location.href') {
+                      bFound=blr.W15yQC.fnCheckMandateStringMatch(doc.URL, m.tests[j].matchType, m.tests[j].text);
+                      results.push(bFound);
+                  } else {
+                    nodesSnapshot = doc.evaluate(m.tests[j].xPath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+                    if (nodesSnapshot!=null && nodesSnapshot.snapshotLength>0) {
+                      bFound=false;
+                      for (k=0;k<nodesSnapshot.snapshotLength;k++) {
+                        el=nodesSnapshot.snapshotItem(k);
+                        if (blr.W15yQC.fnStringHasContent(m.tests[j].text)) {
+                          if (blr.W15yQC.fnCheckMandateStringMatch(m.tests[j].matchType=='RC'?el.innerHTML:el.textContent, m.tests[j].matchType, m.tests[j].text)) {
+                            bFound=true;
+                            break;
+                          }
+                        } else {
                           bFound=true;
                           break;
                         }
-                      } else {
-                        bFound=true;
-                        break;
                       }
+                      results.push(bFound);
+                    } else {
+                      results.push(false);
                     }
-                    results.push(bFound);
-                  } else {
-                    results.push(false);
                   }
                 } else { // text only search, no xPath
-                  if (doc.textContent.toLowerCase().indexOf(m.tests[i].text.toLowerCase())>=0) {
+                  if (doc.textContent.toLowerCase().indexOf(m.tests[j].text.toLowerCase())>=0) {
                     results.push(true);
                   } else {
                     results.push(false);
@@ -9767,9 +9802,10 @@ ys: 'whys'
                   }
                   try {
                     result=eval(sLogic);
+                    sMsg=sLogic;
                   } catch(ex) {
                     result=false;
-                    sMsg='Syntax error in logic string.';
+                    sMsg='Syntax error in logic string: '+sLogic;
                   }
                 }
               }
@@ -9777,7 +9813,7 @@ ys: 'whys'
                 oW15yQCReport.aMandates=[];
                 oW15yQCReport.iMandateFailuresCount=0;
               }
-              mo={title:m.title, result:result, weight:m.weight, message:sMsg};
+              mo={title:m.title, result:result, weight:m.weight, message:m.logic+'='+sMsg};
               oW15yQCReport.aMandates.push(mo);
               if (!result) {
                 oW15yQCReport.iMandateFailuresCount++;
@@ -9802,14 +9838,14 @@ ys: 'whys'
           table = rd.createElement('table');
           table.setAttribute('id', 'AIMandatesTable');
           // TODO: Make summary and caption columns so they only appear when needed.
-          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHName'), blr.W15yQC.fnGetString('hrsTHResult')]);
+          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHName'), blr.W15yQC.fnGetString('hrsTHResult'), blr.W15yQC.fnGetString('hrsTHNotes')]);
           tbody = rd.createElement('tbody');
           for (i = 0; i < aMandatesList.length; i++) {
             sClass = '';
             if (!aMandatesList[i].result) {
               sClass = 'failed';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aMandatesList[i].title), aMandatesList[i].result?'Passed':'Failed'], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aMandatesList[i].title), aMandatesList[i].result?'Passed':'Failed', blr.W15yQC.fnMakeWebSafe(aMandatesList[i].message)], sClass);
           }
           table.appendChild(tbody);
           div.appendChild(table);

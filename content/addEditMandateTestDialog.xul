@@ -32,11 +32,12 @@
 			<xul:label value="Match Type:" control="matchType"/>
 			<xul:menulist id="matchType">
 				<xul:menupopup>
-					<xul:menuitem label="String match" value="S"/>
-					<xul:menuitem label="Contains" value="C"/>
-					<xul:menuitem label="Begins with" value="B"/>
-					<xul:menuitem label="Ends with" value="E"/>
-					<xul:menuitem label="Regular expression" value="R"/>
+					<xul:menuitem label="Match text" value="M"/>
+					<xul:menuitem label="Contains text" value="C"/>
+					<xul:menuitem label="Begins with text" value="B"/>
+					<xul:menuitem label="Ends with text" value="E"/>
+					<xul:menuitem label="Regular expression on text" value="RT"/>
+					<xul:menuitem label="Regular expression on code" value="RC"/>
 				</xul:menupopup>
 			</xul:menulist>
 		</xul:hbox>
