@@ -1041,6 +1041,7 @@ ys: 'whys'
       frmCtrlLegendWOFieldset: [false,2,0,false,null],
       frmCtrlFieldsetWOLegend: [false,2,0,false,null],
       frmCtrlRadioButtonWOLegendText: [false,1,0,false,null],
+      frmCtrlNotInTabOrder: [false,2,0,true,null],
       frmCtrlIDNotValid: [false,1,0,false,null],
       frmCtrlIDNotUnique: [false,2,0,false,null],
 
@@ -1071,6 +1072,7 @@ ys: 'whys'
       lnkTargetIDisNotUnique: [false,2,0,false,null],
       lnkTargetIDNotValid: [false,1,0,false,null],
       lnkServerSideImageMap: [false,2,0,false,null],
+      lnkNotInTabOrder: [false,2,0,true,null],
       lnkIDNotValid: [false,1,0,false,null],
       lnkIDNotUnique: [false,2,0,false,null],
 
@@ -5971,6 +5973,30 @@ ys: 'whys'
                       case 'canvas':
                         // TODO: What to do here? Get alternative content? text?
                         break;
+                      case 'svg':
+                        xPath = blr.W15yQC.fnGetElementXPath(node);
+                        nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                        aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                        effectiveLabel=aLabel[0];
+                        effectiveLabelSource=aLabel[1];
+                        box = node.getBoundingClientRect();
+                        if (box != null) {
+                          width = box.width;
+                          height = box.height;
+                        }
+                        title = null;
+                        if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
+                        alt = null;
+                        if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
+                        src = null;
+                        if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
+                        oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
+                        oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
+                        if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
+                          oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
+                          if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
+                        }
+                        break;
                       case 'img':
                         // Document image: node, nodeDescription, doc, orderNumber, src, width, height, alt, title, ariaLabel
                         xPath = blr.W15yQC.fnGetElementXPath(node);
@@ -8296,11 +8322,11 @@ ys: 'whys'
 
           bIsFormControl=!blr.W15yQC.fnIsLabelControlNode(aFormControlsList[i].node);
           if(bIsFormControl==true && blr.W15yQC.fnFindImplicitLabelNode(aFormControlsList[i].node) != null) {
-            blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); //
+            blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlImplicitLabel'); // // TODO: QA This
           }
           if (aFormControlsList[i].labelTagText == null && aFormControlsList[i].legendText == null && aFormControlsList[i].title == null &&
              (aFormControlsList[i].effectiveLabel == null || aFormControlsList[i].effectiveLabel.length < 1)) {
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); //
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotLabeled'); // TODO: QA This
               if(bIsFormControl) {
                 oW15yResults.PageScore.bAllFormControlsAreLabeled=false;
                 iUnLabeledFormControlCount++;
@@ -8309,13 +8335,13 @@ ys: 'whys'
             if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(aFormControlsList[i].effectiveLabel)) {
               if(bIsFormControl) { oW15yResults.PageScore.bAllFormControlsAreLabeled=false; }
               if(bIsFormControl) { oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=false; }
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); //
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelOnlyASCII'); // TODO: QA This
             } else if (blr.W15yQC.fnIsOnlyNextOrPreviousText(aFormControlsList[i].effectiveLabel) == true) {
               if(bIsFormControl) { oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=false; }
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNextPrev'); //
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNextPrev'); // TODO: QA This
             } else if (blr.W15yQC.fnIsMeaningfulFormLabelText(aFormControlsList[i].effectiveLabel) == false) {
               if(bIsFormControl) { oW15yResults.PageScore.bAllFormControlsHaveMeaningfulLabels=false; }
-              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNotMeaningful'); //
+              blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelNotMeaningful'); // TODO: QA This
             }
 
             if(bIsFormControl!=false) {
@@ -8341,6 +8367,9 @@ ys: 'whys'
               }
               if(aSoundsTheSame.length>0) {
                 blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlLabelDoesntSoundUnique', [blr.W15yQC.fnCutoffString(aSoundsTheSame.toString(),99)]); //
+              }
+              if (aFormControlsList[i].node!=null && (aFormControlsList[i].node.tabIndex==null || aFormControlsList[i].node.tabIndex<0)) {
+                blr.W15yQC.fnAddNote(aFormControlsList[i], 'frmCtrlNotInTabOrder'); // QA This formcontrols01.html
               }
             }
           } else {
@@ -8769,6 +8798,11 @@ ys: 'whys'
             }
           }
         }
+
+        if (aLinksList[i].node!=null && (aLinksList[i].node.tabIndex==null || aLinksList[i].node.tabIndex<0)) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkNotInTabOrder'); // QA This
+        }
+        
 
         if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
           aLinksList[i].listedByAT=false;

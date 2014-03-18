@@ -116,6 +116,18 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- Handle canvas fallback content in semantic view
+  -- go over each HTML5 element and make sure accessibility of it is handled by W15yQC
+  -- Test with JAWS, NVDA
+      - <div role="button">Only child text</div>  Does it show up as labeled?
+      - <div role="button" aria-label="override">child text</div> Which text wins out, virtual browsing, tabbing, forms list. Should we warn if different?
+      - <div role="button" title="does this work as label?"></div>
+      - <div role="button"><img alt="blah"/></div> Does this work?
+      - <svg><title><desc></svg> -- does JAWS, NVDA, VoiceOver only read the top level title / desc elements?
+      - <svg aria-label="override"><title><desc></svg> -- what happens here?
+      - <svg title="override"></svg> -- what happens here?
+      - <svg title="override"><title><desc></svg> -- what happens here?
+      - <svg>multiple levels of title and desc features</svg> -- what happens here? do only top level pieces work?
   -- Add misc section that includes:
      - contrast ratio check
      - Failure: marquee element
@@ -139,13 +151,10 @@
   -- Debug HTML5 handling
        -- required attribute Does it show up in state?
        -- sectioning elements
-  -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly. [CANT REPRODUCE]
-  -- Warn about input[type=image] that get alt text from value attribute.
   -- Document errors do not appear to be included in the failures total listed in the scanner
       : http://www.iuk.edu/academics/library/services/support_services.shtml
   -- List URL for selected URL in scanner in the note window so it can be easily copied.
   -- Open recent file feature appears to be broken in project scanner
-  -- Clicking delete URL on a URL in the IUK.project file appeared to delete most URLs not just the one selected
   -- Generate list of pages w/o unique page titles, meaningful page titles, titles missing text
   -- Add option to require title text, page text/markup in project scanner
   -- Add HTML5 sectioning elements to the page description.
@@ -623,6 +632,9 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED
+    -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly. [CANT REPRODUCE]
+    -- Clicking delete URL on a URL in the IUK.project file appeared to delete most URLs not just the one selected [Fixed when sorted list bugs were addressed]
+    -- Warn about input[type=image] that get alt text from value attribute. [This is already done. input[type=image] elements w/o alt attributes get failures
     -- Improved effectively equal page title calculations [03/02/2014]
     -- Added Overall report to the scanner tool [03/02/2014]
     -- Sped up inspectPageTitles method in the scanner by optimizing call to cleanSpaces by moving code into function and optimizing it [03/01/2014]

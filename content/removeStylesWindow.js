@@ -260,7 +260,7 @@ try{
                 sRole = '';
               }
 
-              if (blr.W15yQC.fnIsARIALandmark(c) || blr.W15yQC.fnIsHTML5SectionElement(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
+              if (blr.W15yQC.fnIsARIALandmark(c) || blr.W15yQC.fnIsHTML5SectionElement(c) || sTagName=='canvas' || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
                   sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" ||
                   sRole == "note" || sRole == "list" || sRole == "img" || sRole == "grid" || sRole == "document" ||
                   sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
@@ -268,6 +268,9 @@ try{
                 if (sRole == "menubar") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ') + ' To navigate use the left and right arrow keys.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ');
+                } else if (sRole == 'presentation') {
+                  sEnteringLabel = '';
+                  sExitingLabel = '';
                 } else if (sRole == "menu") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu.', ' ') + ' To navigate use the up and down arrow keys.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu.', ' ');
@@ -277,9 +280,9 @@ try{
                 } else if (blr.W15yQC.fnIsHTML5SectionElement(c)) {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.tagName, ' ') + ' HTML5 region. ';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.tagName, ' ') + ' HTML5 region. ';
-                } else if (sRole == 'presentation') {
-                  sEnteringLabel = '';
-                  sExitingLabel = '';
+                } else if (sTagName == 'canvas') {
+                  sEnteringLabel = 'Canvas element.';
+                  sExitingLabel = 'Canvas element.';
                 } else {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + '.';
                   sExitingLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), c.getAttribute('role'), ' ') + '.';
@@ -312,6 +315,8 @@ try{
                 node=rd.createElement('div');
               } else if (sRole == 'presentation' && /^(i|b|strong)$/i.test(c.tagName)) {
                 node=rd.createElement('span');
+              } else if (sTagName == 'canvas') {
+                node=rd.createElement('div');
               } else if (sTagName == 'object' || sTagName == 'embed') {
                 if ((sTagTypeAttr == "application/x-shockwave-flash") || (c.hasAttribute('classid') && c.getAttribute('classid').toLowerCase() == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) {
                   sLabel = 'Flash Object';
