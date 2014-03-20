@@ -1010,6 +1010,8 @@ ys: 'whys'
       hHeadingRoleOverriddenByInheritedRole: [true,1,1,false,null],
       hHeadingRoleOverriddenByRoleAttr: [true,1,1,false,null],
       hChildOfSectioningElementWOLevel: [false,1,1,true,null],
+      hTxtMayBeTooLong: [true,1,1,false,null],
+      hTxtIsTooLong: [true,2,1,false,null],
       hIDNotValid: [false,1,1,false,null],
       hIDNotUnique: [false,2,1,false,null],
 
@@ -8016,6 +8018,10 @@ ys: 'whys'
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtOnlyASCII'); // QA: headings01.html
             } else if (blr.W15yQC.fnIsMeaningfulHeadingText(aHeadingsList[i].effectiveLabel) == false) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtNotMeaninfgul'); // QA: headings01.html
+            } else if (aHeadingsList[i].effectiveLabel.length>175) {
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtIsTooLong'); // QA: headings01.html
+            } else if (aHeadingsList[i].effectiveLabel.length>115) {
+              blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtMayBeTooLong'); // QA: headings01.html
             }
           } else {
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hTxtEmpty'); // QA: headings01.html
@@ -8194,8 +8200,6 @@ ys: 'whys'
             }
           }
         }
-
-        
         // Page Level
         if(aHeadingsList.pageLevel && aHeadingsList.pageLevel.notes) {
           for (i = 0; i < aHeadingsList.pageLevel.notes.length; i++) {
@@ -8214,7 +8218,6 @@ ys: 'whys'
             }
           }
         }
-        
         
         table.appendChild(tbody);
         divContainer.appendChild(table);

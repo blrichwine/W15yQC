@@ -257,7 +257,7 @@
   -- Require alternate content for OBJECT: <object>Alternative text content</object>
   -- Detect broken skip links
   -- Detect sensory descriptions in alt text (red, left, right)
-  -- Detect sensory descriptions in title (left, right, top, bottom)
+  -- Detect sensory descriptions in title (left, right, top, bottom, big, small, tall, short, round, square, )
   -- Check if FLASH refers to version 6 or later -- CODEBASE attribute
   -- Make sure AXIS attributes refer to a TH element in the same table.
   -- Detect stylized headings that are not also semantic headings.
@@ -369,31 +369,18 @@
 
 
       Store which columns are visible and which are hidden
-      Add sort option for the inspectors
-      Unify inspectors to have effective label field and a description of where the label came from
           - Access keys
               Where does the label for an access key come from? Do tests to determine. Verify against QA pages. Is it always from the element's label that it is attached to?
                 - Accesskeys on links
                 - Accesskeys on buttons
                 - Accesskeys on ARIA features
                    - ARIA button
-              Add label source. [Done: 4/28/2013]
           - ARIA Landmarks
               Determine how ARIA Landmark Labels are determined. Verify against QA pages.
               Add label source. [Done]
               Warn if non-generated to spec.
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
-          - Images
-            Added support for effective label and effective label source to the inspector dialog [Done: 4/28/2013]
-          - Links
-              Distinguish between link text and the effective label [Done: 4/28/2013]
-          - Forms
-              Move Effective Label column to the left [Done: 4/28/2013]
-              Add form control type
-                input[type=button], button, ARIA button, etc.
-              Add Label Source [Done: 4/28/2013]
-          - Frames OK
           - Headings
              Add label source --FIX IT RIGHT AWAY-- , effective label does not seem to be working on the ARIA headings
              Add heading type
@@ -632,6 +619,7 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED
+    -- ** Don't display Owner Document Number in full HTML report if only one document is present [3/20/2014]
     -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly. [CANT REPRODUCE]
     -- Clicking delete URL on a URL in the IUK.project file appeared to delete most URLs not just the one selected [Fixed when sorted list bugs were addressed]
     -- Warn about input[type=image] that get alt text from value attribute. [This is already done. input[type=image] elements w/o alt attributes get failures
