@@ -8064,7 +8064,7 @@ ys: 'whys'
 
       if (aHeadingsList && aHeadingsList.length > 0) {
         for(i=0;i<aHeadingsList.length;i++) {
-          if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; break; }
+          if(aHeadingsList[i].ownerDocumentNumber>1) { multipleDocs=true; }
           if (aHeadingsList[i].level==null || aHeadingsList[i].level<1) {
             aHeadingsList[i].level=2;
           }
@@ -8167,10 +8167,16 @@ ys: 'whys'
             blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
           }
         } else {
-          table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
+          if (multipleDocs) {
+            table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
                                                               blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHHeadingLevel'),
                                                               blr.W15yQC.fnGetString('hrsTHEffectiveLabel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'),
                                                               blr.W15yQC.fnGetString('hrsTHNotes')]);
+          } else {
+            table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHHeadingElement'),
+                                                              blr.W15yQC.fnGetString('hrsTHHeadingLevel'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
+                                                              blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource'), blr.W15yQC.fnGetString('hrsTHNotes')]);
+          }
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aHeadingsList.length; i++) {
@@ -8181,7 +8187,11 @@ ys: 'whys'
             } else if (aHeadingsList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+            if (multipleDocs) {
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+            } else {
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+            }
           }
         }
 
