@@ -3570,6 +3570,11 @@ ys: 'whys'
                   sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', ');
                 }
                 break;
+              
+              case 'svgtext':
+                sLabelText = blr.W15yQC.fnGetSVGLabel(node);
+                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'SVG Text', ', '); }
+                break;
 
               case 'default':
                 if(aConfig.length>i+1) {
@@ -3611,8 +3616,40 @@ ys: 'whys'
       return [sLabelText, sLabelSource];
     },
 
+  fnGetSVGLabel: function(node, iLevel) {
+    var n, bDontDig, sTagName, sMsg='';
+    
+    if (node != null) {
+      for (n = node.firstChild; n != null; n = n.nextSibling) {
+        if (n.nodeType==1 && n.tagName) {
+          bDontDig=false;
+          sTagName=n.tagName.toLowerCase();
+          switch(sTagName) {
+            case 'title':
+              sMsg=blr.W15yQC.fnJoin(sMsg, 'Title: '+n.textContent,' ');
+              bDontDig=true;
+              break;
+            case 'desc':
+              sMsg=blr.W15yQC.fnJoin(sMsg, 'Desc: '+n.textContent,' ');
+              bDontDig=true;
+              break;
+            case 'text':
+              sMsg=blr.W15yQC.fnJoin(sMsg, n.textContent,' ');
+              bDontDig=true;
+              break;
+          }
+        }
+        if (!bDontDig) {
+          blr.W15yQC.fnJoin(sMsg, blr.W15yQC.fnGetSVGLabel(n, iLevel==null?1:iLevel+1),' ');
+        }
+      }
+    }
+    return sMsg;
+  },
+
     fnGetEffectiveLabel: function (node,iRecursion,aStopElements, aElements) {
-      // TODO: Which ARIA roles override the native HTML element's role?
+      // TODO: Which ARIA roles override the native HTML element's role? Should to role checks be first????
+      // TODO: Add canvas
       // TODO: Which ARIA roles allow child text collection. When does the title attribute override them?
       // TODO: pick up role="button", etc? JAWS does...
       // TODO: return an effective Label Object that contains the text and a property that tells the text source
@@ -3707,6 +3744,12 @@ ys: 'whys'
 
           } else if (sTagName == 'img' || sTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','alt','title','aria-labelledby'],iRecursion,aStopElements,aElements);
+
+          } else if (sTagName == 'svg') { // TODO: Vet svg with JAWS
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','title','aria-labelledby','svgtext'],iRecursion,aStopElements,aElements);
+
+          } else if (sTagName == 'canvas') { // TODO: Vet svg with JAWS
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','title','aria-labelledby','child text'],iRecursion,aStopElements,aElements);
 
           } else if (sTagName == 'iframe' || sTagName == 'frame') { // JAWS 14 FF19 Win8: ignore doc title, title attribute, aria-labelledby, aria-label
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','title','aria-labelledby', 'aria-label'],iRecursion,aStopElements,aElements);
@@ -5972,6 +6015,26 @@ ys: 'whys'
                         break;
                       case 'canvas':
                         // TODO: What to do here? Get alternative content? text?
+                        xPath = blr.W15yQC.fnGetElementXPath(node);
+                        nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                        aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
+                        effectiveLabel=aLabel[0];
+                        effectiveLabelSource=aLabel[1];
+                        box = node.getBoundingClientRect();
+                        if (box != null) {
+                          width = box.width;
+                          height = box.height;
+                        }
+                        title = null;
+                        if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
+                        alt = null;
+                        src = null;
+                        oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
+                        oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
+                        if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {
+                          oW15yResults.iTextSize=oW15yResults.iTextSize+effectiveLabel.length;
+                          if(ARIALandmarkLevel<1) { oW15yResults.PageScore.bAllContentContainedInLandmark=false; }
+                        }
                         break;
                       case 'svg':
                         xPath = blr.W15yQC.fnGetElementXPath(node);
@@ -5987,9 +6050,7 @@ ys: 'whys'
                         title = null;
                         if (node.hasAttribute('title')) { title = node.getAttribute('title'); }
                         alt = null;
-                        if (node.hasAttribute('alt')) { alt = node.getAttribute('alt'); }
                         src = null;
-                        if (node.hasAttribute('src')) { src = blr.W15yQC.fnCutoffString(node.getAttribute('src'), 200); }
                         oW15yResults.aImages.push(new blr.W15yQC.image(node, xPath, nodeDescription, doc, oW15yResults.aImages.length, sRole, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, sARIALabel));
                         oW15yResults.aImages[oW15yResults.aImages.length-1].ownerDocumentNumber=docNumber+1;
                         if(blr.W15yQC.fnStringHasContent(effectiveLabel)) {

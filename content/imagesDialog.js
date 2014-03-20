@@ -82,7 +82,7 @@ blr.W15yQC.ImagesDialog = {
   },
 
   fnPopulateTree: function (aDocumentsList, aImagesList, bDontHideCols) {
-    var tbc, bHasAriaLabel, bHasRole, bHasStateDescription, bHasTitle, i, ak, ch, textbox, treecell, treeitem, treerow, order;
+    var tbc, bHasAriaLabel, bHasRole, bHasStateDescription, bHasTitle, bHasMultipleTypes, i, ak, ch, textbox, treecell, treeitem, treerow, order;
     blr.W15yQC.ImagesDialog.updateDisplayOrderArray();
     order=blr.W15yQC.ImagesDialog.aDisplayOrder;
     if (aDocumentsList != null && aImagesList != null && aImagesList.length && aImagesList.length > 0) {
@@ -97,11 +97,20 @@ blr.W15yQC.ImagesDialog = {
         }
         if (bDontHideCols!=true) {
             for (i = 0; i < aImagesList.length; i++) {
-              ak = aImagesList[i];
-              if (ak.title) bHasTitle = true;
-              if (ak.role) bHasRole = true;
-              if (ak.ariaLabel) bHasAriaLabel = true;
-              if (ak.stateDescription && ak.stateDescription.length > 0) bHasStateDescription = true;
+              try {
+                ak = aImagesList[i];
+                if (ak.title) bHasTitle = true;
+                if (ak.role) bHasRole = true;
+                if (ak.ariaLabel) bHasAriaLabel = true;
+                if (ak.stateDescription && ak.stateDescription.length > 0) bHasStateDescription = true;
+                if (!bHasMultipleTypes && i<aImagesList.length-1 && ak.nodeDescription.replace(/^[^a-z]*([a-z]+).*$/i,"$1")!==aImagesList[i+1].nodeDescription.replace(/^[^a-z]*([a-z]+).*$/i,"$1")) {
+                  bHasMultipleTypes=true;
+                }
+              } catch(ex) {}
+            }
+            if (bHasMultipleTypes) {
+              ch = document.getElementById('col-header-type');
+              ch.setAttribute('hidden', 'false');
             }
             if (!bHasTitle) {
               ch = document.getElementById('col-header-title');
@@ -144,6 +153,10 @@ blr.W15yQC.ImagesDialog = {
 
           treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.nodeDescription);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.nodeDescription.replace(/^[^a-z]*([a-z]+).*$/i,"$1"));
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
@@ -267,16 +280,16 @@ blr.W15yQC.ImagesDialog = {
       textbox.value = '';
     }
 
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, ak.nodeDescription, "\n\n");
-
+    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, ak.nodeDescription, "\n\n");
+    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'Effective Label: '+ak.effectiveLabel, "\n\n");
     if (ak.node != null) {
       box = ak.node.getBoundingClientRect();
       if (box != null) {
-        textbox.value = blr.W15yQC.fnJoin(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n");
+        textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'Top:' + Math.floor(box.top) + ', Left:' + Math.floor(box.left) + ', Width:' + Math.floor(box.width) + ', Height:' + Math.floor(box.height), "\n\n");
       }
     }
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'xPath: ' + ak.xpath, "\n");
-    textbox.value = blr.W15yQC.fnJoin(textbox.value, 'BaseURI: ' + blr.W15yQC.ImagesDialog.aDocumentsList[ak.ownerDocumentNumber - 1].URL, "\n");
+    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'xPath: ' + ak.xpath, "\n");
+    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'BaseURI: ' + blr.W15yQC.ImagesDialog.aDocumentsList[ak.ownerDocumentNumber - 1].URL, "\n");
 
     blr.W15yQC.fnResetHighlights(blr.W15yQC.ImagesDialog.aDocumentsList);
     if (blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs) {
@@ -410,6 +423,7 @@ blr.W15yQC.ImagesDialog = {
         blr.W15yQC.ImagesDialog.sortTreeAsStringOn('baseURI',sortDir);
         break;
       case 'col-header-elementDescription':
+      case 'col-header-type':
         blr.W15yQC.ImagesDialog.sortTreeAsStringOn('nodeDescription',sortDir);
         break;
       case 'col-header-src':
