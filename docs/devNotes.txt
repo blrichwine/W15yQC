@@ -382,7 +382,6 @@
           - Documents
               Update doctype detection. Verify against QA pages. Make sure is listed in Full HTML Report as well is in the inspector dialog.
           - Headings
-             Add label source --FIX IT RIGHT AWAY-- , effective label does not seem to be working on the ARIA headings
              Add heading type
                 h1, h2, ..., h6, ARIA heading
 
