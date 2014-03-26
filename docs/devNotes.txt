@@ -116,6 +116,8 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- What to do about hidden HTML5 audio elements (hidden with display:none, but still play audio)
+  -- List languages found for caption and sub-title tracks when reporting on multi-media.
   -- Handle canvas fallback content in semantic view
   -- go over each HTML5 element and make sure accessibility of it is handled by W15yQC
   -- Test with JAWS, NVDA
@@ -401,6 +403,7 @@ HTML5 Elements to test
   
 
 
+      
       Sounds the same CNN vs. CNNi
         -- for all cap tokens, should they be separated into individual letters?
         -- How should mixed case words be treated? CNNi, for instance? TEST WITH JAWS

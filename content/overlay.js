@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 49',
-    releaseDate: 'March 17, 2014',
+    releaseVersion: '1.0 - Beta 50',
+    releaseDate: 'March 26, 2014',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -880,7 +880,51 @@ ys: 'whys'
         el.parentNode.removeChild(el);
       }
     },
-    
+
+  addUniqueTextListItem: function(sText, aList, bAscending, iMaxLength) {
+    var i, slcT, sTemp;
+    if (sText==null) {
+      sText='null';
+    }
+    if (iMaxLength<1) {
+      iMaxLength=100;
+    }
+    slcT=sText.toLowerCase();
+    if (aList==null) {
+      return [sText];
+    } else if (aList.length+1>iMaxLength) {
+      if (aList.length<iMaxLength) {
+        aList.push('...');
+      }
+      return aList;
+    } else if(bAscending!==false) {
+      for(i=0;i<aList.length-1;i++) {
+        sTemp=aList[i].toLowerCase();
+        if (slcT==sTemp) {
+          return aList;
+        } else if (slcT<sTemp) {
+          aList.splice(i,0,sText);
+          return aList;
+        }
+      }
+      aList.push(sText);
+      return aList;
+    } else {
+      for(i=0;i<aList.length-1;i++) {
+        sTemp=aList[i].toLowerCase();
+        if (slcT==sTemp) {
+          return aList;
+        } else if (slcT>sTemp) {
+          aList.splice(i,0,sText);
+          return aList;
+        }
+      }
+      aList.push(sText);
+      return aList;
+    }
+    return aList;
+  },    
+
     // Severity Levels: 0=notice, 1=warning, 2=failure
     // Expert Levels: 0=Basic, 1=Advanced, 2=Expert
     noteDetails: { // [Quick, Severity, Expert level, hasExplanation, URL]
@@ -987,6 +1031,12 @@ ys: 'whys'
 
       mmNestedInObject: [false,0,0,false,null],
       mmNestedInEmbed: [false,0,0,false,null],
+      mmVideoAutoPlays: [false,1,0,false,null],
+      mmVideoTextTracksLanguageNotSpecified: [false,1,0,false,null],
+      mmVideoWOCaptionsTrack: [false,1,0,false,null],
+      mmVideoWSubTitlesButNoCaptions: [false,1,0,false,null],
+      mmVideoCaptionLangsFound: [true,0,0,false,null],
+      mmVideoSubTitleLangsFound: [true,0,0,false,null],
       mmIDNotValid: [false,1,0,false,null],
       mmIDNotUnique:  [false,2,0,false,null],
       
@@ -7706,7 +7756,8 @@ ys: 'whys'
     },
 
     fnAnalyzeMultiMedia: function (oW15yResults) {
-      var sTagName, i, j, aMMList=oW15yResults.aMultiMedia, aDocumentsList=oW15yResults.aDocuments, elList;
+      var sTagName, i, j, aMMList=oW15yResults.aMultiMedia, aDocumentsList=oW15yResults.aDocuments, elList,
+          bTracksDontAllHaveLanguage, bFoundCaptions, bFoundSubTitles, aCaptionLangs=[], aSubTitleLangs=[], sLang;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
 
       if (aMMList != null && aMMList.length) {
@@ -7719,6 +7770,11 @@ ys: 'whys'
             if (blr.W15yQC.fnElementIsChildOf(aMMList[i].node,'object')) {
               blr.W15yQC.fnAddNote(aMMList[i], 'mmNestedInObject'); // TODO: QA This
             }
+            bTracksDontAllHaveLanguage=false;
+            bFoundCaptions=false;
+            bFoundSubTitles=false;
+            aCaptionLangs=[];
+            aSubTitleLangs=[];
             switch (sTagName) {
               case 'object':
                 if (blr.W15yQC.fnStringHasContent(aMMList[i].src)==false) {
@@ -7728,6 +7784,45 @@ ys: 'whys'
                       aMMList[i].src=elList[j].getAttribute('value');
                     }
                   }
+                }
+                // TODO: Check for child text, some kind of text replacement
+                // TODO: Check for sub-titles?
+                // TODO: Research how common video players specify caption tracks, sub-titles, transcripts, etc.
+                break;
+              case 'video':
+                if (aMMList[i].node.hasAttribute('autoplay')) {
+                  blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoAutoPlays');
+                }
+                elList=aMMList[i].node.getElementsByTagName('track');
+                for (j=0;j<elList.length;j++) {
+                  if (!blr.W15yQC.fnStringHasContent(elList[j].getAttribute('srclang'))) {
+                    bTracksDontAllHaveLanguage=true;
+                    sLang=null;
+                  } else {
+                    sLang=elList[j].getAttribute('srclang');
+                  }
+                  if (/captions/i.test(elList[j].getAttribute('kind'))) {
+                    bFoundCaptions=true;
+                    blr.W15yQC.addUniqueTextListItem(sLang,aCaptionLangs);
+                  } else if (/subtitles/i.test(elList[j].getAttribute('kind'))) {
+                    bFoundSubTitles=true;
+                    blr.W15yQC.addUniqueTextListItem(sLang,aSubTitleLangs);
+                  } 
+                }
+                if (bTracksDontAllHaveLanguage) {
+                  blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoTextTracksLanguageNotSpecified');
+                }
+                if (!bFoundCaptions) {
+                  blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoWOCaptionsTrack');
+                  if (bFoundSubTitles) {
+                    blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoWSubTitlesButNoCaptions');
+                  }
+                }
+                if (aCaptionLangs.length>0) {
+                  blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoCaptionLangsFound', [aCaptionLangs.toString()]);
+                }
+                if (aSubTitleLangs.length>0) {
+                  blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoSubTitleLangsFound', [aSubTitleLangs.toString()]);
                 }
                 break;
             }
