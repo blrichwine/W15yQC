@@ -48,7 +48,11 @@
        Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
       https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
-
+      HTML 5 Video Accessibility:
+         http://www.html5rocks.com/en/tutorials/track/basics/
+         http://www.3playmedia.com/how-it-works/how-to-guides/html5-video-captioning/
+         http://html5videoguide.net/presentations/WebVTT/#title-slide
+         http://ie.microsoft.com/Testdrive/Graphics/VideoCaptions/Default.html
     
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
