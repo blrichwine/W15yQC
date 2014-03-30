@@ -461,7 +461,7 @@ blr.W15yQC.options = {
                               v=blr.W15yQC.options.readDOMEncodedString(prefs[i],'value',null);
                               if(v!==null) {
                                 Application.prefs.setValue(name,v);
-                                alert(name+'='+v);
+                                //alert(name+'='+v);
                               }
                             }
                             break;
