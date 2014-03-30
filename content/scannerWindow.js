@@ -520,7 +520,7 @@ blr.W15yQC.ScannerWindow = {
 
   urlAlreadyInList: function(sURL) {
     var bIgnoreWWW=false, i,j,r, url2, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
-    bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
+    bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
     if(blr.W15yQC.ScannerWindow.urlList!=null) {
       sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
       for(i=0;i<blr.W15yQC.domainEq1.length;i++) {

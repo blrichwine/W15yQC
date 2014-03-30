@@ -36,6 +36,24 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  */
 blr.W15yQC.options = {
 
+  prefs: [{n:'extensions.W15yQC.inspectElements.autoScrollToSelectedElements',t:'b'},
+          {n:'extensions.W15yQC.userExpertLevel',t:'i'},
+          {n:'extensions.W15yQC.HTMLReport.collapsedByDefault',t:'b'},
+          {n:'extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault',t:'b'},
+          {n:'extensions.W15yQC.getElements.includeLabelElementsInFormControls',t:'b'},
+          {n:'extensions.W15yQC.getElements.includeHiddenElements',t:'b'},
+          {n:'extensions.W15yQC.getElements.firstHeadingMustBeLevel1',t:'b'},
+          {n:'extensions.W15yQC.getElements.mustHaveLevel1Heading',t:'b'},
+          {n:'extensions.W15yQC.getElements.onlyOneLevel1Heading',t:'b'},
+          {n:'extensions.W15yQC.getElements.honorARIA',t:'b'},
+          {n:'extensions.W15yQC.getElements.honorHTML5',t:'b'},
+          {n:'extensions.W15yQC.DomainEquivalences',t:'s'},
+          {n:'extensions.W15yQC.testContrast.suppressPassingCRNotes',t:'b'},
+          {n:'extensions.W15yQC.DomainEquivalences.ignoreWWW',t:'b'},
+          {n:'extensions.W15yQC.testContrast.MinSpec',t:'s'},
+          {n:'extensions.W15yQC.mandates',t:'s'},
+          {n:'extensions.W15yQC.mandatesEnabled',t:'b'},
+          {n:'extensions.W15yQC.rulesToExcludeList',t:'s'}],
   mandates: [],
   
   init: function() {
@@ -237,23 +255,306 @@ blr.W15yQC.options = {
   
   fnResetDefaults: function() {
     // Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", "");
-    Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
     Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
+
     Application.prefs.setValue("extensions.W15yQC.HTMLReport.collapsedByDefault", true);
     Application.prefs.setValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", false);
+
     Application.prefs.setValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls", true);
     Application.prefs.setValue("extensions.W15yQC.getElements.includeHiddenElements", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
     Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+
+    Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
     Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", true);
-    Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
-    Application.prefs.setValue("extensions.W15yQC.extensions.W15yQC.mandatesEnabled", false);
+    Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
+    Application.prefs.setValue("extensions.W15yQC.mandatesEnabled", false);
     Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
     Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
-  }
+  },
+  
+  spaces: function(count) {
+    count=(count==null) ? 0 : (count>20 ? 20 : count);
+    return count>0 ? "                    ".slice(0,count-1) : "";
+  },
 
+  readDOMEncodedString: function(rootNode, tagName, defaultValue) {
+    var e,s=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        s=decodeURIComponent(e[0].textContent);
+      } else if(defaultValue!==undefined) {
+        s=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      s=defaultValue;
+    }
+    return s;
+  },
+
+  readDOMInt: function(rootNode, tagName, defaultValue) {
+    var e,i=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        i=parseInt(decodeURIComponent(e[0].textContent),10);
+      } else if(defaultValue!==undefined) {
+          i=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      i=defaultValue;
+    }
+    return i;
+  },
+
+  readDOMDate: function(rootNode, tagName, defaultValue) {
+    var e,d=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        d=new Date(decodeURIComponent(e[0].textContent));
+      } else if(defaultValue!==undefined) {
+        d=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      d=defaultValue;
+    }
+    return d;
+  },
+
+  readDOMBool: function(rootNode, tagName, defaultValue) {
+    var e, b=null;
+    if(rootNode!=null) {
+      e=rootNode.getElementsByTagName(tagName);
+      if(e!=null && e.length>0) {
+        b=((decodeURIComponent(e[0].textContent)).toLowerCase() == "true") ? true : false ;
+      } else if(defaultValue!==undefined) {
+        b=defaultValue;
+      }
+    } else if(defaultValue!==undefined) {
+      b=defaultValue;
+    }
+    return b;
+  },
+  
+  writeXMLEncodedString: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null) {
+      converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+' type="string">'+encodeURIComponent(value)+'</'+tagName+'>\n');
+    }
+  },
+
+  writeXMLInt: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null) {
+      converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+' type="int">'+encodeURIComponent(value.toString())+'</'+tagName+'>\n');
+    }
+  },
+
+  writeXMLBool: function(value, tagName, converter, indent) {
+    if(value!=null && converter!=null) {
+      converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+' type="bool">'+(value ? "true":"false")+'</'+tagName+'>\n');
+    }
+  },
+
+  writeXMLDate: function(value, tagName, converter, indent) {
+    var d;
+    if(value!=null && converter!=null) {
+      if (value.toISOString) {
+        converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+'>'+value.toISOString()+'</'+tagName+'>\n');
+      } else {
+        d=new Date(value);
+        if (d!=null && d.toISOString) {
+          converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+'>'+d.toISOString()+'</'+tagName+'>\n');
+        } else {
+          converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+'>'+value+'</'+tagName+'>\n');
+        }
+      }
+    }
+  },
+
+  openPrefs: function () {
+    var fp, rv, file, sFileContents, fstream, cstream, str, read, i, j, bOpenedOK=false,
+      preferences, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches,
+      prefs, name, value, v, bFoundInPrefs, sPrefType;
+
+      fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+      //blr.W15yQC.options.fnUpdateStatus('Choose Project File to Open');
+      fp.init(window, "Open Project", nsIFilePicker.modeOpen);
+      fp.appendFilter("W15yQC Project","*.w15yqcini");
+      rv = fp.show();
+      if (rv == nsIFilePicker.returnOK) {
+        file=fp.file;
+      }
+
+      if(file!=null && file.path && /.+\.w15yqcini$/.test(file.path) == true) {
+        sFileContents = '';
+        //blr.W15yQC.options.fnUpdateStatus('Opening project file.');
+        fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
+        cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
+
+        try {
+          fstream.init(file, -1, 0, 0);
+          cstream.init(fstream, "UTF-8", 0, 0);
+          bOpenedOK=true;
+          } catch(e) {
+          //blr.W15yQC.options.fnUpdateStatus('Failed to open preferences file.');
+          alert("Failed to open the file:\n"+e);
+        }
+
+        if (bOpenedOK==true) {
+          //blr.W15yQC.options.fnUpdateStatus('Reading project file.');
+          read = 0;
+          str={};
+          do {
+            read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
+            sFileContents += str.value;
+          } while (read != 0);
+          cstream.close(); // this closes fstream
+          //blr.W15yQC.options.addFileToRecentList(file.path);
+          file=null;
+          rv=null;
+          fp=null;
+
+          xmlParser = new DOMParser(); // https://developer.mozilla.org/en-US/docs/DOM/DOMParser
+          xmlDoc = xmlParser.parseFromString(sFileContents, "text/xml");
+          sFileContents=null;
+          if(xmlDoc && xmlDoc.getElementsByTagName) {
+            // Read Project Properties
+            //blr.W15yQC.options.fnUpdateStatus('Reading project properties.');
+            preferences=xmlDoc.getElementsByTagName('preferences');
+            if(preferences!=null && preferences.length>0) {
+              // Read prefs
+              prefs=xmlDoc.getElementsByTagName('pref');
+              //blr.W15yQC.options.fnUpdateStatus('Reading '+prefs.length+' URLs.');
+              for(i=0;i<prefs.length;i++) {
+                name=blr.W15yQC.options.readDOMEncodedString(prefs[i],'name',null);
+                for(j=0;j<blr.W15yQC.options.prefs.length;j++) {
+                  if (blr.W15yQC.options.prefs[j].n===name) {
+                    value=prefs[i].getElementsByTagName('value');
+                    if (name.length>1 && value.length>=1) {
+                      value=value[0];
+                      if (value.hasAttribute('type')) {
+                        switch(value.getAttribute('type').toLowerCase()) {
+                          case 'bool':
+                            if (blr.W15yQC.options.prefs[j].t==='b') {
+                              v=blr.W15yQC.options.readDOMBool(prefs[i],'value',null);
+                              if(v!=null) {
+                                Application.prefs.setValue(name,v);
+                                //alert(name+'='+v);
+                              }
+                            }
+                            break;
+                          case 'int':
+                            if (blr.W15yQC.options.prefs[j].t==='i') {
+                              v=blr.W15yQC.options.readDOMInt(prefs[i],'value',null);
+                              if(v!==null) {
+                                Application.prefs.setValue(name,v);
+                                //alert(name+'='+v);
+                              }
+                            }
+                            break;
+                          case 'string':
+                            if (blr.W15yQC.options.prefs[j].t==='s') {
+                              v=blr.W15yQC.options.readDOMEncodedString(prefs[i],'value',null);
+                              if(v!==null) {
+                                Application.prefs.setValue(name,v);
+                                alert(name+'='+v);
+                              }
+                            }
+                            break;
+                        }
+                      }
+                    }
+                    break; // leave prefs match for loop
+                  }
+                }
+              }
+            }
+          }
+        }
+        blr.W15yQC.options.fnReadPrefs();
+        xmlDoc = null;
+      }
+      if(prefs.length>0) {
+        //blr.W15yQC.options.fnUpdateStatus('Preferences loaded.');
+      } else {
+        if (bOpenedOK) {
+          //blr.W15yQC.options.fnUpdateStatus('Empty preferences file loaded.');
+        } else {
+          //blr.W15yQC.options.fnUpdateStatus('No preferences loaded.');
+        }
+      }
+      //blr.W15yQC.options.updateControlStates();
+  },
+
+  savePrefs: function () { // TODO: Handle errors gracefully.
+    var bCancel=false,
+        nsIFilePicker, fp, rv, file, foStream, converter, i, value;
+
+        nsIFilePicker = Components.interfaces.nsIFilePicker;
+        fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+        fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+        fp.appendFilter("W15yQC Preferences","*.w15yqcini");
+        rv = fp.show();
+        if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+          file = fp.file;
+          if (/\.w15yqcini/.test(file.path) == false) {
+            file.initWithPath(file.path + '.w15yqcini');
+          }
+        } else {
+          bCancel=true;
+        }
+
+        if(bCancel==false) {
+          // blr.W15yQC.options.fnUpdateStatus('Saving preferences file.');
+          foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
+          createInstance(Components.interfaces.nsIFileOutputStream);
+
+          foStream.init(file, 0x2A, 438, 0);
+          //blr.W15yQC.options.addFileToRecentList(file.path);
+          converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+          converter.init(foStream, "UTF-8", 0, 0);
+          converter.writeString('<?xml version="1.0" encoding="UTF-8"?>\n');
+          converter.writeString('<w15yqc>\n');
+          converter.writeString('  <preferences>\n');
+
+          //blr.W15yQC.options.writeXMLEncodedString(file.path,'file_name',converter,4);
+          //blr.W15yQC.options.writeXMLDate(Date.now(),'creation_date',converter,4);
+
+          for(i=0;i<blr.W15yQC.options.prefs.length;i++) {
+            value=Application.prefs.getValue(blr.W15yQC.options.prefs[i].n,null);
+            if (value!==null) {
+              converter.writeString('    <pref>\n');
+              blr.W15yQC.options.writeXMLEncodedString(blr.W15yQC.options.prefs[i].n,'name',converter,6);
+              switch(typeof value) {
+                case 'string':
+                  blr.W15yQC.options.writeXMLEncodedString(value,'value',converter,6);
+                  break;
+                case 'number':
+                  blr.W15yQC.options.writeXMLInt(value,'value',converter,6);
+                  break;
+                case 'boolean': 
+                  blr.W15yQC.options.writeXMLBool(value,'value',converter,6);
+                  break;
+                default:
+                  alert('Error: '+(typeof value)+' was not handled.');
+                break;
+              }
+              converter.writeString('    </pref>\n');            
+            }
+          }
+          converter.writeString('  </preferences>\n');
+          converter.writeString('</w15yqc>\n');
+
+          converter.close(); // this closes foStream
+          //blr.W15yQC.options.fnUpdateStatus('Preferences file saved.');
+        } else {
+          //blr.W15yQC.options.fnUpdateStatus('Preferences file not saved.');
+        }
+  }
+  
 };
 

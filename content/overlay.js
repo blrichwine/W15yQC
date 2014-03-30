@@ -1794,6 +1794,10 @@ ys: 'whys'
           dialogID = 'linksResultsDialog';
           dialogPath = 'chrome://W15yQC/content/linksDialog.xul';
           break;
+        case 'multimedia':
+          dialogID = 'multimediaResultsDialog';
+          dialogPath = 'chrome://W15yQC/content/multimediaDialog.xul';
+          break;
         case 'tables':
           dialogID = 'tablesResultsDialog';
           dialogPath = 'chrome://W15yQC/content/tablesDialog.xul';
@@ -2088,27 +2092,29 @@ ys: 'whys'
 
     resetHighlightElement: function (doc) {
       var he=null, idCounter, failureCount;
-      if (doc != null && doc.getElementById) {
-        try {
-          he = doc.getElementById('W15yQCElementHighlight');
-          if (he != null && he.parentNode != null && he.parentNode.removeChild) { he.parentNode.removeChild(he); }
-        } catch(err) {}
-        idCounter = 0;
-        failureCount = 0;
-        do {
-          idCounter++;
-          try{
-            he = doc.getElementById('W15yQCElementHighlight'+idCounter.toString());
-            if (he != null && he.parentNode != null) {
-              he.parentNode.removeChild(he);
-            } else {
+      try {
+        if (doc != null && doc.getElementById) {
+          try {
+            he = doc.getElementById('W15yQCElementHighlight');
+            if (he != null && he.parentNode != null && he.parentNode.removeChild) { he.parentNode.removeChild(he); }
+          } catch(err) {}
+          idCounter = 0;
+          failureCount = 0;
+          do {
+            idCounter++;
+            try{
+              he = doc.getElementById('W15yQCElementHighlight'+idCounter.toString());
+              if (he != null && he.parentNode != null) {
+                he.parentNode.removeChild(he);
+              } else {
+                failureCount++;
+              }
+            } catch(err) {
               failureCount++;
             }
-          } catch(err) {
-            failureCount++;
-          }
-        } while(failureCount<5);
-      }
+          } while(failureCount<5);
+        }
+      } catch(e) {}
     },
 
 
@@ -2230,7 +2236,7 @@ ys: 'whys'
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
       var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
-      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",true);
+      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW",true);
 
       if(url1 != null) {
         url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
@@ -3361,6 +3367,38 @@ ys: 'whys'
       return sXPath;
     },
 
+    fnDescribeNodeType: function (node) {
+      var sTagName;
+      if(node!=null) {
+        if (node.nodeType==1) {
+          sTagName=node.tagName.toLowerCase();
+          switch (sTagName) {
+            case 'input':
+              return node.tagName+'[type='+(blr.W15yQC.fnStringHasContent(node.getAttribute('type'))?node.getAttribute('type'):'text')+']';
+            case 'object':
+            case 'embed':
+              if (/clsid:D27CDB6E-AE6D-11cf-96B8-444553540000/i.test(node.getAttribute('classid'))) {
+                return node.tagName+'[classid=Flash]';
+              }
+              if (/^https?\/\/:download.macromedia.com.*swflash.cab$/i.test(node.getAttribute('codebase'))) {
+                return node.tagName+'[codebase=Flash]';
+              }
+              return node.tagName+(blr.W15yQC.fnStringHasContent(node.getAttribute('type'))?'[type='+node.getAttribute('type').replace('application/x-shockwave-flash','Flash')+']':'');
+            default:
+              return node.tagName;
+          }
+        } else {
+          if (blr.W15yQC.fnStringHasContent(node.localName)) {
+            return node.localName+'[nodeType='+node.nodeType+']';
+          } else {
+            return 'nodeType='+node.nodeType;
+          }
+        }
+      } else {
+        return 'null';
+      }
+    },
+    
     fnDescribeElement: function (node, maxLength, maxAttributeLength, sMode) {
       var sDescription = '',
           sAttributes = '',
@@ -7755,14 +7793,14 @@ ys: 'whys'
       rd.body.appendChild(div);
     },
 
-    fnAnalyzeMultiMedia: function (oW15yResults) {
+fnAnalyzeMultimedia: function (oW15yResults) {
       var sTagName, i, j, aMMList=oW15yResults.aMultiMedia, aDocumentsList=oW15yResults.aDocuments, elList,
           bTracksDontAllHaveLanguage, bFoundCaptions, bFoundSubTitles, aCaptionLangs=[], aSubTitleLangs=[], sLang;
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
-
       if (aMMList != null && aMMList.length) {
         for (i = 0; i < aMMList.length; i++) {
-          if (aMMList[i].node != null && aMMList[i].node.hasAttribute && aMMList[i].node.tagName) {
+          if (aMMList[i].node != null) {
+            aMMList[i].nodeType=blr.W15yQC.fnDescribeNodeType(aMMList[i].node);
             sTagName=aMMList[i].node.tagName.toLowerCase();
             if (blr.W15yQC.fnElementIsChildOf(aMMList[i].node,'embed')) {
               blr.W15yQC.fnAddNote(aMMList[i], 'mmNestedInEmbed'); // TODO: QA This
@@ -7777,12 +7815,13 @@ ys: 'whys'
             aSubTitleLangs=[];
             switch (sTagName) {
               case 'object':
-                if (blr.W15yQC.fnStringHasContent(aMMList[i].src)==false) {
-                  elList=aMMList[i].node.getElementsByTagName('param');
-                  for (j=0;j<elList.length;j++) {
-                    if (/movie/i.test(elList[j].getAttribute('name'))) {
-                      aMMList[i].src=elList[j].getAttribute('value');
-                    }
+                elList=aMMList[i].node.getElementsByTagName('param');
+                for (j=0;j<elList.length;j++) {
+                  if (blr.W15yQC.fnStringHasContent(aMMList[i].src)==false && /movie/i.test(elList[j].getAttribute('name'))) {
+                    aMMList[i].src=elList[j].getAttribute('value');
+                  }
+                  if (/flashvars/i.test(elList[j].getAttribute('name')) && /autoplay[A-F0-9%]+true/i.test(elList[j].getAttribute('value'))) { 
+                    blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoAutoPlays');
                   }
                 }
                 // TODO: Check for child text, some kind of text replacement
@@ -10110,7 +10149,7 @@ ys: 'whys'
         oW15yQCReport.iMandateFailuresCount=0;
       }
 
-      if (oW15yQCReport!=null && oW15yQCReport.aDocuments!=null && Application.prefs.getValue('extensions.W15yQC.extensions.W15yQC.mandatesEnabled',false)) {
+      if (oW15yQCReport!=null && oW15yQCReport.aDocuments!=null && Application.prefs.getValue('extensions.W15yQC.mandatesEnabled',false)) {
         mandates=JSON.parse(Application.prefs.getValue("extensions.W15yQC.mandates","[]"));
         if (mandates!=null) {
           for (i=0;i<mandates.length;i++) {
@@ -10735,7 +10774,7 @@ ys: 'whys'
         }
 
         if(sReports=='' || sReports.indexOf('multimedia')>=0) {
-          blr.W15yQC.fnAnalyzeMultiMedia(oW15yQCReport);
+          blr.W15yQC.fnAnalyzeMultimedia(oW15yQCReport);
           blr.W15yQC.fnDisplayMultiMediaResults(reportDoc, oW15yQCReport.aMultiMedia);
         }
 
@@ -11234,6 +11273,7 @@ try{
   blr.W15yQC.frameElement = function (node, xpath, nodeDescription, doc, orderNumber, role, id, name, title, effectiveLabel, effectiveLabelSource, src) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11249,6 +11289,7 @@ try{
   blr.W15yQC.frameElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11274,6 +11315,7 @@ try{
   blr.W15yQC.headingElement = function (node, xpath, nodeDescription, doc, orderNumber, role, inheritedRoles, level, effectiveLabel, effectiveLabelSource, text) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11297,6 +11339,7 @@ try{
   blr.W15yQC.headingElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11321,6 +11364,7 @@ try{
   blr.W15yQC.ariaElement = function (node, xpath, nodeDescription, doc, orderNumber, level, role, label, stateDescription) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11333,6 +11377,7 @@ try{
   blr.W15yQC.ariaElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11351,6 +11396,7 @@ try{
   blr.W15yQC.ariaLandmarkElement = function (node, xpath, nodeDescription, doc, orderNumber, level, effectiveLabel, effectiveLabelSource, role, stateDescription) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11364,6 +11410,7 @@ try{
   blr.W15yQC.ariaLandmarkElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11385,6 +11432,7 @@ try{
   blr.W15yQC.formElement = function (node, xpath, nodeDescription, doc, ownerDocumentNumber, orderNumber, id, name, role, action, method) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.ownerDocumentNumber = ownerDocumentNumber;
@@ -11399,6 +11447,7 @@ try{
   blr.W15yQC.formElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11418,6 +11467,7 @@ try{
   blr.W15yQC.formControlElement = function (node, xpath, nodeDescription, parentFormNode, parentFormDescription, doc, orderNumber, controlType, role, id, name, title, legendText, labelText, ARIALabelText, ARIADescriptionText, effectiveLabel, effectiveLabelSource, announcedAs, stateDescription, value) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.parentFormNode = parentFormNode;
     this.parentFormDescription = parentFormDescription;
@@ -11442,6 +11492,7 @@ try{
   blr.W15yQC.formControlElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     controlType: null,
     parentFormNode: null,
@@ -11475,6 +11526,7 @@ try{
   blr.W15yQC.linkElement = function (node, xpath, nodeDescription, doc, orderNumber, role, stateDescription, effectiveLabel, effectiveLabelSource, text, title, target, href) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11496,6 +11548,7 @@ try{
   blr.W15yQC.linkElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11524,6 +11577,7 @@ try{
   blr.W15yQC.image = function (node, xpath, nodeDescription, doc, orderNumber, role, src, width, height, effectiveLabel, effectiveLabelSource, alt, title, ariaLabel) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11541,6 +11595,7 @@ try{
   blr.W15yQC.image.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11569,6 +11624,7 @@ try{
   blr.W15yQC.multimedia = function (node, xpath, nodeDescription, doc, orderNumber, role, src, width, height, effectiveLabel, effectiveLabelSource, title, ariaLabel) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11585,6 +11641,7 @@ try{
   blr.W15yQC.multimedia.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11610,6 +11667,7 @@ try{
   blr.W15yQC.contrastElement = function (node, xpath, nodeDescription, doc, orderNumber, id, sClass, sText, sTextSize, textWeight, fgColor, fgC, bgColor, bgC, bHasBGImage, fgLuminosity, bgLuminosity, lRatio) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11631,6 +11689,7 @@ try{
   blr.W15yQC.contrastElement.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11656,6 +11715,7 @@ try{
   blr.W15yQC.accessKey = function (node, xpath, nodeDescription, doc, orderNumber, role, accessKey, effectiveLabel, effectiveLabelSource) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11668,6 +11728,7 @@ try{
   blr.W15yQC.accessKey.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11688,6 +11749,7 @@ try{
   blr.W15yQC.badId = function (node, xpath, nodeDescription, doc, orderNumber, ownerDocumentNumber, sID) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11698,6 +11760,7 @@ try{
   blr.W15yQC.badId.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,
@@ -11712,6 +11775,7 @@ try{
   blr.W15yQC.table = function (node, xpath, nodeDescription, doc, orderNumber, role, nestingLevel, title, summary) {
     this.node = node;
     this.xpath = xpath;
+    this.nodeType = null;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
@@ -11724,6 +11788,7 @@ try{
   blr.W15yQC.table.prototype = {
     node: null,
     xpath: null,
+    nodeType: null,
     nodeDescription: null,
     doc: null,
     orderNumber: null,

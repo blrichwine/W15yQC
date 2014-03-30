@@ -41,13 +41,13 @@
 
  How to update the version number
    1. Update blr.W15yQC.version in overlay.js
-   2. Update version text in aboutDialog.xul
-   3. Update <em:version> in install.rdf
+   2. Update <em:version> in install.rdf
 
  HOW TO INFO:
        Accessing tree cells: https://developer.mozilla.org/en-US/docs/XUL/tree
       https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Tree_Selection
       - Doctype info: http://stackoverflow.com/questions/6088972/get-doctype-of-an-html-as-string-with-javascript
+   -- HTML5 INFO: https://carmenwiki.osu.edu/display/10292/HTML5+Accessibility+Code+Examples
       HTML 5 Video Accessibility:
          http://www.html5rocks.com/en/tutorials/track/basics/
          http://www.3playmedia.com/how-it-works/how-to-guides/html5-video-captioning/
@@ -120,8 +120,10 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- add disable contrast checking in inspections option.
+  -- Create describe element/node type function. Use it in analysis routines to set nodeType attribute
+  -- Organize element type objects, make sure prototype includes all members, organize members -- have common ones at top, unique ones after that
   -- What to do about hidden HTML5 audio elements (hidden with display:none, but still play audio)
-  -- List languages found for caption and sub-title tracks when reporting on multi-media.
   -- Handle canvas fallback content in semantic view
   -- go over each HTML5 element and make sure accessibility of it is handled by W15yQC
   -- Test with JAWS, NVDA
@@ -174,7 +176,6 @@
   -- URL normalizer is not detecting index.shtml as the same as a default index page  www.d.com/ vs. www.d.com/index.shtml should be a match
   -- legend element must be first child of fieldset element?
   -- Does value attribute work as label on input type="image"? Should this be a warning?
-  -- HTML5 INFO: https://carmenwiki.osu.edu/display/10292/HTML5+Accessibility+Code+Examples
   -- Warn on TH elements that don't have a scope attribute and the scope would be unclear.
   -- Add an option to require scope attribute on all TH cells
   -- Can we detect server-side image maps? Do we indicate a failure on this?
@@ -625,6 +626,7 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED
+    -- List languages found for caption and sub-title tracks when reporting on multi-media.
     -- ** Don't display Owner Document Number in full HTML report if only one document is present [3/20/2014]
     -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly. [CANT REPRODUCE]
     -- Clicking delete URL on a URL in the IUK.project file appeared to delete most URLs not just the one selected [Fixed when sorted list bugs were addressed]

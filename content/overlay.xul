@@ -43,6 +43,8 @@
                   oncommand="blr.W15yQC.openDialog('images');"/>
         <menuitem id="W15yQC_menuEntry_linksDialog" accesskey="L" label="Links"
                   oncommand="blr.W15yQC.openDialog('links');"/>
+        <menuitem id="W15yQC_menuEntry_multimediaDialog" accesskey="M" label="Multimedia"
+                  oncommand="blr.W15yQC.openDialog('multimedia');"/>
         <menuitem id="W15yQC_menuEntry_tablesDialog" accesskey="T" label="Tables"
                   oncommand="blr.W15yQC.openDialog('tables');"/>
         <menu id="W15yQC_menuEntry_highlightersMenu" accesskey="g" label="Highlighters">
@@ -116,6 +118,7 @@
           <menuitem id="W15yTPBMI-HeadingsDialog" accesskey="" label="Headings" oncommand="blr.W15yQC.openDialog('headings');"/>
           <menuitem id="W15yTPBMI-ImagesDialog" accesskey="" label="Images" oncommand="blr.W15yQC.openDialog('images');"/>
           <menuitem id="W15yTPBMI-LinksDialog" accesskey="" label="Links" oncommand="blr.W15yQC.openDialog('links');"/>
+          <menuitem id="W15yTPBMI-MultimediaDialog" accesskey="" label="Multimedia" oncommand="blr.W15yQC.openDialog('multimedia');"/>
           <menuitem id="W15yTPBMI-TablesDialog" accesskey="" label="Tables" oncommand="blr.W15yQC.openDialog('tables');"/>
       </menupopup>
     </toolbarbutton>

@@ -2105,7 +2105,7 @@ ys: 'whys'
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
       var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.s?html?$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
-      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
+      bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
 
       if(url1 != null) {
         url1 = blr.W15yQC.fnNormalizeURL(docURL1, url1);
