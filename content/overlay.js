@@ -61,7 +61,8 @@ if (!blr.W15yQC) {
     domainEq1: [],
     domainEq2: [],
     storedColors: [],
-
+    crcTable: null,
+    
     dominantAriaRoles: /\b(button|heading|checkbox|combobox|menuitem|menuitemcheckbox|menuitemradio|option|progressbar|radio|scrollbar|slider|spinbutton|tab|textbox|treeitem|listbox|tree|treegrid|img)\b/i,
 
     // Homophones object for sounds like routine
@@ -610,6 +611,29 @@ youre: 'yore',
 ys: 'whys'
 },
 
+  makeCRCTable: function() {
+    var c, n, k, crcTable = [];
+    for(n =0; n < 256; n++){
+        c = n;
+        for(k =0; k < 8; k++){
+            c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+        }
+        crcTable[n] = c;
+    }
+    return crcTable;
+  },
+
+  crc32: function(str) {
+    blr.W15yQC.crcTable = blr.W15yQC.crcTable || (blr.W15yQC.crcTable = blr.W15yQC.makeCRCTable());
+    var crc = 0 ^ (-1);
+
+    for (var i = 0; i < str.length; i++ ) {
+        crc = (crc >>> 8) ^ blr.W15yQC.crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+    }
+
+    return (crc ^ (-1)) >>> 0;
+  },
+  
     // fnCreateStrBundle based on: chrome://global/content/strres.js
     strBundleService: null,
     fnCreateStrBundle: function(path) {

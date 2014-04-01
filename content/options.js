@@ -35,7 +35,7 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  * Returns:
  */
 blr.W15yQC.options = {
-
+  ps:null,
   prefs: [{n:'extensions.W15yQC.inspectElements.autoScrollToSelectedElements',t:'b'},
           {n:'extensions.W15yQC.userExpertLevel',t:'i'},
           {n:'extensions.W15yQC.HTMLReport.collapsedByDefault',t:'b'},
@@ -56,8 +56,59 @@ blr.W15yQC.options = {
           {n:'extensions.W15yQC.rulesToExcludeList',t:'s'}],
   mandates: [],
   
+  fnUpdateStatus: function(sLabel) {
+    document.getElementById('settingsStatus').value=sLabel;
+    blr.W15yQC.fnDoEvents();
+  },
+
+  calculateOptionsCrc32: function() {
+    var i, s='';
+    
+    for(i=0;i<blr.W15yQC.options.prefs.length;i++) {
+      try {
+        s=s+Application.prefs.getValue(blr.W15yQC.options.prefs[i].n,'null');
+      } catch(e) {}
+    }
+    return blr.W15yQC.crc32(s);
+  },
+  
+  fnUpdateControlStates: function() {
+    var optionsCrc32=Application.prefs.getValue("extensions.W15yQC.options.crc32",null);
+    
+    if (optionsCrc32!=null) {
+      if (optionsCrc32===blr.W15yQC.options.calculateOptionsCrc32()) {
+        blr.W15yQC.options.fnUpdateStatus('Options match: '+Application.prefs.getValue("extensions.W15yQC.options.filename",'???'));
+      } else {
+        blr.W15yQC.options.fnUpdateStatus('Options: Custom');
+        //Application.prefs.setValue("extensions.W15yQC.options.crc32",null);
+      }
+    } else {
+      blr.W15yQC.options.fnUpdateStatus('Options: Custom');
+    }
+  },
+
   init: function() {
+    var panels = document.getElementById("optionsTabpanels"); // whatever your ID is
+
     blr.W15yQC.options.fnReadPrefs();
+    panels.addEventListener("select", function(e) {
+      blr.W15yQC.options.fnUpdateControlStates();
+    }, false);
+    
+     this.ps = Components.classes["@mozilla.org/preferences-service;1"]
+         .getService(Components.interfaces.nsIPrefService)
+         .getBranch("extensions.W15yQC.");
+     this.ps.QueryInterface(Components.interfaces.nsIPrefBranch);
+     this.ps.addObserver("", this, false);
+    blr.W15yQC.fnUpdateControlStates();
+  },
+
+  observe: function(subject, topic, data) {
+     if (topic != "nsPref:changed")
+     {
+       return;
+     }
+    blr.W15yQC.options.fnUpdateControlStates();
   },
 
   fnReadPrefs: function() {
@@ -376,22 +427,23 @@ blr.W15yQC.options = {
   },
 
   openPrefs: function () {
-    var fp, rv, file, sFileContents, fstream, cstream, str, read, i, j, bOpenedOK=false,
+    var fp, rv, file, fn, sFileContents, fstream, cstream, str, read, i, j, bOpenedOK=false,
       preferences, nsIFilePicker = Components.interfaces.nsIFilePicker, xmlDoc, xmlParser, matchList, matches,
       prefs, name, value, v, bFoundInPrefs, sPrefType;
 
       fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-      //blr.W15yQC.options.fnUpdateStatus('Choose Project File to Open');
+      blr.W15yQC.options.fnUpdateStatus('Choose Preference File to Open');
       fp.init(window, "Open Project", nsIFilePicker.modeOpen);
       fp.appendFilter("W15yQC Project","*.w15yqcini");
       rv = fp.show();
       if (rv == nsIFilePicker.returnOK) {
         file=fp.file;
+        fn=file.path;
       }
 
       if(file!=null && file.path && /.+\.w15yqcini$/.test(file.path) == true) {
         sFileContents = '';
-        //blr.W15yQC.options.fnUpdateStatus('Opening project file.');
+        blr.W15yQC.options.fnUpdateStatus('Opening preference file.');
         fstream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
         cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].createInstance(Components.interfaces.nsIConverterInputStream);
 
@@ -400,12 +452,12 @@ blr.W15yQC.options = {
           cstream.init(fstream, "UTF-8", 0, 0);
           bOpenedOK=true;
           } catch(e) {
-          //blr.W15yQC.options.fnUpdateStatus('Failed to open preferences file.');
+          blr.W15yQC.options.fnUpdateStatus('Failed to open preferences file.');
           alert("Failed to open the file:\n"+e);
         }
 
         if (bOpenedOK==true) {
-          //blr.W15yQC.options.fnUpdateStatus('Reading project file.');
+          blr.W15yQC.options.fnUpdateStatus('Reading preference file.');
           read = 0;
           str={};
           do {
@@ -413,7 +465,6 @@ blr.W15yQC.options = {
             sFileContents += str.value;
           } while (read != 0);
           cstream.close(); // this closes fstream
-          //blr.W15yQC.options.addFileToRecentList(file.path);
           file=null;
           rv=null;
           fp=null;
@@ -422,13 +473,13 @@ blr.W15yQC.options = {
           xmlDoc = xmlParser.parseFromString(sFileContents, "text/xml");
           sFileContents=null;
           if(xmlDoc && xmlDoc.getElementsByTagName) {
-            // Read Project Properties
-            //blr.W15yQC.options.fnUpdateStatus('Reading project properties.');
+            // Read Preferences
+            blr.W15yQC.options.fnUpdateStatus('Reading preferences.');
             preferences=xmlDoc.getElementsByTagName('preferences');
             if(preferences!=null && preferences.length>0) {
               // Read prefs
               prefs=xmlDoc.getElementsByTagName('pref');
-              //blr.W15yQC.options.fnUpdateStatus('Reading '+prefs.length+' URLs.');
+              blr.W15yQC.options.fnUpdateStatus('Reading '+prefs.length+' URLs.');
               for(i=0;i<prefs.length;i++) {
                 name=blr.W15yQC.options.readDOMEncodedString(prefs[i],'name',null);
                 for(j=0;j<blr.W15yQC.options.prefs.length;j++) {
@@ -479,12 +530,14 @@ blr.W15yQC.options = {
         xmlDoc = null;
       }
       if(prefs.length>0) {
-        //blr.W15yQC.options.fnUpdateStatus('Preferences loaded.');
+        blr.W15yQC.options.fnUpdateStatus('Preferences loaded.');
+        Application.prefs.setValue("extensions.W15yQC.options.filename",fn);
+        Application.prefs.setValue("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
       } else {
         if (bOpenedOK) {
-          //blr.W15yQC.options.fnUpdateStatus('Empty preferences file loaded.');
+          blr.W15yQC.options.fnUpdateStatus('Empty preferences file loaded.');
         } else {
-          //blr.W15yQC.options.fnUpdateStatus('No preferences loaded.');
+          blr.W15yQC.options.fnUpdateStatus('No preferences loaded.');
         }
       }
       //blr.W15yQC.options.updateControlStates();
@@ -509,7 +562,7 @@ blr.W15yQC.options = {
         }
 
         if(bCancel==false) {
-          // blr.W15yQC.options.fnUpdateStatus('Saving preferences file.');
+          blr.W15yQC.options.fnUpdateStatus('Saving preferences file.');
           foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
           createInstance(Components.interfaces.nsIFileOutputStream);
 
@@ -520,9 +573,6 @@ blr.W15yQC.options = {
           converter.writeString('<?xml version="1.0" encoding="UTF-8"?>\n');
           converter.writeString('<w15yqc>\n');
           converter.writeString('  <preferences>\n');
-
-          //blr.W15yQC.options.writeXMLEncodedString(file.path,'file_name',converter,4);
-          //blr.W15yQC.options.writeXMLDate(Date.now(),'creation_date',converter,4);
 
           for(i=0;i<blr.W15yQC.options.prefs.length;i++) {
             value=Application.prefs.getValue(blr.W15yQC.options.prefs[i].n,null);
@@ -550,9 +600,13 @@ blr.W15yQC.options = {
           converter.writeString('</w15yqc>\n');
 
           converter.close(); // this closes foStream
-          //blr.W15yQC.options.fnUpdateStatus('Preferences file saved.');
+
+          Application.prefs.setValue("extensions.W15yQC.options.filename",file.path);
+          Application.prefs.setValue("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
+          
+          blr.W15yQC.options.fnUpdateStatus('Preferences file saved.');
         } else {
-          //blr.W15yQC.options.fnUpdateStatus('Preferences file not saved.');
+          blr.W15yQC.options.fnUpdateStatus('Preferences file not saved.');
         }
   }
   
