@@ -1,6 +1,6 @@
 /*
     This file is part of W15y Quick Check
-    Copyright (C) 2011, 2012  Brian L. Richwine
+    Copyright (C) 2011, 2012, 2013, 2014  Brian L. Richwine
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || !blr) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 51',
-    releaseDate: 'March 30, 2014',
+    releaseVersion: '1.0 - Beta 52',
+    releaseDate: 'April 6, 2014',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -1301,7 +1301,7 @@ ys: 'whys'
       return sHTML;
     },
 
-    fnMakeTextNotesList: function(no, msgHash) {
+    fnMakeTextNotesList: function(no, msgHash, sMsgKeysToIgnore) {
       blr.W15yQC.userExpertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
       var sNotes = '',
       noteLevelDisplayOrder = [2,1,0],
@@ -1322,7 +1322,7 @@ ys: 'whys'
           noteLevel = noteLevelDisplayOrder[noteLevelIndex];
           noteText = noteLevelTexts[noteLevel];
           for(i=0; i<no.notes.length; i++) {
-            if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel) {
+            if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel && (sMsgKeysToIgnore==null || sMsgKeysToIgnore.contains("|"+no.notes[i].msgKey+"|")==false)) {
               rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
               if(rn != null && ((rn.expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (rn.bQuick==true && blr.W15yQC.bQuick==true))) {
                 if(noteLevel==1) {
@@ -8439,7 +8439,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             }
             li.appendChild(rd.createTextNode("[h" + aHeadingsList[i].level + "] " + aHeadingsList[i].effectiveLabel));
 
-            sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i]);
+            sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aHeadingsList[i], null, '|elContrastRatioChkPassed|elContrastRatioChkWarning|elContrastRatioChkFailed|');
             sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aHeadingsList[i].stateDescription, ', '+blr.W15yQC.fnGetString('hrsHeadingState')+':'), ' - ');
             if ((aHeadingsList[i].failed || aHeadingsList[i].warning) && sMessage != null && sMessage.length != null && sMessage.length > 0) {
               span = rd.createElement('span');
