@@ -120,6 +120,20 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+
+What's up with this:	
+1	<UL id="menu" role="navigation" aria-label="Main Navigation">	1	Main Navigation navigation landmark	aria-label attribute, role attribute	navigation		
+    Warning: Landmark name does not need to be in the element label.	
+	
+Landmarks should only be placed on div, span and selected HTML5 sectioning elements
+
+HTML Headings results
+  Hierarchy Display
+    Only highlight hierarchy failures / warnings
+  Elements Display
+
+HOME is immune to link text differences.
+  
   -- add disable contrast checking in inspections option.
   -- Create describe element/node type function. Use it in analysis routines to set nodeType attribute
   -- Organize element type objects, make sure prototype includes all members, organize members -- have common ones at top, unique ones after that

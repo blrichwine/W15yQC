@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:texthelpns="" lang="en-US"><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>ATAC Personal Metrics Recording Tool - Mary  Stores: Mon Jun 23 2014</title>
+  <link rel="stylesheet" href="metrics_files/base.css" type="text/css">
+  <link rel="stylesheet" href="metrics_files/metrics.css" type="text/css">
+  <script type="text/javascript" src="metrics_files/jquery-2.js"></script>
+	<script type="text/javascript" src="metrics_files/base.js"></script>
+	<script type="text/javascript" src="metrics_files/metrics.js"></script>
+<span installed="true" id="WebReader"></span></head>
+<body onload="metricsPageInit()" lang="en-US">
+	<div id="pageContent">
+    <div id="pageTop" role="banner">
+      <div id="skipNav">
+        <a href="#main" onclick="document.getElementById('main').focus(); return false;">Skip to Main Content</a>
+      </div>
+      <div id="banner">
+        <div>
+          <img src="metrics_files/blockiu.png" alt="I. U. " id="bigIU" height="75" width="65">
+          <p class="UITS">UNIVERSITY INFORMATION TECHNOLOGY SERVICES</p>
+        </div>
+        <p class="ATAC">Assistive Technology and Accessibility Center</p>
+      </div>
+    </div>
+
+		<div role="main">
+			<h1 id="main" tabindex="-1">Record Personal Metrics for Mon Jun 23 2014<br><span>Mary  Stores</span></h1>
+			<div id="notifications" aria-busy="true" aria-live="polite" aria-atomic="true" aria-relevant="additions">
+				<div id="notificationsBorder" aria-hidden="true" aria-label="notifications" style="display:none;visibility:hidden" hidden="true">
+					<ul id="notificationsList"></ul>
+					<div style="clear:both"></div>
+				</div>
+			</div>
+			<div style="display: none; visibility: hidden;" aria-hidden="true" id="initSection" hidden="true">
+				<p id="initLoadingDataP"><xmlns:texthelpns rwthpgen="1">Initializing.</xmlns:texthelpns><xmlns:texthelpns rwthpgen="1">.</xmlns:texthelpns><xmlns:texthelpns rwthpgen="1">.</xmlns:texthelpns></p>
+			</div>
+			<form method="post" action="#">
+				<div id="chooseType" aria-hidden="false" style="visibility: visible;">
+					<h2 tabindex="0" style="visibility: visible;" aria-hidden="false" id="makeAnEntry">Make an Entry</h2>
+					<input onclick="displayConsultationEntryForm(); return false;" value="Consultation" type="button">
+					<input onclick="displayMeaningfulContactEntryForm(); return false;" value="Meaningful Contact" type="button">
+					<input onclick="displayPresentationEntryForm('Presentation'); return false;" value="Presentation" type="button">
+					<input onclick="displayPresentationEntryForm('Training'); return false;" value="Training (Group)" type="button">
+					<input onclick="displayPresentationEntryForm('Workshop'); return false;" value="Workshop" type="button">
+				</div>
+				<p style="visibility: visible;" aria-hidden="false" id="declareNoEntries"><xmlns:texthelpns rwthpgen="1">Or, </xmlns:texthelpns><input onclick="declareNoEntries(); return false;" value="Declare No Entries" type="button"></p>
+				<p id="reverseNoEntriesDeclaration" style="display:none;visibility:hidden" aria-hidden="true" hidden="true">
+					It has been indicated that there are no entries for this date.<br>
+					<input onclick="reverseNoEntriesDeclaration(); return false;" value="Reverse No Entries Declaration" type="button"></p>
+
+				<div id="journalEntryDetails" style="display:none;visibility:hidden" aria-hidden="true" hidden="true">
+					<h2 id="entryDetailsHeading"></h2>
+
+					<div style="display: none; visibility: hidden;" aria-hidden="true" id="entryMethodControls" hidden="true">
+						<label for="selectEntryMethod">Method: </label>
+						<select id="selectEntryMethod">
+							<option value="choose" selected="selected">Choose One</option>
+							<option value="email">Email</option>
+							<option value="inperson">In-person</option>
+							<option value="telephone">Telephone</option>
+							<option value="videoconf">Video conference</option>
+						</select>
+					</div>
+
+					<div style="display: none; visibility: hidden;" aria-hidden="true" id="serviceTypeControls" hidden="true">
+						<label class="clearBoth" for="selectEntryPurpose">Activity: </label>
+						<select id="selectEntryPurpose">
+							<option value="choose" selected="selected">Choose One</option>
+							<option value="1">Client Alternate media</option>
+							<option value="2">Client Assistive Technology</option>
+							<option value="3">Course Accommodation</option>
+							<option value="4">Partner (AES, DSS, Groups, etc.) Support</option>
+							<option value="5">General Services Question</option>
+							<option value="6">IU Accessibility</option>
+							<option value="7">UITS Accessibility</option>
+              <option value="8">Higher Ed Accessibility</option>
+              <option value="9">Key Vendor Accessibility</option>
+							<option value="10">Public/other Outreach</option>
+						</select>
+					</div>
+
+					<div style="display: none; visibility: hidden;" aria-hidden="true" id="durationControls" hidden="true">
+            <fieldset><legend>Duration</legend>
+              <label for="consultDuration">Hours:</label>
+              <input id="durationHours" size="4" type="text">
+              <label for="consultDuration">Minutes:</label>
+              <input id="durationMinutes" size="4" type="text">
+            </fieldset>
+					</div>
+
+					<div style="display: none; visibility: hidden;" aria-hidden="true" id="presentationTitleControls" hidden="true">
+						<label id="titleLabel" for="presentationTitle">Presentation Title:</label>
+						<input id="presentationTitle" size="70" type="text">
+					</div>
+
+					<div style="display: none; visibility: hidden;" aria-hidden="true" id="attendanceControls" hidden="true">
+						<label for="attendanceCount">Number in Attendance:</label>
+						<input id="attendanceCount" size="5" type="text">
+					</div>
+
+				<div id="chooseClientSection" style="display:none;visibility:hidden" aria-hidden="true" hidden="true">
+					<fieldset>
+            <legend>Choose Clients</legend>
+            <div id="choseClientSectionContent" class="sectionContent">
+              <input id="clientSearchTerms" aria-label="Client Search Terms" style="width:200px" type="text">
+              <button type="button" aria-label="Search for Client" onclick="searchForClient();return false;">Search</button>
+              <button type="button" onclick="displayNewClientForm();return false;">Enter New Client</button>
+              <button id="clearClientSearchResultsTable" type="button" onclick="clearClientSearchTable();return false;" style="display:none;visibility:hidden" aria-hidden="true">Clear Search</button>
+              <table id="clientSearchResultsTable" style="display:none;visibility:hidden" aria-hidden="true" hidden="true">
+                <caption>Client Search Results</caption>
+                <thead><tr><th>Action</th><th>User ID</th><th>Name</th><th>Campus</th><th>Role</th><th>Last Active</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div>
+              <ul id="clientList" class="clientList">
+              </ul>
+            </div>
+          </fieldset>
+        </div>
+
+				<div id="addClientSection" style="display:none;visibility:hidden" aria-hidden="true">
+					<h2 role="heading" aria-level="2" id="addEditClientHeading">Add New Client Form</h2>
+					<div id="addClientSectionContent" class="sectionContent">
+						<!-- TODO: Set maxlength attribute values to match the database -->
+						<p class="instructions">Instructions: Selecting the semester, 
+campus, and either a course number or course name (or both) are 
+required. If indicating that there are concerns, then a brief statement 
+as to why is also required.</p>
+						<div><label for="newClientRole">Role: </label><select id="newClientRole" aria-required="true" required="true">
+								<option value="" selected="selected">Select One</option>
+								<option value="Faculty">Faculty</option>
+								<option value="Non-IU">Non-IU</option>
+								<option value="Staff">Staff</option>
+								<option value="Student">Student</option>
+								<option value="Unknown">Unknown</option>
+							</select>
+							<label for="newClientAffiliation">Campus: </label><select id="newClientAffiliation" aria-required="true" required="true">
+								<option value="" selected="selected">Select One</option>
+								<option value="IUB">IUB</option>
+								<option value="IUPUC">IUPUC</option>
+								<option value="IUPUI">IUPUI</option>
+								<option value="IUE">IUE</option>
+								<option value="IUK">IUK</option>
+								<option value="IUN">IUN</option>
+								<option value="IUS">IUS</option>
+								<option value="IUSB">IUSB</option>
+								<option value="IPFW">IPFW</option>
+								<option value="other">Other</option>
+								<option value="unknown">Unknown</option>
+							</select></div>
+						<div><label for="newClientFirstName">First:</label> <input maxlength="50" size="24" style="width:75px" name="newClientFirstName" id="newClientFirstName" aria-required="true" required="true" onchange="this.value=simpleText(this.value)" type="text">
+						<label for="newClientMiddleName">Middle:</label> <input maxlength="50" size="24" style="width:75px" name="newClientMiddleName" id="newClientMiddleName" aria-required="false" onchange="this.value=simpleText(this.value)" type="text">
+						<label for="newClientLastName">Last:</label> <input maxlength="50" size="50" style="width:150px" name="newClientLastName" id="newClientLastName" aria-required="true" required="true" onchange="this.value=simpleText(this.value)" type="text"></div>
+						<div><label for="newClientUserID">User ID:</label> <input maxlength="10" name="newClientUserID" id="newClientUserID" style="width:100px" aria-required="false" aria-description="newClientUserIDDesc" onchange="this.value=simpleText(this.value)" type="text">
+							<span id="newClientUserIDDesc"> (like 'brichwin')</span>
+						</div>
+						<div><label id="newClientUIDNL" for="newClientUniversityIDNumber">University ID Number: </label><input maxlength="12" name="newClientUniversityIDNumber" id="newClientUniversityIDNumber" aria-describedby="newClientUIDNDesc" onchange="this.value=simpleText(this.value)" type="text"><span id="newClientUIDNDesc"> (like '00038382938')</span></div>
+						<div><label id="newClientUEL" for="newClientUniversityEmail">University Email: </label><input maxlength="50" size="40" name="newClientUniversityEmail" id="newClientUniversityEmail" onchange="this.value=simpleText(this.value)" type="email"><input name="newClientPreferredEM" value="u" id="newClientUnivEmailRB" type="radio"><label for="newClientUnivEmailRB">University Email Preferred</label></div>
+						<div><label id="newClientAEL" for="newClientAlternateEmail">Alternate Email: </label><input maxlength="50" size="40" name="newClientAlternateEmail" id="newClientAlternateEmail" onchange="this.value=simpleText(this.value)" type="email"><input name="newClientPreferredEM" value="a" id="newClientAltEmailRB" type="radio"><label for="newClientAltEmailRB">Alternate Email Preferred</label></div>
+						<div><label id="newClientPPL" for="newClientPreferredPhone">Preferred Phone: </label><input maxlength="50" size="30" name="newClientPreferredPhone" id="newClientPreferredPhone" onchange="this.value=simpleText(this.value)" type="tel">
+							<label for="newClientPPType">Preferred Phone Type: </label><select maxlength="50" id="newClientPPType" name="newClientPPType">
+								<option selected="selected" value=""></option>
+								<option value="1">Cell</option>
+								<option value="2">Home</option>
+								<option value="3">Work</option>
+								<option value="4">Permanent</option>
+							</select>
+						</div>
+						<div><label id="newClientAPL" for="newClientAlternatePhone">Alternate Phone: </label><input size="30" name="newClientAlternatePhone" id="newClientAlternatePhone" onchange="this.value=simpleText(this.value)" type="tel">
+							<label for="newClientAPType">Alternate Phone Type: </label><select id="newClientAPType" name="newClientAPType">
+								<option selected="selected" value=""></option>
+								<option value="1">Cell</option>
+								<option value="2">Home</option>
+								<option value="3">Work</option>
+								<option value="4">Permanent</option>
+							</select>
+						</div>
+						<div id="haveConcernsAboutClientControlsSection">
+							<div><input name="haveConcernsAboutNewClient" id="haveConcernsAboutNewClient" onchange="enableAndSetRequired('whyHaveConcernsAboutNewClient',this.checked,true,true,true);" type="checkbox"><label for="haveConcernsAboutNewClient">Have concerns about client.</label></div>
+							<div><label for="whyHaveConcernsAboutNewClient" style="display:none;visibility:hidden" aria-hidden="true">Why have concerns: </label></div>
+							<div><textarea id="whyHaveConcernsAboutNewClient" rows="4" cols="80" aria-required="false" aria-hidden="true" style="display:none;visibility:hidden" onchange="this.value=simpleText(this.value)"></textarea></div>
+						</div>
+						<div><label for="newClientAltMediaPreferences">Alternate Media Preferences:</label></div>
+						<div><textarea id="newClientAltMediaPreferences" rows="4" cols="80" onchange="this.value=simpleText(this.value)"></textarea></div>
+						<div><label for="newClientComments">Comments:</label></div>
+						<div><textarea id="newClientComments" rows="4" cols="80" onchange="this.value=simpleText(this.value)"></textarea></div>
+						<div id="addingNewClientFormActions">
+							<button type="button" onclick="saveNewClient();">Save New Client</button><button type="button" onclick="cancelAddingNewClient();return false;">Cancel Adding New Client</button>
+						</div>
+						<div id="editingClientDetailsFormActions">
+							<button type="button" onclick="sendClientUpdates();">Save Changes to Client</button><button type="button" onclick="cancelEditingClientDetails();return false;">Cancel Editing Client Details</button>
+						</div>
+					</div>
+					<p id="savingNewClientStatusP" tabindex="-1" aria-hidden="true" style="display:none;visibility:hidden">
+						Saving New Client...
+					</p>
+				</div>
+
+					<fieldset style="display: none; visibility: hidden;" aria-hidden="true" id="tagControls" hidden="true">
+						<legend>Tags:</legend>
+						<div>
+							<input id="tagToAdd" title="Enter Tag to Add" list="tagsLookupDataList" size="55" type="text">
+							<datalist id="tagsLookupDataList">
+								<option value="Kurzweil">
+								</option><option value="JAWS">
+								</option><option value="Inspiration">
+								</option><option value="Dragon NaturallySpeaking">
+								</option><option value="Captioning">
+							</option></datalist>
+							<input id="addTag" value="Add" onclick="addTag()" type="button">
+							<input id="clearTagList" value="Clear" onclick="clearTagsList()" type="button">
+						</div>
+						<div>
+							<ul id="tagList" class="tagList">
+							</ul>
+						</div>
+					</fieldset>
+
+					<fieldset style="display: none; visibility: hidden;" aria-hidden="true" id="otherStaffControls" hidden="true">
+						<legend>Other Staff:</legend>
+						<div>
+						  <span id="staffInputControl">
+							<input id="otherStaffToAdd" title="Enter Other Staff to Add" list="staffLookupDataList" size="55" type="text">
+						  </span>
+							<input id="addOtherStaff" value="Add" onclick="addOtherStaffToList()" type="button">
+							<input id="clearOtherStaffList" value="Clear" onclick="clearOtherStaffFromList()" type="button">
+						</div>
+						<div>
+							<ul id="otherStaffList" class="clientList">
+							</ul>
+						</div>
+					</fieldset>
+
+					<div style="display: none; visibility: hidden;" aria-hidden="true" id="projectControls" hidden="true">
+						<label for="selectedProject">Project:</label>
+						<input id="selectedProject" title="Enter Project" list="projectLookupDataList" size="55" type="text">
+						<datalist id="projectLookupDataList">
+							<option value="Project 1">
+							</option><option value="Project 2">
+							</option><option value="Project 3">
+							</option><option value="Project 4">
+						</option></datalist>
+					</div>
+
+					<div>
+						<label for="entryNotes">Notes:</label>
+					</div>
+					<textarea id="entryNotes" style="width:95%;height:50px"></textarea>
+					<div>
+						<input id="submitForm" value="Add Consultation" onclick="commitForm(); return false;" type="button">
+						<input value="cancel" onclick="cancelForm()" type="reset">
+					</div>
+				</div>
+
+			</form>
+
+      <div style="visibility: visible;" aria-hidden="false" id="summary">
+        <h2 id="summaryHeading">Summary</h2>
+        <div id="summaryContainer">
+        </div>
+      </div>
+
+		<div style="visibility: visible;" aria-hidden="false" id="dateNav" role="navigation" aria-label="Date">
+      <h2>Change Date</h2>
+			<input value="&lt;&lt; Previous Week" name="prevWeek" onclick="changeDateBy(-7)" aria-label="Previous Week" type="button">
+			<input value="&lt; Previous Day" name="prevDay" onclick="changeDateBy(-1)" aria-label="Previous Day" type="button">
+			<input value="Change Date" name="changeDate" onclick="" aria-label="Change Date" type="button">
+			<input value="Next Date &gt;" name="nextDay" onclick="changeDateBy(1);" aria-label="Next Day" type="button">
+			<input value="Next Week&gt;&gt;" name="nextWeek" onclick="changeDateBy(7)" aria-label="Next Week" type="button">
+		</div>
+
+	</div>
+	<div id="modalDialog" aria-hidden="true">
+	</div>
+
+
+</div><span id="textHelp"><span version="0.0.1.0" path="resource://68f7746d-e5ad-4398-889a-75f0a6ceb7c3-at-texthelp-dot-com/webreader/data/" id="WebReader"><link title="rwstyles" type="text/css" rel="stylesheet" href="metrics_files/styles.css"><span id="thScripts"><script id="$th_texthelpReturn" type="text/javascript">function $th_doReturn(a){var b=document.getElementById('$th_texthelpReturnValueID');b!=null&&(b.setAttribute('result',a),a=document.createEvent('Events'),a.initEvent('$th_texthelpReturnEvent',!0,!1),b.dispatchEvent(a))};</script><th_texthelpreturnvalue id="$th_texthelpReturnValueID" result=""></th_texthelpreturnvalue><script id="$th_texthelpWriteSocket" type="text/javascript">function rw_sendSocketMessage(aData){$th_doReturn(aData);};</script></span></span></span><div style="left: 1110px; top: 6.51px; visibility: visible; display: inline;" visibility="hidden" rwthcomp="1" id="rwDrag"><div visibility="hidden" rwthcomp="1" id="rwDrag"></div></div></body></html>

@@ -25,7 +25,7 @@
  */
 "use strict";
 
-if (typeof blr == "undefined" || !blr) {var blr = {}};
+if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 /*
  * Object:  W15yQC
