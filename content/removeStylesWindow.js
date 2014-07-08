@@ -439,6 +439,17 @@ try{
                 node = rd.createElement('button');
                 node.appendChild(rd.createTextNode((blr.W15yQC.fnGetEffectiveLabel(c))[0]));
                 bDontDig=true;
+              } else if (/^button$/i.test(c.tagName)) {
+                node = rd.createElement('button');
+                
+                sLabel = blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label'));
+                if(sLabel.length<1 && node.hasAttribute('aria-labelledby')) {
+                  sLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
+                }
+                if (sLabel.length>1) {
+                  node.appendChild(rd.createTextNode(sLabel));
+                  bDontDig=true;
+                }
               } else if (/^(b|big|center|em|font|i|link|small|strong|tt|u)$/i.test(c.tagName)) {
                 node = rd.createElement('span');
               } else if (c.tagName=='hr') {
@@ -457,14 +468,26 @@ try{
                      /^#[^#]/.test(node.getAttribute('href')));
 
                   node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
-                  if (blr.W15yQC.fnFirstChildElementIs(c, 'img') == false) {
+                  
+                  sLabel = blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label'));
+                  if(blr.W15yQC.fnStringHasContent(sLabel)==false && node.hasAttribute('aria-labelledby')) {
+                    sLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
+                  }
+                  if(blr.W15yQC.fnStringHasContent(sLabel)==false && blr.W15yQC.fnStringHasContent(blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(c,0,['ul','ol','dl','li','dt','dl','dd'],[])))==false
+                     && blr.W15yQC.fnStringHasContent(c.getAttribute('title'))) {
+                    sLabel=c.getAttribute('title');
+                  }                  
+                  if (blr.W15yQC.fnStringHasContent(sLabel)) {
+                    node.appendChild(rd.createTextNode((bSamePageLink ? ' Same Page Link: ' : ' Link: ')+sLabel));
+                    bDontDig=true;
+                  } else if (blr.W15yQC.fnFirstChildElementIs(c, 'img') == false) {
                     if (blr.W15yQC.fnFirstChildElementIs(c, 'h1') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h2') == false &&
                         blr.W15yQC.fnFirstChildElementIs(c, 'h3') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h4') == false &&
                         blr.W15yQC.fnFirstChildElementIs(c, 'h5') == false && blr.W15yQC.fnFirstChildElementIs(c, 'h6') == false) {
                         node.appendChild(rd.createTextNode(bSamePageLink ? ' Same Page Link: ' : ' Link: '));
                     }
                   }
-                } else if (/^h/i.test(node.tagName) && c.parentNode.tagName.toLowerCase()=='a') {
+                } else if (/^h/i.test(node.tagName) && c.parentNode.tagName.toLowerCase()=='a' && /^\s*(Same Page Link|Link)/.test(c.parentNode.innerHTML)==false) {
                     node.appendChild(rd.createTextNode('Link: '));
                 }
               }

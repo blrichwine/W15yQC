@@ -15,6 +15,8 @@
 	xmlns:html="http://www.w3.org/1999/xhtml">
 
   <script type="application/x-javascript" src="chrome://W15yQC/content/overlay.js"/>
+  <script type="application/x-javascript" src="chrome://W15yQC/content/pdf.js"/>
+  <script type="application/x-javascript" src="chrome://W15yQC/content/pdf.worker.js"/>
   <script type="application/x-javascript" src="chrome://W15yQC/content/highlighters.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="overlay-string-bundle" src="chrome://W15yQC/locale/overlay.properties"/>

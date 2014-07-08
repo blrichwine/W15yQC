@@ -34,8 +34,8 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 52',
-    releaseDate: 'April 6, 2014',
+    releaseVersion: '1.0 - Beta 53',
+    releaseDate: 'July 6, 2014',
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -6054,33 +6054,33 @@ ys: 'whys'
                       oW15yResults.aARIAElements.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, oW15yResults.aARIAElements.length, ARIAElementStack.length+1, sFirstRole, sARIALabel, sState));
                       oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
                       ARIAElementStack.push(node);
-  
-                      switch (sFirstRole) {
-                        case 'application':
-                        case 'banner':
-                        case 'complementary':
-                        case 'contentinfo':
-                        case 'form':
-                        case 'main':
-                        case 'navigation':
-                        case 'search':
-                          // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
-                          ARIALandmarkLevel = 1;
-                          for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
-                            if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
-                              ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
-                              break;
-                            }
-                          }
-                          aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-                          effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
-                          effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
-                          oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
-                          oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
-                          break;
-                        default:
-                          oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
+                      
+                      if (blr.W15yQC.fnIsARIALandmark(node)==false) {
+                        oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
                       }
+                    }
+                    
+                    if (blr.W15yQC.fnIsARIALandmark(node) || blr.W15yQC.fnIsHTML5SectionElement(node) ) {
+                      // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
+                      ARIALandmarkLevel = 1;
+                      for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
+                        if(blr.W15yQC.fnIsDescendant(oW15yResults.aARIALandmarks[i].node,node)==true && oW15yResults.aARIALandmarks[i].level+1>ARIALandmarkLevel) {
+                          ARIALandmarkLevel = oW15yResults.aARIALandmarks[i].level+1;
+                          break;
+                        }
+                      }
+                      xPath = blr.W15yQC.fnGetElementXPath(node);
+                      nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
+                      aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
+                      if (blr.W15yQC.fnIsARIALandmark(node)) {
+                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
+                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));                        
+                      } else {
+                        effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' section',' '));
+                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 section element', ', '));                        
+                      }
+                      oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
+                      oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                     }
     
                     switch (sTagName) { // TODO: Debug how to handle HTML5 elements! Explore how JAWS 15 in FF or NVDA reports these
@@ -6955,8 +6955,6 @@ ys: 'whys'
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList, bQuick) {
       var div, divContainer, innerDiv, list, previousHeadingLevel, previousDocument, sDoc, li, sNotesTxt, sMessage, span, nextLogicalLevel,
         table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
-
-
 
      div = rd.createElement('div');
       divContainer = rd.createElement('div');

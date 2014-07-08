@@ -120,6 +120,11 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+    
+Semantic view tool does not appear to support aria-label on buttons. google search results for example.
+HTML5 Landmarks do not show up in ARIA Landmarks inspector or HTML reports.
+Options came up incorrect. Why?
+Page level heading failures too many colunms in the HTML list
 
 What's up with this:	
 1	<UL id="menu" role="navigation" aria-label="Main Navigation">	1	Main Navigation navigation landmark	aria-label attribute, role attribute	navigation		
