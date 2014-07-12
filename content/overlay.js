@@ -6374,7 +6374,7 @@ ys: 'whys'
                       oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
                     }
   
-                    if(sTagName=='a') {  // document the link
+                    if(sTagName=='a' && blr.W15yQC.fnIsFormControlNode(node)==false) {  // document the link
                       xPath = blr.W15yQC.fnGetElementXPath(node);
                       nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
                       aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
@@ -6827,6 +6827,7 @@ ys: 'whys'
       // TODO: Learn what is important to analyze in ARIA landmarks!
 
       oW15yResults.PageScore.bUsesARIALandmarks=false;
+      oW15yResults.PageScore.bUsesHTML5SectionElements=false;
       oW15yResults.PageScore.bHasMainLandmark=false;
       oW15yResults.PageScore.bMainLandmarkContainsHeading=false;
       oW15yResults.PageScore.bAllLandmarksUnique=true;
@@ -8535,7 +8536,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             if(bQuick) {
               blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', sNotes], sClass);
             } else {
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', sNotes], sClass);
             }
           }
         }
@@ -11078,6 +11079,7 @@ try{
     this.bNotAllHeadingsInASectionAreUnique=null;
     this.bMainLandmarkContainsHeading=null;
     this.bUsesARIALandmarks=null;
+    this.bUsesHTML5SectionElements=null;
     this.bHasMainLandmark=null;
     this.bLandmarksBesidesApplication=null;
     this.bAllLandmarksUnique=null;
@@ -11128,6 +11130,7 @@ try{
     bHasLandmarksOrMultipleHeadings: null,
     bMainLandmarkContainsHeading: null,
     bUsesARIALandmarks: null,
+    bUsesHTML5SectionElements: null,
     bHasMainLandmark: null,
     bLandmarksBesidesApplication: null,
     bAllLandmarksUnique: null,
