@@ -2675,7 +2675,7 @@ ys: 'whys'
     },
 
     fnNodeHasPresentationRole: function (node) {
-      if (node && node.hasAttribute && node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='presentation') {
+      if (blr.W15yQC.bHonorARIA && node && node.hasAttribute && node.hasAttribute('role')==true && node.getAttribute('role').toLowerCase()=='presentation') {
         return true;
       }
       return false;
@@ -3091,7 +3091,7 @@ ys: 'whys'
       return false;
     },
 
-    fnNodeIsHidden: function (node) { // TODO: Improve and QA This!, USE THE NODE's WINDOW
+    fnNodeIsHidden: function (node) { // TODO: Improve and QA This!, USE THE NODE's WINDOW, should this pay attention to aria-hidden?
       //returns true if element should be invisible to screen-readers.
       if(blr.W15yQC.bIncludeHidden) { return false; }
       if (node != null) {
@@ -3282,7 +3282,7 @@ ys: 'whys'
           return true;
         }
       }
-      if (node.hasAttribute && node.hasAttribute('role')) {
+      if (node.hasAttribute && node.hasAttribute('role')) { // TODO: Is this accurate?
         switch (node.getAttribute('role')) {
         case 'radiogroup':
           return true;
@@ -3301,7 +3301,7 @@ ys: 'whys'
         case 'textarea':
           return true;
         }
-        if (node.hasAttribute && node.hasAttribute('role')) {
+        if (blr.W15yQC.bHonorARIA==true && node.hasAttribute && node.hasAttribute('role')) {
           sRole=node.getAttribute('role');
           sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
           switch (sFirstRole) {
@@ -3493,14 +3493,14 @@ ys: 'whys'
         //Seek upward until we reach a fieldset node
         // aNode = aNode.parentNode;
         while ((aNode != null) && (aNode.nodeName.toLowerCase() != 'fieldset' || bARIAOnly==true) && (aNode.nodeName.toLowerCase() != 'form') && (aNode.nodeName.toLowerCase() != 'body') &&
-               (!aNode.hasAttribute || aNode.hasAttribute('role')==false || aNode.getAttribute('role').toLowerCase() != 'radiogroup')) {
+               (blr.W15yQC.bHonorARIA==false || !aNode.hasAttribute || aNode.hasAttribute('role')==false || aNode.getAttribute('role').toLowerCase() != 'radiogroup')) {
           aNode = aNode.parentNode;
         }
-        if( (aNode.hasAttribute && aNode.hasAttribute('role') && aNode.getAttribute('role').toLowerCase() == 'radiogroup')) {
+        if( (blr.W15yQC.bHonorARIA==true && aNode.hasAttribute && aNode.hasAttribute('role') && aNode.getAttribute('role').toLowerCase() == 'radiogroup')) {
           if (aNode.hasAttribute('aria-label')) {
             sLabelText = blr.W15yQC.fnCleanSpaces(aNode.getAttribute('aria-label'));
           }
-          if ((sLabelText == null || sLabelText.length < 1) && aNode.hasAttribute('aria-labelledby')) {
+          if (blr.W15yQC.bHonorARIA==true && (sLabelText == null || sLabelText.length < 1) && aNode.hasAttribute('aria-labelledby')) {
             sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(aNode.getAttribute('aria-labelledby'), aNode.ownerDocument));
           }
         }
@@ -3568,7 +3568,7 @@ ys: 'whys'
 
     fnGetARIALabelText: function (node) {
       var sLabelText = null, doc;
-      if (node != null && node.hasAttribute && node.ownerDocument) {
+      if (blr.W15yQC.bHonorARIA==true && node != null && node.hasAttribute && node.ownerDocument) {
         doc=node.ownerDocument;
         if (node.hasAttribute('aria-label')) {
           sLabelText = blr.W15yQC.fnCleanSpaces(node.getAttribute('aria-label'));
@@ -3584,7 +3584,7 @@ ys: 'whys'
       var sLabelText = null, implicitLabelNode, explictLabelsList, i, doc;
       if (node != null && node.getAttribute && node.ownerDocument) {
         doc=node.ownerDocument;
-        if(node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') { // TODO: Check this!! I don't believe it.
+        if(blr.W15yQC.bHonorARIA==true && node.hasAttribute('role') && node.getAttribute('role').toLowerCase()=='radio') { // TODO: Check this!! I don't believe it.
           sLabelText = blr.W15yQC.fnGetDisplayableTextRecursively(node);  // TODO: Check this!! I don't believe it.
         } else {
           implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
@@ -3639,24 +3639,28 @@ ys: 'whys'
                 break;
 
               case 'aria':
-                sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute('aria-label'), ' '));
-                if(sLabelText.length>l) {
-                  sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-label attribute', ', ');
-                } else if (node.hasAttribute('aria-labelledby')) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
-                  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
+                if (blr.W15yQC.bHonorARIA==true) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute('aria-label'), ' '));
+                  if(sLabelText.length>l) {
+                    sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-label attribute', ', ');
+                  } else if (node.hasAttribute('aria-labelledby')) {
+                    sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
+                    if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
+                  }
                 }
                 break;
 
               case 'aria-describedby':
-                if (node.hasAttribute('aria-describedby')) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc),' '));
-                  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
+                if (blr.W15yQC.bHonorARIA==true) {
+                  if (node.hasAttribute('aria-describedby')) {
+                    sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc),' '));
+                    if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
+                  }
                 }
                 break;
 
               case 'aria-labelledby':
-                if (node.hasAttribute('aria-labelledby')) {
+                if (blr.W15yQC.bHonorARIA==true && node.hasAttribute('aria-labelledby')) {
                   sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
                   if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
                 }
@@ -3703,8 +3707,14 @@ ys: 'whys'
                 if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'default text', ', '); }
                 break;
 
-              case 'alt':
               case 'aria-label':
+                if (blr.W15yQC.bHonorARIA==true && node.hasAttribute(aConfig[i])) {
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute(aConfig[i]), ' '));
+                  if (sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, aConfig[i]+' attribute', ', '); }
+                }
+                break;
+
+              case 'alt':
               case 'title':
               case 'value':
               case 'name':
@@ -3798,7 +3808,7 @@ ys: 'whys'
 
       if (node != null && node.tagName) {
         sTagName = node.tagName.toLowerCase();
-        if(node.hasAttribute && node.hasAttribute('role')) {
+        if(blr.W15yQC.bHonorARIA==true && node.hasAttribute && node.hasAttribute('role')) {
           sRole=node.getAttribute('role').toLowerCase();
           sRole=sRole.replace(/^(\w+)\s.*$/, "$1");
         } else {
@@ -3876,7 +3886,7 @@ ys: 'whys'
           } else if (sTagName == 'article' || sTagName == 'aside' || sTagName == 'header' || sTagName == 'footer' || sTagName == 'nav' || sTagName == 'section') { // TODO: QA This
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first', 'aria', 'title'],iRecursion,aStopElements,aElements);
 
-          } else if (blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
+          } else if (blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
             if(/^(button|checkbox|columnheader|directory|gridcell|heading|landmark|link|listitem|menuitem|menuitemcheckbox|menuitemradio|option|radio|row|rowgroup|rowheader|section|sectionhead|tab|treeitem)/.test(sRole)==true) {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','child text','fieldset'],iRecursion,aStopElements,aElements); // TODO: Does the title attribute really trump child text for 'Name From: Contents' roles?
             } else {
@@ -3892,7 +3902,7 @@ ys: 'whys'
 
     fnGetARIADescriptionText: function (node, doc) {
       var sDescription = '';
-      if (node != null && node.hasAttribute && doc != null && doc.getElementById) {
+      if (blr.W15yQC.bHonorARIA==true && node != null && node.hasAttribute && doc != null && doc.getElementById) {
         if (node.hasAttribute('aria-describedby')) {
           sDescription = blr.W15yQC.fnJoin(sDescription, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc), ' ');
         }
@@ -3921,29 +3931,31 @@ ys: 'whys'
         if (node.hasAttribute('hidden') == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'hidden="' + node.getAttribute('hidden') + '"', ', ');
         }
-        if (node.hasAttribute('aria-autocomplete') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-autocomplete="' + node.getAttribute('aria-autocomplete') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-busy') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-busy="' + node.getAttribute('aria-busy') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-disabled') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-disabled="' + node.getAttribute('aria-disabled') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-grabbed') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-grabbed="' + node.getAttribute('aria-grabbed') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-haspopup') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-haspopup="' + node.getAttribute('aria-haspopup') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-hidden') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-hidden="' + node.getAttribute('aria-hidden') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-invalid') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-invalid="' + node.getAttribute('aria-invalid') + '"', ', ');
-        }
-        if (node.hasAttribute('aria-required') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-required="' + node.getAttribute('aria-required') + '"', ', ');
+        if (blr.W15yQC.bHonorARIA==true) {
+          if (node.hasAttribute('aria-autocomplete') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-autocomplete="' + node.getAttribute('aria-autocomplete') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-busy') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-busy="' + node.getAttribute('aria-busy') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-disabled') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-disabled="' + node.getAttribute('aria-disabled') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-grabbed') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-grabbed="' + node.getAttribute('aria-grabbed') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-haspopup') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-haspopup="' + node.getAttribute('aria-haspopup') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-hidden') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-hidden="' + node.getAttribute('aria-hidden') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-invalid') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-invalid="' + node.getAttribute('aria-invalid') + '"', ', ');
+          }
+          if (node.hasAttribute('aria-required') == true) {
+            sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'aria-required="' + node.getAttribute('aria-required') + '"', ', ');
+          }
         }
       }
       return blr.W15yQC.fnCleanSpaces(sStateDescription);
@@ -3986,8 +3998,8 @@ ys: 'whys'
                   sRecursiveText = blr.W15yQC.fnGetDisplayableTextBetweenElements(node, iRecursion + 1, aStopElements);
                 }
                 if (blr.W15yQC.fnStringHasContent(sRecursiveText) == false && node.nodeType == 1) {
-                  sRecursiveText = node.getAttribute('aria-label');
-                  if(blr.W15yQC.fnStringHasContent(sRecursiveText)== false && node.hasAttribute('aria-labelledby')) {
+                  sRecursiveText = blr.W15yQC.bHonorARIA==true ? node.getAttribute('aria-label') : '';
+                  if(blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnStringHasContent(sRecursiveText)== false && node.hasAttribute('aria-labelledby')) {
                     sRecursiveText = blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), node.ownerDocument);
                   }
                   if (blr.W15yQC.fnStringHasContent(sRecursiveText) == false && node.tagName != null && blr.W15yQC.fnCanTagHaveAlt(node.tagName) && node.hasAttribute('alt') == true) {
@@ -4159,10 +4171,13 @@ ys: 'whys'
 
     fnElementUsesARIA: function (node) {
       var i, attrName;
-      if(node.hasAttribute('role')) { return true; }
-      for (i = 0; i < node.attributes.length; i++) {
-        attrName = node.attributes[i].name.toLowerCase();
-        if(attrName.match(/^aria-/) != null) { return true; }
+      
+      if (blr.W15yQC.bHonorARIA==true) {
+        if(node.hasAttribute('role')) { return true; }
+        for (i = 0; i < node.attributes.length; i++) {
+          attrName = node.attributes[i].name.toLowerCase();
+          if(attrName.match(/^aria-/) != null) { return true; }
+        }
       }
       return false;
     },
@@ -4659,7 +4674,7 @@ ys: 'whys'
 
     fnGetARIAAttributeValueWarnings: function(no, node) { // Based on: http://www.w3.org/TR/wai-aria/states_and_properties
       var doc, sRole='',i, attrName, attrValue, attrValueLC, tagName, sMsg;
-      if(node != null && node.hasAttribute) {
+      if(blr.W15yQC.bHonorARIA==true && node != null && node.hasAttribute) {
         if(node.hasAttribute('role')) {
           sRole = node.getAttribute('role').toLowerCase();
           sRole=sRole.replace(/^(\w+)\s.*$/, "$1");
@@ -5028,81 +5043,87 @@ ys: 'whys'
 
     fnInvalidARIAPresentationRoleUse: function(node) { // based on: https://dvcs.w3.org/hg/aria-unofficial/raw-file/tip/index.html#do
       var tagName,type;
-      if(node != null && node.tagName) {
-        tagName=node.tagName.toLowerCase();
-        switch(tagName) {
-          case 'a':
-          case 'area':
-            if(blr.W15yQC.fnStringHasContent(node.getAttribute('href'))) { return true; }
-            break;
-          case 'dialog':
-            if(blr.W15yQC.fnStringHasContent(node.getAttribute('open'))==false) { return true; }
-            break;
-          case 'input':
-            if(node.hasAttribute('type')==false || node.getAttribute('type').toLowerCase()!='hidden') { return true; }
-            break;
-          case 'button':
-          case 'keygen':
-          case 'menu':
-          case 'option':
-          case 'select':
-          case 'textarea':
-            return true;
-            break;
+      if (blr.W15yQC.bHonorARIA==true) {
+        if(node != null && node.tagName) {
+          tagName=node.tagName.toLowerCase();
+          switch(tagName) {
+            case 'a':
+            case 'area':
+              if(blr.W15yQC.fnStringHasContent(node.getAttribute('href'))) { return true; }
+              break;
+            case 'dialog':
+              if(blr.W15yQC.fnStringHasContent(node.getAttribute('open'))==false) { return true; }
+              break;
+            case 'input':
+              if(node.hasAttribute('type')==false || node.getAttribute('type').toLowerCase()!='hidden') { return true; }
+              break;
+            case 'button':
+            case 'keygen':
+            case 'menu':
+            case 'option':
+            case 'select':
+            case 'textarea':
+              return true;
+              break;
+          }
         }
-      }
-      if(node.hasAttribute('tabindex') && node.hasAttribute('disabled')==false && node.getAttribute('tabindex')!="-1" && blr.W15yQC.fnNodeIsHidden(node)==false) {
-        return true;
+        if(node.hasAttribute('tabindex') && node.hasAttribute('disabled')==false && node.getAttribute('tabindex')!="-1" && blr.W15yQC.fnNodeIsHidden(node)==false) {
+          return true;
+        }
       }
       return false;
     },
 
     fnCheckARIARole: function(no, node, sRole) {
       var sMsg, i, c, bFoundRequiredChild, bFoundRequiredContainer, cRole;
-      if(blr.W15yQC.ARIAChecks.hasOwnProperty(sRole) == true) {
-        // Check for required properties
-        if(blr.W15yQC.ARIAChecks[sRole].reqProps != null) {
-          sMsg=null;
-          for(i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
-            if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
+      
+      if (blr.W15yQC.bHonorARIA==true) {
+        if(blr.W15yQC.ARIAChecks.hasOwnProperty(sRole) == true) {
+          // Check for required properties
+          if(blr.W15yQC.ARIAChecks[sRole].reqProps != null) {
+            sMsg=null;
+            for(i=0;i<blr.W15yQC.ARIAChecks[sRole].reqProps.length;i++) {
+              if(node.hasAttribute(blr.W15yQC.ARIAChecks[sRole].reqProps[i])==false) { sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].reqProps[i],', '); }
+            }
           }
-        }
-        if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); } // QA
-        // Check validity of the ARIA- attributes
-        // TODO: finish this
-
-        // Check for required parents
-        if(blr.W15yQC.ARIAChecks[sRole].container != null) {
-          sMsg=null;
-          bFoundRequiredContainer = false;
-          c=node.parentNode;
-          while(c != null && bFoundRequiredContainer == false) {
-            if(c.hasAttribute && c.hasAttribute('role')) {
-              cRole = c.getAttribute('role');
-              for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
-                if(cRole == blr.W15yQC.ARIAChecks[sRole].container[i]) {
-                  bFoundRequiredContainer = true;
-                  break;
+          if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); } // QA
+          // Check validity of the ARIA- attributes
+          // TODO: finish this
+  
+          // Check for required parents
+          if(blr.W15yQC.ARIAChecks[sRole].container != null) {
+            sMsg=null;
+            bFoundRequiredContainer = false;
+            c=node.parentNode;
+            while(c != null && bFoundRequiredContainer == false) {
+              if(c.hasAttribute && c.hasAttribute('role')) {
+                cRole = c.getAttribute('role');
+                for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
+                  if(cRole == blr.W15yQC.ARIAChecks[sRole].container[i]) {
+                    bFoundRequiredContainer = true;
+                    break;
+                  }
                 }
               }
+              c=c.parentNode;
             }
-            c=c.parentNode;
+            if(!bFoundRequiredContainer) {
+              sMsg=null;
+              for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
+                sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].container[i],', ');
+              }
+              if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingContainer', [sMsg]); } // QA
+            }
           }
-          if(!bFoundRequiredContainer) {
+          // Check for required children
+          if(blr.W15yQC.ARIAChecks[sRole].reqChildren != null) {
             sMsg=null;
-            for(i=0;i<blr.W15yQC.ARIAChecks[sRole].container.length;i++) {
-              sMsg=blr.W15yQC.fnJoin(sMsg,blr.W15yQC.ARIAChecks[sRole].container[i],', ');
-            }
-            if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingContainer', [sMsg]); } // QA
+            bFoundRequiredChild = false;
+            // TODO: Finish this
           }
-        }
-        // Check for required children
-        if(blr.W15yQC.ARIAChecks[sRole].reqChildren != null) {
-          sMsg=null;
-          bFoundRequiredChild = false;
-          // TODO: Finish this
         }
       }
+      
       return no;
     },
 
@@ -5204,7 +5225,7 @@ ys: 'whys'
 
     fnAnalyzeARIAMarkupOnNode: function (node, no) {
       var sRole, sFirstRole, i, roles;
-      if (node != null && node.hasAttribute) {
+      if (blr.W15yQC.bHonorARIA==true && node != null && node.hasAttribute) {
         if (node.hasAttribute('role')) {
           // TODO: check role values, check for multiple role values
           sRole = blr.W15yQC.fnTrim(node.getAttribute('role'));
@@ -6029,7 +6050,7 @@ ys: 'whys'
                     height=null;
                     width=null;
                     sARIALabel=null;
-                    sRole=blr.W15yQC.fnGetNodeAttribute(node, 'role', null);
+                    sRole=blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnGetNodeAttribute(node, 'role', null) : null;
                     sType = blr.W15yQC.fnGetNodeAttribute(node, 'type', null);
                     sType = sType==null ? null : sType.toLowerCase();
                     if(sRole!==null) {
@@ -6038,7 +6059,7 @@ ys: 'whys'
                     }
                     sTagName = node.tagName.toLowerCase();
                     
-                    if (blr.W15yQC.fnElementUsesARIA(node) == true) {
+                    if (blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnElementUsesARIA(node) == true) {
                       while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1], node) == false) {
                         ARIAElementStack.pop();
                       }
@@ -6060,7 +6081,7 @@ ys: 'whys'
                       }
                     }
                     
-                    if (blr.W15yQC.fnIsARIALandmark(node) || blr.W15yQC.fnIsHTML5SectionElement(node) ) {
+                    if ((blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsARIALandmark(node)) || blr.W15yQC.fnIsHTML5SectionElement(node) ) {
                       // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
                       ARIALandmarkLevel = 1;
                       for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
@@ -6274,9 +6295,9 @@ ys: 'whys'
                     }
   
                     bFoundHeading=false;
-                    if(sFirstRole=='heading') {
+                    if(blr.W15yQC.bHonorARIA==true && sFirstRole=='heading') {
                       bFoundHeading=true;
-                      if(node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
+                      if(blr.W15yQC.bHonorARIA==true && node.hasAttribute('aria-level') && blr.W15yQC.fnIsValidPositiveInt(node.getAttribute('aria-level'))==true) {
                         headingLevel=parseInt(node.getAttribute('aria-level'));
                       } else { // TODO: Look deeper at this. JAWS 13 seems to default to heading level 2 if not specified
                         headingLevel=2;
@@ -6364,7 +6385,7 @@ ys: 'whys'
                       if(blr.W15yQC.fnStringHasContent(controlType)) { controlType='['+controlType+']'; }
                       controlType=sTagName+controlType;
                       sAnnouncedAs=blr.W15yQC.fnJAWSAnnouncesControlAs(node);
-                      sARIADescriptionText = blr.W15yQC.fnGetARIADescriptionText(node, doc);
+                      sARIADescriptionText = blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnGetARIADescriptionText(node, doc) : null;
                       sStateDescription = blr.W15yQC.fnGetNodeState(node);
                       sID = node.getAttribute('id');
                       sName = node.getAttribute('name');
@@ -6466,7 +6487,7 @@ ys: 'whys'
   
                   if (node.firstChild != null) { // keep looking through current document
                     if(sFirstRole!==null) {
-                      if(blr.W15yQC.fnIsValidARIARole(sFirstRole) && blr.W15yQC.fnIsARIALandmarkRole(sFirstRole)!=true) {
+                      if(blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsValidARIARole(sFirstRole) && blr.W15yQC.fnIsARIALandmarkRole(sFirstRole)!=true) {
                         bAddedARIARole=true;
                         sPreviousInheritedRoles=sInheritedRoles;
                         sInheritedRoles=blr.W15yQC.fnJoin(sInheritedRoles,sFirstRole,':');
@@ -6752,7 +6773,7 @@ ys: 'whys'
     },
 
     fnIsARIALandmark: function(node) {
-      return (node != null && node.hasAttribute && node.hasAttribute('role') && blr.W15yQC.fnIsARIALandmarkRole(node.getAttribute('role')));
+      return (blr.W15yQC.bHonorARIA==true && node != null && node.hasAttribute && node.hasAttribute('role') && blr.W15yQC.fnIsARIALandmarkRole(node.getAttribute('role')));
     },
 
     fnIsHTML5SectionElement: function(node) {
@@ -10771,7 +10792,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           blr.W15yQC.fnDisplayARIALandmarksResults(reportDoc, oW15yQCReport.aARIALandmarks);
         }
 
-        if(sReports=='' || sReports.indexOf('aria')>=0 && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
+        if(blr.W15yQC.bHonorARIA==true && (sReports=='' || sReports.indexOf('aria')>=0) && blr.W15yQC.userExpertLevel>0 && Application.prefs.getValue("extensions.W15yQC.enableARIAElementsInspector",true)) {
           if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing ARIA', 18); }
           blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
           blr.W15yQC.fnDisplayARIAElementsResults(reportDoc, oW15yQCReport.aARIAElements);

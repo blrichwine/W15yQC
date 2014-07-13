@@ -120,8 +120,9 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
-    
-Semantic view tool does not appear to support aria-label on buttons. google search results for example.
+  -- Display settings summary in the HTML Reports
+  -- See if aria-hidden is taken into account for hiding elements, reports, semantic view
+  -- role="radiogroup" how should this be handled? QA This!!    
 HTML5 Landmarks do not show up in ARIA Landmarks inspector or HTML reports.
 Options came up incorrect. Why?
 Page level heading failures too many colunms in the HTML list
@@ -645,6 +646,7 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED
+    -- Semantic view tool does not appear to support aria-label on buttons. google search results for example. [7/12/2014]
     -- List languages found for caption and sub-title tracks when reporting on multi-media.
     -- ** Don't display Owner Document Number in full HTML report if only one document is present [3/20/2014]
     -- Link text for the "advertisement" squares on iuk.edu homepage read incorrectly. [CANT REPRODUCE]
