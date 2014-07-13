@@ -30,6 +30,7 @@
       <preference id="testContrastMinSpec" name="extensions.W15yQC.testContrast.MinSpec" type="string"/>
       <preference id="mandatoryCodeList" name="extensions.W15yQC.mandatoryCodeList" type="string"/>
       <preference id="enableMandates" name="extensions.W15yQC.mandatesEnabled" type="bool"/>
+      <preference id="autoCheckForUpdates" name="extensions.W15yQC.autoCheckForUpdates" type="bool"/>
       <preference id="rulesToExcludeList" name="extensions.W15yQC.rulesToExcludeList" type="string"/>
     </preferences>
 
@@ -57,6 +58,7 @@
 					</menulist>
 					<spacer flex="1"/>
 				</hbox>
+				<checkbox label="Automatically Check For Updates" preference="autoCheckForUpdates"/>
 				<spacer flex="1"/>
 				<hbox>
 					<spacer flex="1"/>

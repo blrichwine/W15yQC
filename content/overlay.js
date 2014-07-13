@@ -34,8 +34,11 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 53',
-    releaseDate: 'July 6, 2014',
+    releaseVersion: '1.0 - Beta 54',
+    releaseDate: 'July 13, 2014',
+    mainVersion: 1.0,
+    betaVersion: 54,
+    overlayDoc: null,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -62,6 +65,11 @@ if (!blr.W15yQC) {
     domainEq2: [],
     storedColors: [],
     crcTable: null,
+    bAutoCheckForUpdates: false,
+    bPromptUserOfUpdate: false,
+    bOnStableUpdateChannel: false,
+    checkForUpdatesHttpRequest: null,
+
     
     dominantAriaRoles: /\b(button|heading|checkbox|combobox|menuitem|menuitemcheckbox|menuitemradio|option|progressbar|radio|scrollbar|slider|spinbutton|tab|textbox|treeitem|listbox|tree|treegrid|img)\b/i,
 
@@ -732,10 +740,12 @@ ys: 'whys'
       var p, out = '';
       if (o != null) {
         for (p in o) {
-          if (o[p].toString() == '[object Object]' && bDig != false) {
-            out += 'STARTOBJ' + p + ': [' + blr.W15yQC.LinksDialog.objectToString(o[p], false) + ']\n';
-          } else {
-            out += p + ': ' + o[p] + '\n';
+          if (o[p]!=null) {
+            if (o[p].toString() == '[object Object]' && bDig != false) {
+              out += 'STARTOBJ' + p + ': [' + blr.W15yQC.LinksDialog.objectToString(o[p], false) + ']\n';
+            } else {
+              out += p + ': ' + o[p] + '\n';
+            }
           }
         }
       }
@@ -11048,6 +11058,11 @@ try{
           }
         }
       }
+      
+      blr.W15yQC.bAutoCheckForUpdates = Application.prefs.getValue('extensions.W15yQC.autoCheckForUpdates',false);
+      if (blr.W15yQC.bAutoCheckForUpdates==true) {
+        blr.W15yQC.fnCheckForUpdates();
+      }
     },
 
     fnRemoveStyles: function () {
@@ -11065,7 +11080,66 @@ try{
         if(win!=null && win.focus) win.focus();
       }
     },
+    
+    fnCheckForUpdates: function(bPromptUser) {
+      var i=Math.floor(Math.random() * (1000)) + 1;
+      blr.W15yQC.bPromptUserOfUpdate=bPromptUser==true?true:false;
+      if(blr.W15yQC.checkForUpdatesHttpRequest==null) {
+	blr.W15yQC.checkForUpdatesHttpRequest=new XMLHttpRequest();;
+	if(blr.W15yQC.checkForUpdatesHttpRequest!==null) {
+          blr.W15yQC.checkForUpdatesHttpRequest.onreadystatechange = blr.W15yQC.fnHandleUpdateResponse;
+          blr.W15yQC.checkForUpdatesHttpRequest.open('GET', 'http://blrichwine.github.io/W15yQC/index.html?i='+i.toString());
+          blr.W15yQC.checkForUpdatesHttpRequest.send();
+	}
+      }
+    },
 
+    fnHandleUpdateResponse: function() {
+      var b, el, m, stableVer, betaVer, sLabel='';
+      if (blr.W15yQC.checkForUpdatesHttpRequest!==null && blr.W15yQC.checkForUpdatesHttpRequest.readyState === 4) {
+        if (blr.W15yQC.checkForUpdatesHttpRequest.status === 200) {
+          try {
+            if(blr.W15yQC.checkForUpdatesHttpRequest.responseText!=null) {
+              m=blr.W15yQC.checkForUpdatesHttpRequest.responseText.match(/<!-- stable: (0.0) beta: (1.0)-b(53) -->/);
+              if (m!=null && m.length>2) {
+                if (blr.W15yQC.bOnStableUpdateChannel==true) {
+                  if (parseFloat(m[1])>blr.W15yQC.mainVersion) {
+                    sLabel="Upgrade to "+m[1];
+                  }
+                } else { 
+                  if (parseFloat(m[2])>blr.W15yQC.mainVersion || (parseFloat(m[2])>=blr.W15yQC.mainVersion && parseFloat(m[3])>blr.W15yQC.betaVersion)) {
+                    sLabel="Upgrade to "+m[2]+"-b"+m[3];
+                  }
+                }
+                if (blr.W15yQC.fnStringHasContent(sLabel)==true) {
+                  b=blr.W15yQC.overlayDoc.createElement('toolbarbutton');
+                  el=blr.W15yQC.overlayDoc.getElementById('W15yTPB-HTMLQuickReport').parentNode;
+                  b.setAttribute('label',sLabel);
+                  b.setAttribute('class','toolbarbuton');
+                  b.setAttribute('oncommand',"blr.W15yQC.fnOpenURL('http://blrichwine.github.io/W15yQC/downloads/w15yqc_downloads.html');");
+                  el.appendChild(b);
+                  if (blr.W15yQC.bPromptUserOfUpdate==true) {
+                    alert("Update Available!");
+                  }
+                } else if (blr.W15yQC.bPromptUserOfUpdate==true) {
+                  alert("W15yQC is up-to-date.");
+                }
+              }
+            blr.W15yQC.fnLog('handleUpdateRespone passed');
+            }
+          } catch(ex) { 
+            blr.W15yQC.fnLog('check for updates failed'+ex.toString());
+            alert('check for updates failed'+ex.toString()); 
+          };
+          blr.W15yQC.checkForUpdatesHttpRequest=null;
+        } else {
+          blr.W15yQC.fnLog('handleUpdateRespone HTTP request failed.');
+          alert('Check for updates HTTP request failed.');
+          blr.W15yQC.checkForUpdatesHttpRequest=null;
+        }
+      }
+    },
+    
     fnNonDOMIntegrityTests: function () {
       if (blr.W15yQC.fnMaxDecimalPlaces(10.234324, 2).toString() != "10.23") {
         blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
@@ -11087,6 +11161,7 @@ try{
       }
     }
   };
+
 
   // ----------------
   //     Objects

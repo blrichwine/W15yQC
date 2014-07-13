@@ -12,3 +12,4 @@ pref("extensions.W15yQC.getElements.honorARIA", true);
 pref("extensions.W15yQC.testContrast.MinSpec", 'WCAG2 AA');
 pref("extensions.W15yQC.rulesToExcludeList", "");
 pref("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", false);
+pref("extensions.W15yQC.autoCheckForUpdates", false);

@@ -149,6 +149,7 @@
       <menupopup onpopupshowing="">
           <menuitem id="W15yTPBMI-Options" accesskey="" label="Options Dialog" oncommand="blr.W15yQC.openDialog('options');"/>
           <menuitem id="W15yTPBMI-About" accesskey="" label="About" oncommand="blr.W15yQC.openDialog('about');"/>
+          <menuitem id="W15yTPBMI-ChkForUpdate" accesskey="" label="Check for update" oncommand="blr.W15yQC.fnCheckForUpdates(true);"/>
           <menuitem id="W15yTPBMI-Help" accesskey="" label="Help" oncommand="blr.W15yQC.fnOpenURL('http://blrichwine.github.com/W15yQC/w15yqc_docs.html');"/>
       </menupopup>
     </toolbarbutton>
@@ -170,4 +171,5 @@
                  oncommand="blr.W15yQC.openHTMLReportWindow();">
     </toolbarbutton>
   </toolbar>
+  <script>blr.W15yQC.overlayDoc=document;</script>
 </overlay>
