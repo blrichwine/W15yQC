@@ -120,7 +120,10 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+  -- improve list highlighter to highlight role="list"
   -- Display settings summary in the HTML Reports
+  -- fnGetDocuments needs to be investigated for completeness
+  -- verify highlighters get the right elements, the fnGetXXX routines need verified
   -- See if aria-hidden is taken into account for hiding elements, reports, semantic view
   -- role="radiogroup" how should this be handled? QA This!!    
 HTML5 Landmarks do not show up in ARIA Landmarks inspector or HTML reports.

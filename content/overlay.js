@@ -5536,39 +5536,6 @@ ys: 'whys'
       }
     },
 
-    fnGetFrameTitles: function (doc, rootNode, aFramesList) {
-      var c, frameTitle, frameSrc, frameId, frameName, role, xPath, nodeDescription, frameDocument, aLabel, effectiveLabel, effectiveLabelSource;
-      if (aFramesList == null) { aFramesList = []; }
-
-      if (doc != null) {
-        if (rootNode == null) { rootNode = doc.body; }
-        for (c = rootNode.firstChild; c != null; c = c.nextSibling) {
-          if (c.nodeType == 1) { // Only pay attention to element nodes
-            if (c.tagName && ((c.contentWindow && c.contentWindow.document !== null) || (c.contentDocument && c.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(c) == false) { // Found a frame
-              // document the frame
-              frameTitle = blr.W15yQC.fnGetNodeAttribute(c, 'title', null);
-              frameSrc = blr.W15yQC.fnGetNodeAttribute(c, 'src', null);
-              frameId = blr.W15yQC.fnGetNodeAttribute(c, 'id', null);
-              frameName = blr.W15yQC.fnGetNodeAttribute(c, 'name', null);
-              role = blr.W15yQC.fnGetNodeAttribute(c, 'role', null);
-              xPath = blr.W15yQC.fnGetElementXPath(c);
-              aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
-              effectiveLabel=aLabel[0];
-              effectiveLabelSource=aLabel[1];
-              nodeDescription = blr.W15yQC.fnDescribeElement(c, 400);
-              aFramesList.push(new blr.W15yQC.frameElement(c, xPath, nodeDescription, doc, aFramesList.length, role, frameId, frameName, frameTitle, effectiveLabel, effectiveLabelSource, frameSrc));
-              // get frame contents
-              frameDocument = c.contentWindow ? c.contentWindow.document : c.contentDocument;
-              blr.W15yQC.fnGetFrameTitles(frameDocument, frameDocument.body, aFramesList);
-            } else { // keep looking through current document
-              blr.W15yQC.fnGetFrameTitles(doc, c, aFramesList);
-            }
-          }
-        }
-      }
-      return aFramesList;
-    },
-
     fnAnalyzeFrameTitles: function (oW15yResults) {
       var i, framedDocumentBody, j, aFramesList=oW15yResults.aFrames, aDocumentsList=oW15yResults.aDocuments;
 
@@ -6525,6 +6492,7 @@ ys: 'whys'
        // QA Framesets - framesetTest01.html
        // QA iFrames - iframeTests01.html
       // TODO: Store framing node (frameset, iframe, object, etc.)
+      // TODO: verify this is up-to-date with the getElements version
       if (doc != null) {
         if (aDocumentsList == null) {
           aDocumentsList = [];
