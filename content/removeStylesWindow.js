@@ -254,16 +254,16 @@ try{
               } else {
                 sTagTypeAttr = '';
               }
-              if (c.hasAttribute('role')) {
+              if (blr.W15yQC.bHonorARIA==true && c.hasAttribute('role')) {
                 sRole = c.getAttribute('role').toLowerCase();
               } else {
                 sRole = '';
               }
 
-              if (blr.W15yQC.fnIsARIALandmark(c) || blr.W15yQC.fnIsHTML5SectionElement(c) || sTagName=='canvas' || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
+              if (blr.W15yQC.fnIsHTML5SectionElement(c) || sTagName=='canvas' || (blr.W15yQC.bHonorARIA==true && (blr.W15yQC.fnIsARIALandmark(c) || sRole == "menubar" || sRole == "menu" || sRole == "tablist" ||
                   sRole == "tabpanel" || sRole == "toolbar" || sRole == "tree" || sRole == "treegrid" || sRole == "status" ||
                   sRole == "note" || sRole == "list" || sRole == "img" || sRole == "grid" || sRole == "document" ||
-                  sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog") {
+                  sRole == "directory" || sRole == "dialog" || sRole == "alert" || sRole == "alertdialog"))) {
                 bInAriaBlock = true; // TODO: Should the landmark role prevent the natural element role? Is this appropriate? What about nested ARIA structures?
                 if (sRole == "menubar") {
                   sEnteringLabel = blr.W15yQC.fnJoin(blr.W15yQC.fnGetARIALabelText(c), 'menu bar.', ' ') + ' To navigate use the left and right arrow keys.';
@@ -416,7 +416,7 @@ try{
                   node.appendChild(rd.createTextNode(sLabel));
                 }
               } else if (sRole == 'heading') { // TODO: Improve the handling of heading roles on complex elements (a, tr, td, etc.s)
-                if (blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
+                if (blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsValidPositiveInt(c.getAttribute('aria-level'))) {
                   level = parseInt(blr.W15yQC.fnTrim(c.getAttribute('aria-level')), 10).toString();
                 } else { // TODO: How is this calculated when it is left out?
                   level = '2'; // TODO: What should this be when it was left out?
@@ -430,7 +430,7 @@ try{
                 if (c.parentNode.tagName.toLowerCase()=='a') {
                   node.appendChild(rd.createTextNode('Link: '));
                 }
-                sLabel=blr.W15yQC.fnGetARIALabelText(c);
+                sLabel=blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnGetARIALabelText(c) : null;
                 if (blr.W15yQC.fnStringHasContent(sLabel)) {
                     node.appendChild(rd.createTextNode(blr.W15yQC.fnGetARIALabelText(c)));
                     bDontDig=true; // TODO: ignore child text? What about complex content?
@@ -442,8 +442,8 @@ try{
               } else if (/^button$/i.test(c.tagName)) {
                 node = rd.createElement('button');
                 
-                sLabel = blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label'));
-                if(sLabel.length<1 && node.hasAttribute('aria-labelledby')) {
+                sLabel = blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label')) : '';
+                if(blr.W15yQC.bHonorARIA==true && sLabel.length<1 && node.hasAttribute('aria-labelledby')) {
                   sLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
                 }
                 if (sLabel.length>1) {
@@ -469,8 +469,8 @@ try{
 
                   node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
                   
-                  sLabel = blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label'));
-                  if(blr.W15yQC.fnStringHasContent(sLabel)==false && node.hasAttribute('aria-labelledby')) {
+                  sLabel = blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label')) : '';
+                  if(blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnStringHasContent(sLabel)==false && node.hasAttribute('aria-labelledby')) {
                     sLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
                   }
                   if(blr.W15yQC.fnStringHasContent(sLabel)==false && blr.W15yQC.fnStringHasContent(blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(c,0,['ul','ol','dl','li','dt','dl','dd'],[])))==false
@@ -506,7 +506,7 @@ try{
                   bKeepStyle = false;
                 }
                 if(sTagName=='input' && /^(button|checkbox|hidden|image|radio|reset|submit)$/.test(sTagTypeAttr)==false) {
-                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c);
+                    sControlsOtherText=blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnGetARIALabelText(c) : '';
                     sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c);
 
                     if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {
@@ -542,7 +542,7 @@ try{
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
 
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {
-                    sControlsOtherText=blr.W15yQC.fnGetARIALabelText(c);
+                    sControlsOtherText=blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnGetARIALabelText(c) : '';
                     sControlsLabelText=blr.W15yQC.fnGetFormControlLabelTagText(c);
 
                     if(blr.W15yQC.fnStringHasContent(sControlsOtherText)==true) {

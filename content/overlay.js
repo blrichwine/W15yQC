@@ -3104,7 +3104,7 @@ ys: 'whys'
         while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset' &&
                (window.getComputedStyle(node, null)==null||(window.getComputedStyle(node, null).getPropertyValue("display").toLowerCase() != 'none' &&
                window.getComputedStyle(node, null).getPropertyValue("visibility").toLowerCase() != 'hidden')) &&
-               (node.hasAttribute('aria-hidden') == false || node.getAttribute('aria-hidden') == "false")) {
+               ((blr.W15yQC.bHonorARIA==false || node.hasAttribute('aria-hidden') == false || /^false\b/i.test(node.getAttribute('aria-hidden'))))) {
           node = node.parentNode;
         }
         if (node != null && (node.nodeName.toLowerCase() == 'body' || node.nodeName.toLowerCase() == 'frameset')) {
