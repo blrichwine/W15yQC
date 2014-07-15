@@ -120,6 +120,17 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
+    
+  -- language attribute checking:
+    The required version of the lang attribute varies with the doctype:
+     -For html pages use lang="en".
+     -For xhtml 1.0 pages, use both lang="en" and xml:lang="en".
+     -For xhtml 1.1 pages, use xml:lang="en".
+  -- Create highlightersDev.html page with challenging content for the highlighters to work on for testing and development
+  -- Review: http://www.html5accessibility.com/
+  -- output element?
+  -- Placeholder handling -- provide warning if it is the only source of label, what are the appropriate elements it is on?
+  -- What does the semantic view do for invalid links. Should show text but not make it a link.
   -- Display settings summary in the HTML Reports
   -- fnGetDocuments needs to be investigated for completeness
   -- verify highlighters get the right elements, the fnGetXXX routines need verified

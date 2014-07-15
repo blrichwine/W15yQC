@@ -129,6 +129,7 @@
           <menuitem id="W15yTPBMI-ARIALandmarksHighlighter" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
           <menuitem id="W15yTPBMI-BlockquotesHighlighter" accesskey="" label="Blockquotes" oncommand="blr.W15yQC.Highlighters.highlightBasicElement('blockquote');"/>
           <menuitem id="W15yTPBMI-HeadingsHighlighter" accesskey="" label="Headings" oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>
+          <menuitem id="W15yTPBMI-LangAttrHighlighter" accesskey="" label="Language Attributes" oncommand="blr.W15yQC.Highlighters.highlightLangAttributes();"/>
           <menuitem id="W15yTPBMI-ListsHighlighter" accesskey="" label="Lists" oncommand="blr.W15yQC.Highlighters.highlightLists();"/>
           <menuitem id="W15yTPBMI-TablesHighlighter" accesskey="" label="Tables" oncommand="blr.W15yQC.Highlighters.highlightTables();"/>
           <menuitem id="W15yTPBMI-InstallAllHighlighters" label="Install All" oncommand="blr.W15yQC.Highlighters.installAllHighlights();"/>

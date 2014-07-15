@@ -60,25 +60,6 @@ blr.W15yQC.Highlighters = {
     return setHighlights; // return status of highlights
   },
 
-  basicHighlightLists: function (aDocumentsList) {
-    var doc, styleElement, i;
-    if (aDocumentsList != null && aDocumentsList.length > 0) {
-      for (i = 0; i < aDocumentsList.length; i++) {
-        doc = aDocumentsList[i].doc;
-        if (doc != null) {
-          styleElement = doc.createElement('style');
-          if (blr.W15yQC.bHonorARIA==false) {
-            styleElement.innerHTML = 'dl,ol,ul{border: 2px solid red !important;margin:3px !important} dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
-          } else {
-            styleElement.innerHTML = '*[role=list],dl,ol,ul{border: 2px solid red !important;margin:3px !important} *[role=listitem],dl dt,ol li,ul li{border: 2px dashed red !important;margin:3px !important; padding: 3px !important}dl dd{border: 1px dashed red !important;margin:3px !important; padding: 3px !important}';
-          }
-          styleElement.setAttribute('id', 'W15yQCListsHighlightStyle');
-          doc.head.insertBefore(styleElement, doc.head.firstChild);
-        }
-      }
-    }
-  },
-
   extendedHighlightLists: function (aDocumentsList) { // TODO: What about definition lists?
     var doc, styleElement, j, i, lists, listIndex, div, span, listItem;
     blr.W15yQC.Highlighters.removeListHighlights(aDocumentsList);
@@ -356,6 +337,83 @@ blr.W15yQC.Highlighters = {
     }
   },
 
+ 
+  highlightLangAttributes: function (aDocumentsList) {
+    var styleElement = null,
+      setHighlights = false;
+    try {
+      if (aDocumentsList == null) {
+        aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+      }
+      if (aDocumentsList != null && aDocumentsList.length > 0) {
+        styleElement = aDocumentsList[0].doc.getElementById('W15yQCLangAttributesHighlightStyle');
+        if (styleElement) {
+          blr.W15yQC.Highlighters.removeLangAttributeHighlights(aDocumentsList);
+          setHighlights = false;
+        } else {
+          blr.W15yQC.Highlighters.extendedHighlightLangAttributes(aDocumentsList);
+          setHighlights = true;
+        }
+      }
+    } catch (ex) {}
+    return setHighlights; // return status of highlights
+  },
+
+  extendedHighlightLangAttributes: function (aDocumentsList) {
+    var langAttrList, doc, styleElement, i, j, insert, span1, sInsertText;
+    try{
+    if (aDocumentsList != null && aDocumentsList.length > 0) {
+      for (i = 0; i < aDocumentsList.length; i++) {
+        doc = aDocumentsList[i].doc;
+        if (doc != null) {
+          styleElement = doc.createElement('style');
+          styleElement.innerHTML = '.w15yqcLangAttrInsert{text-indent:0px !important; float:none !important}*[lang]{border:2px solid red !important}.w15yqcLAInsert{text-indent:0px !important; display:box !important;float:left !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
+          styleElement.setAttribute('id', 'W15yQCLangAttributesHighlightStyle');
+          doc.head.insertBefore(styleElement, doc.head.firstChild);
+
+          langAttrList=doc.querySelectorAll("*[lang]");
+          for (j = 0; j < langAttrList.length; j++) {
+            sInsertText=langAttrList[j].getAttribute('lang'); 
+            if (blr.W15yQC.fnStringHasContent(sInsertText)==true) {
+              span1 = doc.createElement('span');
+              span1.setAttribute('style', 'background: yellow !important; border-image:none !important; display:inline !important; position:static !important;clear:both !important;z-index:2140000000 !important');
+              span1.className = 'w15yqcLangAttrInsert';
+              insert = doc.createElement('span');
+              insert.setAttribute('style', 'z-index:2140000000 !important; display:inline;font-size:small;');
+              insert.className = 'w15yqcLAInsert';
+              insert.appendChild(doc.createTextNode(langAttrList[j].tagName+'[lang="'+sInsertText+'"]'));
+              span1.appendChild(insert);
+              langAttrList[j].insertBefore(span1, langAttrList[j].firstChild);
+            }
+          }
+        }
+      }
+    }
+    } catch(ex){alert(ex.toString());}
+  },
+  
+  removeLangAttributeHighlights: function (aDocumentsList) {
+    var doc, i, styleElement = null,
+      infoElements = null;
+    if (aDocumentsList != null && aDocumentsList.length > 0) {
+      for (i = 0; i < aDocumentsList.length; i++) {
+        doc = aDocumentsList[i].doc;
+        if (doc != null) {
+          styleElement = doc.getElementById('W15yQCLangAttributesHighlightStyle');
+          if (styleElement) {
+            styleElement.parentNode.removeChild(styleElement);
+          }
+          infoElements = doc.getElementsByClassName('w15yqcLangAttrInsert');
+          while (infoElements != null && infoElements.length > 0) {
+            infoElements[0].parentNode.removeChild(infoElements[0]);
+          }
+        }
+      }
+    }
+  },
+ 
+  
+  
   highlightTables: function (aDocumentsList) {
     var styleElement = null,
       setHighlights = false;
@@ -375,21 +433,6 @@ blr.W15yQC.Highlighters = {
       }
     } catch (ex) {}
     return setHighlights; // return status of highlights
-  },
-
-  basicHighlightTables: function (aDocumentsList) {
-    var doc, styleElement, i;
-    if (aDocumentsList != null && aDocumentsList.length > 0) {
-      for (i = 0; i < aDocumentsList.length; i++) {
-        doc = aDocumentsList[i].doc;
-        if (doc != null) {
-          styleElement = doc.createElement('style');
-          styleElement.innerHTML = 'table {border: 1px solid red !important; } table th {border: 2px solid blue !important; } table td {border: 1px dotted  blue !important;} table caption {text-indent:0px !important; border: 1px dotted  red !important; } table th[scope=col],table th[scope=colgroup] {text-indent:0px !important; border-bottom: 4px solid green !important} table th[scope=row],table th[scope=rowgroup] {text-indent:0px !important; border-right: 4px solid green !important}';
-          styleElement.setAttribute('id', 'W15yQCTableHighlightStyle');
-          doc.head.insertBefore(styleElement, doc.head.firstChild);
-        }
-      }
-    }
   },
 
   extendedHighlightTables: function (aDocumentsList) {
@@ -592,6 +635,8 @@ blr.W15yQC.Highlighters = {
       }
     }
   },
+  
+  
 
   highlightBasicElement: function(elementTagName, aDocumentsList) {
     var styleElement = null,
@@ -683,6 +728,7 @@ blr.W15yQC.Highlighters = {
     blr.W15yQC.Highlighters.highlightLists(aDocumentsList);
     blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
     blr.W15yQC.Highlighters.highlightBasicElement('blockquote', aDocumentsList);
+    blr.W15yQC.Highlighters.highlightLangAttributes(aDocumentsList);
   },
 
   removeAllHighlights: function(aDocumentsList) {
@@ -694,6 +740,7 @@ blr.W15yQC.Highlighters = {
     blr.W15yQC.Highlighters.removeARIALandmarkHighlights(aDocumentsList);
     blr.W15yQC.Highlighters.removeTableHighlights(aDocumentsList);
     blr.W15yQC.Highlighters.removeBasicElementHighlights('blockquote', aDocumentsList);
+    blr.W15yQC.Highlighters.removeLangAttributeHighlights(aDocumentsList);
   }
 
 };
