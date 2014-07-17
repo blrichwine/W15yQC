@@ -126,6 +126,7 @@
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Highlighters" label="Highlighters" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
+          <menuitem id="W15yTPBMI-ARIAAbbrElsHighlighter" accesskey="" label="Abbreviations" oncommand="blr.W15yQC.Highlighters.highlightAbbrElements();"/>
           <menuitem id="W15yTPBMI-ARIALandmarksHighlighter" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.Highlighters.highlightARIALandmarks();"/>
           <menuitem id="W15yTPBMI-BlockquotesHighlighter" accesskey="" label="Blockquotes" oncommand="blr.W15yQC.Highlighters.highlightBasicElement('blockquote');"/>
           <menuitem id="W15yTPBMI-HeadingsHighlighter" accesskey="" label="Headings" oncommand="blr.W15yQC.Highlighters.highlightHeadings();"/>

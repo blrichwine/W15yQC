@@ -367,7 +367,7 @@ blr.W15yQC.Highlighters = {
         doc = aDocumentsList[i].doc;
         if (doc != null) {
           styleElement = doc.createElement('style');
-          styleElement.innerHTML = '.w15yqcLangAttrInsert{text-indent:0px !important; float:none !important}*[lang]{border:2px solid red !important}.w15yqcLAInsert{text-indent:0px !important; display:box !important;float:left !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
+          styleElement.innerHTML = '.w15yqcLangAttrInsert{text-indent:0px !important; float:none !important}*[lang]{border:2px solid red !important}.w15yqcLAInsert{text-indent:0px !important; display:box !important;float:none !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;clear:both !important; font-family:arial,sans-serif !important}';
           styleElement.setAttribute('id', 'W15yQCLangAttributesHighlightStyle');
           doc.head.insertBefore(styleElement, doc.head.firstChild);
 
@@ -376,7 +376,7 @@ blr.W15yQC.Highlighters = {
             sInsertText=langAttrList[j].getAttribute('lang'); 
             if (blr.W15yQC.fnStringHasContent(sInsertText)==true) {
               span1 = doc.createElement('span');
-              span1.setAttribute('style', 'background: yellow !important; border-image:none !important; display:inline !important; position:static !important;clear:both !important;z-index:2140000000 !important');
+              span1.setAttribute('style', 'background: yellow !important; clear:both !important; border-image:none !important; display:inline !important; position:static !important;z-index:2140000000 !important');
               span1.className = 'w15yqcLangAttrInsert';
               insert = doc.createElement('span');
               insert.setAttribute('style', 'z-index:2140000000 !important; display:inline;font-size:small;');
@@ -412,6 +412,82 @@ blr.W15yQC.Highlighters = {
     }
   },
  
+ 
+  highlightAbbrElements: function (aDocumentsList) {
+    var styleElement = null,
+      setHighlights = false;
+    try {
+      if (aDocumentsList == null) {
+        aDocumentsList = blr.W15yQC.fnGetDocuments(window.top.content.document);
+      }
+      if (aDocumentsList != null && aDocumentsList.length > 0) {
+        styleElement = aDocumentsList[0].doc.getElementById('W15yQCAbbrElementsHighlightStyle');
+        if (styleElement) {
+          blr.W15yQC.Highlighters.removeAbbrElementHighlights(aDocumentsList);
+          setHighlights = false;
+        } else {
+          blr.W15yQC.Highlighters.extendedHighlightAbbrElements(aDocumentsList);
+          setHighlights = true;
+        }
+      }
+    } catch (ex) {}
+    return setHighlights; // return status of highlights
+  },
+
+  extendedHighlightAbbrElements: function (aDocumentsList) {
+    var elList, doc, styleElement, i, j, insert, span1, sInsertText;
+    try{
+    if (aDocumentsList != null && aDocumentsList.length > 0) {
+      for (i = 0; i < aDocumentsList.length; i++) {
+        doc = aDocumentsList[i].doc;
+        if (doc != null) {
+          styleElement = doc.createElement('style');
+          styleElement.innerHTML = '.w15yqcAbbrElInsert{text-indent:0px !important; float:none !important}abbr{border:2px solid red !important}.w15yqcAbbrInsert{text-indent:0px !important; display:box !important;float:none !important; border: 2px solid green !important; font-weight:normal;color:black !important; background-color:#AAFFAA !important;margin:1px 1px 3px 1px !important;padding:2px 2px 2px 2px !important;position:static !important; z-index:2140000000 !important;font-family:arial,sans-serif !important;clear:both !important}';
+          styleElement.setAttribute('id', 'W15yQCAbbrElementsHighlightStyle');
+          doc.head.insertBefore(styleElement, doc.head.firstChild);
+
+          elList=doc.querySelectorAll("abbr");
+          for (j = 0; j < elList.length; j++) {
+            sInsertText=elList[j].getAttribute('title'); 
+            if (blr.W15yQC.fnStringHasContent(sInsertText)==true) {
+              span1 = doc.createElement('span');
+              span1.setAttribute('style', 'background: yellow !important; border-image:none !important; display:inline !important; position:static !important;clear:both !important;z-index:2140000000 !important');
+              span1.className = 'w15yqcAbbrElInsert';
+              insert = doc.createElement('span');
+              insert.setAttribute('style', 'z-index:2140000000 !important; display:inline;font-size:small;');
+              insert.className = 'w15yqcAbbrInsert';
+              insert.appendChild(doc.createTextNode(elList[j].tagName+'[title="'+sInsertText+'"]'));
+              span1.appendChild(insert);
+              elList[j].insertBefore(span1, elList[j].firstChild);
+            }
+          }
+        }
+      }
+    }
+    } catch(ex){alert(ex.toString());}
+  },
+  
+  removeAbbrElementHighlights: function (aDocumentsList) {
+    var doc, i, styleElement = null,
+      infoElements = null;
+    if (aDocumentsList != null && aDocumentsList.length > 0) {
+      for (i = 0; i < aDocumentsList.length; i++) {
+        doc = aDocumentsList[i].doc;
+        if (doc != null) {
+          styleElement = doc.getElementById('W15yQCAbbrElementsHighlightStyle');
+          if (styleElement) {
+            styleElement.parentNode.removeChild(styleElement);
+          }
+          infoElements = doc.getElementsByClassName('w15yqcAbbrElInsert');
+          while (infoElements != null && infoElements.length > 0) {
+            infoElements[0].parentNode.removeChild(infoElements[0]);
+          }
+        }
+      }
+    }
+  },
+ 
+  
   
   
   highlightTables: function (aDocumentsList) {
@@ -711,7 +787,7 @@ blr.W15yQC.Highlighters = {
   },
 
   installAllHighlights: function (aDocumentsList, aHeadingsList) {
-    var aARIALandmarksList
+    var aARIALandmarksList;
     // Headings
     // Tables
     // Landmarks
@@ -729,6 +805,7 @@ blr.W15yQC.Highlighters = {
     blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
     blr.W15yQC.Highlighters.highlightBasicElement('blockquote', aDocumentsList);
     blr.W15yQC.Highlighters.highlightLangAttributes(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightAbbrElements(aDocumentsList);
   },
 
   removeAllHighlights: function(aDocumentsList) {
@@ -741,6 +818,7 @@ blr.W15yQC.Highlighters = {
     blr.W15yQC.Highlighters.removeTableHighlights(aDocumentsList);
     blr.W15yQC.Highlighters.removeBasicElementHighlights('blockquote', aDocumentsList);
     blr.W15yQC.Highlighters.removeLangAttributeHighlights(aDocumentsList);
+    blr.W15yQC.Highlighters.removeAbbrElementHighlights(aDocumentsList);
   }
 
 };

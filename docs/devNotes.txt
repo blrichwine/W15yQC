@@ -120,7 +120,30 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 	  
     *** FIX ASAP***
-    
+  -- Check contrast between link text and surrounding text if link text is not underlined.
+  -- is search role valid on a form element? WebAIM recommends it, so lets allow it.
+  -- check for links in navigation role. Are the links in a list?
+  -- warn on tabindex values that are 1 or higher.
+      When implementing a page that contains a large number of focusable elements arranged via CSS and using methods to adapt the layout to multiple device form factors, what alternatives would you recommend to control the tab order?
+      Also, I would appreciate any elaboration on why tabindex “causes more accessibility issues than it solves”.
+  -- role="presentation" fail if on links or form controls.
+  -- role="presentation" on images, fail if image has alternate text (what happens here... test with JAWS)
+  -- test for display:none, visibility:hidden, or aria-hidden on skip links and fail/warn on them.
+  -- Make sure the link, headings, images, and form control inspectors display the label/link text/alt text/etc. on the first line in the notes panel for the selected element
+  -- radio groups are listed as fieldsets in the label source. can this be fixed to note the real aria source? http://webaim.org/presentations/2012/ahgaria/radiogroup2
+  -- Include HTML5 Section elements as Landmarks Option
+  -- banner, main, and contentinfo landmarks only appear once
+  -- warn on role="application" that area of the page needs to be tested with assistive technologies (screen-readers), by someone who can't see and didn't write the widget
+      look for meaningful content inside of role="application" and provide warning.
+      Look for inappropriate role="application" use.
+      Be very careful with <body role="application">. 
+             + Users cannot easily leave forms mode. 
+             + Screen reader sends all keystrokes to the page/browser/application.
+             + Standard A.T. keystrokes are disabled. disables standard A.T. keystrokes to allow the page to function like a desktop application
+      Some ARIA elements (tree view, slider, table, tabs, dialog, toolbar, menus, etc.) have an assumed application role.
+
+
+  -- Look for too many landmarks (how many is too many?)
   -- language attribute checking:
     The required version of the lang attribute varies with the doctype:
      -For html pages use lang="en".
@@ -149,6 +172,13 @@ HTML Headings results
 
 HOME is immune to link text differences.
   
+  -- add linearize all tables button to semantic view
+  -- add tool to resize text on webpage
+  -- warn on use of br elements in paragraphs
+  -- warn on the use of q (quotation) element
+  -- warn on the use of sub (superscript) and sub (subscript) elements
+  -- Does semantic view display blockquotes as begin/end blockquote?
+  -- Add highlight abbreviation and acronyms in document feature (use lang code as example).
   -- add disable contrast checking in inspections option.
   -- Create describe element/node type function. Use it in analysis routines to set nodeType attribute
   -- Organize element type objects, make sure prototype includes all members, organize members -- have common ones at top, unique ones after that
@@ -485,8 +515,8 @@ HTML5 Elements to test
       audit each of the remove highlights routines to see if they really clean everything up.
       if link or button contains no text, but has text that is hidden with display:none or the such, provide a warning on the use of display:none
       look up common skip navigation link texts
-      look for meaningful content inside of role="application" and provide warning.
-      Look for inappropriate role="application" use.
+      
+      
       Moan about keyboard accessibility issues
         - A elements without HREF attributes that have onclick handlers
 
