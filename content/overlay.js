@@ -11100,8 +11100,10 @@ try{
         if (blr.W15yQC.checkForUpdatesHttpRequest.status === 200) {
           try {
             if(blr.W15yQC.checkForUpdatesHttpRequest.responseText!=null) {
-              m=blr.W15yQC.checkForUpdatesHttpRequest.responseText.match(/<!-- stable: (0.0) beta: (1.0)-b(53) -->/);
+              blr.W15yQC.fnLog('handleUpdateResponse passed');
+              m=blr.W15yQC.checkForUpdatesHttpRequest.responseText.match(/<!--\s*stable:\s*(\d+\.\d+)\s*beta:\s(\d+\.\d+)-b(\d+) -->/);
               if (m!=null && m.length>2) {
+                blr.W15yQC.fnLog('handleUpdateResponse found latest version comment');
                 if (blr.W15yQC.bOnStableUpdateChannel==true) {
                   if (parseFloat(m[1])>blr.W15yQC.mainVersion) {
                     sLabel="Upgrade to "+m[1];
@@ -11124,8 +11126,9 @@ try{
                 } else if (blr.W15yQC.bPromptUserOfUpdate==true) {
                   alert("W15yQC is up-to-date.");
                 }
+              } else {
+                blr.W15yQC.fnLog('handleUpdateResponse did not find latest version comment');
               }
-            blr.W15yQC.fnLog('handleUpdateRespone passed');
             }
           } catch(ex) { 
             blr.W15yQC.fnLog('check for updates failed'+ex.toString());
