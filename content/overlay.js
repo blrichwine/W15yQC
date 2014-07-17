@@ -60,6 +60,7 @@ if (!blr.W15yQC) {
     bFirstHeadingMustBeLevel1: true,
     bOnlyOneLevel1Heading: false,
     bHonorARIA: true,
+    bHonorHTML5: true,
     bAutoScrollToSelectedElementInInspectorDialogs: true,
     domainEq1: [],
     domainEq2: [],
@@ -3110,7 +3111,7 @@ ys: 'whys'
         if (node.tagName.toLowerCase() == 'input' && node.hasAttribute('type') && node.getAttribute('type').toLowerCase() == 'hidden') {
           return true;
         }
-        if(node.hasAttribute('hidden') && (node.getAttribute('hidden')=='hidden' || node.getAttribute('hidden')=='')) { // For now, strict interpretation
+        if(blr.W15yQC.bHonorHTML5==true && node.hasAttribute('hidden') && (node.getAttribute('hidden')=='hidden' || node.getAttribute('hidden')=='')) { // For now, strict interpretation
           return true;
         }
         while (node != null && node.nodeType==1 && node.nodeName.toLowerCase() != 'body' && node.nodeName.toLowerCase() != 'frameset' &&
@@ -3925,7 +3926,9 @@ ys: 'whys'
     fnGetNodeState: function (node) {
       var sStateDescription = null;
       if (node != null && node.tagName != null) {
-        if (blr.W15yQC.fnNodeIsHidden(node) == true) {
+        if (blr.W15yQC.bHonorHTML5==true && node.hasAttribute('hidden') == true) {
+          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'hidden="' + node.getAttribute('hidden') + '"', ', ');
+        } else if (blr.W15yQC.fnNodeIsHidden(node) == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsHidden'), ', ');
         }
         if (blr.W15yQC.fnNodeIsMasked(node) == true) {
@@ -3939,9 +3942,6 @@ ys: 'whys'
         }
         if (node.readOnly == true) {
           sStateDescription = blr.W15yQC.fnJoin(sStateDescription, blr.W15yQC.fnGetString('nsReadOnly'), ', ');
-        }
-        if (node.hasAttribute('hidden') == true) {
-          sStateDescription = blr.W15yQC.fnJoin(sStateDescription, 'hidden="' + node.getAttribute('hidden') + '"', ', ');
         }
         if (blr.W15yQC.bHonorARIA==true) {
           if (node.hasAttribute('aria-autocomplete') == true) {
@@ -5268,42 +5268,42 @@ ys: 'whys'
             if (blr.W15yQC.fnIsHTML5SectionElement(node)==true || /^div|span|form$/i.test(node.tagName)==true) {
               switch(node.tagName.toLowerCase()) {
                 case 'article':
-                  if (/article/i.test(sFirstRole)==false) {
+                  if (/^article$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'article']); // TODO: QA This
                   }
                   break;
                 case 'aside':
-                  if (/complementary/i.test(sFirstRole)==false) {
+                  if (/^complementary$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'complementary']); // TODO: QA This
                   }
                   break;
                 case 'footer':
-                  if (/contentinfo/i.test(sFirstRole)==false) {
+                  if (/^contentinfo$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'contentinfo']); // TODO: QA This
                   }
                   break;
                 case 'form':
-                  if (/form/i.test(sFirstRole)==false) {
-                    blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'form']); // TODO: QA This
+                  if (/^(form|search)$/i.test(sFirstRole)==false) {
+                    blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'form,search']); // TODO: QA This
                   }
                   break;
                 case 'header':
-                  if (/banner/i.test(sFirstRole)==false) {
+                  if (/^banner$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'banner']); // TODO: QA This
                   }
                   break;
                 case 'main':
-                  if (/main/i.test(sFirstRole)==false) {
+                  if (/^main$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'main']); // TODO: QA This
                   }
                   break;
                 case 'nav':
-                  if (/navigation/i.test(sFirstRole)==false) {
+                  if (/^navigation$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'navigation']); // TODO: QA This
                   }
                   break;
                 case 'section':
-                  if (/region/i.test(sFirstRole)==false) {
+                  if (/^region$/i.test(sFirstRole)==false) {
                     blr.W15yQC.fnAddNote(no, 'ariaLandmarkOnIncorrectElement',[node.tagName.toLowerCase(),sFirstRole,'region']); // TODO: QA This
                   }
                   break;
@@ -6804,7 +6804,7 @@ ys: 'whys'
     },
 
     fnIsHTML5SectionElement: function(node) {
-      return (node != null && node.hasAttribute && /^(article|aside|footer|header|main|nav|section)$/i.test(node.tagName)==true);
+      return (node != null && blr.W15yQC.bHonorHTML5==true && node.hasAttribute && /^(article|aside|footer|header|main|nav|section)$/i.test(node.tagName)==true);
     },
 
     fnGetARIALandmarks: function (doc, rootNode, aARIALandmarksList, baseLevel) {
