@@ -4137,41 +4137,49 @@ ys: 'whys'
         if(rootNode.nodeType==1 && /block/i.test(rootNode.ownerDocument.defaultView.getComputedStyle(rootNode, null).getPropertyValue('display'))) {
           sRootBlockSpace = ' ';
         }
-        
-        for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
-          if (node.nodeType == 1 || node.nodeType == 3) { // Only pay attention to element and text nodes
-            if (node.tagName && ((node.contentWindow && node.contentWindow.document !== null) ||
-                              (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
-              // don't get frame contents, but instead check if it has an ARIA label content or a title attribute
-              // TODO: ARIA LABEL CONTENT
-              if (node.hasAttribute('title')) {
-                sNodeChildText = blr.W15yQC.fnJoinNoClean(sNodeChildText, node.getAttribute('title'), ' ')+' ';
-              }
-            } else { // keep looking through current document
-              if (node.nodeType == 3 && node.nodeValue != null) { // text content
-                sNodeChildText = blr.W15yQC.fnJoinNoClean(sNodeChildText, node.nodeValue, '');
-              }
-              if (node.nodeType == 1 || node.nodeType == 3) {
-                if (iRecursion < 100 && (node.nodeType!=1 || (((iRecursion>0 && aStopElements!=null) ? aStopElements.indexOf(node.tagName.toLowerCase()) : -1) < 0 && blr.W15yQC.fnNodeIsHidden(node) == false))) {
-                  if(node.nodeType==1 && /block/i.test(node.ownerDocument.defaultView.getComputedStyle(node, null).getPropertyValue('display'))) {
-                    sBlockSpace = ' ';
-                  }
-                  sRecursiveText = blr.W15yQC.fnGetEffectiveLabel(node, iRecursion + 1, aStopElements, aElements)[0];
+        if (rootNode.nodeType==1 && blr.W15yQC.fnStringHasContent(blr.W15yQC.fnGetARIALabelText(rootNode))==true) {
+          sNodeChildText=blr.W15yQC.fnGetARIALabelText(rootNode);
+        } else {
+          for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
+            if (node.nodeType == 1 || node.nodeType == 3) { // Only pay attention to element and text nodes
+              
+              if (node.tagName && ((node.contentWindow && node.contentWindow.document !== null) ||
+                                (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
+                // don't get frame contents, but instead check if it has an ARIA label content or a title attribute
+                // TODO: ARIA LABEL CONTENT
+                if (node.hasAttribute('title')) {
+                  sNodeChildText = blr.W15yQC.fnJoinNoClean(sNodeChildText, node.getAttribute('title'), ' ')+' ';
                 }
-                if (sRecursiveText == null || (node.nodeType == 1 && blr.W15yQC.fnTrim(sRecursiveText).length == 0)) {
-                  if (node.tagName != null && blr.W15yQC.fnCanTagHaveAlt(node.tagName) && node.hasAttribute('alt') == true) {
-                    sRecursiveText = node.getAttribute('alt');
-                  } else if (node.hasAttribute && node.hasAttribute('title')) {
-                    sRecursiveText = node.getAttribute('title');
-                  }
+              } else { // keep looking through current document
+                if (node.nodeType == 3 && node.nodeValue != null) { // text content
+                  sNodeChildText = blr.W15yQC.fnJoinNoClean(sNodeChildText, node.nodeValue, '');
                 }
-                sNodeChildText = blr.W15yQC.fnJoinNoClean(sNodeChildText, sRecursiveText, sBlockSpace)+sBlockSpace;
-                if(blr.W15yQC.fnStringHasContent(sRecursiveText)) { sBlockSpace=''; }
+                if (node.nodeType == 1 || node.nodeType == 3) {
+                  if (iRecursion < 100 && (node.nodeType!=1 || (((iRecursion>0 && aStopElements!=null) ? aStopElements.indexOf(node.tagName.toLowerCase()) : -1) < 0 && blr.W15yQC.fnNodeIsHidden(node) == false))) {
+                    if(node.nodeType==1 && /block/i.test(node.ownerDocument.defaultView.getComputedStyle(node, null).getPropertyValue('display'))) {
+                      sBlockSpace = ' ';
+                    }
+                    if (node.nodeType==1 && blr.W15yQC.fnStringHasContent(blr.W15yQC.fnGetARIALabelText(node))==true) {
+                      sRecursiveText=blr.W15yQC.fnGetARIALabelText(node);
+                    } else {
+                      sRecursiveText = blr.W15yQC.fnGetEffectiveLabel(node, iRecursion + 1, aStopElements, aElements)[0];
+                    }
+                  }
+                  if (sRecursiveText == null || (node.nodeType == 1 && blr.W15yQC.fnTrim(sRecursiveText).length == 0)) {
+                    if (node.tagName != null && blr.W15yQC.fnCanTagHaveAlt(node.tagName) && node.hasAttribute('alt') == true) {
+                      sRecursiveText = node.getAttribute('alt');
+                    } else if (node.hasAttribute && node.hasAttribute('title')) {
+                      sRecursiveText = node.getAttribute('title');
+                    }
+                  }
+                  sNodeChildText = blr.W15yQC.fnJoinNoClean(sNodeChildText, sRecursiveText, sBlockSpace)+sBlockSpace;
+                  if(blr.W15yQC.fnStringHasContent(sRecursiveText)) { sBlockSpace=''; }
+                }
               }
             }
           }
         }
-
+        
         sNodeChildText = sRootBlockSpace+sNodeChildText+sRootBlockSpace;
         if (iRecursion==0) {
           sNodeChildText = blr.W15yQC.fnCleanSpaces(sNodeChildText);
@@ -7251,7 +7259,7 @@ ys: 'whys'
     },
 
     fnDisplayARIAElementsResults: function (rd, aARIAElementsList) {
-      var div, innerDiv, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, divARIAEl, divWidth, sNotesTxt, sMessage, span;
+      var div, innerDiv, list, previousHeadingLevel, previousDocument, i, sDoc, nextLogicalLevel, j, li, li2, divARIAEl, divWidth, sClose, sNotesTxt, sMessage, span;
       div = rd.createElement('div');
       innerDiv = rd.createElement('div');
       div.setAttribute('id', 'AIARIAElementsList');
@@ -7291,6 +7299,14 @@ ys: 'whys'
             previousHeadingLevel = j;
           }
 
+          //if ((i==0 && aARIAElementsList[i].node!==aARIAElementsList[i].doc.body.firstElementChild) ||
+          //    (i>0 && (aARIAElementsList[i].level==aARIAElementsList[i-1].level && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.nextElementSibling) ||
+          //     (aARIAElementsList[i].level==aARIAElementsList[i-1].level+1 && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.firstElementChild))) {
+          //  li2 = rd.createElement('li');
+          //  li2.appendChild(rd.createTextNode('...'));
+          //  list[list.length - 1].appendChild(li2);
+          //}
+
           li = rd.createElement('li');
           if (previousDocument != aARIAElementsList[i].doc) {
             blr.W15yQC.fnAddClass(li, 'newDocument');
@@ -7302,6 +7318,10 @@ ys: 'whys'
           divWidth = 600-aARIAElementsList[i].level*15;
           divARIAEl.setAttribute('style','float:left;width:'+divWidth+'px');
           divARIAEl.appendChild(rd.createTextNode(aARIAElementsList[i].nodeDescription));
+          if ((aARIAElementsList[i].node.firstChild!=null && i+1<aARIAElementsList.length && aARIAElementsList[i].level>=aARIAElementsList[i+1].level)||
+              (i+1==aARIAElementsList.length)){
+            divARIAEl.appendChild(rd.createTextNode(blr.W15yQC.fnCutoffString(blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(aARIAElementsList[i].node),25)+'</'+aARIAElementsList[i].node.tagName+'>'));
+          }
           li.appendChild(divARIAEl);
           sNotesTxt = blr.W15yQC.fnMakeTextNotesList(aARIAElementsList[i]);
           sMessage = blr.W15yQC.fnJoin(sDoc, blr.W15yQC.fnJoin(sNotesTxt, aARIAElementsList[i].stateDescription, ', state:'), ' - ');
@@ -7318,7 +7338,6 @@ ys: 'whys'
           } else if (aARIAElementsList[i].warning) {
             li.setAttribute('class', 'warning');
           }
-          if (aARIAElementsList[i].nodeDescription != null) { li.setAttribute('title', aARIAElementsList[i].nodeDescription); }
 
           if (aARIAElementsList[i].level > previousHeadingLevel && previousHeadingLevel > 0) {
             list.push(rd.createElement('ul'));
@@ -7326,10 +7345,37 @@ ys: 'whys'
             while (aARIAElementsList[i].level < previousHeadingLevel) {
               list[list.length - 2].appendChild(list[list.length - 1]);
               list.pop();
+              sClose='';
+              for (j=i-1;j>=0;j--) {
+                if (aARIAElementsList[j].level==previousHeadingLevel-1) {
+                  sClose=aARIAElementsList[j].node.tagName;
+                  break;
+                }
+              }
               previousHeadingLevel--;
+
+              li2 = rd.createElement('li');
+              li2.appendChild(rd.createTextNode('</'+sClose+'>'));
+              list[list.length - 1].appendChild(li2);
             }
           }
+          
+          if ((i==0 && aARIAElementsList[i].node!==aARIAElementsList[i].doc.body.firstElementChild) ||
+              (i>0 && (aARIAElementsList[i].level==aARIAElementsList[i-1].level && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.nextElementSibling) ||
+               (aARIAElementsList[i].level==aARIAElementsList[i-1].level+1 && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.firstElementChild))) {
+            li2 = rd.createElement('li');
+            li2.appendChild(rd.createTextNode('...'));
+            list[list.length - 1].appendChild(li2);
+          }
+
           list[list.length - 1].appendChild(li);
+          
+          if ((i+1<aARIAElementsList.length && aARIAElementsList[i].node.nextElementSibling!=null && aARIAElementsList[i].level>aARIAElementsList[i+1].level) ||
+              (i+1==aARIAElementsList.length && aARIAElementsList[i].node.nextElementSibling!=null)) {
+            li2 = rd.createElement('li');
+            li2.appendChild(rd.createTextNode('...'));
+            list[list.length - 1].appendChild(li2);
+          }
           previousHeadingLevel = parseInt(aARIAElementsList[i].level,10);
         }
         while (list.length > 1) {

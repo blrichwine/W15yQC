@@ -531,14 +531,9 @@ HTML5 Elements to test
         Currently it is not listed in the remove styles view.)
       Detect alt text for Flash objects, other embedded objects, canvas, etc.
       Add effective label columns to the appropriate HTML Report sections and inspector dialogs
-      Add blr.W15yQC.bQuick = false; to each inspector dialog -- maybe not, added it to the open dialog routine.
       Find pronounciation dictionary, use Perl to create list of homonyms by reverse indexing the pronounciation codes, create expanded list from this.
       Use the spider link text word report to create list of popular tokens that are not in the dictionary, examine them and analyze
       If a token starts with i or e, (iPhone), then see if the word minus the first letter is in the homonym list. If so, separate it (eye, e)
-      Need smart scroll to feature.
-        - Right now it scrolls to the top each element and makes it difficult to see. How can we scroll it only part way?
-        - Can we only scroll it when necessary?
-        - Can we center it vertically?
       From firefox chrome://browser/content/browser.xul:
        -BrowserViewSourceOfDocument(content.document);
        <menuitem id="context-inspect"
@@ -566,10 +561,6 @@ HTML5 Elements to test
            - disabled attribute on the fieldset element
            - canvas tag child content / alt content
         - Disabled attribute on the fieldset element
-        - Remove styles view, show semantics: details+summary, HTML5 aside, etc., figure+figcaption
-        - Handle ARIA in remove styles view
-        - Load configuration from a file (rules to include, exclude, expert level, ignores, etc.)
-        - Add lang attribute highlighter that highlights language changes
         - overlay.xul: wrap the opendialog call in an extra (empty catch) try catch block so the second call to open.dialog doesn't take place on error in the dialog itself.
         - Need a print CSS file for the HTML Report - background images are not printing!
         - Canvas tags -- detect alt text, list in with images (truncate if necessary)
@@ -622,9 +613,7 @@ HTML5 Elements to test
         - **** Detect ARIA overrides of native tag semantics -- what is acceptable? what is not? (This should be in the aria roles checks)
         - **** test role="group" effects
         - **** In each selection list (select tag), does each list item grouping (optgroup tag) have a label attribute?
-        - **** How does JAWS announce the various form controls? Make a function to return string announced by JAWS.
         - **** QA state listing on ARIA landmarks -- doesn't appear to be working
-        - **** Form controls HTML list should show 'alt' column when a valid instance of alt is present and the effective label comes from one
         - **** Fix form control label detection (fieldsets, legend, label, aria role="group")
         - **** select elements with onchange -- make sure a warning is given in the form control's listing
         - **** each fieldset should contain a legend (Radio buttons require this already)
@@ -636,9 +625,6 @@ HTML5 Elements to test
         - DETERMINE WHICH ELEMENTS FIELDSET LEGENDS APPLY TO, RADIOGROUPs
         - QUESTION: Do div's that have a title attribute and can get focus get announced by screen-readers when they get focus?
         - Which elements have child text that works as a label for ARIA form control roles (radio?)
-        - Check for elements that activate TOC heading level mode and warn at the doc level
-        - Add why invalid ID routine
-        - QA Form Control Test [].
         - In document list, don't list URL on documents that are script generated. (http://webaim.org/blog/four-keys-to-accessibility/)
         - check label is labeling appropriate form control, guess by location of label vs. location of other control's label
         - FEATURE ADD: Compute largest square that fits in an area's target. Check if it is too small to hit reliably. (have on links, need on buttons and other targets)
