@@ -173,5 +173,4 @@
                  oncommand="blr.W15yQC.openHTMLReportWindow();">
     </toolbarbutton>
   </toolbar>
-  <script>blr.W15yQC.overlayDoc=document;</script>
 </overlay>

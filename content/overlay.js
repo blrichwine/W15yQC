@@ -38,7 +38,7 @@ if (!blr.W15yQC) {
     releaseDate: 'July 17, 2014',
     mainVersion: 1.0,
     betaVersion: 55,
-    overlayDoc: null,
+    updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
     bHonorCSSDisplayNoneAndVisibilityHidden: true,
@@ -743,7 +743,7 @@ ys: 'whys'
         for (p in o) {
           if (o[p]!=null) {
             if (o[p].toString() == '[object Object]' && bDig != false) {
-              out += 'STARTOBJ' + p + ': [' + blr.W15yQC.LinksDialog.objectToString(o[p], false) + ']\n';
+              out += 'STARTOBJ' + p + ': [' + blr.W15yQC.objectToString(o[p], false) + ']\n';
             } else {
               out += p + ': ' + o[p] + '\n';
             }
@@ -3698,11 +3698,11 @@ ys: 'whys'
 
               case 'child text':
                 if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,['ul','ol','dl','li','dt','dl','dd'],aElements),' '));
+                  sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,['ul','ol','dl','li','dt','dl','dd'],aElements),' ');
                 } else {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText,blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,aStopElements,aElements),' '));
+                  sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText,blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,aStopElements,aElements),' ');
                 }
-                if(sLabelText.length > l) {
+                if(blr.W15yQC.fnStringHasContent(sLabelText.length)) {
                   sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', ');
                 }
                 break;
@@ -4156,7 +4156,7 @@ ys: 'whys'
                 }
                 if (node.nodeType == 1 || node.nodeType == 3) {
                   if (iRecursion < 100 && (node.nodeType!=1 || (((iRecursion>0 && aStopElements!=null) ? aStopElements.indexOf(node.tagName.toLowerCase()) : -1) < 0 && blr.W15yQC.fnNodeIsHidden(node) == false))) {
-                    if(node.nodeType==1 && /block/i.test(node.ownerDocument.defaultView.getComputedStyle(node, null).getPropertyValue('display'))) {
+                    if(node.nodeType==1 && /inline/i.test(node.ownerDocument.defaultView.getComputedStyle(node, null).getPropertyValue('display'))==false) {
                       sBlockSpace = ' ';
                     }
                     if (node.nodeType==1 && blr.W15yQC.fnStringHasContent(blr.W15yQC.fnGetARIALabelText(node))==true) {
@@ -7359,10 +7359,10 @@ ys: 'whys'
               list[list.length - 1].appendChild(li2);
             }
           }
-          
+
           if ((i==0 && aARIAElementsList[i].node!==aARIAElementsList[i].doc.body.firstElementChild) ||
-              (i>0 && (aARIAElementsList[i].level==aARIAElementsList[i-1].level && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.nextElementSibling) ||
-               (aARIAElementsList[i].level==aARIAElementsList[i-1].level+1 && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.firstElementChild))) {
+              (i>0 && ((aARIAElementsList[i].level==aARIAElementsList[i-1].level && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.nextElementSibling) ||
+               (aARIAElementsList[i].level==aARIAElementsList[i-1].level+1 && aARIAElementsList[i].node!==aARIAElementsList[i-1].node.firstElementChild)))) {
             li2 = rd.createElement('li');
             li2.appendChild(rd.createTextNode('...'));
             list[list.length - 1].appendChild(li2);
@@ -11129,8 +11129,8 @@ try{
     
     fnCheckForUpdates: function(bPromptUser) {
       var i=Math.floor(Math.random() * (1000)) + 1;
-      blr.W15yQC.bPromptUserOfUpdate=bPromptUser==true?true:false;
-      if(blr.W15yQC.checkForUpdatesHttpRequest==null) {
+      blr.W15yQC.bPromptUserOfUpdate=(bPromptUser==true)?true:false;
+      if(blr.W15yQC.checkForUpdatesHttpRequest==null && (blr.W15yQC.updateCheckMade==false || bPromptUser==true)) {
 	blr.W15yQC.checkForUpdatesHttpRequest=new XMLHttpRequest();;
 	if(blr.W15yQC.checkForUpdatesHttpRequest!==null) {
           blr.W15yQC.checkForUpdatesHttpRequest.onreadystatechange = blr.W15yQC.fnHandleUpdateResponse;
@@ -11141,33 +11141,46 @@ try{
     },
 
     fnHandleUpdateResponse: function() {
-      var b, el, m, stableVer, betaVer, sLabel='';
+      var b, el, m, stableVer, betaVer, sLabel='', stableURL='', betaURL='', sURL='', doUpdate=false;
       if (blr.W15yQC.checkForUpdatesHttpRequest!==null && blr.W15yQC.checkForUpdatesHttpRequest.readyState === 4) {
         if (blr.W15yQC.checkForUpdatesHttpRequest.status === 200) {
           try {
             if(blr.W15yQC.checkForUpdatesHttpRequest.responseText!=null) {
               blr.W15yQC.fnLog('handleUpdateResponse passed');
-              m=blr.W15yQC.checkForUpdatesHttpRequest.responseText.match(/<!--\s*stable:\s*(\d+\.\d+)\s*beta:\s(\d+\.\d+)-b(\d+) -->/);
-              if (m!=null && m.length>2) {
+              m=blr.W15yQC.checkForUpdatesHttpRequest.responseText.match(/<!--\s*stable:\s*(\d+\.\d+)\s*(\S+)\s+beta:\s(\d+\.\d+)-b(\d+)\s+(\S+)\s+-->/);
+              if (m!=null && m.length>5) {
+                blr.W15yQC.updateCheckMade=true;
+                blr.W15yQC.fnLog('handleUpdateResponse m.length>5');
+                stableURL=m[2];
+                betaURL=m[5];
                 blr.W15yQC.fnLog('handleUpdateResponse found latest version comment');
                 if (blr.W15yQC.bOnStableUpdateChannel==true) {
                   if (parseFloat(m[1])>blr.W15yQC.mainVersion) {
                     sLabel="Upgrade to "+m[1];
+                    sURL=stableURL;
                   }
-                } else { 
-                  if (parseFloat(m[2])>blr.W15yQC.mainVersion || (parseFloat(m[2])>=blr.W15yQC.mainVersion && parseFloat(m[3])>blr.W15yQC.betaVersion)) {
-                    sLabel="Upgrade to "+m[2]+"-b"+m[3];
+                } else {
+                  if (parseFloat(m[3])>blr.W15yQC.mainVersion || (parseFloat(m[3])>=blr.W15yQC.mainVersion && parseInt(m[4])>blr.W15yQC.betaVersion)) {
+                    sLabel="Upgrade to "+m[3]+"-b"+m[4];
+                    sURL=betaURL;
                   }
                 }
-                if (blr.W15yQC.fnStringHasContent(sLabel)==true) {
-                  b=blr.W15yQC.overlayDoc.createElement('toolbarbutton');
-                  el=blr.W15yQC.overlayDoc.getElementById('W15yTPB-HTMLQuickReport').parentNode;
-                  b.setAttribute('label',sLabel);
-                  b.setAttribute('class','toolbarbuton');
-                  b.setAttribute('oncommand',"blr.W15yQC.fnOpenURL('http://blrichwine.github.io/W15yQC/downloads/w15yqc_downloads.html');");
-                  el.appendChild(b);
+                if (blr.W15yQC.fnStringHasContent(sLabel)==true && blr.W15yQC.fnAppearsToBeURL(sURL)==true) {
+                  if (blr.W15yQC.bPromptUserOfUpdate==false) {
+                    b=document.createElement('toolbarbutton');
+                    el=document.getElementById('W15yTPB-HTMLQuickReport').parentNode;
+                    b.setAttribute('label',sLabel);
+                    b.setAttribute('class','toolbarbuton');
+                    b.setAttribute('oncommand',"blr.W15yQC.fnOpenURL('"+sURL+"');");
+                    el.appendChild(b);
+                  }
                   if (blr.W15yQC.bPromptUserOfUpdate==true) {
-                    alert("Update Available!");
+                    doUpdate = window.confirm('A newer version is availble. '+sLabel+'?');
+                    if (doUpdate==true) {
+                      if (blr.W15yQC.fnAppearsToBeURL(sURL)==true) {
+                        blr.W15yQC.fnOpenURL(sURL);
+                      }
+                    }
                   }
                 } else if (blr.W15yQC.bPromptUserOfUpdate==true) {
                   alert("W15yQC is up-to-date.");
@@ -11176,15 +11189,20 @@ try{
                 blr.W15yQC.fnLog('handleUpdateResponse did not find latest version comment');
               }
             }
+            blr.W15yQC.bPromptUserOfUpdate=false;
           } catch(ex) { 
+            blr.W15yQC.checkForUpdatesHttpRequest=null;
             blr.W15yQC.fnLog('check for updates failed'+ex.toString());
-            alert('check for updates failed'+ex.toString()); 
+            if(blr.W15yQC.bPromptUserOfUpdate==true) { alert('check for updates failed'+ex.toString()); }
+            blr.W15yQC.bPromptUserOfUpdate=false;
           };
+          blr.W15yQC.bPromptUserOfUpdate=false;
           blr.W15yQC.checkForUpdatesHttpRequest=null;
         } else {
-          blr.W15yQC.fnLog('handleUpdateRespone HTTP request failed.');
-          alert('Check for updates HTTP request failed.');
           blr.W15yQC.checkForUpdatesHttpRequest=null;
+          blr.W15yQC.fnLog('handleUpdateRespone HTTP request failed.');
+          if(blr.W15yQC.bPromptUserOfUpdate==true) { alert('Check for updates HTTP request failed.'); }
+          blr.W15yQC.bPromptUserOfUpdate=false;
         }
       }
     },

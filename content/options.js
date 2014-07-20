@@ -100,7 +100,7 @@ blr.W15yQC.options = {
          .getBranch("extensions.W15yQC.");
      this.ps.QueryInterface(Components.interfaces.nsIPrefBranch);
      this.ps.addObserver("", this, false);
-    blr.W15yQC.fnUpdateControlStates();
+    blr.W15yQC.options.fnUpdateControlStates();
   },
 
   observe: function(subject, topic, data) {
