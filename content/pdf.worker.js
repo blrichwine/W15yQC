@@ -5348,7 +5348,7 @@ var PDFDocument = (function PDFDocumentClosure() {
       }
       return shadow(this, 'documentInfo', docInfo);
     },
-    
+
     get tagged() {
       var rootDict, value=false;
       try {
@@ -6711,10 +6711,10 @@ var NameTree = (function NameTreeClosure() {
 })();
 
 /**
- * "A PDF file can refer to the contents of another file by using a File 
+ * "A PDF file can refer to the contents of another file by using a File
  * Specification (PDF 1.1)", see the spec (7.11) for more details.
  * NOTE: Only embedded files are supported (as part of the attachments support)
- * TODO: support the 'URL' file system (with caching if !/V), portable 
+ * TODO: support the 'URL' file system (with caching if !/V), portable
  * collections attributes and related files (/RF)
  */
 var FileSpec = (function FileSpecClosure() {
@@ -37409,7 +37409,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         var fingerprintPromise = pdfManager.ensureDoc('fingerprint');
         var taggedPromise = pdfManager.ensureDoc('tagged');
         var encryptedPromise = pdfManager.ensureXRef('encrypt');
-        Promise.all([numPagesPromise, fingerprintPromise, 
+        Promise.all([numPagesPromise, fingerprintPromise,
                      encryptedPromise, taggedPromise]).then(function onDocReady(results) {
           var doc = {
             numPages: results[0],
@@ -37570,7 +37570,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
 
     handler.on('GetDocRequest', function wphSetupDoc(data) {
 
-      var onSuccess = function(doc) { 
+      var onSuccess = function(doc) {
         handler.send('GetDoc', { pdfInfo: doc });
       };
 
@@ -37857,9 +37857,9 @@ if (typeof window === 'undefined') {
 
 /* This class implements the QM Coder decoding as defined in
  *   JPEG 2000 Part I Final Committee Draft Version 1.0
- *   Annex C.3 Arithmetic decoding procedure 
+ *   Annex C.3 Arithmetic decoding procedure
  * available at http://www.jpeg.org/public/fcd15444-1.pdf
- * 
+ *
  * The arithmetic decoder is used in conjunction with context models to decode
  * JPEG2000 and JBIG2 streams.
  */
@@ -42534,6 +42534,3 @@ if (!PDFJS.workerSrc && typeof document !== 'undefined') {
     return pdfjsSrc && pdfjsSrc.replace(/\.js$/i, '.worker.js');
   })();
 }
-
-
-

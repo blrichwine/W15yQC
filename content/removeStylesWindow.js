@@ -54,7 +54,7 @@ blr.W15yQC.RemoveStylesWindow = {
   prompts: null,
   rd: null,
   srcDoc: null,
-  
+
   init: function (dialog) {
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.RemoveStylesWindow.srcDoc = dialog.arguments[1];
@@ -86,9 +86,9 @@ try{
     blr.W15yQC.RemoveStylesWindow.fnBuildRemoveStylesView(rd, rd.body, blr.W15yQC.RemoveStylesWindow.srcDoc);
     blr.W15yQC.RemoveStylesWindow.fnLinearizeTables(rd);
     blr.W15yQC.RemoveStylesWindow.fnInstallFocusHighlighter();
-}catch(ex){alert(ex);}
+}catch(ex){alert(blr.W15yQC.objectToString(ex));}
   },
-  
+
   cleanup: function () {
     blr.W15yQC.RemoveStylesWindow.aDocumentsList = null;
     blr.W15yQC.RemoveStylesWindow.aHeadingsList = null;
@@ -136,7 +136,7 @@ try{
 
   processSVG: function(rd, appendNode, doc, rootNode, oValues, iLevel) {
     var n, div, p, el, bDontDig, sTagName;
-    
+
     if (doc != null && appendNode != null && rootNode != null) {
       if (appendNode == null) {
         appendNode = rd.body;
@@ -396,7 +396,7 @@ try{
                   if (blr.W15yQC.fnElementIsChildOf(c, 'a')) {
                     c2 = appendNode;
                     while (c2 != null && typeof c2.tagName != 'undefined' && /^(a|body|html)$/i.test(c2.tagName)===false) { c2 = c2.parentNode; }
-                    if (c2 != null && c2.tagName && /^a$/i.test(c2.tagName)) { 
+                    if (c2 != null && c2.tagName && /^a$/i.test(c2.tagName)) {
                       borderStyle = 'border:1px solid blue;';
                       sLabel = blr.W15yQC.fnJoin('Image-Link', (blr.W15yQC.fnGetEffectiveLabel(c))[0], ': ');
                       div = rd.createElement('div');
@@ -441,12 +441,12 @@ try{
                 bDontDig=true;
               } else if (/^button$/i.test(c.tagName)) {
                 node = rd.createElement('button');
-                
+
                 sLabel = blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label')) : '';
-                if(blr.W15yQC.bHonorARIA==true && sLabel.length<1 && node.hasAttribute('aria-labelledby')) {
+                if(blr.W15yQC.bHonorARIA==true && !blr.W15yQC.fnStringHasContent(sLabel) && node.hasAttribute('aria-labelledby')) {
                   sLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
                 }
-                if (sLabel.length>1) {
+                if (blr.W15yQC.fnStringHasContent(sLabel)) {
                   node.appendChild(rd.createTextNode(sLabel));
                   bDontDig=true;
                 }
@@ -468,7 +468,7 @@ try{
                      /^#[^#]/.test(node.getAttribute('href')));
 
                   node.setAttribute('href', '#dont-load-' + node.getAttribute('href'));
-                  
+
                   sLabel = blr.W15yQC.bHonorARIA==true ? blr.W15yQC.fnCleanSpaces(c.getAttribute('aria-label')) : '';
                   if(blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnStringHasContent(sLabel)==false && node.hasAttribute('aria-labelledby')) {
                     sLabel = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc));
@@ -476,7 +476,7 @@ try{
                   if(blr.W15yQC.fnStringHasContent(sLabel)==false && blr.W15yQC.fnStringHasContent(blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(c,0,['ul','ol','dl','li','dt','dl','dd'],[])))==false
                      && blr.W15yQC.fnStringHasContent(c.getAttribute('title'))) {
                     sLabel=c.getAttribute('title');
-                  }                  
+                  }
                   if (blr.W15yQC.fnStringHasContent(sLabel)) {
                     node.appendChild(rd.createTextNode((bSamePageLink ? ' Same Page Link: ' : ' Link: ')+sLabel));
                     bDontDig=true;
@@ -538,7 +538,7 @@ try{
                   appendNode.appendChild(rd.createTextNode(' ' + oValues.sHeldLabel + ' '));
                   oValues.sHeldLabel='';
                 }
-                
+
                 appendNode.appendChild(node); //alert('appending:'+node.tagName+' to:'+appendNode.tagName);
 
                 if(sTagName=='input' && /^(checkbox|radio)$/.test(sTagTypeAttr)==true) {

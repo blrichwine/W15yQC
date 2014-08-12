@@ -34,10 +34,10 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 56',
-    releaseDate: 'July 20, 2014',
+    releaseVersion: '1.0 - Beta 57',
+    releaseDate: 'August 11, 2014',
     mainVersion: 1.0,
-    betaVersion: 56,
+    betaVersion: 57,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
@@ -71,7 +71,7 @@ if (!blr.W15yQC) {
     bOnStableUpdateChannel: false,
     checkForUpdatesHttpRequest: null,
 
-    
+
     dominantAriaRoles: /\b(button|heading|checkbox|combobox|menuitem|menuitemcheckbox|menuitemradio|option|progressbar|radio|scrollbar|slider|spinbutton|tab|textbox|treeitem|listbox|tree|treegrid|img)\b/i,
 
     // Homophones object for sounds like routine
@@ -642,7 +642,7 @@ ys: 'whys'
 
     return (crc ^ (-1)) >>> 0;
   },
-  
+
     // fnCreateStrBundle based on: chrome://global/content/strres.js
     strBundleService: null,
     fnCreateStrBundle: function(path) {
@@ -742,15 +742,15 @@ ys: 'whys'
       if (o != null) {
         for (p in o) {
           if (o[p]!=null) {
-            if (o[p].toString() == '[object Object]' && bDig != false) {
-              out += 'STARTOBJ' + p + ': [' + blr.W15yQC.objectToString(o[p], false) + ']\n';
+            if(typeof o[p]==='object' && bDig !== false) {
+              out += 'STARTOBJ: ' + p + ': [' + blr.W15yQC.objectToString(o[p], bDig) + ']\n';
             } else {
-              out += p + ': ' + o[p] + '\n';
+              if((typeof o[p])!=='function') { out += p + ': ' + o[p] + '\n'; }
             }
           }
         }
       }
-      return out;
+      return out===''?o:out;
     },
 
     fnLog: function (sMsg) {
@@ -830,7 +830,7 @@ ys: 'whys'
       }
       return s;
     },
-    
+
     fnCleanSpaces: function (str, bKeepNewLines) {
       if (str && str.replace) {
         if (bKeepNewLines) {
@@ -900,13 +900,13 @@ ys: 'whys'
         dt=doc.doctype;
         return '<!DOCTYPE ' + dt.name
          + (dt.publicId ? ' PUBLIC "' + dt.publicId + '"' : '')
-         + (!dt.publicId && dt.systemId ? ' SYSTEM' : '') 
+         + (!dt.publicId && dt.systemId ? ' SYSTEM' : '')
          + (dt.systemId ? ' "' + dt.systemId + '"' : '')
          + '>';
       }
       return '';
     },
-    
+
     fnRemoveElementFromChain: function(el) {
       if (el!==null && el.parentNode) {
         while (el.firstChild!==null) {
@@ -958,7 +958,7 @@ ys: 'whys'
       return aList;
     }
     return aList;
-  },    
+  },
 
     // Severity Levels: 0=notice, 1=warning, 2=failure
     // Expert Levels: 0=Basic, 1=Advanced, 2=Expert
@@ -1006,7 +1006,7 @@ ys: 'whys'
       ldmkBannerShouldNotBeNested: [false,1,0,false,null],
       ldmkLandmarkNameInLabel: [false,1,0,false,null],
       ldmkMainStartsWithNav: [false,2,0,false,null],
-      
+
       ariaLmkAndLabelNotUnique: [true,2,0,false,null],
       ariaLmkNotUnique: [true,2,0,false,null],
       ariaHeadingMissingAriaLevel: [false,1,0,true,null],
@@ -1076,7 +1076,7 @@ ys: 'whys'
       mmVideoSubTitleLangsFound: [true,0,0,false,null],
       mmIDNotValid: [false,1,0,false,null],
       mmIDNotUnique:  [false,2,0,false,null],
-      
+
       akConflict: [true,1,0,false,null],
       akNoLabel: [true,2,0,false,null],
       akLabelOnlyASCII: [false,2,0,false,null],
@@ -1415,7 +1415,7 @@ ys: 'whys'
       }
       return false;
     },
-    
+
     fnFirstChildElementIs: function(node, sElementTagName) {
       var nodeStack=[], n;
       sElementTagName=sElementTagName.toLowerCase();
@@ -1787,7 +1787,7 @@ ys: 'whys'
         inspector.selection.setNode(node, "browser-context-menu");
       }.bind(this));
     },
-      
+
     openDialog: function (sDialogName) {
       var dialogPath = null, dialogID = null, win;
 
@@ -1862,6 +1862,10 @@ ys: 'whys'
         case 'scanner':
           dialogID = 'scannerWindow';
           dialogPath = 'chrome://W15yQC/content/scanner.xul';
+          break;
+        case 'pdfChecker':
+          dialogID = 'pdfCheckerDevDialog';
+          dialogPath = 'chrome://W15yQC/content/pdfCheckerDev.xul';
           break;
         }
         if (dialogID != null) {
@@ -2300,7 +2304,7 @@ ys: 'whys'
       if(url1!=null) { url1 = url1.replace(r4, ''); }
       if(url2!=null) { url2 = url2.replace(r4, ''); }
       return (url1 == url2);
-    },  
+    },
 
     fnLinkTextsAreDifferent: function(s1, s2) { // TODO: QA This function
       if(s1 == s2) { return false; }
@@ -2549,7 +2553,7 @@ ys: 'whys'
       if (WordString.length<2) {
         return WordString;
       }
-      
+
       /* Clean and tidy
        */
       WordStr = WordString;
@@ -3435,7 +3439,7 @@ ys: 'whys'
         return 'null';
       }
     },
-    
+
     fnDescribeElement: function (node, maxLength, maxAttributeLength, sMode) {
       var sDescription = '',
           sAttributes = '',
@@ -3706,7 +3710,7 @@ ys: 'whys'
                   sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', ');
                 }
                 break;
-              
+
               case 'svgtext':
                 sLabelText = blr.W15yQC.fnGetSVGLabel(node);
                 if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'SVG Text', ', '); }
@@ -3753,14 +3757,14 @@ ys: 'whys'
         //  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc),' '));
         //  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
         //}
-        
+
        }
       return [sLabelText, sLabelSource];
     },
 
   fnGetSVGLabel: function(node, iLevel) {
     var n, bDontDig, sTagName, sMsg='';
-    
+
     if (node != null) {
       for (n = node.firstChild; n != null; n = n.nextSibling) {
         if (n.nodeType==1 && n.tagName) {
@@ -4041,7 +4045,7 @@ ys: 'whys'
       return sNodeChildText;
     },
 
-    
+
     fnGetDisplayableTextRecursively: function (rootNode, iRecursion, aStopElements) {
       // TODO: Vet this with JAWS
       // TODO: How is this used? Getting the title and alt text isn't exactly displayable text. What should this function do? Do we need another one?
@@ -4110,7 +4114,7 @@ ys: 'whys'
       // TODO: QA THIS, rethink this...
       // TODO: Gan we get this from Firefox? What about ARIA-label and other ARIA attribute?
       // How does display:none, visibility:hidden, and aria-hidden=true affect child text collection?
-      
+
       var sNodeChildText = '',
           sRecursiveText = null,
           sRootBlockSpace = '',
@@ -4118,7 +4122,7 @@ ys: 'whys'
           node,
           i;
       if (rootNode != null) {
-        if (iRecursion == null) { 
+        if (iRecursion == null) {
           iRecursion = 0;
         }
         if (aElements==null) {
@@ -4142,7 +4146,7 @@ ys: 'whys'
         } else {
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
             if (node.nodeType == 1 || node.nodeType == 3) { // Only pay attention to element and text nodes
-              
+
               if (node.tagName && ((node.contentWindow && node.contentWindow.document !== null) ||
                                 (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
                 // don't get frame contents, but instead check if it has an ARIA label content or a title attribute
@@ -4179,7 +4183,7 @@ ys: 'whys'
             }
           }
         }
-        
+
         sNodeChildText = sRootBlockSpace+sNodeChildText+sRootBlockSpace;
         if (iRecursion==0) {
           sNodeChildText = blr.W15yQC.fnCleanSpaces(sNodeChildText);
@@ -4191,7 +4195,7 @@ ys: 'whys'
 
     fnElementUsesARIA: function (node) {
       var i, attrName;
-      
+
       if (blr.W15yQC.bHonorARIA==true) {
         if(node.hasAttribute('role')) { return true; }
         for (i = 0; i < node.attributes.length; i++) {
@@ -5096,7 +5100,7 @@ ys: 'whys'
 
     fnCheckARIARole: function(no, node, sRole) {
       var sMsg, i, c, bFoundRequiredChild, bFoundRequiredContainer, cRole;
-      
+
       if (blr.W15yQC.bHonorARIA==true) {
         if(blr.W15yQC.ARIAChecks.hasOwnProperty(sRole) == true) {
           // Check for required properties
@@ -5109,7 +5113,7 @@ ys: 'whys'
           if(sMsg != null) { blr.W15yQC.fnAddNote(no, 'ariaMissingProperties', [sMsg]); } // QA
           // Check validity of the ARIA- attributes
           // TODO: finish this
-  
+
           // Check for required parents
           if(blr.W15yQC.ARIAChecks[sRole].container != null) {
             sMsg=null;
@@ -5143,7 +5147,7 @@ ys: 'whys'
           }
         }
       }
-      
+
       return no;
     },
 
@@ -5552,7 +5556,7 @@ ys: 'whys'
         iDisplayedWarningsCount=(listObj==null)?0:listObj.warningCount;
         iDisplayedFailuresCount=(listObj==null)?0:listObj.failedCount;
       }
-      
+
       if(listObj!=null && (iDisplayedWarningsCount>0 || iDisplayedFailuresCount>0)) {
         try{
           if(iDisplayedWarningsCount==1) {
@@ -5780,7 +5784,7 @@ ys: 'whys'
       element = rd.createElement('p');
       element.appendChild(rd.createTextNode(sMainDocType));
       div2.appendChild(element);
-      
+
       div.appendChild(div2);
       rd.body.appendChild(div);
     },
@@ -6018,7 +6022,7 @@ ys: 'whys'
                     oW15yResults.aDocuments[docNumber].hasFullJustifiedText=true;
                   }
                 }
-  
+
                 if (node.hasAttribute('id') == true) {
                   sID = blr.W15yQC.fnTrim(node.getAttribute('id'));
                   idCount = 1;
@@ -6043,7 +6047,7 @@ ys: 'whys'
                   }
                 }
                 blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[docNumber],node);
-  
+
                 if (((node.contentWindow && node.contentWindow.document !== null) || (node.contentDocument && node.contentDocument.body !== null)) && blr.W15yQC.fnNodeIsHidden(node) == false) { // Found a frame
                   // document the frame
                   frameTitle = blr.W15yQC.fnGetNodeAttribute(node, 'title', null);
@@ -6056,7 +6060,7 @@ ys: 'whys'
                   aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
                   effectiveLabel=aLabel[0];
                   effectiveLabelSource=aLabel[1];
-  
+
                   oW15yResults.aFrames.push(new blr.W15yQC.frameElement(node, xPath, nodeDescription, doc, oW15yResults.aFrames.length, sRole, frameId, frameName, frameTitle, effectiveLabel, effectiveLabelSource, frameSrc));
                   oW15yResults.aFrames[oW15yResults.aFrames.length-1].ownerDocumentNumber=docNumber+1;
                   // Document the new document
@@ -6076,7 +6080,7 @@ ys: 'whys'
                   oW15yResults.aDocuments[oW15yResults.aDocuments.length-1].ownerDocumentNumber=docNumber+1;
                   if(frameDocument && frameDocument.body) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body); }
                   if(frameDocument && frameDocument.body && frameDocument.body.parentNode) { blr.W15yQC.fnAddLangValue(oW15yResults.aDocuments[oW15yResults.aDocuments.length-1],frameDocument.body.parentNode); }
-  
+
                   // get frame contents
                   blr.W15yQC.fnGetElements(frameDocument, progressWindow, total, frameDocument.body, oW15yResults, ARIAElementStack, ARIALandmarkLevel, inTable, bInScript, '', nestingDepth);
                 } else { // Not a new frame
@@ -6092,7 +6096,7 @@ ys: 'whys'
                       sFirstRole=sRole.replace(/^(\w+)\s.*$/, "$1");
                     }
                     sTagName = node.tagName.toLowerCase();
-                    
+
                     if (blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnElementUsesARIA(node) == true) {
                       while(ARIAElementStack.length>0 && blr.W15yQC.fnIsDescendant(ARIAElementStack[ARIAElementStack.length-1], node) == false) {
                         ARIAElementStack.pop();
@@ -6109,12 +6113,12 @@ ys: 'whys'
                       oW15yResults.aARIAElements.push(new blr.W15yQC.ariaElement(node, xPath, nodeDescription, doc, oW15yResults.aARIAElements.length, ARIAElementStack.length+1, sFirstRole, sARIALabel, sState));
                       oW15yResults.aARIAElements[oW15yResults.aARIAElements.length-1].ownerDocumentNumber=docNumber+1;
                       ARIAElementStack.push(node);
-                      
+
                       if (blr.W15yQC.fnIsARIALandmark(node)==false) {
                         oW15yResults.PageScore.bUsesARIABesidesLandmarks=true;
                       }
                     }
-                    
+
                     if ((blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsARIALandmark(node)) || blr.W15yQC.fnIsHTML5SectionElement(node) ) {
                       // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
                       ARIALandmarkLevel = 1;
@@ -6129,15 +6133,15 @@ ys: 'whys'
                       aLabel=blr.W15yQC.fnGetEffectiveLabel(node);
                       if (blr.W15yQC.fnIsARIALandmark(node)) {
                         effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sFirstRole.replace(/contentinfo/,'content info')+' landmark',' '));
-                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));                        
+                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'role attribute', ', '));
                       } else {
                         effectiveLabel=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[0],sTagName+' section',' '));
-                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 section element', ', '));                        
+                        effectiveLabelSource=blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(aLabel[1], 'HTML5 section element', ', '));
                       }
                       oW15yResults.aARIALandmarks.push(new blr.W15yQC.ariaLandmarkElement(node, xPath, nodeDescription, doc, oW15yResults.aARIALandmarks.length, ARIALandmarkLevel, effectiveLabel, effectiveLabelSource, sFirstRole, sState));
                       oW15yResults.aARIALandmarks[oW15yResults.aARIALandmarks.length-1].ownerDocumentNumber=docNumber+1;
                     }
-    
+
                     switch (sTagName) { // TODO: Debug how to handle HTML5 elements! Explore how JAWS 15 in FF or NVDA reports these
                       case 'article': // http://blog.paciellogroup.com/2011/03/html5-accessibility-chops-section-elements/
                       case 'section':
@@ -6262,7 +6266,7 @@ ys: 'whys'
                         break;
 
                       case 'embed':
-                      case 'object': 
+                      case 'object':
                         if (((sType == "application/x-shockwave-flash") || (node.hasAttribute('classid') && node.getAttribute('classid').toLowerCase() == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000")) &&
                             blr.W15yQC.fnElementIsChildOf(node,'object')==false && blr.W15yQC.fnElementIsChildOf(node,'embed')==false) {
                           oW15yResults.iFlashObjectsCount++;
@@ -6327,7 +6331,7 @@ ys: 'whys'
                       oW15yResults.aAccessKeys.push(new blr.W15yQC.accessKey(node, xPath, nodeDescription, doc, oW15yResults.aAccessKeys.length, sFirstRole, accessKey, effectiveLabel, effectiveLabelSource));
                       oW15yResults.aAccessKeys[oW15yResults.aAccessKeys.length-1].ownerDocumentNumber=docNumber+1;
                     }
-  
+
                     bFoundHeading=false;
                     if(blr.W15yQC.bHonorARIA==true && sFirstRole=='heading') {
                       bFoundHeading=true;
@@ -6369,7 +6373,7 @@ ys: 'whys'
                         }
                       }
                     }
-  
+
                     if (sTagName == 'form') {
                       sXPath = blr.W15yQC.fnGetElementXPath(node);
                       sFormDescription = blr.W15yQC.fnDescribeElement(node);
@@ -6424,11 +6428,11 @@ ys: 'whys'
                       sID = node.getAttribute('id');
                       sName = node.getAttribute('name');
                       sValue = node.getAttribute('value');
-  
+
                       oW15yResults.aFormControls.push(new blr.W15yQC.formControlElement(node, xPath, sFormElementDescription, parentFormNode, sFormDescription, doc, oW15yResults.aFormControls.length, controlType, sFirstRole, sID, sName, sTitle, sLegendText, sLabelTagText, sARIALabel, sARIADescriptionText, effectiveLabel, effectiveLabelSource, sAnnouncedAs, sStateDescription, sValue));
                       oW15yResults.aFormControls[oW15yResults.aFormControls.length-1].ownerDocumentNumber=docNumber+1;
                     }
-  
+
                     if(sTagName=='a' && blr.W15yQC.fnIsFormControlNode(node)==false) {  // document the link
                       xPath = blr.W15yQC.fnGetElementXPath(node);
                       nodeDescription = blr.W15yQC.fnDescribeElement(node, 400);
@@ -6518,7 +6522,7 @@ ys: 'whys'
                       }
                     }
                   }
-  
+
                   if (node.firstChild != null) { // keep looking through current document
                     if(sFirstRole!==null) {
                       if(blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsValidARIARole(sFirstRole) && blr.W15yQC.fnIsARIALandmarkRole(sFirstRole)!=true) {
@@ -6934,7 +6938,7 @@ ys: 'whys'
                   blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkBannerShouldNotBeNested', [node.getAttribute('role')]);   // TODO QA This
               }
               node = node.parentNode?node.parentNode:null;
-            }            
+            }
           } else if(sRole == 'contentinfo') {
             iContentInfoLandmarkCount++;
           } else if (sRole == 'navigation') {
@@ -6945,7 +6949,7 @@ ys: 'whys'
                   blr.W15yQC.fnAddNote(aARIALandmarksList[i], 'ldmkMainStartsWithNav');   // TODO QA This
               }
               node = node.parentNode?node.parentNode:null;
-            }            
+            }
           }
           sRoleAndLabel = aARIALandmarksList[i].roleAndLabel;
           if (blr.W15yQC.fnStringHasContent(sRole)) {
@@ -7369,7 +7373,7 @@ ys: 'whys'
           }
 
           list[list.length - 1].appendChild(li);
-          
+
           if ((i+1<aARIAElementsList.length && aARIAElementsList[i].node.nextElementSibling!=null && aARIAElementsList[i].level>aARIAElementsList[i+1].level) ||
               (i+1==aARIAElementsList.length && aARIAElementsList[i].node.nextElementSibling!=null)) {
             li2 = rd.createElement('li');
@@ -7486,8 +7490,8 @@ ys: 'whys'
           textWeight = parseInt( aColors[7] );
           bBgImage = aColors[8];
           lRatio = blr.W15yQC.fnComputeWCAG2LuminosityRatio(aColors[0], aColors[1], aColors[2], aColors[3], aColors[4], aColors[5]);
-          
-          
+
+
           if (textSize >= 18) {
             AALimit = 3.0;
             AAALimit = 4.5;
@@ -7508,7 +7512,7 @@ ys: 'whys'
 
           sMsg = ' WCAG' + (bWCAGTripleA?'AAA':'AA') + ' minimum contrast ratio for text that is ' + sTextDescription + '. (AA: ' + AALimit +
             ':1, AAA: ' + AAALimit + ':1).';
-      
+
           if ((bWCAGTripleA && lRatio<AAALimit) || lRatio<AALimit) {
             sMsg=lRatio + ':1 fails '+sMsg;
           } else {
@@ -7518,7 +7522,7 @@ ys: 'whys'
           if (bBgImage) {
             sMsg = blr.W15yQC.fnJoin('Element has a background image; Contrast results may be inaccurate.', sMsg, ' ');
           }
-          
+
           if ((bWCAGTripleA && lRatio<AAALimit) || lRatio<AALimit) {
             return [bBgImage?'W':'F', sMsg];
           } else {
@@ -7528,7 +7532,7 @@ ys: 'whys'
       }
       return null;
     },
-    
+
     fnGetLuminosityCheckElements: function(doc, rootNode, aLumCheckList, parentsColor, parentsBGColor) { // TODO: What percentage of text is non-compliant?
       var node, frameDocument, tagName, aColors, xPath, nodeDescription, sText, sTextSize, sID, sClass,
         fgColor, fgC, bgColor, bgC, textWeight, bBgImage, fgLum, bgLum, lRatio;
@@ -7937,7 +7941,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
                   if (blr.W15yQC.fnStringHasContent(aMMList[i].src)==false && /movie/i.test(elList[j].getAttribute('name'))) {
                     aMMList[i].src=elList[j].getAttribute('value');
                   }
-                  if (/flashvars/i.test(elList[j].getAttribute('name')) && /autoplay[A-F0-9%]+true/i.test(elList[j].getAttribute('value'))) { 
+                  if (/flashvars/i.test(elList[j].getAttribute('name')) && /autoplay[A-F0-9%]+true/i.test(elList[j].getAttribute('value'))) {
                     blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoAutoPlays');
                   }
                 }
@@ -7963,7 +7967,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
                   } else if (/subtitles/i.test(elList[j].getAttribute('kind'))) {
                     bFoundSubTitles=true;
                     blr.W15yQC.addUniqueTextListItem(sLang,aSubTitleLangs);
-                  } 
+                  }
                 }
                 if (bTracksDontAllHaveLanguage) {
                   blr.W15yQC.fnAddNote(aMMList[i], 'mmVideoTextTracksLanguageNotSpecified');
@@ -7982,9 +7986,9 @@ fnAnalyzeMultimedia: function (oW15yResults) {
                 }
                 break;
             }
-            
+
             aMMList[i] = blr.W15yQC.fnAnalyzeARIAMarkupOnNode(aMMList[i].node, aMMList[i]);
-  
+
             if(aMMList[i].node != null && aMMList[i].node.hasAttribute('id')==true) {
               if(blr.W15yQC.fnIsValidHtmlID(aMMList[i].node.getAttribute('id'))==false) {
                 blr.W15yQC.fnAddNote(aMMList[i], 'mmIDNotValid'); // TODO: QA This
@@ -7998,7 +8002,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       }
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aMMList);
     },
-    
+
     fnDisplayMultiMediaResults: function (rd, aMultiMediaList, bQuick) {
       var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasSrc=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIMultiMediaList');
@@ -8329,7 +8333,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       oW15yResults.PageScore.bHasEnoughHeadingsForContent=true;
       oW15yResults.PageScore.bNotAllHeadingsHaveMeaningfulText=false;
       oW15yResults.PageScore.bNotAllHeadingsInASectionAreUnique=false;
-      
+
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       if (aHeadingsList != null && aHeadingsList.length && aHeadingsList.length > 0) {
         for (i = 0; i < aHeadingsList.length; i++) {
@@ -8401,7 +8405,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           if(aHeadingsList[i].listedByAT==true) {
             if(firstListedHeading==true) {
               firstListedHeading=false;
-              
+
               if(oW15yResults.PageScore.bUsesHeadings==true && blr.W15yQC.bFirstHeadingMustBeLevel1==true) {
                 previousHeadingLevel = 0;
               } else {
@@ -8456,7 +8460,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             blr.W15yQC.fnAddNote(aHeadingsList[i], 'hHeadingNotUniqueInSection', [aHeadingsList[i].aSameTextAs.toString()]); // TODO: QA This
             oW15yResults.PageScore.bNotAllHeadingsInASectionAreUnique=true;
           }
-          
+
           if (aHeadingsList[i].node != null && blr.W15yQC.fnIsValidPositiveInt(aHeadingsList[i].node.getAttribute('aria-level'))==false &&
               blr.W15yQC.fnElementIsChildOfSectioningElement(aHeadingsList[i].node)==true) {
               blr.W15yQC.fnAddNote(aHeadingsList[i], 'hChildOfSectioningElementWOLevel'); // QA: headings01.html
@@ -8634,7 +8638,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             }
           }
         }
-        
+
         table.appendChild(tbody);
         divContainer.appendChild(table);
         blr.W15yQC.fnMakeTableSortable(div, rd, 'AIHeadingsTable');
@@ -9001,7 +9005,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         oW15yResults.PageScore.bMostFormControlsAreNotLabeled=true;
       }
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aFormControlsList);
-        
+
       } catch(e) {
         alert(e);
       }
@@ -9219,7 +9223,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       }
       return false;
     },
-    
+
     fnThreeConsecutiveInts: function(s1,s2,s3) {
       var re=/^\d+ \d+ \d+$/;
       if (re.test(s1+' '+s2+' '+s3)) {
@@ -9229,7 +9233,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       }
       return blr.W15yQC.fnThreeConsecutiveLetters(s1,s2,s3);
     },
- 
+
     fnAnalyzeLinks: function (oW15yResults, progressWindow) { // TODO: Eliminate double sounds like checking for each pair of links, only do it once!
       var aLinksList=oW15yResults.aLinks, aDocumentsList=oW15yResults.aDocuments, i, aChildImages, j, linkText, maxRect, bHrefsAreEqual, bIsALink, aCR,
           bLinkTextsAreDifferent, bOnclickValuesAreDifferent, sHref, sTargetId, sSamePageLinkTarget, aTargetLinksList, iTargetedLink, targetNode, skipStatusUpdateCounter=1;
@@ -9292,7 +9296,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         if (aLinksList[i].node!=null && (aLinksList[i].node.tabIndex==null || aLinksList[i].node.tabIndex<0)) {
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkNotInTabOrder'); // QA This
         }
-        
+
 
         if (aLinksList[i].href == null && aLinksList[i].node.hasAttribute('name') == false && aLinksList[i].node.hasAttribute('id') == false) {
           aLinksList[i].listedByAT=false;
@@ -10229,7 +10233,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aBadIDsList);
       return aBadIDsList;
     },
-    
+
     fnCheckMandateStringMatch: function(s,matchType,matchText) {
       var re;
 
@@ -10258,10 +10262,10 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       }
       return false;
     },
-    
+
     fnCheckMandates: function(oW15yQCReport) {
       var mandates, i, j, k, m, results, doc, nodesSnapshot, el, text, bFound, sLogic, re, result, mo, sMsg='';
-      
+
       if (oW15yQCReport!=null || !oW15yQCReport.iMandateFailuresCount) {
         oW15yQCReport.iMandateFailuresCount=0;
       }
@@ -10355,9 +10359,9 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         div = rd.createElement('div');
         div.setAttribute('id', 'AIMandatesList');
         div.setAttribute('class', 'AISection');
-  
+
         blr.W15yQC.fnAppendExpandContractHeadingTo(div, aMandatesList.length+" Mandates ("+iMandateFailuresCount+" Failures)");
-  
+
         if (aMandatesList && aMandatesList.length > 0) {
           table = rd.createElement('table');
           table.setAttribute('id', 'AIMandatesTable');
@@ -10378,7 +10382,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         rd.body.appendChild(div);
       }
     },
-    
+
     fnQuantify: function (count, s1, s2) {
       if(count == 1) {
         return '1 '+s1;
@@ -10997,10 +11001,10 @@ try{
         if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
 
         blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
-        
+
         if(progressWindow!=null) { progressWindow.fnUpdateProgress('Checking Mandates', 97); }
         blr.W15yQC.fnCheckMandates(oW15yQCReport);
-        
+
         blr.W15yQC.fnDescribeWindow(oW15yQCReport);
         blr.W15yQC.fnComputeScore(oW15yQCReport);
         blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport, true);
@@ -11104,7 +11108,7 @@ try{
           }
         }
       }
-      
+
       blr.W15yQC.bAutoCheckForUpdates = Application.prefs.getValue('extensions.W15yQC.autoCheckForUpdates',false);
       if (blr.W15yQC.bAutoCheckForUpdates==true) {
         blr.W15yQC.fnCheckForUpdates();
@@ -11126,7 +11130,7 @@ try{
         if(win!=null && win.focus) win.focus();
       }
     },
-    
+
     fnCheckForUpdates: function(bPromptUser) {
       var i=Math.floor(Math.random() * (1000)) + 1;
       blr.W15yQC.bPromptUserOfUpdate=(bPromptUser==true)?true:false;
@@ -11190,7 +11194,7 @@ try{
               }
             }
             blr.W15yQC.bPromptUserOfUpdate=false;
-          } catch(ex) { 
+          } catch(ex) {
             blr.W15yQC.checkForUpdatesHttpRequest=null;
             blr.W15yQC.fnLog('check for updates failed'+ex.toString());
             if(blr.W15yQC.bPromptUserOfUpdate==true) { alert('check for updates failed'+ex.toString()); }
@@ -11206,7 +11210,7 @@ try{
         }
       }
     },
-    
+
     fnNonDOMIntegrityTests: function () {
       if (blr.W15yQC.fnMaxDecimalPlaces(10.234324, 2).toString() != "10.23") {
         blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");

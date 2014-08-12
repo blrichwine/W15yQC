@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
 
-<!-- 
+<!--
 //
 // This file is part of W15yQC
-// 
+//
 // Written by Brian Richwine (blrichwine at gmail dot com)
-//    
+//
 -->
 
 <!DOCTYPE overlay SYSTEM "chrome://W15yQC/locale/overlay.dtd">
@@ -145,6 +145,7 @@
           <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
           <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="blr.W15yQC.openDialog('idsCheck');"/>
           <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Project Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
+          <menuitem id="W15yTPBMI_pdfChecker" accesskey="" label="PDF Checker" oncommand="blr.W15yQC.openDialog('pdfChecker');"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Options" label="Options" type="menu" onmouseover="" class="toolbarbutton">
