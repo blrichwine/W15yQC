@@ -14,9 +14,10 @@
 			var blr=this.arguments[0];
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfChecker.js"/>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
  		<xul:hbox align="center">
-			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value="http://www.udlcenter.org/sites/udlcenter.org/files/updateguidelines2_0.pdf"/>
+			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value="http://www.csus.edu/accessibility/guides/creating_accessible_pdfs.pdf"/>
 		</xul:hbox>
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
@@ -25,7 +26,7 @@
       <xul:hbox id="box-button" align="right">
 				 <xul:button id="button-loadPDF"
 					 label="Load PDF"
-					 oncommand="blr.W15yQC.pdfChecker.check();"
+					 oncommand="blr.W15yQC.pdfCheckDialog.check();"
 					 accesskey=""/>
       </xul:hbox>
    </xul:vbox>

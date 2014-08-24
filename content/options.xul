@@ -5,7 +5,7 @@
 	type="prefwindow"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	buttons="accept, cancel"
-	style="min-height:325px;min-width:800px;max-height:325px;max-width:800px"
+	style="min-height:325px;min-width:800px;max-height:425px;max-width:800px"
 	title="W15yQC Web Accessibility Quick Check Options">
 
    <script>
@@ -28,6 +28,9 @@
       <preference id="suppressPassingCRNotes" name="extensions.W15yQC.testContrast.suppressPassingCRNotes" type="bool"/>
       <preference id="ignoreWWW" name="extensions.W15yQC.DomainEquivalences.ignoreWWW" type="bool"/>
       <preference id="testContrastMinSpec" name="extensions.W15yQC.testContrast.MinSpec" type="string"/>
+      <preference id="suppressBackgroundImgWarningCRNotes" name="extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings" type="bool"/>
+      <preference id="quickCheckPDFs" name="extensions.W15yQC.HTMLReport.quickCheckPDFs" type="bool"/>
+      <preference id="checkLinks" name="extensions.W15yQC.HTMLReport.checkLinks" type="bool"/>
       <preference id="mandatoryCodeList" name="extensions.W15yQC.mandatoryCodeList" type="string"/>
       <preference id="enableMandates" name="extensions.W15yQC.mandatesEnabled" type="bool"/>
       <preference id="autoCheckForUpdates" name="extensions.W15yQC.autoCheckForUpdates" type="bool"/>
@@ -100,6 +103,9 @@
 						</menulist>
 					</hbox>
 				<checkbox label="Suppress passing contrast ratio notes" preference="suppressPassingCRNotes"/>
+				<checkbox label="Suppress background image contrast warnings" preference="suppressBackgroundImgWarningCRNotes"/>
+				<checkbox label="Quick Check PDFs" preference="quickCheckPDFs"/>
+				<checkbox label="Check links" preference="checkLinks"/>
 			</tabpanel>
 
 			<tabpanel id="W15yQC_tab_Mandates" orient="vertical">

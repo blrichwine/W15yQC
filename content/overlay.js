@@ -61,6 +61,8 @@ if (!blr.W15yQC) {
     bOnlyOneLevel1Heading: false,
     bHonorARIA: true,
     bHonorHTML5: true,
+    bSuppressBGImgWarningCRNotes: true,
+    bQuickCheckPDFs: false,
     bAutoScrollToSelectedElementInInspectorDialogs: true,
     domainEq1: [],
     domainEq2: [],
@@ -737,15 +739,20 @@ ys: 'whys'
       return blr.W15yQC.userLocale;
     },
 
-    objectToString: function (o, bDig) {
+    objectToString: function (o, bDig, level) {
       var p, out = '';
       if (o != null) {
+        if (level==null) {
+          level=0;
+        } else if (level>4) {
+          return '--ABORTING objectToString DUE TO TOO MANY LEVELS OF RECURSION--';
+        }
         for (p in o) {
           if (o[p]!=null) {
             if(typeof o[p]==='object' && bDig !== false) {
-              out += 'STARTOBJ: ' + p + ': [' + blr.W15yQC.objectToString(o[p], bDig) + ']\n';
+              out += Array(3*level+1).join(' ') + 'STARTOBJ: ' + p + ': [' + blr.W15yQC.objectToString(o[p], bDig, level+1) + ']\n';
             } else {
-              if((typeof o[p])!=='function') { out += p + ': ' + o[p] + '\n'; }
+              if((typeof o[p])!=='function') { out += Array(3*level+1).join(' ') + p + ': ' + o[p] + '\n'; }
             }
           }
         }
@@ -1196,7 +1203,16 @@ ys: 'whys'
       tblUnequalColCount: [true,1,0,false,null],
       tblLayoutTblIsComplex: [true,1,0,false,null],
       tblLayoutTblIsComplexWOpresRole: [false,1,0,false,null],
-      tblTooLargeForLayoutTable: [false,1,0,false,null]
+      tblTooLargeForLayoutTable: [false,1,0,false,null],
+
+      pdfIsTagged: [false,0,0,false,null],
+      pdfIsNotTaggedButIsStructured: [false,1,0,false,null],
+      pdfIsNotTaggedOrStructured: [false,2,0,false,null],
+      pdfErrorsCheckingPdf: [false,1,0,false,null],
+      pdfFoundDefaultLangEntry: [false,0,0,false,null],
+      pdfDefaultLangAttrInvalidUseUnderscore: [false,1,0,false,null],
+      pdfDefaultLangInvalid: [false,1,0,false,null],
+      pdfDefaultLangMissing: [false,1,0,false,null]
     },
 
     fnGetNoteSeverityLevel: function(msgKey) {
@@ -7520,6 +7536,9 @@ ys: 'whys'
           }
 
           if (bBgImage) {
+            if (blr.W15yQC.bSuppressBGImgWarningCRNotes) {
+              return null;
+            }
             sMsg = blr.W15yQC.fnJoin('Element has a background image; Contrast results may be inaccurate.', sMsg, ' ');
           }
 
@@ -9536,6 +9555,81 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       blr.W15yQC.fnUpdateWarningAndFailureCounts(aLinksList);
     },
 
+
+    fnCheckLinks: function (oW15yQCReport, reportDoc, sReports, progressWindow, callBack) {
+      var aLinksList=oW15yQCReport.aLinks, aDocumentsList=oW15yQCReport.aDocuments, i=0,
+          bCheckPDFs=Application.prefs.getValue('extensions.W15yQC.HTMLReport.quickCheckPDFs',false),
+          bCheckLinks=Application.prefs.getValue('extensions.W15yQC.HTMLReport.checkLinks',false);
+
+      function processCheckPdfResults(r) {
+        if (r!=null && blr.W15yQC.fnStringHasContent(r.version)) {
+          if (r.isTagged==true) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'pdfIsTagged');
+          } else if (r.isStructured==true) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'pdfIsNotTaggedButIsStructured');
+          }
+          if (r.errors==true) {
+            blr.W15yQC.fnAddNote(aLinksList[i], 'pdfErrorsCheckingPdf');
+          } else {
+            if(blr.W15yQC.fnStringHasContent(r.defaultLang)) {
+              if (blr.W15yQC.fnIsValidLocale(r.defaultLang)) {
+                blr.W15yQC.fnAddNote(aLinksList[i], 'pdfFoundDefaultLangEntry',[r.defaultLang]); // QA
+              } else if(/_/.test(r.defaultLang)) {
+                blr.W15yQC.fnAddNote(aLinksList[i], 'pdfDefaultLangAttrInvalidUseUnderscore',[r.defaultLang]); // QA
+              } else {
+                blr.W15yQC.fnAddNote(aLinksList[i], 'pdfDefaultLangInvalid', [r.defaultLang]); // QA
+              }
+            } else {
+              blr.W15yQC.fnAddNote(aLinksList[i], 'pdfDefaultLangMissing'); // QA
+            }
+            if (r.isTagged==false && r.isStructured==false) {
+              blr.W15yQC.fnAddNote(aLinksList[i], 'pdfIsNotTaggedOrStructured'); // QA
+            }
+          }
+        } else {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'pdfErrorsCheckingPdf');
+        }
+      }
+
+      function nextURL() {
+        var sURL;
+
+        while(i<aLinksList.length) {
+          sURL=blr.W15yQC.fnNormalizeURL(aDocumentsList[aLinksList[i].ownerDocumentNumber-1].URL, aLinksList[i].href);
+          //alert(i+' '+sURL+'\n\n'+aLinksList[i].href+'\n\n'+aDocumentsList[aLinksList[i].ownerDocumentNumber-1].URL);
+          if (bCheckPDFs && /^(ftp|http).*\.pdf$/i.test(sURL)) {
+            break;
+          } else {
+            i++;
+          }
+        }
+        if (i<aLinksList.length) {
+          if (bCheckPDFs && /^(ftp|http).*\.pdf$/i.test(sURL)) { progressWindow.fnUpdateStatus('Checking: '+sURL);
+            blr.W15yQC.pdfChecker.getPDF(sURL).then(
+              function(r){ // Promise resolved
+                processCheckPdfResults(r);
+                i++; nextURL();
+              },
+              function(){ // Promise failed, nothing to process
+                i++; nextURL();
+              }
+            );
+          } else {
+            i++; nextURL(); // Should never get here...
+          }
+        } else { // Done!
+          callBack(oW15yQCReport, reportDoc, sReports, progressWindow);
+        }
+      }
+
+      if((bCheckPDFs||bCheckLinks) && aLinksList!=null && aLinksList.length>0) {
+        nextURL();
+      } else {
+        callBack(oW15yQCReport, reportDoc, sReports, progressWindow);
+      }
+    },
+
+
     fnDisplayLinkResults: function (rd, aLinksList, bQuick) {
       var div, table, msgHash, tbody, i, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div = rd.createElement('div');
@@ -10874,12 +10968,18 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           blr.W15yQC.fnAnalyzeARIAElements(oW15yQCReport);
           blr.W15yQC.fnDisplayARIAElementsResults(reportDoc, oW15yQCReport.aARIAElements);
         }
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Links', 24); }
 
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Links', 24); }
         if(sReports=='' || sReports.indexOf('links')>=0) {
           blr.W15yQC.fnAnalyzeLinks(oW15yQCReport, progressWindow);
+          if (Application.prefs.getValue('extensions.W15yQC.HTMLReport.quickCheckPDFs',false)||
+              Application.prefs.getValue('extensions.W15yQC.HTMLReport.checkLinks',false)) {
+            blr.W15yQC.fnCheckLinks(oW15yQCReport, reportDoc, sReports, progressWindow, blr.W15yQC.fnFullInspectPart2);
+            return reportDoc;
+          }
           blr.W15yQC.fnDisplayLinkResults(reportDoc, oW15yQCReport.aLinks);
         }
+
         if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Forms', 75); }
 
         if(sReports=='' || sReports.indexOf('forms')>=0) {
@@ -10931,6 +11031,60 @@ try{
         return reportDoc;
       }
       return null;
+    },
+
+    fnFullInspectPart2: function (oW15yQCReport, reportDoc, sReports, progressWindow) {
+        blr.W15yQC.fnDisplayLinkResults(reportDoc, oW15yQCReport.aLinks);
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Forms', 75); }
+
+        if(sReports=='' || sReports.indexOf('forms')>=0) {
+          blr.W15yQC.fnAnalyzeFormControls(oW15yQCReport);
+          blr.W15yQC.fnDisplayFormResults(reportDoc, oW15yQCReport.aForms);
+          blr.W15yQC.fnDisplayFormControlResults(reportDoc, oW15yQCReport.aFormControls);
+        }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Images', 85); }
+
+        if(sReports=='' || sReports.indexOf('images')>=0) {
+          blr.W15yQC.fnAnalyzeImages(oW15yQCReport);
+          blr.W15yQC.fnDisplayImagesResults(reportDoc, oW15yQCReport.aImages);
+        }
+
+        if(sReports=='' || sReports.indexOf('multimedia')>=0) {
+          blr.W15yQC.fnAnalyzeMultimedia(oW15yQCReport);
+          blr.W15yQC.fnDisplayMultiMediaResults(reportDoc, oW15yQCReport.aMultiMedia);
+        }
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Access Keys', 90); }
+
+        if(sReports=='' || sReports.indexOf('accesskeys')>=0) {
+          blr.W15yQC.fnAnalyzeAccessKeys(oW15yQCReport);
+          blr.W15yQC.fnDisplayAccessKeysResults(reportDoc, oW15yQCReport.aAccessKeys);
+        }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Analyzing Tables', 95); }
+
+        if(sReports=='' || sReports.indexOf('tables')>=0) {
+          blr.W15yQC.fnAnalyzeTables(oW15yQCReport);
+          blr.W15yQC.fnDisplayTableResults(reportDoc, oW15yQCReport.aTables);
+        }
+try{
+        if(sReports=='' || sReports.indexOf('mandates')>=0) {
+          blr.W15yQC.fnCheckMandates(oW15yQCReport);
+          blr.W15yQC.fnDisplayMandatesCheckResults(reportDoc, oW15yQCReport.aMandates, oW15yQCReport.iMandateFailuresCount);
+        }
+        if(sReports=='' || sReports.indexOf('pageSummary')>=0) {
+          blr.W15yQC.fnDescribeWindow(oW15yQCReport);
+          blr.W15yQC.fnComputeScore(oW15yQCReport);
+          blr.W15yQC.fnDisplayPageSummary(reportDoc, oW15yQCReport);
+        }
+} catch(ex) {alert(ex.toString());}
+
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
+
+        blr.W15yQC.fnDisplayFooter(reportDoc);
+
+        reportDoc.defaultView.focus();
+        return reportDoc;
     },
 
     fnQuickInspect: function (reportDoc, sourceDocument, sReports, progressWindow) {
@@ -11084,6 +11238,8 @@ try{
       blr.W15yQC.bOnlyOneLevel1Heading = Application.prefs.getValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
       blr.W15yQC.bHonorARIA = Application.prefs.getValue("extensions.W15yQC.getElements.honorARIA", true);
       blr.W15yQC.bSuppressPassingCRNotes = Application.prefs.getValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
+      blr.W15yQC.bSuppressBGImgWarningCRNotes = Application.prefs.getValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true);
+      blr.W15yQC.bQuickCheckPDFs = Application.prefs.getValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false);
 
       blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs = Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements",true);
 

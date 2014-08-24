@@ -34,12 +34,14 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  * Object:  Options
  * Returns:
  */
-blr.W15yQC.options = {
+blr.W15yQC.options = { // TODO: Make sure prefs is up to date
   ps:null,
   prefs: [{n:'extensions.W15yQC.inspectElements.autoScrollToSelectedElements',t:'b'},
           {n:'extensions.W15yQC.userExpertLevel',t:'i'},
           {n:'extensions.W15yQC.HTMLReport.collapsedByDefault',t:'b'},
           {n:'extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault',t:'b'},
+          {n:'extensions.W15yQC.HTMLReport.quickCheckPDFs',t:'b'},
+          {n:'extensions.W15yQC.HTMLReport.checkLinks',t:'b'},
           {n:'extensions.W15yQC.getElements.includeLabelElementsInFormControls',t:'b'},
           {n:'extensions.W15yQC.getElements.includeHiddenElements',t:'b'},
           {n:'extensions.W15yQC.getElements.firstHeadingMustBeLevel1',t:'b'},
@@ -55,7 +57,7 @@ blr.W15yQC.options = {
           {n:'extensions.W15yQC.mandatesEnabled',t:'b'},
           {n:'extensions.W15yQC.rulesToExcludeList',t:'s'}],
   mandates: [],
-  
+
   fnUpdateStatus: function(sLabel) {
     document.getElementById('settingsStatus').value=sLabel;
     blr.W15yQC.fnDoEvents();
@@ -63,7 +65,7 @@ blr.W15yQC.options = {
 
   calculateOptionsCrc32: function() {
     var i, s='';
-    
+
     for(i=0;i<blr.W15yQC.options.prefs.length;i++) {
       try {
         s=s+Application.prefs.getValue(blr.W15yQC.options.prefs[i].n,'null');
@@ -71,10 +73,10 @@ blr.W15yQC.options = {
     }
     return blr.W15yQC.crc32(s);
   },
-  
+
   fnUpdateControlStates: function() {
     var optionsCrc32=Application.prefs.getValue("extensions.W15yQC.options.crc32",null);
-    
+
     if (optionsCrc32!=null) {
       if (optionsCrc32===blr.W15yQC.options.calculateOptionsCrc32()) {
         blr.W15yQC.options.fnUpdateStatus('Options match: '+Application.prefs.getValue("extensions.W15yQC.options.filename",'???'));
@@ -94,7 +96,7 @@ blr.W15yQC.options = {
     panels.addEventListener("select", function(e) {
       blr.W15yQC.options.fnUpdateControlStates();
     }, false);
-    
+
      this.ps = Components.classes["@mozilla.org/preferences-service;1"]
          .getService(Components.interfaces.nsIPrefService)
          .getBranch("extensions.W15yQC.");
@@ -174,7 +176,7 @@ blr.W15yQC.options = {
         treecell.setAttribute('label',m.weight);
         row.appendChild(treecell);
         treeitem.appendChild(row);
-        tbc.appendChild(treeitem);      
+        tbc.appendChild(treeitem);
       }
     }
   },
@@ -267,7 +269,7 @@ blr.W15yQC.options = {
     }
     Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
-  
+
   fnEditMandate: function() {
     var i,num,num2,tbc, rows, row, m={},
         treebox, treeitem, treerow, treecell, selectedRow, treecells,
@@ -290,7 +292,7 @@ blr.W15yQC.options = {
     }
     Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
-  
+
   fnDeleteMandate: function() {
     var treebox, selectedRow, row;
 
@@ -303,7 +305,7 @@ blr.W15yQC.options = {
     }
     Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
-  
+
   fnResetDefaults: function() {
     // Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", "");
     Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
@@ -317,6 +319,9 @@ blr.W15yQC.options = {
     Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
     Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
     Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+    Application.prefs.setValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true);
+    Application.prefs.setValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false);
+    Application.prefs.setValue("extensions.W15yQC.HTMLReport.checkLinks", false);
 
     Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
     Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
@@ -326,7 +331,7 @@ blr.W15yQC.options = {
     Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
     Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
   },
-  
+
   spaces: function(count) {
     count=(count==null) ? 0 : (count>20 ? 20 : count);
     return count>0 ? "                    ".slice(0,count-1) : "";
@@ -391,7 +396,7 @@ blr.W15yQC.options = {
     }
     return b;
   },
-  
+
   writeXMLEncodedString: function(value, tagName, converter, indent) {
     if(value!=null && converter!=null) {
       converter.writeString(blr.W15yQC.options.spaces(indent)+'<'+tagName+' type="string">'+encodeURIComponent(value)+'</'+tagName+'>\n');
@@ -586,14 +591,14 @@ blr.W15yQC.options = {
                 case 'number':
                   blr.W15yQC.options.writeXMLInt(value,'value',converter,6);
                   break;
-                case 'boolean': 
+                case 'boolean':
                   blr.W15yQC.options.writeXMLBool(value,'value',converter,6);
                   break;
                 default:
                   alert('Error: '+(typeof value)+' was not handled.');
                 break;
               }
-              converter.writeString('    </pref>\n');            
+              converter.writeString('    </pref>\n');
             }
           }
           converter.writeString('  </preferences>\n');
@@ -603,12 +608,11 @@ blr.W15yQC.options = {
 
           Application.prefs.setValue("extensions.W15yQC.options.filename",file.path);
           Application.prefs.setValue("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
-          
+
           blr.W15yQC.options.fnUpdateStatus('Preferences file saved.');
         } else {
           blr.W15yQC.options.fnUpdateStatus('Preferences file not saved.');
         }
   }
-  
-};
 
+};
