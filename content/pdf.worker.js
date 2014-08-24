@@ -5143,6 +5143,18 @@ var PDFDocument = (function PDFDocumentClosure() {
     this.xref = xref;
   }
 
+  function displayStart(stream) {
+    var origPos = stream.pos;
+    stream.pos=1;
+    var strBuf = [];
+    for (var n = 0; n < 200; ++n) {
+      strBuf.push(String.fromCharCode(stream.getByte()));
+    }
+    var str = strBuf.join('');
+    stream.pos=origPos;
+    alert(str);
+  }
+
   function find(stream, needle, limit, backwards) {
     var pos = stream.pos;
     var end = stream.end;
@@ -5208,6 +5220,9 @@ var PDFDocument = (function PDFDocumentClosure() {
       if (length) {
         try {
           linearization = new Linearization(this.stream);
+          //displayStart(this.stream);
+          //alert(linearization.length + ' vs '+ length);
+
           if (linearization.length != length) {
             linearization = false;
           }
@@ -5311,6 +5326,12 @@ var PDFDocument = (function PDFDocumentClosure() {
       var num = linearization ? linearization.numPages : this.catalog.numPages;
       // shadow the prototype getter
       return shadow(this, 'numPages', num);
+    },
+    get isLinearized() {
+      var linearization = this.linearization;
+      var value = linearization===false ? false : true;
+      // shadow the prototype getter
+      return shadow(this, 'isLinearized', value);
     },
     get documentInfo() {
       var docInfo = {
@@ -34745,6 +34766,7 @@ var Linearization = (function LinearizationClosure() {
   Linearization.prototype = {
     getInt: function Linearization_getInt(name) {
       var linDict = this.linDict;
+      //alert(blr.W15yQC.objectToString(linDict));
       var obj;
       if (isDict(linDict) && isInt(obj = linDict.get(name)) && obj > 0) {
         return obj;
@@ -37402,14 +37424,23 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         var numPagesPromise = pdfManager.ensureDoc('numPages');
         var fingerprintPromise = pdfManager.ensureDoc('fingerprint');
         var taggedPromise = pdfManager.ensureDoc('tagged');
+        var isLinearizedPromise = pdfManager.ensureDoc('isLinearized');
+        var outlinePromise = pdfManager.ensureCatalog('documentOutline');
+        var docInfoPromise = pdfManager.ensureDoc('documentInfo');
+        var metadataPromise = pdfManager.ensureCatalog('metadata');
         var encryptedPromise = pdfManager.ensureXRef('encrypt');
         Promise.all([numPagesPromise, fingerprintPromise,
-                     encryptedPromise, taggedPromise]).then(function onDocReady(results) {
+                     encryptedPromise, taggedPromise, outlinePromise,
+                     docInfoPromise, metadataPromise, isLinearizedPromise]).then(function onDocReady(results) {
           var doc = {
             numPages: results[0],
             fingerprint: results[1],
             encrypted: !!results[2],
-            tagged: results[3]
+            tagged: results[3],
+            outline: results[4],
+            info: results[5],
+            metadata: results[6],
+            isLinearized: results[7]
           };
           loadDocumentCapability.resolve(doc);
         },

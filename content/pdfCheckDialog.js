@@ -50,11 +50,10 @@ if (!blr) {
 blr.W15yQC.pdfCheckDialog = {
 
   check: function() {
+    var sURL=document.getElementById('tbURL').value;
 
-    blr.PDFJS.getDocument('http://www.udlcenter.org/sites/udlcenter.org/files/UDLinPostsecondary.pdf').then(function(pdf){alert('got here:'+pdf.pdfInfo.numPages);});
-
+    blr.W15yQC.pdfChecker.getPDF(sURL, document.getElementById('note-text')).then(function(results){alert(blr.W15yQC.objectToString(results));});
     //alert(blr.W15yQC.objectToString(blr.PDFJS));
-    //var sURL=document.getElementById('tbURL').value;
     //if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
     //  blr.W15yQC.pdfChecker.getPDF(sURL,document.getElementById('note-text')).then();
     //} else {
