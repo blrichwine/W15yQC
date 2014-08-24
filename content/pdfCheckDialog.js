@@ -51,7 +51,7 @@ blr.W15yQC.pdfCheckDialog = {
 
   check: function() {
 
-    blr.PDFJS.getDocument('http://www.udlcenter.org/sites/udlcenter.org/files/updateguidelines2_0.pdf').then(function(){alert('got here');});
+    blr.PDFJS.getDocument('http://www.udlcenter.org/sites/udlcenter.org/files/UDLinPostsecondary.pdf').then(function(pdf){alert('got here:'+pdf.pdfInfo.numPages);});
 
     //alert(blr.W15yQC.objectToString(blr.PDFJS));
     //var sURL=document.getElementById('tbURL').value;

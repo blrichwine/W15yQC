@@ -22,7 +22,7 @@ if (typeof this.PDFJS == "undefined" || this.PDFJS===null) { this.PDFJS = PDFJS}
 
 
 PDFJS.version = '1.0.1';
-
+PDFJS.verbosity = 1000;
 (function pdfjsWrapper() {
   // Use strict in our context only - users might not want it
   'use strict';
@@ -4573,6 +4573,7 @@ var WorkerTransport = (function WorkerTransportClosure() {
     this.downloadInfoCapability = createPromiseCapability();
     this.passwordCallback = null;
 
+    globalScope.PDFJS.disableWorker=true; // Running as an extension
     // If worker support isn't disabled explicit and the browser has worker
     // support, create a new web worker and test if it/the browser fullfills
     // all requirements to run parts of pdf.js in a web worker.
@@ -4651,9 +4652,11 @@ var WorkerTransport = (function WorkerTransportClosure() {
         // In the developer build load worker_loader which in turn loads all the
         // other files and resolves the promise. In production only the
         // pdf.worker.js file is needed.
-        Util.loadScript(PDFJS.workerSrc, function() {
-          PDFJS.fakeWorkerFilesLoadedCapability.resolve();
-        });
+        PDFJS.fakeWorkerFilesLoadedCapability.resolve();
+
+        //Util.loadScript(PDFJS.workerSrc, function() {
+        //  PDFJS.fakeWorkerFilesLoadedCapability.resolve();
+        //});
       }
       return PDFJS.fakeWorkerFilesLoadedCapability.promise;
     },
