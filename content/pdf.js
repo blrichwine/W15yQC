@@ -17,13 +17,11 @@
 /*jshint globalstrict: false */
 
 // Initializing PDFJS global object (if still undefined)
-if (typeof PDFJS === 'undefined') {
-  (typeof window !== 'undefined' ? window : this).PDFJS = {};
-}
-blr.PDFJS=PDFJS;
+if (typeof PDFJS == "undefined" || PDFJS===null) {var PDFJS = {}};
+if (typeof this.PDFJS == "undefined" || this.PDFJS===null) { this.PDFJS = PDFJS};
+
 
 PDFJS.version = '1.0.1';
-PDFJS.build = 'fatal: Not a git repository (or any of the parent directories): .git';
 
 (function pdfjsWrapper() {
   // Use strict in our context only - users might not want it
@@ -50,7 +48,7 @@ PDFJS.build = 'fatal: Not a git repository (or any of the parent directories): .
 
 'use strict';
 
-var globalScope = (typeof window === 'undefined') ? this : window;
+var globalScope = this;
 
 var isWorker = (typeof window == 'undefined');
 
@@ -8642,19 +8640,5 @@ var FontFace = (function FontFaceClosure() {
   return FontFace;
 })();
 
-
-}).call((typeof window === 'undefined') ? this : window);
-
-blr.PDFJS.workerSrc = 'chrome://W15yQC/content/pdf.worker.js';
-PDFJS.workerSrc = 'chrome://W15yQC/content/pdf.worker.js';
-
-if (!PDFJS.workerSrc && typeof document !== 'undefined') {
-  // workerSrc is not set -- using last script url to define default location
-  PDFJS.workerSrc = (function () {
-    'use strict';
-    var scriptTagContainer = document.body ||
-                             document.getElementsByTagName('head')[0];
-    var pdfjsSrc = scriptTagContainer.lastChild.src;
-    return pdfjsSrc && pdfjsSrc.replace(/\.js$/i, '.worker.js');
-  })();
-}
+blr.PDFJS=PDFJS;
+}).call(this);

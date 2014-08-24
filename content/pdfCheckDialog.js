@@ -50,11 +50,15 @@ if (!blr) {
 blr.W15yQC.pdfCheckDialog = {
 
   check: function() {
-    var sURL=document.getElementById('tbURL').value;
-    if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
-      blr.W15yQC.pdfChecker.getPDF(sURL,document.getElementById('note-text')).then();
-    } else {
-      alert('URL looks invalid: '+sURL);
-    }
+
+    blr.PDFJS.getDocument('http://www.udlcenter.org/sites/udlcenter.org/files/updateguidelines2_0.pdf').then(function(){alert('got here');});
+
+    //alert(blr.W15yQC.objectToString(blr.PDFJS));
+    //var sURL=document.getElementById('tbURL').value;
+    //if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
+    //  blr.W15yQC.pdfChecker.getPDF(sURL,document.getElementById('note-text')).then();
+    //} else {
+    //  alert('URL looks invalid: '+sURL);
+    //}
   }
 }

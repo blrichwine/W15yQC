@@ -16,13 +16,7 @@
  */
 /*jshint globalstrict: false */
 
-// Initializing PDFJS global object (if still undefined)
-if (typeof PDFJS === 'undefined') {
-  (typeof window !== 'undefined' ? window : this).PDFJS = {};
-}
-blr.PDFJS=PDFJS;
-PDFJS.version = '1.0.1';
-PDFJS.build = 'fatal: Not a git repository (or any of the parent directories): .git';
+// PDFJS global object is declared in pdf.js CALL IT FIRST!!!!
 
 (function pdfjsWrapper() {
   // Use strict in our context only - users might not want it
@@ -49,9 +43,9 @@ PDFJS.build = 'fatal: Not a git repository (or any of the parent directories): .
 
 'use strict';
 
-var globalScope = (typeof window === 'undefined') ? this : window;
+var globalScope = this;
 
-var isWorker = (typeof window == 'undefined');
+var isWorker = true;
 
 var FONT_IDENTITY_MATRIX = [0.001, 0, 0, 0.001, 0, 0];
 
@@ -42519,18 +42513,5 @@ var MurmurHash3_64 = (function MurmurHash3_64Closure (seed) {
 })();
 
 
-}).call((typeof window === 'undefined') ? this : window);
+}).call(this);
 
-blr.PDFJS.workerSrc = 'chrome://W15yQC/content/pdf.worker.js';
-PDFJS.workerSrc = 'chrome://W15yQC/content/pdf.worker.js';
-
-if (!PDFJS.workerSrc && typeof document !== 'undefined') {
-  // workerSrc is not set -- using last script url to define default location
-  PDFJS.workerSrc = (function () {
-    'use strict';
-    var scriptTagContainer = document.body ||
-                             document.getElementsByTagName('head')[0];
-    var pdfjsSrc = scriptTagContainer.lastChild.src;
-    return pdfjsSrc && pdfjsSrc.replace(/\.js$/i, '.worker.js');
-  })();
-}
