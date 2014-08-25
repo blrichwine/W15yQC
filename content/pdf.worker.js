@@ -5366,6 +5366,63 @@ var PDFDocument = (function PDFDocumentClosure() {
 
     get tagged() {
       var rootDict, value=false;
+
+      try {
+        rootDict = this.xref.trailer.get('Root');
+      } catch (err) {
+        info('The document root dictionary is invalid.');
+      }
+      if (rootDict) {
+        if (rootDict.has('MarkInfo')) {
+             value = rootDict.get('MarkInfo');
+             value=value.map.Marked;
+        }
+      }
+      value=(value===true?true:false);
+      return shadow(this, 'tagged', value);
+    },
+
+    get structured() {
+      var rootDict, str, value=false;
+
+      try {
+        rootDict = this.xref.trailer.get('Root');
+      } catch (err) {
+        info('The document root dictionary is invalid.');
+      }
+
+      if (rootDict) {
+       if (rootDict.has('StructTreeRoot')) {
+        str = rootDict.get('StructTreeRoot');
+        if(str!=null && str.map!=null && str.map.K!=null) {
+          value=true;
+        }
+       }
+      }
+      value=(value===true?true:false);
+      return shadow(this, 'structured', value);
+    },
+
+    get hasSuspects() {
+      var rootDict, value=false;
+      try {
+        rootDict = this.xref.trailer.get('Root');
+      } catch (err) {
+        info('The document root dictionary is invalid.');
+      }
+      if (rootDict) {
+        if (rootDict.has('MarkInfo')) {
+             value = rootDict.get('MarkInfo');
+             value=value.map.Suspects;
+        }
+      }
+      value= (value==true) ? true : false;
+      return shadow(this, 'hasSuspects', value);
+    },
+
+    readStructure: function Catalog_readDocumentStructure() {
+    // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
+      var rootDict, value=false;
       var str, i, j, ref, so, ca, stre, structure=[], strStats={}, xref=this.xref;
 
 
@@ -5396,11 +5453,6 @@ var PDFDocument = (function PDFDocumentClosure() {
       } catch (err) {
         info('The document root dictionary is invalid.');
       }
-      if (rootDict) {
-        if (rootDict.has('MarkInfo')) {
-             value = rootDict.get('MarkInfo');
-             value=value.map.Marked;
-        }
       if (rootDict) {
         info('rootDict:'+blr.W15yQC.objectToString(rootDict));
         if (rootDict.has('StructTreeRoot')) {
@@ -5436,56 +5488,7 @@ var PDFDocument = (function PDFDocumentClosure() {
         }
         info('Structure:'+blr.W15yQC.objectToString(structure ,true));
       }
-      }
-
-      return shadow(this, 'tagged', value);
-    },
-
-    get hasSuspects() {
-      var rootDict, value=false;
-      try {
-        rootDict = this.xref.trailer.get('Root');
-      } catch (err) {
-        info('The document root dictionary is invalid.');
-      }
-      if (rootDict) {
-        if (rootDict.has('MarkInfo')) {
-             value = rootDict.get('MarkInfo');
-             value=value.map.Suspects;
-        }
-      }
-      value= (value==true) ? true : false;
-      return shadow(this, 'hasSuspects', value);
-    },
-
-    readStructure: function Catalog_readDocumentStructure() {
-    // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
-      var i, rootDict, str=null, strStats={};
-      info('readStructure starting');
-      try {
-        rootDict = this.xref.trailer.get('Root');
-      } catch (err) {
-        info('The document root dictionary is invalid.');
-      }
-      if (rootDict) {
-        if (rootDict.has('StructTreeRoot')) {
-         info('rootDict has StructTreeRoot');
-         str = rootDict.get('StructTreeRoot');
-         if(str!=null && str.map) {
-           info('K type: '+typeof str.map.K);
-           if(str.map.K) {
-             if(str.map.K.length>1) {
-               warn('K in StructTreeRoot has more than one children in a tagged PDF');
-             }
-             for(i=0;i<str.map.K.length;i++) {
-
-             }
-           }
-         }
-        }
-      }
-
-      return;
+      return structure;
     },
 
     get fingerprint() {
@@ -37529,6 +37532,8 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         var numPagesPromise = pdfManager.ensureDoc('numPages');
         var fingerprintPromise = pdfManager.ensureDoc('fingerprint');
         var taggedPromise = pdfManager.ensureDoc('tagged');
+        var hasSuspectsPromise = pdfManager.ensureDoc('hasSuspects');
+        var structuredPromise = pdfManager.ensureDoc('structured');
         var isLinearizedPromise = pdfManager.ensureDoc('isLinearized');
         var outlinePromise = pdfManager.ensureCatalog('documentOutline');
         var docInfoPromise = pdfManager.ensureDoc('documentInfo');
@@ -37536,7 +37541,8 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         var encryptedPromise = pdfManager.ensureXRef('encrypt');
         Promise.all([numPagesPromise, fingerprintPromise,
                      encryptedPromise, taggedPromise, outlinePromise,
-                     docInfoPromise, metadataPromise, isLinearizedPromise]).then(function onDocReady(results) {
+                     docInfoPromise, metadataPromise, isLinearizedPromise,
+                     structuredPromise, hasSuspectsPromise]).then(function onDocReady(results) {
           var doc = {
             numPages: results[0],
             fingerprint: results[1],
@@ -37545,7 +37551,9 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
             outline: results[4],
             info: results[5],
             metadata: results[6],
-            isLinearized: results[7]
+            isLinearized: results[7],
+            isStructured: results[8],
+            hasSuspects: results[9]
           };
           loadDocumentCapability.resolve(doc);
         },
