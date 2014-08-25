@@ -17,7 +17,7 @@
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
  		<xul:hbox align="center">
-			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value="http://www.csus.edu/accessibility/guides/creating_accessible_pdfs.pdf"/>
+			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value="http://wac.osu.edu/pdf/why-pdf.pdf"/>
 		</xul:hbox>
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0">
 				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>

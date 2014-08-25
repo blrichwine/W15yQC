@@ -5366,8 +5366,33 @@ var PDFDocument = (function PDFDocumentClosure() {
 
     get tagged() {
       var rootDict, value=false;
+      var str, i, j, ref, so, ca, stre, structure=[], strStats={}, xref=this.xref;
+
+
+      function addStructElementChildren(strec) {
+        var k, children=[], strecc, so2, ca2;
+
+        if (strec!=null && strec.map!=null && strec.map.K!=null) {
+         if(typeof strec.map.K.length != 'undefined' && strec.map.K.length !==null) {
+          for (k=0;k<strec.map.K.length;k++) {
+           strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
+           if (strecc!=null && strecc.map) {
+            children.push({"S":(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null, "children":addStructElementChildren(strecc)});
+           }
+          }
+         } else if(strec.map.K.num != null) {
+           strecc=xref.fetch(new Ref(strec.map.K.num,strec.map.K.gen));
+           info(strecc.map.S.name);
+           children.push({"S":(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null, "children":addStructElementChildren(strecc)});
+         }
+        }
+
+        return children;
+      }
+
+
       try {
-        rootDict = this.xref.trailer.get('Root');
+        rootDict = xref.trailer.get('Root');
       } catch (err) {
         info('The document root dictionary is invalid.');
       }
@@ -5376,11 +5401,91 @@ var PDFDocument = (function PDFDocumentClosure() {
              value = rootDict.get('MarkInfo');
              value=value.map.Marked;
         }
-        if (rootDict.has('Lang')) {
-             value = rootDict.get('Lang');
+      if (rootDict) {
+        info('rootDict:'+blr.W15yQC.objectToString(rootDict));
+        if (rootDict.has('StructTreeRoot')) {
+         str = rootDict.get('StructTreeRoot');
+         info('root.StructTreeRoot: '+blr.W15yQC.objectToString(str, false));
+         if(str!=null && str.map!=null) {
+           info('K type: '+(typeof str.map.K));
+           info('K: '+blr.W15yQC.objectToString(str.map.K));
+           if(str.map.K) {
+             if(typeof str.map.K.length != 'undefined' && str.map.K.length !==null) {
+              if(str.map.K.length>1) {
+                warn('K in StructTreeRoot has more than one children in a tagged PDF. str.map.K.length:'+str.map.K.length);
+              }
+              so={"S":'Sect', "children":[]}; // Assuming a Sect as root since multiple K values is technically a syntax error
+              for(i=0;i<str.map.K.length;i++) {
+               stre=xref.fetch(new Ref(str.map.K[i].num,str.map.K[i].gen));
+               if (stre!=null && stre.map) {
+                ca=addStructElementChildren(stre);
+                for (j=0;j<ca.length;j++) {
+                 so.children.push(ca[j]);
+                }
+               }
+              }
+              structure.push(so);
+             } else if(str.map.K && str.map.K.num) {
+               stre=xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
+               if (stre!=null && stre.map) {
+                structure.push({"S":(stre.map.S && stre.map.S.name)?stre.map.S.name:null, "children":addStructElementChildren(stre)});
+               }
+             }
+           }
+         }
+        }
+        info('Structure:'+blr.W15yQC.objectToString(structure ,true));
+      }
+      }
+
+      return shadow(this, 'tagged', value);
+    },
+
+    get hasSuspects() {
+      var rootDict, value=false;
+      try {
+        rootDict = this.xref.trailer.get('Root');
+      } catch (err) {
+        info('The document root dictionary is invalid.');
+      }
+      if (rootDict) {
+        if (rootDict.has('MarkInfo')) {
+             value = rootDict.get('MarkInfo');
+             value=value.map.Suspects;
         }
       }
-      return shadow(this, 'tagged', value);
+      value= (value==true) ? true : false;
+      return shadow(this, 'hasSuspects', value);
+    },
+
+    readStructure: function Catalog_readDocumentStructure() {
+    // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
+      var i, rootDict, str=null, strStats={};
+      info('readStructure starting');
+      try {
+        rootDict = this.xref.trailer.get('Root');
+      } catch (err) {
+        info('The document root dictionary is invalid.');
+      }
+      if (rootDict) {
+        if (rootDict.has('StructTreeRoot')) {
+         info('rootDict has StructTreeRoot');
+         str = rootDict.get('StructTreeRoot');
+         if(str!=null && str.map) {
+           info('K type: '+typeof str.map.K);
+           if(str.map.K) {
+             if(str.map.K.length>1) {
+               warn('K in StructTreeRoot has more than one children in a tagged PDF');
+             }
+             for(i=0;i<str.map.K.length;i++) {
+
+             }
+           }
+         }
+        }
+      }
+
+      return;
     },
 
     get fingerprint() {
@@ -42545,4 +42650,3 @@ var MurmurHash3_64 = (function MurmurHash3_64Closure (seed) {
 
 
 }).call(this);
-

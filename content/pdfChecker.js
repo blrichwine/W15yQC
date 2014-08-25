@@ -73,6 +73,8 @@ blr.W15yQC.pdfChecker = {
 
         if (pdf!=null) {
           if (pdf.pdfInfo) {
+            // pdf.pdfInfo=null;
+            alert(blr.W15yQC.objectToString(pdf, false));
             pdf.pdfInfo.outline=null;
             pdf.pdfInfo.metadata=null;
             alert(blr.W15yQC.objectToString(pdf.pdfInfo));
@@ -184,6 +186,7 @@ blr.W15yQC.pdfChecker = {
       blr.W15yQC.pdfChecker.log('Requesting: '+sURL);
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
+          blr.W15yQC.pdfChecker.log('Checking document.');
           resolve(blr.W15yQC.pdfChecker.checkPDF(pdf));
         },
         function() {

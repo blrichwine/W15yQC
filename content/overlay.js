@@ -748,12 +748,22 @@ ys: 'whys'
           return '--ABORTING objectToString DUE TO TOO MANY LEVELS OF RECURSION--';
         }
         for (p in o) {
-          if (o[p]!=null) {
-            if(typeof o[p]==='object' && bDig !== false) {
-              out += Array(3*level+1).join(' ') + 'STARTOBJ: ' + p + ': [' + blr.W15yQC.objectToString(o[p], bDig, level+1) + ']\n';
-            } else {
-              if((typeof o[p])!=='function') { out += Array(3*level+1).join(' ') + p + ': ' + o[p] + '\n'; }
+          try {
+            if (p!=null && typeof p != 'undefined') {
+              if (o[p]!=null && typeof o[p] != 'undefined') {
+                if(typeof o[p]=='object' && bDig !== false) {
+                  out += Array(3*level+1).join(' ') + 'STARTOBJ: ' + p + ': [' + blr.W15yQC.objectToString(o[p], bDig, level+1) + ']\n';
+                } else {
+                  try {
+                    if((typeof o[p])!=='function') { out += Array(3*level+1).join(' ') + p + ': ' + o[p] + '\n'; }
+                  } catch(e) {
+                    if((typeof o[p])!=='function') { out += Array(3*level+1).join(' ') + p + ': ' + (typeof o[p]) + '\n'; }
+                  }
+                }
+              }
             }
+          } catch(e) {
+            out += 'Error converting object to string:'+e.toString()+'\n';
           }
         }
       }
