@@ -112,6 +112,7 @@ blr.W15yQC.pdfChecker = {
     var h,div,span,el,l,li, key, i;
     var rd=blr.W15yQC.pdfChecker.rd;
     var re=blr.W15yQC.pdfChecker.re;
+    var ds=null;
 
     function renderDocStructureLevel(o,el) {
       var oi,ol,oli;
@@ -119,7 +120,7 @@ blr.W15yQC.pdfChecker = {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
           oli=rd.createElement('li');
-          oli.appendChild(rd.createTextNode(o[oi].S));
+          oli.appendChild(rd.createTextNode(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S));
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
             renderDocStructureLevel(o[oi].children,oli);
@@ -130,10 +131,29 @@ blr.W15yQC.pdfChecker = {
     }
 
     function renderAndCheckDocStructure(docStructure,el) {
+      var rm={}, rmi, ol, oli;
+      ds=docStructure;
       h=rd.createElement('h2');
       h.appendChild(rd.createTextNode('Document Structure:'));
       el.appendChild(h);
-      renderDocStructureLevel(docStructure,el);
+      if (ds!=null && ds.RoleMap && ds.RoleMap!==null && ds.RoleMap.map!==null) {
+        h=rd.createElement('h3');
+        h.appendChild(rd.createTextNode('Role Map:'));
+        el.appendChild(h);
+        ol=rd.createElement('ul');
+        for(rmi in ds.RoleMap.map) {
+          rm[rmi]=ds.RoleMap.map[rmi].name;
+          oli=rd.createElement('li');
+          oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
+          ol.appendChild(oli);
+        }
+        el.appendChild(ol);
+      }
+      ds.rm=rm;
+      h=rd.createElement('h3');
+      h.appendChild(rd.createTextNode('Structure:'));
+      el.appendChild(h);
+      renderDocStructureLevel(ds,el);
     }
 
     function renderOutlineLevel(o,el) {

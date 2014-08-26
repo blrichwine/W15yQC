@@ -5493,7 +5493,12 @@ var PDFDocument = (function PDFDocumentClosure() {
         if (rootDict.has('StructTreeRoot')) {
          str = rootDict.get('StructTreeRoot');
          info('root.StructTreeRoot: '+blr.W15yQC.objectToString(str, false));
+         info('root.StructTreeRoot.map: '+blr.W15yQC.objectToString(str.map, false));
          if(str!=null && str.map!=null) {
+           if (str.map.RoleMap && str.map.RoleMap!=null) {
+            structure.RoleMap=xref.fetch(new Ref(str.map.RoleMap.num,str.map.RoleMap.gen));
+            info('root.StructTreeRoot.map.RoleMap: '+blr.W15yQC.objectToString(structure.RoleMap, true));
+           }
            info('K type: '+(typeof str.map.K));
            info('K: '+blr.W15yQC.objectToString(str.map.K));
            if(str.map.K) {
