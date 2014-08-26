@@ -5420,6 +5420,18 @@ var PDFDocument = (function PDFDocumentClosure() {
       return shadow(this, 'hasSuspects', value);
     },
 
+    get documentStructure() {
+      var obj = null;
+      try {
+        obj = this.readStructure();
+      } catch (ex) {
+        if (ex instanceof MissingDataException) {
+          throw ex;
+        }
+        warn('Unable to read document structure');
+      }
+      return shadow(this, 'documentStructure', obj);
+    },
     readStructure: function Catalog_readDocumentStructure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
       var rootDict, value=false;
@@ -5446,7 +5458,6 @@ var PDFDocument = (function PDFDocumentClosure() {
 
         return children;
       }
-
 
       try {
         rootDict = xref.trailer.get('Root');
@@ -37520,7 +37531,6 @@ var NullStream = (function NullStreamClosure() {
   return NullStream;
 })();
 
-
 var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
   setup: function wphSetup(handler) {
     var pdfManager;
@@ -37545,15 +37555,15 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
                      structuredPromise, hasSuspectsPromise]).then(function onDocReady(results) {
           var doc = {
             numPages: results[0],
-            fingerprint: results[1],
-            encrypted: !!results[2],
-            tagged: results[3],
+            isStructured: results[8],
+            hasSuspects: results[9],
+            isTagged: results[3],
             outline: results[4],
             info: results[5],
             metadata: results[6],
             isLinearized: results[7],
-            isStructured: results[8],
-            hasSuspects: results[9]
+            fingerprint: results[1],
+            encrypted: !!results[2]
           };
           loadDocumentCapability.resolve(doc);
         },
@@ -37830,6 +37840,14 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
       function wphSetupGetOutline(data, deferred) {
         pdfManager.ensureCatalog('documentOutline').then(function (outline) {
           deferred.resolve(outline);
+        }, deferred.reject);
+      }
+    );
+
+    handler.on('GetDocStructure',
+      function wphSetupGetDocStructure(data, deferred) {
+        pdfManager.ensureDoc('documentStructure').then(function (docStructure) {
+          deferred.resolve(docStructure);
         }, deferred.reject);
       }
     );

@@ -4225,6 +4225,13 @@ var PDFDocumentProxy = (function PDFDocumentProxyClosure() {
       return this.transport.getOutline();
     },
     /**
+     * @return {Promise} A promise that is resolved with an {Array} that is the
+     * document structure (if it has one) of the PDF.
+     */
+    getDocumentStructure: function PDFDocumentProxy_getDocStructure() {
+      return this.transport.getDocumentStructure();
+    },
+    /**
      * @return {Promise} A promise that is resolved with an {Object} that has
      * info and metadata properties.  Info is an {Object} filled with anything
      * available in the information dictionary and similarly metadata is a
@@ -4993,6 +5000,16 @@ var WorkerTransport = (function WorkerTransportClosure() {
         this.messageHandler.send('GetOutline', null,
           function transportOutline(outline) {
             resolve(outline);
+          }
+        );
+      }.bind(this));
+    },
+
+    getDocumentStructure: function WorkerTransport_getDocStructure() {
+      return new Promise(function (resolve) {
+        this.messageHandler.send('GetDocStructure', null,
+          function transportDocStructure(docStructure) {
+            resolve(docStructure);
           }
         );
       }.bind(this));
