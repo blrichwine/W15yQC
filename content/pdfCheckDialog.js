@@ -52,7 +52,7 @@ blr.W15yQC.pdfCheckDialog = {
   check: function() {
     var sURL=document.getElementById('tbURL').value;
 
-    blr.W15yQC.pdfChecker.getPDF(sURL, document.getElementById('note-text')).then(function(results){alert(blr.W15yQC.objectToString(results));});
+    blr.W15yQC.pdfChecker.getPdfForFullCheck(sURL, document, document.getElementById('note-text'), document.getElementById('reportIFrame')).then(function(results){alert(blr.W15yQC.objectToString(results));});
     //alert(blr.W15yQC.objectToString(blr.PDFJS));
     //if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
     //  blr.W15yQC.pdfChecker.getPDF(sURL,document.getElementById('note-text')).then();

@@ -57,9 +57,10 @@ blr.W15yQC.pdfChecker = {
    *
    */
 
+   rd: null, // Report Document
    logElement: null,
    re: null, // Report Element
-
+   sURL: null,
 
    log: function(s) {
     if (blr.W15yQC.pdfChecker.logElement!=null) {
@@ -77,7 +78,7 @@ blr.W15yQC.pdfChecker = {
         results.isStructured=pdf.pdfInfo.isStructured;
         results.hasSuspects=pdf.pdfInfo.hasSuspects;
         results.isTagged=pdf.pdfInfo.isTagged;
-        results.hasOutline=pdf.pdfInfo.outline!==null;
+        results.hasOutline=pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>1;
         results.isLinearized=pdf.pdfInfo.isLinearized;
         if (pdf.pdfInfo.info) {
           results.version=pdf.pdfInfo.info.PDFFormatVersion;
@@ -108,45 +109,139 @@ blr.W15yQC.pdfChecker = {
   getPdfFullCheckResults: function(pdf) {
     var results={"version":null, "isLinearized":null, "hasOutline":null, "isStructured":null, "hasSuspects":null,
                  "isTagged":null, "hasForm":null, "defaultLang":null, "numPages":null, "errors":false};
+    var h,div,span,el,l,li, key, i;
+    var rd=blr.W15yQC.pdfChecker.rd;
+    var re=blr.W15yQC.pdfChecker.re;
 
-    if (pdf!=null) {
+    function renderDocStructureLevel(o,el) {
+      var oi,ol,oli;
+      if (o!=null && o.length) {
+        ol=rd.createElement('ul');
+        for(oi=0;oi<o.length;oi++) {
+          oli=rd.createElement('li');
+          oli.appendChild(rd.createTextNode(o[oi].S));
+          ol.appendChild(oli);
+          if (o[oi].children!=null && o[oi].children.length>0) {
+            renderDocStructureLevel(o[oi].children,oli);
+          }
+        }
+        el.appendChild(ol);
+      }
+    }
+
+    function renderAndCheckDocStructure(docStructure,el) {
+      h=rd.createElement('h2');
+      h.appendChild(rd.createTextNode('Document Structure:'));
+      el.appendChild(h);
+      renderDocStructureLevel(docStructure,el);
+    }
+
+    function renderOutlineLevel(o,el) {
+      var oi,ol,oli;
+      if (o!=null && o.length) {
+        ol=rd.createElement('ul');
+        for(oi=0;oi<o.length;oi++) {
+          oli=rd.createElement('li');
+          oli.appendChild(rd.createTextNode(o[oi].title));
+          ol.appendChild(oli);
+          if (o[oi].items!=null && o[oi].items.length>0) {
+            renderOutlineLevel(o[oi].items,oli);
+          }
+        }
+        el.appendChild(ol);
+      }
+    }
+
+    if (pdf!=null && re!=null) {
       if (pdf.pdfInfo) {
-        results.numPages=pdf.pdfInfo.numPages;
-        results.isStructured=pdf.pdfInfo.isStructured;
-        results.hasSuspects=pdf.pdfInfo.hasSuspects;
-        results.isTagged=pdf.pdfInfo.isTagged;
-        results.hasOutline=pdf.pdfInfo.outline!==null;
-        results.isLinearized=pdf.pdfInfo.isLinearized;
-        if (pdf.pdfInfo.info) {
-          results.version=pdf.pdfInfo.info.PDFFormatVersion;
-          results.hasForm=pdf.pdfInfo.info.IsAcroFormPresent||pdf.pdfInfo.info.IsXFAPresent;
+        h=rd.createElement('h1');
+        h.appendChild(rd.createTextNode('PDF Accessibility Report'));
+        re.appendChild(h);
+
+        h=rd.createElement('h2');
+        h.appendChild(rd.createTextNode('PDF Info:'));
+        re.appendChild(h);
+
+        l=rd.createElement('ul');
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('URL: '+blr.W15yQC.pdfChecker.sURL));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Number of pages: '+pdf.pdfInfo.numPages));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Structured: '+(pdf.pdfInfo.isStructured==true?'Yes'+(pdf.pdfInfo.hasSuspects==true?', but has suspects':''):'No')));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Tagged: '+(pdf.pdfInfo.isTagged==true?'Yes':'No')));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Default language: '+pdf.pdfInfo.defaultLang));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Outline/Bookmarks: '+((pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>1)?'Yes':'No')));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Linearized: '+(pdf.pdfInfo.isLinearized==true?'Yes':'No')));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Encrypted: '+(pdf.pdfInfo.encrypted==true?'Yes':'No')));
+        l.appendChild(li);
+
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Fingerprint: '+pdf.pdfInfo.fingerprint));
+        l.appendChild(li);
+
+        for(key in pdf.pdfInfo.info) {
+          if (pdf.pdfInfo.info.hasOwnProperty(key)) {
+            li=rd.createElement('li');
+            li.appendChild(rd.createTextNode(key+': '+pdf.pdfInfo.info[key]));
+            l.appendChild(li);
+          }
+        }
+        re.appendChild(l);
+
+        h=rd.createElement('h2');
+        h.appendChild(rd.createTextNode('PDF Outline (Bookmarks):'));
+        re.appendChild(h);
+
+        renderOutlineLevel(pdf.pdfInfo.outline,re);
+        if (pdf.pdfInfo.isStructured==true) {
+          pdf.getDocumentStructure().then(function(ds){renderAndCheckDocStructure(ds,re);});
+        } else {
+          h=rd.createElement('h2');
+          h.appendChild(rd.createTextNode('No document structure'));
+          re.appendChild(h);
         }
       }
-      pdf.getDocumentStructure().then(function(docStruc){alert('here');});
+    } else {
+      blr.W15yQC.pdfChecker.log('Error: pdf or re objects are null');
     }
-    blr.W15yQC.pdfChecker.log('Results: '+blr.W15yQC.objectToString(results));
-    return results;
   },
 
 
-   getPdfForFullCheck: function(sURL, tb, re) {
-    if (tb!=null) {
+   getPdfForFullCheck: function(sURL, rd, tb, iframe) {
+      blr.W15yQC.pdfChecker.sURL=sURL;
+      blr.W15yQC.pdfChecker.rd=iframe.contentDocument;
       blr.W15yQC.pdfChecker.logElement=tb;
-    } else {
-      blr.W15yQC.pdfChecker.logElement=null;
-    }
-    if (re!=null) {
-      blr.W15yQC.pdfChecker.re = re;
-    } else {
-      blr.W15yQC.pdfChecker.re = null;
-    }
+      blr.W15yQC.pdfChecker.re = iframe.contentDocument.body;
+
+
     return new Promise(function(resolve, reject) {
 
       blr.W15yQC.pdfChecker.log('Requesting: '+sURL);
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
           blr.W15yQC.pdfChecker.log('Checking document.');
-          resolve(blr.W15yQC.pdfChecker.getPdfQuickCheckResults(pdf));
+          resolve(blr.W15yQC.pdfChecker.getPdfFullCheckResults(pdf));
         },
         function() {
           reject(null);

@@ -5382,6 +5382,30 @@ var PDFDocument = (function PDFDocumentClosure() {
       return shadow(this, 'tagged', value);
     },
 
+    get defaultLang() {
+      var rootDict, str, value='';
+
+      try {
+        rootDict = this.xref.trailer.get('Root');
+      } catch (err) {
+        info('The document root dictionary is invalid.');
+      }
+      if (rootDict) {
+        if (rootDict.has('Lang')) {
+          value = rootDict.get('Lang')+' (from document root)';
+          if (rootDict.has('StructTreeRoot')) {
+           str = rootDict.get('StructTreeRoot');
+           if(str!=null && str.map!=null && str.map.Lang!=null) {
+             value=str.map.Lang+' (from StructTreeRoot)';
+           }
+          }
+        } else {
+         value='(not specified)';
+        }
+      }
+      return shadow(this, 'defaultLang', value);
+    },
+
     get structured() {
       var rootDict, str, value=false;
 
@@ -37542,6 +37566,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         var numPagesPromise = pdfManager.ensureDoc('numPages');
         var fingerprintPromise = pdfManager.ensureDoc('fingerprint');
         var taggedPromise = pdfManager.ensureDoc('tagged');
+        var defaultLangPromise = pdfManager.ensureDoc('defaultLang');
         var hasSuspectsPromise = pdfManager.ensureDoc('hasSuspects');
         var structuredPromise = pdfManager.ensureDoc('structured');
         var isLinearizedPromise = pdfManager.ensureDoc('isLinearized');
@@ -37552,9 +37577,10 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         Promise.all([numPagesPromise, fingerprintPromise,
                      encryptedPromise, taggedPromise, outlinePromise,
                      docInfoPromise, metadataPromise, isLinearizedPromise,
-                     structuredPromise, hasSuspectsPromise]).then(function onDocReady(results) {
+                     structuredPromise, hasSuspectsPromise, defaultLangPromise]).then(function onDocReady(results) {
           var doc = {
             numPages: results[0],
+            defaultLang: results[10],
             isStructured: results[8],
             hasSuspects: results[9],
             isTagged: results[3],
