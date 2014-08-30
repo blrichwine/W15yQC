@@ -5452,26 +5452,56 @@ var PDFDocument = (function PDFDocumentClosure() {
         if (ex instanceof MissingDataException) {
           throw ex;
         }
-        warn('Unable to read document structure');
+        warn('Unable to read document structure:'+ex);
       }
       return shadow(this, 'documentStructure', obj);
     },
-    
+
     readStructure: function Catalog_readDocumentStructure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
       var rootDict, value=false;
       var str, i, j, ref, so, ca, stre, structure=[], strStats={}, xref=this.xref;
 
+      function getTextByPageAndMCID(pageRef, mcid) {
+        var text='', po;
+
+        po=xref.fetch(pageRef);
+        if(po!==null) {
+          text='received page object';
+          info('getTextByPageAndMCID: page object:'+blr.W15yQC.objectToString(po,true));
+        } else {
+         info('getTextByPageAndMCID: failed to get page object');
+         text='failed to get';
+        }
+
+        return text;
+      }
+
+      function getTextByObjRef(objRef) {
+        var text='', obj;
+     return '';
+        obj=xref.fetch(objRef);
+        if(obj!==null) {
+          text='received object';
+          info('getTextByObjRef: page object:'+blr.W15yQC.objectToString(obj,true));
+        } else {
+         info('getTextByObjRef: failed to get page object');
+         text='failed to get';
+        }
+
+        return text;
+      }
 
       function addStructElementChildren(strec) {
-        var k, children=[], strecc, so2, ca2;
+        var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, i;
 
         if (strec!=null && strec.map!=null && strec.map.K!=null) {
          if(typeof strec.map.K.length != 'undefined' && strec.map.K.length !==null) {
           for (k=0;k<strec.map.K.length;k++) {
            strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
            if (strecc!=null && strecc.map) {
-            children.push({"S":(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null, "children":addStructElementChildren(strecc)});
+            type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
+            children.push({"S":type, "children":addStructElementChildren(strecc)});
             if(typeof strecc.map.T != 'undefined') { children[children.length-1].T=strecc.map.T; }
             if(typeof strecc.map.Lang != 'undefined') { children[children.length-1].Lang=strecc.map.Lang; }
             if(typeof strecc.map.Alt != 'undefined') { children[children.length-1].Alt=strecc.map.Alt; }
@@ -5479,12 +5509,40 @@ var PDFDocument = (function PDFDocumentClosure() {
             if(typeof strecc.map.ActualText != 'undefined') { children[children.length-1].ActualText=strecc.map.ActualText; }
             if(typeof strecc.map.Pg != 'undefined') { children[children.length-1].Pg=strecc.map.Pg; }
             if(typeof strecc.map.K != 'undefined') { children[children.length-1].K=strecc.map.K; }
+            if(type!==null && structure.RoleMap != null && structure.RoleMap.map && typeof structure.RoleMap.map[type]!=='undefined' && typeof structure.RoleMap.map[type].name!='undefined') {
+             type=structure.RoleMap.map[type].name;
+            }
+            if(/^(H\d+|P)$/i.test(type)) {
+             if(typeof strecc.map.ActualText != 'undefined') { // TODO: Is this the only type of alternate text?
+              text=strecc.map.ActualText;
+             } else {
+               text='';
+               if(typeof strecc.map.Pg != 'undefined' && typeof strecc.map.K != 'undefined') {
+                pageRef=new Ref(strecc.map.Pg.num,strecc.map.Pg.gen);
+                ko=strecc.map.K;
+                if(typeof ko==='number') {
+                 text=getTextByPageAndMCID(pageRef,ko);
+                } else if(typeof ko.num==='number' && typeof ko.gen==='number') {
+                 text=getTextByObjRef(new Ref(ko.num,ko.gen));
+                } else if(ko.length) {
+                 for(i=0;i<ko.length;i++) {
+                  if(typeof ko[i]==='number') {
+                   text+=getTextByPageAndMCID(pageRef,ko[i]);
+                  } else if(typeof ko[i].num==='number' && typeof ko[i].gen==='number') {
+                   text+=getTextByObjRef(new Ref(ko[i].num,ko[i].gen));
+                  }
+                 }
+                }
+               }
+             }
+             children[children.length-1].text=text;
+            }
            }
           }
-         } else if(strec.map.K.num != null) {
+         } else if(typeof strec.map.K.num === 'number') {
            strecc=xref.fetch(new Ref(strec.map.K.num,strec.map.K.gen));
-           info(strecc.map.S.name);
-           children.push({"S":(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null, "children":addStructElementChildren(strecc)});
+           type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
+           children.push({"S":type, "children":addStructElementChildren(strecc)});
             if(typeof strecc.map.T != 'undefined') { children[children.length-1].T=strecc.map.T; }
             if(typeof strecc.map.Lang != 'undefined') { children[children.length-1].Lang=strecc.map.Lang; }
             if(typeof strecc.map.Alt != 'undefined') { children[children.length-1].Alt=strecc.map.Alt; }
@@ -5492,6 +5550,34 @@ var PDFDocument = (function PDFDocumentClosure() {
             if(typeof strecc.map.ActualText != 'undefined') { children[children.length-1].ActualText=strecc.map.ActualText; }
             if(typeof strecc.map.Pg != 'undefined') { children[children.length-1].Pg=strecc.map.Pg; }
             if(typeof strecc.map.K != 'undefined') { children[children.length-1].K=strecc.map.K; }
+            if(type!==null && structure.RoleMap != null && structure.RoleMap.map && typeof structure.RoleMap.map[type]!=='undefined' && typeof structure.RoleMap.map[type].name!='undefined') {
+             type=structure.RoleMap.map[type].name;
+            }
+            if(/^(H.*|P)$/i.test(type)) {
+             if(typeof strecc.map.ActualText != 'undefined') { // TODO: Is this the only type of alternate text?
+              text=strecc.map.ActualText;
+             } else {
+               text='';
+               if(typeof strecc.map.Pg != 'undefined' && typeof strecc.map.K != 'undefined') {
+                pageRef=new Ref(strecc.map.Pg.num,strecc.map.Pg.gen);
+                ko=strecc.map.K;
+                if(typeof ko==='number') {
+                 text=getTextByPageAndMCID(pageRef,ko);
+                } else if(typeof ko.num==='number' && typeof ko.gen==='number') {
+                 text=getTextByObjRef(new Ref(ko.num,ko.gen));
+                } else if(ko.length) {
+                 for(i=0;i<ko.length;i++) {
+                  if(typeof ko[i]==='number') {
+                   text+=getTextByPageAndMCID(pageRef,ko[i]);
+                  } else if(typeof ko[i].num==='number' && typeof ko[i].gen==='number') {
+                   text+=getTextByObjRef(new Ref(ko[i].num,ko[i].gen));
+                  }
+                 }
+                }
+               }
+              }
+              children[children.length-1].text=text;
+             }
          }
         }
 
@@ -16329,8 +16415,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
       return operatorList;
     },
 
-    getTextContent: function PartialEvaluator_getTextContent(stream, resources,
-                                                             stateManager) {
+    getTextContent: function PartialEvaluator_getTextContent(stream, resources, stateManager) {
 
       stateManager = (stateManager || new StateManager(new TextState()));
 
@@ -16371,6 +16456,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
           dir: null,
           width: 0,
           height: 0,
+          mcid: null,
           transform: null,
           fontName: font.loadedName
         };
@@ -16380,6 +16466,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         var bidiResult = PDFJS.bidi(textChunk.str, -1, textState.font.vertical);
         textChunk.str = bidiResult.str;
         textChunk.dir = bidiResult.dir;
+        textChunk.mcid=textState.mcid;
         return textChunk;
       }
 
@@ -16487,6 +16574,12 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         var fn = operation.fn;
         var args = operation.args;
         switch (fn | 0) {
+          case OPS.beginMarkedContentProps:
+            textState.mcid=(typeof args[1].MCID != 'undefined')?args[1].MCID:null;
+            break;
+          case OPS.endMarkedContent:
+            textState.mcid=null;
+            break;
           case OPS.setFont:
             handleSetFont(args[0].name);
             textState.fontSize = args[1];
@@ -17287,6 +17380,7 @@ var TextState = (function TextStateClosure() {
     this.leading = 0;
     this.textHScale = 1;
     this.textRise = 0;
+    this.mcid = null;
   }
 
   TextState.prototype = {

@@ -128,7 +128,7 @@ blr.W15yQC.pdfChecker = {
           }
 //          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+
 //                          (blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
-          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
+          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(typeof o[oi].text!='undefined'?': "'+o[oi].text+'"':'')+(s!=''?' {'+s+'}':'')));
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
             renderDocStructureLevel(o[oi].children,oli);
@@ -270,8 +270,18 @@ blr.W15yQC.pdfChecker = {
       blr.W15yQC.pdfChecker.log('Requesting: '+sURL);
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
-          blr.W15yQC.pdfChecker.log('Checking document.');
-          resolve(blr.W15yQC.pdfChecker.getPdfFullCheckResults(pdf));
+          function handleTextContent(tc) {
+            if (tc!=null) {
+              blr.W15yQC.pdfChecker.log('TC:'+blr.W15yQC.objectToString(tc));
+            }
+          }
+          pdf.getPage(1).then(function(page){
+            page.getTextContent().then(function(tc){
+                handleTextContent(tc);
+              })
+          })
+          //blr.W15yQC.pdfChecker.log('Checking document.');
+          //resolve(blr.W15yQC.pdfChecker.getPdfFullCheckResults(pdf));
         },
         function() {
           reject(null);
