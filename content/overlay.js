@@ -740,34 +740,99 @@ ys: 'whys'
     },
 
     objectToString: function (o, bDig, level) {
-      var p, out = '';
-      if (o != null) {
-        if (level==null) {
-          level=0;
-        } else if (level>4) {
-          return '--ABORTING objectToString DUE TO TOO MANY LEVELS OF RECURSION--';
-        }
-        for (p in o) {
-          try {
-            if (p!=null && typeof p != 'undefined') {
-              if (o[p]!=null && typeof o[p] != 'undefined') {
-                if(typeof o[p]=='object' && bDig !== false) {
-                  out += Array(3*level+1).join(' ') + 'STARTOBJ: ' + p + ': [' + blr.W15yQC.objectToString(o[p], bDig, level+1) + ']\n';
-                } else {
-                  try {
-                    if((typeof o[p])!=='function') { out += Array(3*level+1).join(' ') + p + ': ' + o[p] + '\n'; }
-                  } catch(e) {
-                    if((typeof o[p])!=='function') { out += Array(3*level+1).join(' ') + p + ': ' + (typeof o[p]) + '\n'; }
-                  }
-                }
+      var i, p, keys, out = '';
+      if (level==null) {
+        level=0;
+      }
+      try {
+        if (/undefined/i.test(typeof o)) {
+          return " undefined ";
+        } else if (o===null) {
+          return ' null ';
+        } else if (/^string$/i.test(typeof o)) {
+          return '"'+o.toString()+'"';
+        } else if (/^number$/i.test(typeof o)) {
+          return o.toString();
+        } else if (/^boolean$/i.test(typeof o)) {
+          return o?' true ':' false ';
+        } else if( Object.prototype.toString.call( o ) === '[object Array]' ) {
+          if (bDig || level<=14) {
+            out+=' [';
+            for (i=0;i<o.length;i++) {
+              out+=blr.W15yQC.objectToString(o[i], true, level+1);
+              if (i<o.length-1) {
+                out+=', '
               }
             }
+            out+='] ';
+          } else {
+            out+=' [object Array] ';
+          }
+          return out;
+        } else {
+          if (level>14) {
+            return '--ABORTING objectToString DUE TO TOO MANY LEVELS OF RECURSION--';
+          }
+          try {
+            keys=Object.getOwnPropertyNames(o);
+            if (keys!=null && keys.length>0) {
+              out+='{ ';
+              keys=keys.sort();
+              for (i=0;i<keys.length;i++) {
+                p=keys[i];
+                if (p=='xref') {
+                  continue;
+                }
+                try {
+                  if (p!=null && typeof p != 'undefined') {
+                    if (o[p]!=null && typeof o[p] != 'undefined') {
+                      if(/object/i.test(typeof o[p]) && bDig !== false) {
+                        out += ' "' + p + '": ' + blr.W15yQC.objectToString(o[p], bDig, level+1)+' ';
+                        if (i<keys.length-1) {
+                          out+=', '
+                        }
+                      } else {
+                        try {
+                          if(/^string$/i.test(typeof o[p])) {
+                            out += '"'+ p + '": "' + o[p] + '"';
+                          } else if(/^undefined$/i.test(typeof o[p])) {
+                            out += '"'+ p + '": ' + 'undefined ';
+                          } else if(o[p]===null) {
+                            out += '"'+ p + '": ' + 'null ';
+                          } else if((typeof o[p])!=='function') {
+                            out += '"'+ p + '": ' + o[p];
+                          } else {
+                            out += '"'+ p + '": FUNCTION(){OMITTED}';
+                          }
+                          if (i<keys.length-1) {
+                            out+=', '
+                          }
+                        } catch(e) {
+                          if((typeof o[p])!=='function') {
+                            out += '"'+ p + '": ' + (typeof o[p]);
+                            if (i<keys.length-1) {
+                              out+=', '
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                } catch(e) {
+                  out += 'Error converting object to string:'+e.toString()+'\n';
+                }
+              }
+              out+=' }';
+            }
           } catch(e) {
-            out += 'Error converting object to string:'+e.toString()+'\n';
+            alert(e);
           }
         }
+        return out===''?o:out;
+
+      } catch(e) {
+        alert('objecttostring:' + e);
       }
-      return out===''?o:out;
     },
 
     fnLog: function (sMsg) {

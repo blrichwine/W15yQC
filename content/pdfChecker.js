@@ -115,12 +115,20 @@ blr.W15yQC.pdfChecker = {
     var ds=null;
 
     function renderDocStructureLevel(o,el) {
-      var oi,ol,oli;
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','Pg', 'K'];
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
           oli=rd.createElement('li');
-          oli.appendChild(rd.createTextNode(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S));
+          s='';
+          for(k=0;k<keys.length;k++) {
+            if (typeof o[oi][keys[k]] != 'undefined') {
+              s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
+            }
+          }
+//          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+
+//                          (blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
+          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
             renderDocStructureLevel(o[oi].children,oli);
@@ -133,6 +141,8 @@ blr.W15yQC.pdfChecker = {
     function renderAndCheckDocStructure(docStructure,el) {
       var rm={}, rmi, ol, oli;
       ds=docStructure;
+      blr.W15yQC.pdfChecker.log('DS:'+blr.W15yQC.objectToString(ds));
+
       h=rd.createElement('h2');
       h.appendChild(rd.createTextNode('Document Structure:'));
       el.appendChild(h);

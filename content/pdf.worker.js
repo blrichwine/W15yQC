@@ -5456,6 +5456,7 @@ var PDFDocument = (function PDFDocumentClosure() {
       }
       return shadow(this, 'documentStructure', obj);
     },
+    
     readStructure: function Catalog_readDocumentStructure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
       var rootDict, value=false;
@@ -5471,12 +5472,26 @@ var PDFDocument = (function PDFDocumentClosure() {
            strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
            if (strecc!=null && strecc.map) {
             children.push({"S":(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null, "children":addStructElementChildren(strecc)});
+            if(typeof strecc.map.T != 'undefined') { children[children.length-1].T=strecc.map.T; }
+            if(typeof strecc.map.Lang != 'undefined') { children[children.length-1].Lang=strecc.map.Lang; }
+            if(typeof strecc.map.Alt != 'undefined') { children[children.length-1].Alt=strecc.map.Alt; }
+            if(typeof strecc.map.E != 'undefined') { children[children.length-1].E=strecc.map.E; }
+            if(typeof strecc.map.ActualText != 'undefined') { children[children.length-1].ActualText=strecc.map.ActualText; }
+            if(typeof strecc.map.Pg != 'undefined') { children[children.length-1].Pg=strecc.map.Pg; }
+            if(typeof strecc.map.K != 'undefined') { children[children.length-1].K=strecc.map.K; }
            }
           }
          } else if(strec.map.K.num != null) {
            strecc=xref.fetch(new Ref(strec.map.K.num,strec.map.K.gen));
            info(strecc.map.S.name);
            children.push({"S":(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null, "children":addStructElementChildren(strecc)});
+            if(typeof strecc.map.T != 'undefined') { children[children.length-1].T=strecc.map.T; }
+            if(typeof strecc.map.Lang != 'undefined') { children[children.length-1].Lang=strecc.map.Lang; }
+            if(typeof strecc.map.Alt != 'undefined') { children[children.length-1].Alt=strecc.map.Alt; }
+            if(typeof strecc.map.E != 'undefined') { children[children.length-1].E=strecc.map.E; }
+            if(typeof strecc.map.ActualText != 'undefined') { children[children.length-1].ActualText=strecc.map.ActualText; }
+            if(typeof strecc.map.Pg != 'undefined') { children[children.length-1].Pg=strecc.map.Pg; }
+            if(typeof strecc.map.K != 'undefined') { children[children.length-1].K=strecc.map.K; }
          }
         }
 
@@ -5489,24 +5504,24 @@ var PDFDocument = (function PDFDocumentClosure() {
         info('The document root dictionary is invalid.');
       }
       if (rootDict) {
-        info('rootDict:'+blr.W15yQC.objectToString(rootDict));
+        //info('rootDict:'+blr.W15yQC.objectToString(rootDict));
         if (rootDict.has('StructTreeRoot')) {
          str = rootDict.get('StructTreeRoot');
-         info('root.StructTreeRoot: '+blr.W15yQC.objectToString(str, false));
-         info('root.StructTreeRoot.map: '+blr.W15yQC.objectToString(str.map, false));
+         //info('root.StructTreeRoot: '+blr.W15yQC.objectToString(str, false));
+         //info('root.StructTreeRoot.map: '+blr.W15yQC.objectToString(str.map, false));
          if(str!=null && str.map!=null) {
            if (str.map.RoleMap && str.map.RoleMap!=null) {
             structure.RoleMap=xref.fetch(new Ref(str.map.RoleMap.num,str.map.RoleMap.gen));
-            info('root.StructTreeRoot.map.RoleMap: '+blr.W15yQC.objectToString(structure.RoleMap, true));
+            //info('root.StructTreeRoot.map.RoleMap: '+blr.W15yQC.objectToString(structure.RoleMap, true));
            }
-           info('K type: '+(typeof str.map.K));
-           info('K: '+blr.W15yQC.objectToString(str.map.K));
+           //info('K type: '+(typeof str.map.K));
+           //info('K: '+blr.W15yQC.objectToString(str.map.K));
            if(str.map.K) {
              if(typeof str.map.K.length != 'undefined' && str.map.K.length !==null) {
               if(str.map.K.length>1) {
                 warn('K in StructTreeRoot has more than one children in a tagged PDF. str.map.K.length:'+str.map.K.length);
               }
-              so={"S":'Sect', "children":[]}; // Assuming a Sect as root since multiple K values is technically a syntax error
+              so={"S":'Sect (implied)', "children":[]}; // Assuming a Sect as root since multiple K values is technically a syntax error
               for(i=0;i<str.map.K.length;i++) {
                stre=xref.fetch(new Ref(str.map.K[i].num,str.map.K[i].gen));
                if (stre!=null && stre.map) {
@@ -5521,12 +5536,18 @@ var PDFDocument = (function PDFDocumentClosure() {
                stre=xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
                if (stre!=null && stre.map) {
                 structure.push({"S":(stre.map.S && stre.map.S.name)?stre.map.S.name:null, "children":addStructElementChildren(stre)});
+                if(typeof stre.map.T != 'undefined') { structure[structure.length-1].T=stre.map.T; }
+                if(typeof stre.map.Lang != 'undefined') { structure[structure.length-1].Lang=stre.map.Lang; }
+                if(typeof stre.map.Alt != 'undefined') { structure[structure.length-1].Alt=stre.map.Alt; }
+                if(typeof stre.map.E != 'undefined') { structure[structure.length-1].E=stre.map.E; }
+                if(typeof stre.map.ActualText != 'undefined') { structure[structure.length-1].ActualText=stre.map.ActualText; }
+                if(typeof stre.map.Pg != 'undefined') { structure[structure.length-1].Pg=stre.map.Pg; }
                }
              }
            }
          }
         }
-        info('Structure:'+blr.W15yQC.objectToString(structure ,true));
+        //info('Structure:'+blr.W15yQC.objectToString(structure ,true));
       }
       return structure;
     },
