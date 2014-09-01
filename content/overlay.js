@@ -795,14 +795,16 @@ ys: 'whys'
                         try {
                           if(/^string$/i.test(typeof o[p])) {
                             out += '"'+ p + '": "' + o[p] + '"';
+                          } else if(/^number$/i.test(typeof o[p])) {
+                            out += '"'+ p + '": ' + o[p];
                           } else if(/^undefined$/i.test(typeof o[p])) {
                             out += '"'+ p + '": ' + 'undefined ';
                           } else if(o[p]===null) {
                             out += '"'+ p + '": ' + 'null ';
-                          } else if((typeof o[p])!=='function') {
-                            out += '"'+ p + '": ' + o[p];
-                          } else {
+                          } else if((typeof o[p])=='function') {
                             out += '"'+ p + '": FUNCTION(){OMITTED}';
+                          } else {
+                            out += '"'+ p + '": [' + (typeof o[p])+']';
                           }
                           if (i<keys.length-1) {
                             out+=', '
@@ -822,7 +824,9 @@ ys: 'whys'
                   out += 'Error converting object to string:'+e.toString()+'\n';
                 }
               }
-              out+=' }';
+              out=out+' }';
+            } else {
+              out='{}';
             }
           } catch(e) {
             alert(e);

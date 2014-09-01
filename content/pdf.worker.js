@@ -5462,8 +5462,9 @@ var PDFDocument = (function PDFDocumentClosure() {
 
     readStructure: function PDFDocument_readDocumentStructure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
+      info('readStructure STARTING');
       var rootDict, value=false;
-      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageIndexByRef={}, strStats={}, xref=this.xref, type;
+      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type;
 
       function addStructElementChildren(strec) {
         var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, i;
@@ -5507,6 +5508,21 @@ var PDFDocument = (function PDFDocumentClosure() {
         return children;
       }
 
+      function indexPagesByRef(pages,iNum,iGen) {
+       var pi;
+       if (typeof pages.map!='undefined' && typeof pages.map.Kids!='undefined' ) {
+        for (pi=0;pi<pages.map.Kids.length;pi++) {
+         indexPagesByRef(xref.fetch(new Ref(pages.map.Kids[pi].num,pages.map.Kids[pi].gen)),pages.map.Kids[pi].num,pages.map.Kids[pi].gen);
+        }
+       } else {
+        if(typeof pageIndexByRef[iNum]=='undefined') {
+         pageIndexByRef[iNum]={};
+        }
+        pageIndexByRef[iNum][iGen]=pageCount;
+        pageCount++;
+       }
+      }
+
       try {
         rootDict = xref.trailer.get('Root');
       } catch (err) {
@@ -5517,24 +5533,26 @@ var PDFDocument = (function PDFDocumentClosure() {
         if (rootDict.has('Pages')) {
          pgs = rootDict.get('Pages');
          if (pgs!==null && typeof pgs.map != 'undefined' && pgs.map.Kids) {
-          structure.pages=pgs.map.Kids;
-          for (pi=0;pi<pgs.map.Kids.length;pi++) {
-           if(typeof pageIndexByRef[pgs.map.Kids[pi].num]=='undefined') {
-            pageIndexByRef[pgs.map.Kids[pi].num]={};
-           }
-           pageIndexByRef[pgs.map.Kids[pi].num][pgs.map.Kids[pi].gen]=pi;
-          }
+          pageCount=0;
+          pageIndexByRef={};
+          //info('Calling indexPagesByRef:'+blr.W15yQC.objectToString(pgs));
+          indexPagesByRef(pgs);
+          pgs=null;
+          //info('pageCount:'+pageCount);
+          //info('pageIndexByRef:'+blr.W15yQC.objectToString(pageIndexByRef));
           structure.pageIndexByRef=pageIndexByRef;
          }
         }
         if (rootDict.has('StructTreeRoot')) {
          str = rootDict.get('StructTreeRoot');
          //info('root.StructTreeRoot: '+blr.W15yQC.objectToString(str, false));
-         //info('root.StructTreeRoot.map: '+blr.W15yQC.objectToString(str.map, false));
+         info('root.StructTreeRoot.map: '+blr.W15yQC.objectToString(str.map, false));
          if(str!=null && str.map!=null) {
            if (str.map.RoleMap && str.map.RoleMap!=null) {
-            structure.RoleMap=xref.fetch(new Ref(str.map.RoleMap.num,str.map.RoleMap.gen));
-            //info('root.StructTreeRoot.map.RoleMap: '+blr.W15yQC.objectToString(structure.RoleMap, true));
+            structure.RoleMap=str.get('RoleMap'); //xref.fetch(new Ref(str.map.RoleMap.num,str.map.RoleMap.gen));
+            info('root.StructTreeRoot.map.RoleMap: '+blr.W15yQC.objectToString(structure.RoleMap, true));
+           } else {
+            info('No RoleMap');
            }
            //info('K type: '+(typeof str.map.K));
            //info('K: '+blr.W15yQC.objectToString(str.map.K));

@@ -78,7 +78,7 @@ blr.W15yQC.pdfChecker = {
         results.isStructured=pdf.pdfInfo.isStructured;
         results.hasSuspects=pdf.pdfInfo.hasSuspects;
         results.isTagged=pdf.pdfInfo.isTagged;
-        results.hasOutline=pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>1;
+        results.hasOutline=pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0;
         results.isLinearized=pdf.pdfInfo.isLinearized;
         if (pdf.pdfInfo.info) {
           results.version=pdf.pdfInfo.info.PDFFormatVersion;
@@ -112,7 +112,7 @@ blr.W15yQC.pdfChecker = {
     var h,div,span,el,l,li, key, i;
     var rd=blr.W15yQC.pdfChecker.rd;
     var re=blr.W15yQC.pdfChecker.re;
-    var ds=null;
+    var ds=null, prevPg=-19392, pgNum=1;
 
     function renderElementStatistics(d) {
       var table, thead, tbody, tr, th, td, keys,i;
@@ -188,6 +188,9 @@ blr.W15yQC.pdfChecker = {
           //blr.W15yQC.pdfChecker.log('Calling renderAndCheckDocStructure');
           renderAndCheckDocStructure(re);
         } else {
+            //blr.W15yQC.pdfChecker.log('Checking2: '+dsStack[dsi][dsiIndexes[dsi]].S);
+            //blr.W15yQC.pdfChecker.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
+            //blr.W15yQC.pdfChecker.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
           pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
           K=(typeof dsStack[dsi][dsiIndexes[dsi]].K.length != 'undefined')?dsStack[dsi][dsiIndexes[dsi]].K:[dsStack[dsi][dsiIndexes[dsi]].K];
           //blr.W15yQC.pdfChecker.log('Page Number:'+pgNum+'  K:'+K);
@@ -245,12 +248,20 @@ blr.W15yQC.pdfChecker = {
     }
 
     function renderDocStructureLevel(o,el) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','Pg', 'K'];
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','K','Pg'];
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
           oli=rd.createElement('li');
           s='';
+          if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
+            pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
+          }
+          if (pgNum!=prevPg) {
+            if(prevPg>0) { oli.setAttribute('class','newPage'); }
+            prevPg=pgNum;
+            s=blr.W15yQC.fnJoin(s,'Page: '+pgNum,', ');
+          }
           for(k=0;k<keys.length;k++) {
             if (typeof o[oi][keys[k]] != 'undefined') {
               s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
@@ -269,26 +280,33 @@ blr.W15yQC.pdfChecker = {
     }
 
     function renderAndCheckDocStructure(el) {
-      var rm={}, rmi, ol, oli, div, p;
+      var rm={}, rmi, ol, oli, div, p, keys, i=-1;
       //blr.W15yQC.pdfChecker.log('DS:'+blr.W15yQC.objectToString(ds));
       //blr.W15yQC.pdfChecker.log('Kids:'+blr.W15yQC.objectToString(ds.pages));
 
       h=rd.createElement('h2');
       h.appendChild(rd.createTextNode('Document Structure:'));
       el.appendChild(h);
-      if (ds!=null && ds.RoleMap && ds.RoleMap!==null && ds.RoleMap.map!==null && ds.RoleMap.map.length>0) {
+      if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
         h=rd.createElement('h3');
         h.appendChild(rd.createTextNode('Role Map:'));
         el.appendChild(h);
         ol=rd.createElement('ul');
-        for(rmi in ds.RoleMap.map) {
-          rm[rmi]=ds.RoleMap.map[rmi].name;
-          oli=rd.createElement('li');
-          oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
-          ol.appendChild(oli);
+
+        keys=Object.getOwnPropertyNames(ds.RoleMap.map);
+        if (keys!=null && keys.length>0) {
+          keys=keys.sort();
+          for (i=0;i<keys.length;i++) {
+            rmi=keys[i];
+            rm[rmi]=ds.RoleMap.map[rmi].name;
+            oli=rd.createElement('li');
+            oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
+            ol.appendChild(oli);
+          }
+          el.appendChild(ol);
         }
-        el.appendChild(ol);
-      } else {
+      }
+      if (i<0) {
         p=rd.createElement('p');
         p.appendChild(rd.createTextNode('No Role Map'));
         el.appendChild(p);
@@ -306,6 +324,8 @@ blr.W15yQC.pdfChecker = {
       el.appendChild(h);
       div=rd.createElement('div');
       el.appendChild(div);
+      prevPg=-19392;
+      pgNum=1;
       renderDocStructureLevel(ds,div);
     }
 
@@ -327,6 +347,9 @@ blr.W15yQC.pdfChecker = {
 
     if (pdf!=null && re!=null) {
       if (pdf.pdfInfo) {
+        var style=rd.createElement('style');
+        style.appendChild(rd.createTextNode('li.newPage{border-top:1px solid black;}'));
+        rd.head.appendChild(style);
         h=rd.createElement('h1');
         h.appendChild(rd.createTextNode('PDF Accessibility Report'));
         re.appendChild(h);
@@ -358,7 +381,7 @@ blr.W15yQC.pdfChecker = {
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Outline/Bookmarks: '+((pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>1)?'Yes':'No')));
+        li.appendChild(rd.createTextNode('Outline/Bookmarks: '+((pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0)?'Yes':'No')));
         l.appendChild(li);
 
         li=rd.createElement('li');
@@ -387,6 +410,7 @@ blr.W15yQC.pdfChecker = {
         re.appendChild(h);
 
         renderOutlineLevel(pdf.pdfInfo.outline,re);
+        
         if (pdf.pdfInfo.isStructured==true) {
           pdf.getDocumentStructure().then(function(ds){getTextForDocStructure(ds,re);});
         } else {
