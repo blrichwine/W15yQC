@@ -173,7 +173,7 @@ blr.W15yQC.pdfChecker = {
         }
       }
 
-      function getTextForDsi() {
+      function getTextForDsi() { // TODO: Index MCID to Items to speed this up
         var tc;
         //blr.W15yQC.pdfChecker.log('Starting getTextForDsi: ');
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
@@ -189,7 +189,7 @@ blr.W15yQC.pdfChecker = {
           renderAndCheckDocStructure(re);
         } else {
           pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
-          K=dsStack[dsi][dsiIndexes[dsi]].K;
+          K=(typeof dsStack[dsi][dsiIndexes[dsi]].K.length != 'undefined')?dsStack[dsi][dsiIndexes[dsi]].K:[dsStack[dsi][dsiIndexes[dsi]].K];
           //blr.W15yQC.pdfChecker.log('Page Number:'+pgNum+'  K:'+K);
           if (typeof pgTCCache[pgNum]!='undefined') {
             //blr.W15yQC.pdfChecker.log('Using Cache');
@@ -197,11 +197,9 @@ blr.W15yQC.pdfChecker = {
             bFound=false;
             text=''
             for(item=0;item<tc.items.length;item++) {
-              if (tc.items[item].mcid==K) {
+              if (K.indexOf(tc.items[item].mcid)>-1) {
                 bFound=true;
                 text=text+tc.items[item].str;
-              } else if (bFound==true) {
-                break;
               }
             }
             if(bFound) {
@@ -219,11 +217,9 @@ blr.W15yQC.pdfChecker = {
                 bFound=false;
                 text=''
                 for(item=0;item<tc.items.length;item++) {
-                  if (tc.items[item].mcid==K) {
+                if (K.indexOf(tc.items[item].mcid)>-1) {
                     bFound=true;
                     text=text+tc.items[item].str;
-                  } else if (bFound==true) {
-                    break;
                   }
                 }
                 if(bFound) {
