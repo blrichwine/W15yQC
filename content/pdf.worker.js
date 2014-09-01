@@ -16366,6 +16366,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         items: [],
         styles: Object.create(null)
       };
+      var currentMCID = null;
       var bidiTexts = textContent.items;
       var SPACE_FACTOR = 0.35;
       var MULTI_SPACE_FACTOR = 1.5;
@@ -16399,7 +16400,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
           dir: null,
           width: 0,
           height: 0,
-          mcid: null,
+          mcid: currentMCID,
           transform: null,
           fontName: font.loadedName
         };
@@ -16409,7 +16410,6 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         var bidiResult = PDFJS.bidi(textChunk.str, -1, textState.font.vertical);
         textChunk.str = bidiResult.str;
         textChunk.dir = bidiResult.dir;
-        textChunk.mcid=textState.mcid;
         return textChunk;
       }
 
@@ -16518,10 +16518,10 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         var args = operation.args;
         switch (fn | 0) {
           case OPS.beginMarkedContentProps:
-            textState.mcid=(typeof args[1].MCID != 'undefined')?args[1].MCID:null;
+            currentMCID=(typeof args[1].MCID != 'undefined')?args[1].MCID:null;
             break;
           case OPS.endMarkedContent:
-            textState.mcid=null;
+            currentMCID=null;
             break;
           case OPS.setFont:
             handleSetFont(args[0].name);
@@ -17323,7 +17323,6 @@ var TextState = (function TextStateClosure() {
     this.leading = 0;
     this.textHScale = 1;
     this.textRise = 0;
-    this.mcid = null;
   }
 
   TextState.prototype = {
