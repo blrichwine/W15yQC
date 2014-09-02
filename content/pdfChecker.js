@@ -151,9 +151,41 @@ blr.W15yQC.pdfChecker = {
 
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
-      var dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[], K, text, item, bFound=false;
+      var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
+          K, text, item, bFound=false,
+          h, div, ol, rmi, oli, p, keys;
 
       //blr.W15yQC.pdfChecker.log('Starting getTextForDocStructure: ');
+
+      h=rd.createElement('h2');
+      h.appendChild(rd.createTextNode('Document Structure:'));
+      re.appendChild(h);
+      if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
+        h=rd.createElement('h3');
+        h.appendChild(rd.createTextNode('Role Map:'));
+        re.appendChild(h);
+        div=rd.createElement('div');
+        ol=rd.createElement('ul');
+        keys=Object.getOwnPropertyNames(ds.RoleMap.map);
+        if (keys!=null && keys.length>0) {
+          keys=keys.sort();
+          for (i=0;i<keys.length;i++) {
+            rmi=keys[i];
+            rm[rmi]=ds.RoleMap.map[rmi].name;
+            oli=rd.createElement('li');
+            oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
+            ol.appendChild(oli);
+          }
+          div.appendChild(ol);
+          re.appendChild(div);
+        }
+      }
+      if (i<0) {
+        p=rd.createElement('p');
+        p.appendChild(rd.createTextNode('No Role Map'));
+        re.appendChild(p);
+      }
+      ds.rm=rm;
 
       function getNext() {
         if (dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
@@ -174,11 +206,12 @@ blr.W15yQC.pdfChecker = {
       }
 
       function getTextForDsi() { // TODO: Index MCID to Items to speed this up
-        var tc;
+        var tc, elType;
         //blr.W15yQC.pdfChecker.log('Starting getTextForDsi: ');
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
             //blr.W15yQC.pdfChecker.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
-          if (/^H\d+$/i.test(dsStack[dsi][dsiIndexes[dsi]].S) && typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined' && typeof dsStack[dsi][dsiIndexes[dsi]].K != 'undefined') {
+          elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
+          if (/^H\d+$/i.test(elType) && typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined' && typeof dsStack[dsi][dsiIndexes[dsi]].K != 'undefined') {
             //blr.W15yQC.pdfChecker.log('Found: '+dsStack[dsi][dsiIndexes[dsi]].S);
             break;
           }
@@ -209,6 +242,7 @@ blr.W15yQC.pdfChecker = {
               dsStack[dsi][dsiIndexes[dsi]].text=text;
               //blr.W15yQC.pdfChecker.log('Found: '+text);
             } else {
+              dsStack[dsi][dsiIndexes[dsi]].text='';
               //blr.W15yQC.pdfChecker.log('Not Found: ');
             }
             getNext();
@@ -229,6 +263,7 @@ blr.W15yQC.pdfChecker = {
                   dsStack[dsi][dsiIndexes[dsi]].text=text;
                   //blr.W15yQC.pdfChecker.log('Found: '+text);
                 } else {
+                  dsStack[dsi][dsiIndexes[dsi]].text='';
                     //blr.W15yQC.pdfChecker.log('Not Found: ');
                 }
                 if (pgsInCache.length>4) {
@@ -245,6 +280,93 @@ blr.W15yQC.pdfChecker = {
         }
       }
       getTextForDsi();
+    }
+
+    function renderHeadings(el) {
+      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, prevHeadingLevel=0, hLevel, hList=[], lStack=[], elType, i, j, t;
+
+      function getNext() {
+        if (dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
+          dsStack.push(dsStack[dsi][dsiIndexes[dsi]].children);
+          dsiIndexes.push(0);
+          dsi++;
+        } else if (dsiIndexes[dsi]<dsStack[dsi].length-1) { // More at this level
+          dsiIndexes[dsi]++;
+        } else while (dsi>0) { // Return to previous level
+          dsi--;
+          dsStack.pop();
+          dsiIndexes.pop();
+          if (dsiIndexes[dsi]<dsStack[dsi].length-1 || dsi==0) { // More at this level
+            dsiIndexes[dsi]++;
+            break;
+          }
+        }
+      }
+
+      while (dsiIndexes[dsi]<dsStack[dsi].length) {
+        while (dsiIndexes[dsi]<dsStack[dsi].length) {
+          elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
+            //blr.W15yQC.pdfChecker.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
+          if (/^H\d+$/i.test(elType)) {
+            break;
+          }
+          getNext();
+        }
+        if (dsiIndexes[dsi]>=dsStack[dsi].length && dsi<1) {
+          //blr.W15yQC.pdfChecker.log('Calling renderAndCheckDocStructure');
+          break;
+        } else {
+          if (typeof dsStack[dsi][dsiIndexes[dsi]].text!='undefined') {
+            t=dsStack[dsi][dsiIndexes[dsi]].text;
+          } else {
+            t='';
+          }
+          hList.push({level:parseInt(dsStack[dsi][dsiIndexes[dsi]].S.substring(1),10), text:t});
+          getNext();
+        }
+      }
+
+      if (hList.length>0) {
+        prevHeadingLevel=1;
+        ul=rd.createElement('ul');
+        lStack=[ul];
+        for(i=0;i<hList.length;i++) {
+          hLevel=hList[i].level>0?hList[i].level:1;
+          blr.W15yQC.pdfChecker.log('i:'+i+' hLevel:'+hLevel+' lStack.length:'+lStack.length);
+          if (prevHeadingLevel<hLevel-1) {
+            for(j=prevHeadingLevel+1;j<hLevel;j++) {
+              li=rd.createElement('li');
+              li.appendChild(rd.createTextNode('[H'+j+']: Missing Heading'));
+              lStack[lStack.length-1].appendChild(li);
+              ul2=rd.createElement('ul');
+              li.appendChild(ul2);
+              lStack.push(ul2);
+            }
+          } else if (prevHeadingLevel==hLevel-1) {
+              if (i==0) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('[H1]: Missing Heading'));
+                lStack[0].appendChild(li);
+              }
+              ul2=rd.createElement('ul');
+              lStack[lStack.length-1].appendChild(ul2);
+              lStack.push(ul2);
+          } else if (prevHeadingLevel>hLevel) {
+            for(j=prevHeadingLevel;j>hLevel;j--) {
+              if(lStack.length>1) { lStack.pop(); }
+            }
+          }
+          li=rd.createElement('li');
+          li.appendChild(rd.createTextNode('[H'+hLevel+']: '+hList[i].text))
+          lStack[lStack.length-1].appendChild(li);
+          prevHeadingLevel=hLevel;
+        }
+        el.appendChild(lStack[0]);
+      } else {
+        p=rd.createElement('p');
+        p.appendChild(rd.createTextNode('No Headings'));
+        el.appendChild(p);
+      }
     }
 
     function renderDocStructureLevel(o,el) {
@@ -280,44 +402,23 @@ blr.W15yQC.pdfChecker = {
     }
 
     function renderAndCheckDocStructure(el) {
-      var rm={}, rmi, ol, oli, div, p, keys, i=-1;
+      var rmi, ol, oli, div, p, keys, i=-1;
       //blr.W15yQC.pdfChecker.log('DS:'+blr.W15yQC.objectToString(ds));
       //blr.W15yQC.pdfChecker.log('Kids:'+blr.W15yQC.objectToString(ds.pages));
 
-      h=rd.createElement('h2');
-      h.appendChild(rd.createTextNode('Document Structure:'));
-      el.appendChild(h);
-      if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
-        h=rd.createElement('h3');
-        h.appendChild(rd.createTextNode('Role Map:'));
-        el.appendChild(h);
-        ol=rd.createElement('ul');
-
-        keys=Object.getOwnPropertyNames(ds.RoleMap.map);
-        if (keys!=null && keys.length>0) {
-          keys=keys.sort();
-          for (i=0;i<keys.length;i++) {
-            rmi=keys[i];
-            rm[rmi]=ds.RoleMap.map[rmi].name;
-            oli=rd.createElement('li');
-            oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
-            ol.appendChild(oli);
-          }
-          el.appendChild(ol);
-        }
-      }
-      if (i<0) {
-        p=rd.createElement('p');
-        p.appendChild(rd.createTextNode('No Role Map'));
-        el.appendChild(p);
-      }
-      ds.rm=rm;
       h=rd.createElement('h3');
       h.appendChild(rd.createTextNode('Element Statistics:'));
       el.appendChild(h);
       div=rd.createElement('div');
       el.appendChild(div);
       renderElementStatistics(div);
+
+      h=rd.createElement('h3');
+      h.appendChild(rd.createTextNode('Headings:'));
+      el.appendChild(h);
+      div=rd.createElement('div');
+      el.appendChild(div);
+      renderHeadings(div);
 
       h=rd.createElement('h3');
       h.appendChild(rd.createTextNode('Structure:'));
@@ -358,6 +459,8 @@ blr.W15yQC.pdfChecker = {
         h.appendChild(rd.createTextNode('PDF Info:'));
         re.appendChild(h);
 
+        div=rd.createElement('div');
+        re.appendChild(div);
         l=rd.createElement('ul');
 
         li=rd.createElement('li');
@@ -403,14 +506,16 @@ blr.W15yQC.pdfChecker = {
             l.appendChild(li);
           }
         }
-        re.appendChild(l);
+        div.appendChild(l);
 
         h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('PDF Outline (Bookmarks):'));
         re.appendChild(h);
+        div=rd.createElement('div');
+        re.appendChild(div);
 
-        renderOutlineLevel(pdf.pdfInfo.outline,re);
-        
+        renderOutlineLevel(pdf.pdfInfo.outline,div);
+
         if (pdf.pdfInfo.isStructured==true) {
           pdf.getDocumentStructure().then(function(ds){getTextForDocStructure(ds,re);});
         } else {
