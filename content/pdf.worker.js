@@ -16384,7 +16384,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         items: [],
         styles: Object.create(null)
       };
-      var currentMCID = null;
+      var MCIDStack = [];
       var bidiTexts = textContent.items;
       var SPACE_FACTOR = 0.35;
       var MULTI_SPACE_FACTOR = 1.5;
@@ -16418,7 +16418,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
           dir: null,
           width: 0,
           height: 0,
-          mcid: currentMCID,
+          mcid: MCIDStack!=null && MCIDStack.length>0 ? MCIDStack.slice(0) : null,
           transform: null,
           fontName: font.loadedName
         };
@@ -16536,10 +16536,14 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         var args = operation.args;
         switch (fn | 0) {
           case OPS.beginMarkedContentProps:
-            currentMCID=(typeof args[1].MCID != 'undefined')?args[1].MCID:null;
+            if(typeof args[1].MCID != 'undefined') {
+             MCIDStack.push(args[1].MCID);
+            }
             break;
           case OPS.endMarkedContent:
-            currentMCID=null;
+            if(MCIDStack.length>0) {
+             MCIDStack.pop();
+            }
             break;
           case OPS.setFont:
             handleSetFont(args[0].name);

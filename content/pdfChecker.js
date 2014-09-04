@@ -152,7 +152,7 @@ blr.W15yQC.pdfChecker = {
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
-          K, text, item, bFound=false,
+          K, text, item, bFound=false, i,
           h, div, ol, rmi, oli, p, keys;
 
       //blr.W15yQC.pdfChecker.log('Starting getTextForDocStructure: ');
@@ -233,9 +233,14 @@ blr.W15yQC.pdfChecker = {
             bFound=false;
             text=''
             for(item=0;item<tc.items.length;item++) {
-              if (K.indexOf(tc.items[item].mcid)>-1) {
-                bFound=true;
-                text=text+tc.items[item].str;
+              if (tc.items[item].mcid!==null) {
+                for(i=0;i<tc.items[item].mcid.length;i++) {
+                  if (K.indexOf(tc.items[item].mcid[i])>-1) {
+                    bFound=true;
+                    text=text+tc.items[item].str;
+                    break;
+                  }
+                }
               }
             }
             if(bFound) {
@@ -254,9 +259,14 @@ blr.W15yQC.pdfChecker = {
                 bFound=false;
                 text=''
                 for(item=0;item<tc.items.length;item++) {
-                if (K.indexOf(tc.items[item].mcid)>-1) {
-                    bFound=true;
-                    text=text+tc.items[item].str;
+                  if (tc.items[item].mcid!==null) {
+                    for(i=0;i<tc.items[item].mcid.length;i++) {
+                      if (K.indexOf(tc.items[item].mcid[i])>-1) {
+                        bFound=true;
+                        text=text+tc.items[item].str;
+                        break;
+                      }
+                    }
                   }
                 }
                 if(bFound) {
@@ -270,6 +280,7 @@ blr.W15yQC.pdfChecker = {
                   pgTCCache[pgsInCache[0]]=null;
                   pgsInCache.shift();
                 }
+                //blr.W15yQC.pdfChecker.log("TC:\n"+blr.W15yQC.objectToString(tc)+"\n\n");
                 pgTCCache[pgNum]=tc;
                 pgsInCache.push(pgNum);
                 getNext();
@@ -332,7 +343,7 @@ blr.W15yQC.pdfChecker = {
         lStack=[ul];
         for(i=0;i<hList.length;i++) {
           hLevel=hList[i].level>0?hList[i].level:1;
-          blr.W15yQC.pdfChecker.log('i:'+i+' hLevel:'+hLevel+' lStack.length:'+lStack.length);
+          //blr.W15yQC.pdfChecker.log('i:'+i+' hLevel:'+hLevel+' lStack.length:'+lStack.length);
           if (prevHeadingLevel<hLevel-1) {
             for(j=prevHeadingLevel+1;j<hLevel;j++) {
               li=rd.createElement('li');
