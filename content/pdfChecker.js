@@ -109,13 +109,22 @@ blr.W15yQC.pdfChecker = {
   getPdfFullCheckResults: function(pdf) {
     var results={"version":null, "isLinearized":null, "hasOutline":null, "isStructured":null, "hasSuspects":null,
                  "isTagged":null, "hasForm":null, "defaultLang":null, "numPages":null, "errors":false};
-    var h,div,span,el,l,li, key, i;
+    var standardElements=['Document', 'Part', 'Art', 'Sect', 'Div', 'BlockQuote', 'Caption',
+    'TOC', 'TOCI', 'Index', 'NonStruct', 'Private', 'P', 'H', 'H1', 'H2', 'H3',
+    'H4', 'H5', 'H6', 'L', 'LI', 'Lbl', 'LBody', 'Table', 'TR', 'TH', 'TD', 'THead',
+    'TBody', 'TFoot', 'Span', 'Quote', 'Note', 'Reference', 'BibEntry',
+    'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
+    'Figure', 'Formula', 'Form'];
+    var h,div,span,el,l,li, key, i, meta, style;
     var rd=blr.W15yQC.pdfChecker.rd;
     var re=blr.W15yQC.pdfChecker.re;
     var ds=null, prevPg=-19392, pgNum=1;
 
     function renderElementStatistics(d) {
-      var table, thead, tbody, tr, th, td, keys,i;
+      var h, table, thead, tbody, tr, th, td, keys, mappedKey, i, span, mappedStats={};
+      h=rd.createElement('h3');
+      h.appendChild(rd.createTextNode('Un-Mapped'));
+      d.appendChild(h);
       table=rd.createElement('table');
       thead=rd.createElement('thead');
       tr=rd.createElement('tr');
@@ -134,6 +143,9 @@ blr.W15yQC.pdfChecker = {
       keys=Object.getOwnPropertyNames(ds.stats);
       if (keys!=null && keys.length>0) {
         keys=keys.sort();
+        for (i=0;i<standardElements.length;i++) {
+          standardElements[i]=standardElements[i].toLowerCase();
+        }
         for (i=0;i<keys.length;i++) {
           tr=rd.createElement('tr');
           td=rd.createElement('td');
@@ -141,18 +153,76 @@ blr.W15yQC.pdfChecker = {
           tr.appendChild(td);
           td=rd.createElement('td');
           td.appendChild(rd.createTextNode(ds.stats[keys[i]]));
+          if (ds.rm.hasOwnProperty(keys[i])) {
+            mappedKey=ds.rm[keys[i]];
+          } else {
+            mappedKey=keys[i];
+          }
+          if (mappedStats.hasOwnProperty(mappedKey)) {
+            mappedStats[mappedKey]=mappedStats[mappedKey]+ds.stats[keys[i]];
+          } else {
+            mappedStats[mappedKey]=ds.stats[keys[i]];
+          }
+          if (standardElements.indexOf(keys[i].toLowerCase())<0) {
+            span=rd.createElement('span');
+            span.appendChild(rd.createTextNode(' (Not a standard element)'));
+            td.appendChild(span);
+          }
           tr.appendChild(td);
           tbody.appendChild(tr);
         }
       }
       table.appendChild(tbody);
       d.appendChild(table);
+
+      if (ds.rm!=null && Object.getOwnPropertyNames(ds.rm).length>0) {
+        h=rd.createElement('h3');
+        h.appendChild(rd.createTextNode('Mapped'));
+        d.appendChild(h);
+        table=rd.createElement('table');
+        thead=rd.createElement('thead');
+        tr=rd.createElement('tr');
+        th=rd.createElement('th');
+        th.setAttribute('scope','col');
+        th.appendChild(rd.createTextNode('Element'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.setAttribute('scope','col');
+        th.appendChild(rd.createTextNode('Count'));
+        tr.appendChild(th);
+        thead.appendChild(tr);
+        table.appendChild(thead);
+        tbody=rd.createElement('tbody')
+
+        keys=Object.getOwnPropertyNames(mappedStats);
+        if (keys!=null && keys.length>0) {
+          keys=keys.sort();
+          for (i=0;i<keys.length;i++) {
+            tr=rd.createElement('tr');
+            td=rd.createElement('td');
+            td.appendChild(rd.createTextNode(keys[i]));
+            tr.appendChild(td);
+            td=rd.createElement('td');
+            td.appendChild(rd.createTextNode(mappedStats[keys[i]]));
+            if (standardElements.indexOf(keys[i].toLowerCase())<0) {
+              span=rd.createElement('span');
+              span.appendChild(rd.createTextNode(' (Not a standard element)'));
+              td.appendChild(span);
+              td.setAttribute('class','error');
+            }
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+          }
+        }
+        table.appendChild(tbody);
+        d.appendChild(table);
+      }
     }
 
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
-          K, text, item, bFound=false, i,
+          K, text, item, bFound=false, i=-1,
           h, div, ol, rmi, oli, p, keys;
 
       //blr.W15yQC.pdfChecker.log('Starting getTextForDocStructure: ');
@@ -169,11 +239,22 @@ blr.W15yQC.pdfChecker = {
         keys=Object.getOwnPropertyNames(ds.RoleMap.map);
         if (keys!=null && keys.length>0) {
           keys=keys.sort();
+          for (i=0;i<standardElements.length;i++) {
+            standardElements[i]=standardElements[i].toLowerCase();
+          }
           for (i=0;i<keys.length;i++) {
             rmi=keys[i];
             rm[rmi]=ds.RoleMap.map[rmi].name;
             oli=rd.createElement('li');
             oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
+
+            if (standardElements.indexOf(ds.RoleMap.map[rmi].name.toLowerCase())<0) {
+              span=rd.createElement('span');
+              span.appendChild(rd.createTextNode(' (Not a standard element)'));
+              oli.appendChild(span);
+              oli.setAttribute('class','error');
+            }
+
             ol.appendChild(oli);
           }
           div.appendChild(ol);
@@ -187,8 +268,8 @@ blr.W15yQC.pdfChecker = {
       }
       ds.rm=rm;
 
-      function getNext() {
-        if (dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
+      function getNext(bDontDig) {
+        if (bDontDig!==true && dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
           dsStack.push(dsStack[dsi][dsiIndexes[dsi]].children);
           dsiIndexes.push(0);
           dsi++;
@@ -211,7 +292,8 @@ blr.W15yQC.pdfChecker = {
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
             //blr.W15yQC.pdfChecker.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
           elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
-          if (/^H\d+$/i.test(elType) && typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined' && typeof dsStack[dsi][dsiIndexes[dsi]].K != 'undefined') {
+          if (/\w/i.test(elType) && ((typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined' && typeof dsStack[dsi][dsiIndexes[dsi]].K != 'undefined') ||
+              typeof dsStack[dsi][dsiIndexes[dsi]].Alt != 'undefined')) {
             //blr.W15yQC.pdfChecker.log('Found: '+dsStack[dsi][dsiIndexes[dsi]].S);
             break;
           }
@@ -224,69 +306,75 @@ blr.W15yQC.pdfChecker = {
             //blr.W15yQC.pdfChecker.log('Checking2: '+dsStack[dsi][dsiIndexes[dsi]].S);
             //blr.W15yQC.pdfChecker.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
             //blr.W15yQC.pdfChecker.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
-          pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
-          K=(typeof dsStack[dsi][dsiIndexes[dsi]].K.length != 'undefined')?dsStack[dsi][dsiIndexes[dsi]].K:[dsStack[dsi][dsiIndexes[dsi]].K];
-          //blr.W15yQC.pdfChecker.log('Page Number:'+pgNum+'  K:'+K);
-          if (typeof pgTCCache[pgNum]!='undefined') {
-            //blr.W15yQC.pdfChecker.log('Using Cache');
-            tc=pgTCCache[pgNum];
-            bFound=false;
-            text=''
-            for(item=0;item<tc.items.length;item++) {
-              if (tc.items[item].mcid!==null) {
-                for(i=0;i<tc.items[item].mcid.length;i++) {
-                  if (K.indexOf(tc.items[item].mcid[i])>-1) {
-                    bFound=true;
-                    text=text+tc.items[item].str;
-                    break;
-                  }
-                }
-              }
-            }
-            if(bFound) {
-              dsStack[dsi][dsiIndexes[dsi]].text=text;
-              //blr.W15yQC.pdfChecker.log('Found: '+text);
-            } else {
-              dsStack[dsi][dsiIndexes[dsi]].text='';
-              //blr.W15yQC.pdfChecker.log('Not Found: ');
-            }
-            getNext();
+          if (typeof dsStack[dsi][dsiIndexes[dsi]].Alt!='undefined') {
+            dsStack[dsi][dsiIndexes[dsi]].text=dsStack[dsi][dsiIndexes[dsi]].Alt!==null?dsStack[dsi][dsiIndexes[dsi]].Alt:'';
+            getNext(true);
             getTextForDsi();
           } else {
-            //blr.W15yQC.pdfChecker.log('Calling getPage');
-            pdf.getPage(pgNum+1).then(function(page){
-              page.getTextContent().then(function(tc){
-                bFound=false;
-                text=''
-                for(item=0;item<tc.items.length;item++) {
-                  if (tc.items[item].mcid!==null) {
-                    for(i=0;i<tc.items[item].mcid.length;i++) {
-                      if (K.indexOf(tc.items[item].mcid[i])>-1) {
-                        bFound=true;
-                        text=text+tc.items[item].str;
-                        break;
-                      }
+            pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
+            K=(typeof dsStack[dsi][dsiIndexes[dsi]].K.length != 'undefined')?dsStack[dsi][dsiIndexes[dsi]].K:[dsStack[dsi][dsiIndexes[dsi]].K];
+            //blr.W15yQC.pdfChecker.log('Page Number:'+pgNum+'  K:'+K);
+            if (typeof pgTCCache[pgNum]!='undefined') {
+              //blr.W15yQC.pdfChecker.log('Using Cache');
+              tc=pgTCCache[pgNum];
+              bFound=false;
+              text=''
+              for(item=0;item<tc.items.length;item++) {
+                if (tc.items[item].mcid!==null) {
+                  for(i=0;i<tc.items[item].mcid.length;i++) {
+                    if (K.indexOf(tc.items[item].mcid[i])>-1) {
+                      bFound=true;
+                      text=text+tc.items[item].str;
+                      break;
                     }
                   }
                 }
-                if(bFound) {
-                  dsStack[dsi][dsiIndexes[dsi]].text=text;
-                  //blr.W15yQC.pdfChecker.log('Found: '+text);
-                } else {
-                  dsStack[dsi][dsiIndexes[dsi]].text='';
-                    //blr.W15yQC.pdfChecker.log('Not Found: ');
-                }
-                if (pgsInCache.length>4) {
-                  pgTCCache[pgsInCache[0]]=null;
-                  pgsInCache.shift();
-                }
-                //blr.W15yQC.pdfChecker.log("TC:\n"+blr.W15yQC.objectToString(tc)+"\n\n");
-                pgTCCache[pgNum]=tc;
-                pgsInCache.push(pgNum);
-                getNext();
-                getTextForDsi();
-              })
-            });
+              }
+              if(bFound) {
+                dsStack[dsi][dsiIndexes[dsi]].text=text;
+                //blr.W15yQC.pdfChecker.log('Found: '+text);
+              } else {
+                dsStack[dsi][dsiIndexes[dsi]].text='';
+                //blr.W15yQC.pdfChecker.log('Not Found: ');
+              }
+              getNext();
+              getTextForDsi();
+            } else {
+              //blr.W15yQC.pdfChecker.log('Calling getPage');
+              pdf.getPage(pgNum+1).then(function(page){
+                page.getTextContent().then(function(tc){
+                  bFound=false;
+                  text=''
+                  for(item=0;item<tc.items.length;item++) {
+                    if (tc.items[item].mcid!==null) {
+                      for(i=0;i<tc.items[item].mcid.length;i++) {
+                        if (K.indexOf(tc.items[item].mcid[i])>-1) {
+                          bFound=true;
+                          text=text+tc.items[item].str;
+                          break;
+                        }
+                      }
+                    }
+                  }
+                  if(bFound) {
+                    dsStack[dsi][dsiIndexes[dsi]].text=text;
+                    //blr.W15yQC.pdfChecker.log('Found: '+text);
+                  } else {
+                    dsStack[dsi][dsiIndexes[dsi]].text='';
+                      //blr.W15yQC.pdfChecker.log('Not Found: ');
+                  }
+                  if (pgsInCache.length>4) {
+                    pgTCCache[pgsInCache[0]]=null;
+                    pgsInCache.shift();
+                  }
+                  //blr.W15yQC.pdfChecker.log("TC:\n"+blr.W15yQC.objectToString(tc)+"\n\n");
+                  pgTCCache[pgNum]=tc;
+                  pgsInCache.push(pgNum);
+                  getNext();
+                  getTextForDsi();
+                })
+              });
+            }
           }
         }
       }
@@ -381,7 +469,7 @@ blr.W15yQC.pdfChecker = {
     }
 
     function renderDocStructureLevel(o,el) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','K','Pg'];
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText'];
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
@@ -389,6 +477,9 @@ blr.W15yQC.pdfChecker = {
           s='';
           if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
             pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
+          } else if (/^(art|div|form|part|sect)$/i.test(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]:o[oi].S) && o[oi].children!=null && o[oi].children.length>0 &&
+                     typeof o[oi].children[0].Pg!='undefined' && typeof o[oi].children[0].Pg.gen!='undefined') {
+            pgNum=ds.pageIndexByRef[o[oi].children[0].Pg.num][o[oi].children[0].Pg.gen]+1;
           }
           if (pgNum!=prevPg) {
             if(prevPg>0) { oli.setAttribute('class','newPage'); }
@@ -400,8 +491,6 @@ blr.W15yQC.pdfChecker = {
               s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
             }
           }
-//          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+
-//                          (blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
           oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(typeof o[oi].text!='undefined'?': "'+o[oi].text+'"':'')+(s!=''?' {'+s+'}':'')));
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
@@ -459,7 +548,12 @@ blr.W15yQC.pdfChecker = {
 
     if (pdf!=null && re!=null) {
       if (pdf.pdfInfo) {
-        var style=rd.createElement('style');
+        meta=rd.createElement('meta');
+        meta.setAttribute('http-equiv','content-type');
+        meta.setAttribute('content','text/html; charset=UTF-8');
+        rd.head.appendChild(meta);
+
+        style=rd.createElement('style');
         style.appendChild(rd.createTextNode('li.newPage{border-top:1px solid black;}'));
         rd.head.appendChild(style);
         h=rd.createElement('h1');
@@ -483,7 +577,7 @@ blr.W15yQC.pdfChecker = {
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Structured: '+(pdf.pdfInfo.isStructured==true?'Yes'+(pdf.pdfInfo.hasSuspects==true?', but has suspects':''):'No')));
+        li.appendChild(rd.createTextNode('Structured: '+(pdf.pdfInfo.isStructured==true?'Yes'+(pdf.pdfInfo.hasSuspects==true?', but has suspects':', and no suspects are indicated'):'No')));
         l.appendChild(li);
 
         li=rd.createElement('li');

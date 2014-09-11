@@ -5386,7 +5386,7 @@ var PDFDocument = (function PDFDocumentClosure() {
     },
 
     get defaultLang() {
-      var rootDict, str, value='';
+      var rootDict, str, rootStrucEntry, value='';
 
       try {
         rootDict = this.xref.trailer.get('Root');
@@ -5398,8 +5398,18 @@ var PDFDocument = (function PDFDocumentClosure() {
           value = rootDict.get('Lang')+' (from document root)';
           if (rootDict.has('StructTreeRoot')) {
            str = rootDict.get('StructTreeRoot');
-           if(str!=null && str.map!=null && str.map.Lang!=null) {
-             value=str.map.Lang+' (from StructTreeRoot)';
+           if(str!==null && typeof str.map!='undefined' && typeof str.map.K != 'undefined' && typeof str.map.K.gen != 'undefined' && str.map.K.num != 'undefined') {
+             rootStrucEntry=this.xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
+             if(rootStrucEntry!==null && typeof rootStrucEntry.map != 'undefined' && typeof rootStrucEntry.map.Lang != 'undefined') {
+               if(/\w/.test(rootStrucEntry.map.Lang)) {
+                if(value != '') {
+                  value=rootStrucEntry.map.Lang + ' (from StructTreeRoot which overrides \''+rootDict.get('Lang')+'\' entry in the document root)';
+                } else
+                {
+                  value=rootStrucEntry.map.Lang + ' (from StructTreeRoot)';
+                }
+               }
+             }
            }
           }
         } else {
