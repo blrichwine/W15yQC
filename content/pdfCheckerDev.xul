@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
@@ -26,7 +26,7 @@
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0" flex="1">
 				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
 				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="10" flex="1" />
-				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="5" style="overflow:auto"/>
+				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="5" style="overflow:auto" charset="UTF-8"/>
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
 				 <xul:button id="button-loadPDF"

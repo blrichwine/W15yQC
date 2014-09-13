@@ -49,13 +49,17 @@ if (!blr) {
  */
 blr.W15yQC.pdfChecker = {
 
-  /*
-   * checkIfTaggedPDF
-   *  1. Perform HTTP HEAD request to get PDF length
-   *  2.
-   *
-   *
-   */
+
+//var PatternCS = (function PatternCSClosure() {
+//  function PatternCS(baseCS) {
+//    this.name = 'Pattern';
+//    this.base = baseCS;
+//  }
+//  PatternCS.prototype = {};
+//
+//  return PatternCS;
+//})();
+
 
    rd: null, // Report Document
    logElement: null,
@@ -65,46 +69,9 @@ blr.W15yQC.pdfChecker = {
    log: function(s) {
     if (blr.W15yQC.pdfChecker.logElement!=null) {
       blr.W15yQC.pdfChecker.logElement.value=blr.W15yQC.fnJoin(blr.W15yQC.pdfChecker.logElement.value,s,"\n");
+      blr.W15yQC.fnDoEvents();
     }
    },
-
-  getPdfQuickCheckResults: function(pdf) {
-    var results={"version":null, "isLinearized":null, "hasOutline":null, "isStructured":null, "hasSuspects":null,
-                 "isTagged":null, "hasForm":null, "defaultLang":null, "numPages":null, "errors":false};
-
-    if (pdf!=null) {
-      if (pdf.pdfInfo) {
-        results.numPages=pdf.pdfInfo.numPages;
-        results.isStructured=pdf.pdfInfo.isStructured;
-        results.hasSuspects=pdf.pdfInfo.hasSuspects;
-        results.isTagged=pdf.pdfInfo.isTagged;
-        results.hasOutline=pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0;
-        results.isLinearized=pdf.pdfInfo.isLinearized;
-        if (pdf.pdfInfo.info) {
-          results.version=pdf.pdfInfo.info.PDFFormatVersion;
-          results.hasForm=pdf.pdfInfo.info.IsAcroFormPresent||pdf.pdfInfo.info.IsXFAPresent;
-        }
-      }
-    }
-    blr.W15yQC.pdfChecker.log('Results: '+blr.W15yQC.objectToString(results));
-    return results;
-  },
-
-  getPDF: function(sURL) {
-    return new Promise(function(resolve, reject) {
-
-      blr.W15yQC.pdfChecker.log('Requesting: '+sURL);
-      blr.PDFJS.getDocument(sURL).then(
-        function(pdf){
-          blr.W15yQC.pdfChecker.log('Checking document.');
-          resolve(blr.W15yQC.pdfChecker.getPdfQuickCheckResults(pdf));
-        },
-        function() {
-          reject(null);
-        });
-
-     });
-    },
 
   getPdfFullCheckResults: function(pdf) {
     var results={"version":null, "isLinearized":null, "hasOutline":null, "isStructured":null, "hasSuspects":null,
@@ -115,6 +82,7 @@ blr.W15yQC.pdfChecker = {
     'TBody', 'TFoot', 'Span', 'Quote', 'Note', 'Reference', 'BibEntry',
     'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
     'Figure', 'Formula', 'Form'];
+
     var h,div,span,el,l,li, key, i, meta, style;
     var rd=blr.W15yQC.pdfChecker.rd;
     var re=blr.W15yQC.pdfChecker.re;
@@ -528,6 +496,7 @@ blr.W15yQC.pdfChecker = {
       prevPg=-19392;
       pgNum=1;
       renderDocStructureLevel(ds,div);
+      blr.W15yQC.pdfChecker.log('Finished.');
     }
 
     function renderOutlineLevel(o,el) {
@@ -641,7 +610,6 @@ blr.W15yQC.pdfChecker = {
       blr.W15yQC.pdfChecker.logElement=tb;
       blr.W15yQC.pdfChecker.re = iframe.contentDocument.body;
 
-
     return new Promise(function(resolve, reject) {
 
       blr.W15yQC.pdfChecker.log('Requesting: '+sURL);
@@ -665,5 +633,44 @@ blr.W15yQC.pdfChecker = {
         });
 
      });
+    },
+
+  getPDF: function(sURL) {
+    function getPdfQuickCheckResults(pdf) {
+      var results={"version":null, "isLinearized":null, "hasOutline":null, "isStructured":null, "hasSuspects":null,
+                   "isTagged":null, "hasForm":null, "defaultLang":null, "numPages":null, "errors":false, "messages":null};
+
+      try {
+        if (pdf!=null) {
+          if (pdf.pdfInfo) {
+            results.numPages=pdf.pdfInfo.numPages;
+            results.isStructured=pdf.pdfInfo.isStructured;
+            results.hasSuspects=pdf.pdfInfo.hasSuspects;
+            results.isTagged=pdf.pdfInfo.isTagged;
+            results.hasOutline=pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0;
+            results.isLinearized=pdf.pdfInfo.isLinearized;
+            if (pdf.pdfInfo.info) {
+              results.version=pdf.pdfInfo.info.PDFFormatVersion;
+              results.hasForm=pdf.pdfInfo.info.IsAcroFormPresent||pdf.pdfInfo.info.IsXFAPresent;
+            }
+          }
+        }
+      } catch(ex) {
+        results.messages=ex.toString();
+        results.errors=true;
+      }
+      return results;
     }
+
+    return new Promise(function(resolve, reject) {
+      blr.PDFJS.getDocument(sURL).then(
+        function(pdf){
+          resolve(getPdfQuickCheckResults(pdf));
+        },
+        function() {
+          reject(null);
+        });
+    });
+  }
+
 };
