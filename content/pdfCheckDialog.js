@@ -40,17 +40,7 @@
  */
 "use strict";
 
-if (!blr) {
-  var blr = {};
-}
-
-/*
- * Object:  RemoveStylesWindow
- * Returns:
- */
-blr.W15yQC.pdfCheckDialog = {
-
-  getPdfFullCheckResults: function(pdf,sURL,rd,re,le) {
+  function getPdfFullCheckResults(pdf,sURL,rd,re,le) {
     var standardElements=['Document', 'Part', 'Art', 'Sect', 'Div', 'BlockQuote', 'Caption',
     'TOC', 'TOCI', 'Index', 'NonStruct', 'Private', 'P', 'H', 'H1', 'H2', 'H3',
     'H4', 'H5', 'H6', 'L', 'LI', 'Lbl', 'LBody', 'Table', 'TR', 'TH', 'TD', 'THead',
@@ -59,7 +49,7 @@ blr.W15yQC.pdfCheckDialog = {
     'Figure', 'Formula', 'Form'];
 
     var h,div,span,el,l,li, key, i, meta, style;
-    var ds=null, prevPg=-19392, pgNum=1;
+    var prevPg=-19392, pgNum=1;
 
     function log(s) {
      le.value=blr.W15yQC.fnJoin(le.value,s,"\n");
@@ -167,6 +157,7 @@ blr.W15yQC.pdfCheckDialog = {
 
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
+      ds.title=pdf.pdfInfo!==null?(pdf.pdfInfo.info!=null?pdf.pdfInfo.info.Title:null):null;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
           K, text, item, bFound=false, i=-1,
           h, div, ol, rmi, oli, p, keys;
@@ -177,6 +168,7 @@ blr.W15yQC.pdfCheckDialog = {
       h.appendChild(rd.createTextNode('Document Structure:'));
       re.appendChild(h);
       if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
+        document.getElementById('button-makeSemanticView').disabled=false;
         h=rd.createElement('h3');
         h.appendChild(rd.createTextNode('Role Map:'));
         re.appendChild(h);
@@ -423,7 +415,7 @@ blr.W15yQC.pdfCheckDialog = {
           s='';
           if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
             pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
-          } else if (/^(art|div|form|part|sect)$/i.test(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]:o[oi].S) && o[oi].children!=null && o[oi].children.length>0 &&
+          } else if (/^(l|table|thead|tbody|tfoot|art|div|form|part|sect)$/i.test(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]:o[oi].S) && o[oi].children!=null && o[oi].children.length>0 &&
                      typeof o[oi].children[0].Pg!='undefined' && typeof o[oi].children[0].Pg.gen!='undefined') {
             pgNum=ds.pageIndexByRef[o[oi].children[0].Pg.num][o[oi].children[0].Pg.gen]+1;
           }
@@ -574,14 +566,16 @@ blr.W15yQC.pdfCheckDialog = {
           h=rd.createElement('h2');
           h.appendChild(rd.createTextNode('No document structure'));
           re.appendChild(h);
+          log('Finished.');
         }
       }
     } else {
       log('Error: pdf or re objects are null');
+      log('Finished.');
     }
-  },
+  }
 
-   getPdfForFullCheck: function(sURL) {
+  function getPdfForFullCheck(sURL) {
     var rd=document.getElementById('reportIFrame').contentDocument,
         re=rd.body,
         le=document.getElementById('note-text');
@@ -591,21 +585,10 @@ blr.W15yQC.pdfCheckDialog = {
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
           le.value=le.value+"\nChecking document.";
-          resolve(blr.W15yQC.pdfCheckDialog.getPdfFullCheckResults(pdf,sURL,rd,re,le));
+          resolve(getPdfFullCheckResults(pdf,sURL,rd,re,le));
         },
         function() {
           reject(null);
         });
-     });
-    },
-
-  check: function() {
-    var sURL=document.getElementById('tbURL').value;
-
-    if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
-      blr.W15yQC.pdfCheckDialog.getPdfForFullCheck(sURL);
-    } else {
-      alert('URL looks invalid: '+sURL);
-    }
+    });
   }
-}

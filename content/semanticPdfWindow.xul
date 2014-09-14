@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
+<xul:window
+      id="SemanticPdfWindow"
+      title="Semantic PDF View - W15y Quick Check"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+			width="1200"
+			height="600"
+			onkeydown="windowOnKeyDown(this,event)"
+			onkeyup="windowOnKeyUp(event)"
+			onresize="forceMinSize(this)"
+			onload="fnDelayedInit();">
+   <xul:script>
+			var blr=this.arguments[0];
+			var ds = this.arguments[1];
+
+			function fnDelayedInit() {
+				 window.setTimeout(function(){init(window);}, 0);
+			}
+   </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/semanticPdfWindow.js"/>
+   <xul:vbox id="vb" align="stretch" flex="1" style="overflow:auto">
+			<xul:hbox id="top-toolbar" align="left">
+				 <xul:checkbox id="chkbox-showSemantics" label="Show Semantics" checked="false" oncommand="toggleShowSemantics()"/>
+				 <xul:button id="button-printReport"
+					 label="Print"
+					 oncommand="printReport()"/>
+				 <xul:button id="button-saveReport"
+					 label="Save"
+					 oncommand="saveHTMLReport()"/>
+				 <xul:spacer flex="1"/>
+				 <xul:button id="button-close"
+					 label="Close"
+					 oncommand="window.close();"/>
+      </xul:hbox>
+			<xul:iframe id="HTMLReportIFrame" src="about:blank" type="content" flex="1" style="overflow:auto"/>
+   </xul:vbox>
+</xul:window>

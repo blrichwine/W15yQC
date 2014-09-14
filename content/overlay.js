@@ -1883,7 +1883,7 @@ ys: 'whys'
       }.bind(this));
     },
 
-    openDialog: function (sDialogName) {
+    openDialog: function (sDialogName, arg1) {
       var dialogPath = null, dialogID = null, win;
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==false) {
@@ -1966,7 +1966,7 @@ ys: 'whys'
         if (dialogID != null) {
           blr.W15yQC.bQuick = false; // Make sure this has been reset
           blr.W15yQC.fnDoEvents();
-          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr);
+          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,arg1);
           blr.W15yQC.fnDoEvents();
           if(win!=null && win.focus) { win.focus(); }
           blr.W15yQC.fnDoEvents();

@@ -13,8 +13,31 @@
 	onload="">
    <xul:script>
 			var blr=this.arguments[0];
+			var ds=null;
+			var sURL=null;
+
 			function check() {
-			  blr.W15yQC.pdfCheckDialog.check();
+				sURL=document.getElementById('tbURL').value;
+				ds=null;
+
+				if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
+				  document.getElementById('tbURL').readonly=true;
+					document.getElementById('button-loadPDF').disabled=true;
+					getPdfForFullCheck(sURL);
+				} else {
+					alert('URL looks invalid: '+sURL);
+				}
+			}
+
+			function makeSemanticView() {
+				var dialogID, dialogPath;
+			  if(ds!==null) {
+					dialogID = 'semanticPdfWindow';
+					dialogPath = 'chrome://W15yQC/content/semanticPdfWindow.xul';
+					window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,ds);
+				} else {
+					alert('No semantic structure');
+				}
 			}
    </xul:script>
    <!-- <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfChecker.js"/> -->
@@ -29,10 +52,22 @@
 				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="5" style="overflow:auto" charset="UTF-8"/>
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
+				 <xul:button id="button-makeSemanticView"
+					 label="Make Semantic View"
+					 disabled="true"
+					 oncommand="makeSemanticView();"
+					 accesskey=""/>
 				 <xul:button id="button-loadPDF"
 					 label="Load PDF"
 					 oncommand="check();"
 					 accesskey=""/>
       </xul:hbox>
    </xul:vbox>
+   <xul:script>
+		<![CDATA[
+			if(this.arguments[1]!==null && typeof this.arguments[1].documentURI !== 'undefined') {
+				document.getElementById('tbURL').value=this.arguments[1].documentURI;
+			}
+		]]>
+	 </xul:script>
 </xul:dialog>
