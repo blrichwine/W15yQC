@@ -153,7 +153,7 @@ if (typeof blr==='undefined') {
               p.setAttribute('class','blockSectionType');
               newEl.appendChild(p);
               bInLabeledBlock=false;
-              bDontDig=true;
+              bDontDig=false;
               if (typeof o[oi].text != 'undefined') {
                 newEl.appendChild(rd.createTextNode(' '+o[oi].text));
               }
@@ -195,6 +195,8 @@ if (typeof blr==='undefined') {
                 } else {
                   newEl=rd.createElement('ul');
                 }
+              } else {
+                newEl=rd.createElement('ul');
               }
               break;
             case 'li':
@@ -234,6 +236,9 @@ if (typeof blr==='undefined') {
               break;
             case 'span':
               newEl=rd.createElement('span');
+              if(typeof o[oi].text!='undefined') {
+                newEl.appendChild(rd.createTextNode(o[oi].text));
+              }
               break;
             default: // TODO If caption is in a table, move it ahead of the table...
               if (s!='') {
