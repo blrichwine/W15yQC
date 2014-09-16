@@ -5477,25 +5477,30 @@ var PDFDocument = (function PDFDocumentClosure() {
       var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type;
 
       function addStructElementChildren(strec) {
-        var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, i;
+        var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, indx;
 
-        if (strec!=null && strec.map!=null && strec.map.K!=null) {
-         if(typeof strec.map.K.length != 'undefined' && strec.map.K.length !==null) {
+        if (strec!=null && strec.map!=null && typeof strec.map.K!='undefined') { // TODO: what is better here? typeof or hasOwnProperty?
+         if(typeof strec.map.K.length != 'undefined' && strec.map.K.length !==null) { // Have an array
           for (k=0;k<strec.map.K.length;k++) {
-           strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
-           if (strecc!=null && strecc.map) {
-            type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
-            if (type!=null) {
-             strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
+           if(typeof strec.map.K[k] === 'number') {
+            children.push({"MCID":strec.map.K[k]});
+           } else if(typeof strec.map.K[k].num !='undefined') {
+            strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
+            if (strecc!=null && strecc.map) {
+             type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
+             if (type!=null) {
+              strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
+             }
+             children.push({"S":type, "children":addStructElementChildren(strecc)});
+             indx=children.length-1;
+             if(typeof strecc.map.T != 'undefined') { children[indx].T=strecc.map.T; }
+             if(typeof strecc.map.Lang != 'undefined') { children[indx].Lang=strecc.map.Lang; }
+             if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=strecc.map.Alt; }
+             if(typeof strecc.map.E != 'undefined') { children[indx].E=strecc.map.E; }
+             if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=strecc.map.ActualText; }
+             if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
+             if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
             }
-            children.push({"S":type, "children":addStructElementChildren(strecc)});
-            if(typeof strecc.map.T != 'undefined') { children[children.length-1].T=strecc.map.T; }
-            if(typeof strecc.map.Lang != 'undefined') { children[children.length-1].Lang=strecc.map.Lang; }
-            if(typeof strecc.map.Alt != 'undefined') { children[children.length-1].Alt=strecc.map.Alt; }
-            if(typeof strecc.map.E != 'undefined') { children[children.length-1].E=strecc.map.E; }
-            if(typeof strecc.map.ActualText != 'undefined') { children[children.length-1].ActualText=strecc.map.ActualText; }
-            if(typeof strecc.map.Pg != 'undefined') { children[children.length-1].Pg=strecc.map.Pg; }
-            if(typeof strecc.map.K != 'undefined') { children[children.length-1].K=strecc.map.K; }
            }
           }
          } else if(typeof strec.map.K.num === 'number') {
@@ -5505,13 +5510,16 @@ var PDFDocument = (function PDFDocumentClosure() {
             strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
            }
            children.push({"S":type, "children":addStructElementChildren(strecc)});
-           if(typeof strecc.map.T != 'undefined') { children[children.length-1].T=strecc.map.T; }
-           if(typeof strecc.map.Lang != 'undefined') { children[children.length-1].Lang=strecc.map.Lang; }
-           if(typeof strecc.map.Alt != 'undefined') { children[children.length-1].Alt=strecc.map.Alt; }
-           if(typeof strecc.map.E != 'undefined') { children[children.length-1].E=strecc.map.E; }
-           if(typeof strecc.map.ActualText != 'undefined') { children[children.length-1].ActualText=strecc.map.ActualText; }
-           if(typeof strecc.map.Pg != 'undefined') { children[children.length-1].Pg=strecc.map.Pg; }
-           if(typeof strecc.map.K != 'undefined') { children[children.length-1].K=strecc.map.K; }
+           indx=children.length-1;
+           if(typeof strecc.map.T != 'undefined') { children[indx].T=strecc.map.T; }
+           if(typeof strecc.map.Lang != 'undefined') { children[indx].Lang=strecc.map.Lang; }
+           if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=strecc.map.Alt; }
+           if(typeof strecc.map.E != 'undefined') { children[indx].E=strecc.map.E; }
+           if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=strecc.map.ActualText; }
+           if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
+           if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
+         } else if(typeof strec.map.K === 'number') {
+          children.push({"MCID":strec.map.K});
          }
         }
 

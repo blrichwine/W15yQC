@@ -244,7 +244,7 @@
             //blr.W15yQC.pdfCheckDialog.log('Checking2: '+dsStack[dsi][dsiIndexes[dsi]].S);
             //blr.W15yQC.pdfCheckDialog.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
             //blr.W15yQC.pdfCheckDialog.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
-          if (typeof dsStack[dsi][dsiIndexes[dsi]].Alt!='undefined') {
+          if (typeof dsStack[dsi][dsiIndexes[dsi]].Alt!='undefined') { // TODO: What about other text alternatives?
             dsStack[dsi][dsiIndexes[dsi]].text=dsStack[dsi][dsiIndexes[dsi]].Alt!==null?dsStack[dsi][dsiIndexes[dsi]].Alt:'';
             getNext(true);
             getTextForDsi();
@@ -411,7 +411,7 @@
     }
 
     function renderDocStructureLevel(o,el) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText'];
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText', 'K'];
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
@@ -433,7 +433,13 @@
               s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
             }
           }
-          oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(typeof o[oi].text!='undefined'?': "'+o[oi].text+'"':'')+(s!=''?' {'+s+'}':'')));
+          if (typeof o[oi].S!='undefined') {
+            oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(typeof o[oi].text!='undefined'?': "'+o[oi].text+'"':'')+(s!=''?' {'+s+'}':'')));
+          } else if (typeof o[oi].MCID!='undefined') {
+            oli.appendChild(rd.createTextNode('[MCID='+o[oi].MCID+']'));
+          } else {
+            oli.appendChild(rd.createTextNode('ERROR'));
+          }
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
             renderDocStructureLevel(o[oi].children,oli);
