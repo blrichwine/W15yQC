@@ -56,6 +56,11 @@
      blr.W15yQC.fnDoEvents();
     }
 
+    function tick() {
+     le.value+='.';
+     blr.W15yQC.fnDoEvents();
+    }
+
     function renderElementStatistics(d) {
       var h, table, thead, tbody, tr, th, td, keys, mappedKey, i, span, mappedStats={};
       h=rd.createElement('h3');
@@ -225,13 +230,11 @@
       }
 
       function getTextForDsi() { // TODO: Index MCID to Items to speed this up
-        var tc, elType;
+        var tc, mcid;
         //blr.W15yQC.pdfCheckDialog.log('Starting getTextForDsi: ');
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
             //blr.W15yQC.pdfCheckDialog.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
-          elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
-          if (/\w/i.test(elType) && ((typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined' && typeof dsStack[dsi][dsiIndexes[dsi]].K != 'undefined') ||
-              typeof dsStack[dsi][dsiIndexes[dsi]].Alt != 'undefined')) {
+          if ((typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined') || (typeof dsStack[dsi][dsiIndexes[dsi]].MCID != 'undefined')) {
             //blr.W15yQC.pdfCheckDialog.log('Found: '+dsStack[dsi][dsiIndexes[dsi]].S);
             break;
           }
@@ -244,13 +247,12 @@
             //blr.W15yQC.pdfCheckDialog.log('Checking2: '+dsStack[dsi][dsiIndexes[dsi]].S);
             //blr.W15yQC.pdfCheckDialog.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
             //blr.W15yQC.pdfCheckDialog.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
-          if (typeof dsStack[dsi][dsiIndexes[dsi]].Alt!='undefined') { // TODO: What about other text alternatives?
-            dsStack[dsi][dsiIndexes[dsi]].text=dsStack[dsi][dsiIndexes[dsi]].Alt!==null?dsStack[dsi][dsiIndexes[dsi]].Alt:'';
-            getNext(true);
-            getTextForDsi();
-          } else {
+          if (typeof dsStack[dsi][dsiIndexes[dsi]].Pg!='undefined') { // Track the page number
             pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
-            K=(typeof dsStack[dsi][dsiIndexes[dsi]].K.length != 'undefined')?dsStack[dsi][dsiIndexes[dsi]].K:[dsStack[dsi][dsiIndexes[dsi]].K];
+            getNext();
+            getTextForDsi();
+          } else if (typeof dsStack[dsi][dsiIndexes[dsi]].MCID!='undefined') {
+            mcid=dsStack[dsi][dsiIndexes[dsi]].MCID;
             //blr.W15yQC.pdfCheckDialog.log('Page Number:'+pgNum+'  K:'+K);
             if (typeof pgTCCache[pgNum]!='undefined') {
               //blr.W15yQC.pdfCheckDialog.log('Using Cache');
@@ -261,7 +263,7 @@
                 for(item=0;item<tc.items.length;item++) {
                   if (tc.items[item].mcid!==null) {
                     for(i=0;i<tc.items[item].mcid.length;i++) {
-                      if (K.indexOf(tc.items[item].mcid[i])>-1) {
+                      if (mcid==tc.items[item].mcid[i]) {
                         bFound=true;
                         text=text+tc.items[item].str;
                         break;
@@ -289,7 +291,7 @@
                     for(item=0;item<tc.items.length;item++) {
                       if (tc.items[item].mcid!==null) {
                         for(i=0;i<tc.items[item].mcid.length;i++) {
-                          if (K.indexOf(tc.items[item].mcid[i])>-1) {
+                          if (mcid==tc.items[item].mcid[i]) {
                             bFound=true;
                             text=text+tc.items[item].str;
                             break;
@@ -312,6 +314,7 @@
                   //blr.W15yQC.pdfCheckDialog.log("TC:\n"+blr.W15yQC.objectToString(tc)+"\n\n");
                   pgTCCache[pgNum]=tc;
                   pgsInCache.push(pgNum);
+                  tick();
                   getNext();
                   getTextForDsi();
                 })
@@ -344,6 +347,35 @@
         }
       }
 
+      function getRecursiveText(o) {
+        var text='', oi;
+
+        if (o===null) {
+          return '';
+        } else if (typeof o.MCID != 'undefined') {
+          text=o.text;
+        } else if (typeof o.ActualText!='undefined') {
+          text=o.ActualText;
+        } else if (typeof o.Alt!='undefined') {
+          text=o.Alt;
+        } else if (o.length) {
+          for(oi=0;oi<o.length;oi++) {
+            if (typeof o[oi].MCID != 'undefined') {
+              text+=o[oi].text;
+            } else if (typeof o[oi].ActualText!='undefined') {
+              text+=o[oi].ActualText;
+            } else if (typeof o[oi].Alt!='undefined') {
+              text+=o[oi].Alt;
+            } else if (typeof o[oi].children != 'undefined') {
+              text+=getRecursiveText(o[oi].children);
+            }
+          }
+        } else if (typeof o.children!='undefined') {
+          text+=getRecursiveText(o.children);
+        }
+        return text;
+      }
+
       while (dsiIndexes[dsi]<dsStack[dsi].length) {
         while (dsiIndexes[dsi]<dsStack[dsi].length) {
           elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
@@ -357,12 +389,8 @@
           //blr.W15yQC.pdfCheckDialog.log('Calling renderAndCheckDocStructure');
           break;
         } else {
-          if (typeof dsStack[dsi][dsiIndexes[dsi]].text!='undefined') {
-            t=dsStack[dsi][dsiIndexes[dsi]].text;
-          } else {
-            t='';
-          }
-          hList.push({level:parseInt(dsStack[dsi][dsiIndexes[dsi]].S.substring(1),10), text:t});
+          t=getRecursiveText(dsStack[dsi][dsiIndexes[dsi]]);
+          hList.push({level:parseInt(elType.substring(1),10), text:t});
           getNext();
         }
       }
@@ -377,7 +405,7 @@
           if (prevHeadingLevel<hLevel-1) {
             for(j=prevHeadingLevel+1;j<hLevel;j++) {
               li=rd.createElement('li');
-              li.appendChild(rd.createTextNode('[H'+j+']: Missing Heading'));
+              li.appendChild(rd.createTextNode('<H'+j+' - Missing Heading>'));
               lStack[lStack.length-1].appendChild(li);
               ul2=rd.createElement('ul');
               li.appendChild(ul2);
@@ -386,7 +414,7 @@
           } else if (prevHeadingLevel==hLevel-1) {
               if (i==0) {
                 li=rd.createElement('li');
-                li.appendChild(rd.createTextNode('[H1]: Missing Heading'));
+                li.appendChild(rd.createTextNode('<H1 - Missing Heading>'));
                 lStack[0].appendChild(li);
               }
               ul2=rd.createElement('ul');
@@ -411,7 +439,7 @@
     }
 
     function renderDocStructureLevel(o,el) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText', 'K'];
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText'];
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
@@ -427,6 +455,7 @@
             if(prevPg>0) { oli.setAttribute('class','newPage'); }
             prevPg=pgNum;
             s=blr.W15yQC.fnJoin(s,'Page: '+pgNum,', ');
+            tick();
           }
           for(k=0;k<keys.length;k++) {
             if (typeof o[oi][keys[k]] != 'undefined') {
@@ -434,9 +463,9 @@
             }
           }
           if (typeof o[oi].S!='undefined') {
-            oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(typeof o[oi].text!='undefined'?': "'+o[oi].text+'"':'')+(s!=''?' {'+s+'}':'')));
+            oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
           } else if (typeof o[oi].MCID!='undefined') {
-            oli.appendChild(rd.createTextNode('[MCID='+o[oi].MCID+']'));
+            oli.appendChild(rd.createTextNode('[MCID='+o[oi].MCID+']'+(typeof o[oi].text!='undefined'?':'+o[oi].text:'')));
           } else {
             oli.appendChild(rd.createTextNode('ERROR'));
           }

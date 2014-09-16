@@ -81,9 +81,34 @@ if (typeof blr==='undefined') {
   function fnBuildSemanticView() {
     var pgNum=-1, prevPg=-8482, lastPgNumDisplayed=-234;
 
+    function getRecursiveText(o) {
+      var text='', oi;
+
+      if (typeof o.MCID != 'undefined') {
+        text=o.text;
+      } else if (typeof o.ActualText!='undefined') {
+        text=o.ActualText;
+      } else if (typeof o.Alt!='undefined') {
+        text=o.Alt;
+      } else if (o.length) {
+        for(oi=0;oi<o.length;oi++) {
+          if (typeof o[oi].MCID != 'undefined') {
+            text+=o[oi].text;
+          } else if (typeof o[oi].ActualText!='undefined') {
+            text+=o[oi].ActualText;
+          } else if (typeof o[oi].Alt!='undefined') {
+            text+=o[oi].Alt;
+          } else if (typeof o[oi].children != 'undefined') {
+            text+=getRecursiveText(o[oi].children);
+          }
+        }
+      }
+      return text;
+    }
+
     function renderDocStructureLevel(o,el,sPath,bRecursive) {
       var oi,ol,oli,k,s,keys=['T','Lang','Alt','E','ActualText'],
-          div, newEl=null, p, bInLabeledBlock=false,bDontDig=false;
+          div, newEl=null, p, bInLabeledBlock=false,bDontDig=false, childText;
       if (sPath==='null') {
         sPath='';
       }
@@ -94,190 +119,166 @@ if (typeof blr==='undefined') {
             if (s!==null && s.toLowerCase) {
               s=s.toLowerCase();
             }
-          } else {
-            s='';
-          }
-          if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
-            pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
-          } else if (/^(art|div|form|part|sect)$/i.test(s) && o[oi].children!=null && o[oi].children.length>0 &&
-                     typeof o[oi].children[0].Pg!='undefined' && typeof o[oi].children[0].Pg.gen!='undefined') {
-            pgNum=ds.pageIndexByRef[o[oi].children[0].Pg.num][o[oi].children[0].Pg.gen]+1;
-          }
-          if (pgNum!=prevPg && /\b(l|table|thead|tbody|tr)$/.test(sPath)==false) {
-            if(prevPg>0) {
-              div=rd.createElement('div');
-              div.appendChild(rd.createTextNode('End of Page: '+prevPg));
-              div.setAttribute('class','rawPdfPageNum');
-              el.appendChild(div);
-              lastPgNumDisplayed=prevPg;
+
+            if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
+              pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
+            } else if (/^(art|div|form|part|sect)$/i.test(s) && o[oi].children!=null && o[oi].children.length>0 &&
+                       typeof o[oi].children[0].Pg!='undefined' && typeof o[oi].children[0].Pg.gen!='undefined') {
+              pgNum=ds.pageIndexByRef[o[oi].children[0].Pg.num][o[oi].children[0].Pg.gen]+1;
             }
-            prevPg=pgNum;
-          }
-          newEl=null;
-          bInLabeledBlock=false;
-          bDontDig=false;
-          switch(s) {
-            case 'toci':
-            case 'reference':
-              newEl=rd.createElement('div'); // Don't announce these
-              if (typeof o[oi].text != 'undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            case 'document':
-            case 'part':
-            case 'art':
-            case 'sect':
-            case 'div':
-            case 'toc':
-            case 'blockquote':
-            case 'form':
-            case 'formula':
-            case 'caption': // TODO If caption is in a table, move it ahead of the table...
-              newEl=rd.createElement('div');
-              newEl.setAttribute('class','blockSection');
-              p=rd.createElement('p');
-              p.appendChild(rd.createTextNode(s+(typeof o[oi].T!=='undefined' && blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
-              p.setAttribute('class','blockSectionType');
-              newEl.appendChild(p);
-              bInLabeledBlock=true;
-              if (typeof o[oi].text != 'undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            case 'figure':
-              newEl=rd.createElement('span');
-              newEl.setAttribute('class','blockSection');
-              p=rd.createElement('span');
-              p.appendChild(rd.createTextNode(' '+s+':'));
-              p.setAttribute('class','blockSectionType');
-              newEl.appendChild(p);
-              bInLabeledBlock=false;
-              bDontDig=false;
-              if (typeof o[oi].text != 'undefined') {
-                newEl.appendChild(rd.createTextNode(' '+o[oi].text));
-              }
-              break;
-            case 'h1':
-            case 'h2':
-            case 'h3':
-            case 'h4':
-            case 'h5':
-            case 'h6':
-              newEl=rd.createElement(s);
-              if(typeof o[oi].text!='undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            case 'p':
-              newEl=rd.createElement('p');
-              if(typeof o[oi].text!='undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            case 'l':
-              if (o[oi].children!=null && o[oi].children.length>0 && typeof o[oi].children[0].text!='undefined') {
-                if (/i|v|x/.test(o[oi].children[0].text)) {
-                  newEl=rd.createElement('ol');
-                  newEl.setAttribute('type','i');
-                } else if (/I|V|X/.test(o[oi].children[0].text)) {
-                  newEl=rd.createElement('ol');
-                  newEl.setAttribute('type','I');
-                } else if (/[a-z]/.test(o[oi].children[0].text)) {
-                  newEl=rd.createElement('ol');
-                  newEl.setAttribute('type','a');
-                } else if (/[A-Z]/.test(o[oi].children[0].text)) {
-                  newEl=rd.createElement('ol');
-                  newEl.setAttribute('type','A');
-                } else if (/[0-9]/.test(o[oi].children[0].text)) {
-                  newEl=rd.createElement('ol');
-                  newEl.setAttribute('type','1');
-                } else {
-                  newEl=rd.createElement('ul');
-                }
-              } else {
-                newEl=rd.createElement('ul');
-              }
-              break;
-            case 'li':
-              newEl=rd.createElement('li');
-              break;
-            case 'lbl':
-              if (el.hasAttribute('type')==false) {
-                newEl=rd.createElement('span');
-                if(typeof o[oi].text!='undefined' && /[a-zA-Z0-9]/.test(o[oi].text)) {
-                  newEl.appendChild(rd.createTextNode(o[oi].text));
-                }
-              }
-              break;
-            case 'lbody':
-              el.appendChild(rd.createTextNode(o[oi].text));
-              break;
-            case 'link':
-              newEl=rd.createElement('a');
-              newEl.setAttribute('href','#');
-              if(typeof o[oi].text!='undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            case 'table':
-            case 'thead':
-            case 'tfoot':
-              newEl=rd.createElement(s);
-              break;
-            case 'tr':
-            case 'th':
-            case 'tr':
-            case 'td':
-              newEl=rd.createElement(s);
-              if(typeof o[oi].text!='undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            case 'span':
-              newEl=rd.createElement('span');
-              if(typeof o[oi].text!='undefined') {
-                newEl.appendChild(rd.createTextNode(o[oi].text));
-              }
-              break;
-            default: // TODO If caption is in a table, move it ahead of the table...
-              if (s!='') {
-                newEl=rd.createElement('div');
-                newEl.setAttribute('class','blockSection');
-                p=rd.createElement('p');
-                p.appendChild(rd.createTextNode('DEFAULT: '+s));
-                p.setAttribute('class','blockSectionType');
-                newEl.appendChild(p);
-                bInLabeledBlock=true;
-                if (typeof o[oi].text != 'undefined') {
-                  newEl.appendChild(rd.createTextNode(o[oi].text));
-                }
-              }
-              break;
-          }
-          if (newEl!=null) {
-            el.appendChild(newEl);
-            if (pgNum!=prevPg && /^(l|table|thead|tbody|tr)$/.test(s)==false) {
+            if (pgNum!=prevPg && /\b(l|table|thead|tbody|tr)$/.test(sPath)==false) {
               if(prevPg>0) {
                 div=rd.createElement('div');
                 div.appendChild(rd.createTextNode('End of Page: '+prevPg));
                 div.setAttribute('class','rawPdfPageNum');
-                newEl.insertBefore(div,newEl.firstChild);
+                el.appendChild(div);
                 lastPgNumDisplayed=prevPg;
               }
               prevPg=pgNum;
             }
-          }
-          if (o[oi].children!=null && o[oi].children.length>0 && !bDontDig) {
-            renderDocStructureLevel(o[oi].children,newEl!==null?newEl:el,blr.W15yQC.fnJoin(sPath,s,'|'),true);
-          }
-          bDontDig=false;
-          if (bInLabeledBlock==true) {
-            p=rd.createElement('p');
-            p.appendChild(rd.createTextNode('EXITING: '+s+(typeof o[oi].T!=='undefined' && blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
-            p.setAttribute('class','blockSectionType');
-            newEl.appendChild(p);
+            newEl=null;
             bInLabeledBlock=false;
+            bDontDig=false;
+            switch(s) {
+              case 'toci':
+              case 'reference':
+                newEl=rd.createElement('div'); // Don't announce these
+                break;
+              case 'document':
+              case 'part':
+              case 'art':
+              case 'sect':
+              case 'div':
+              case 'toc':
+              case 'blockquote':
+              case 'form':
+              case 'formula':
+              case 'caption': // TODO If caption is in a table, move it ahead of the table...
+                newEl=rd.createElement('div');
+                newEl.setAttribute('class','blockSection');
+                p=rd.createElement('p');
+                p.appendChild(rd.createTextNode(s+(typeof o[oi].T!=='undefined' && blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
+                p.setAttribute('class','blockSectionType');
+                newEl.appendChild(p);
+                bInLabeledBlock=true;
+                break;
+              case 'figure':
+                newEl=rd.createElement('span');
+                newEl.setAttribute('class','blockSection');
+                p=rd.createElement('span');
+                p.appendChild(rd.createTextNode(' '+s+':'));
+                p.setAttribute('class','blockSectionType');
+                newEl.appendChild(p);
+                bInLabeledBlock=false;
+                bDontDig=false;
+                break;
+              case 'h1':
+              case 'h2':
+              case 'h3':
+              case 'h4':
+              case 'h5':
+              case 'h6':
+                newEl=rd.createElement(s);
+                break;
+              case 'p':
+                newEl=rd.createElement('p');
+                break;
+              case 'l':
+                if (o[oi].children!=null && o[oi].children.length>0) {
+                  childText=getRecursiveText(o[oi]);
+                  if (/i|v|x/.test(childText)) {
+                    newEl=rd.createElement('ol');
+                    newEl.setAttribute('type','i');
+                  } else if (/I|V|X/.test(childText)) {
+                    newEl=rd.createElement('ol');
+                    newEl.setAttribute('type','I');
+                  } else if (/[a-z]/.test(childText)) {
+                    newEl=rd.createElement('ol');
+                    newEl.setAttribute('type','a');
+                  } else if (/[A-Z]/.test(childText)) {
+                    newEl=rd.createElement('ol');
+                    newEl.setAttribute('type','A');
+                  } else if (/[0-9]/.test(childText)) {
+                    newEl=rd.createElement('ol');
+                    newEl.setAttribute('type','1');
+                  } else {
+                    newEl=rd.createElement('ul');
+                  }
+                } else {
+                  newEl=rd.createElement('ul');
+                }
+                break;
+              case 'li':
+                newEl=rd.createElement('li');
+                break;
+              case 'lbl':
+                if (el.hasAttribute('type')==false && el.parentNode.hasAttribute('type')==false) {
+                  newEl=rd.createElement('span');
+                }
+                break;
+              case 'lbody':
+                el.appendChild(rd.createTextNode(getRecursiveText(o[oi])));
+                break;
+              case 'link':
+                newEl=rd.createElement('a');
+                newEl.setAttribute('href','#');
+                break;
+              case 'table':
+              case 'thead':
+              case 'tfoot':
+                newEl=rd.createElement(s);
+                break;
+              case 'tr':
+              case 'th':
+              case 'tr':
+              case 'td':
+                newEl=rd.createElement(s);
+                break;
+              case 'span':
+                newEl=rd.createElement('span');
+                break;
+              default: // TODO If caption is in a table, move it ahead of the table...
+                if (s!='') {
+                  newEl=rd.createElement('div');
+                  newEl.setAttribute('class','blockSection');
+                  p=rd.createElement('p');
+                  p.appendChild(rd.createTextNode('DEFAULT: '+s));
+                  p.setAttribute('class','blockSectionType');
+                  newEl.appendChild(p);
+                  bInLabeledBlock=true;
+                }
+                break;
+            }
+            if (newEl!=null) {
+              el.appendChild(newEl);
+              if (pgNum!=prevPg && /^(l|table|thead|tbody|tr)$/.test(s)==false) {
+                if(prevPg>0) {
+                  div=rd.createElement('div');
+                  div.appendChild(rd.createTextNode('End of Page: '+prevPg));
+                  div.setAttribute('class','rawPdfPageNum');
+                  newEl.insertBefore(div,newEl.firstChild);
+                  lastPgNumDisplayed=prevPg;
+                }
+                prevPg=pgNum;
+              }
+            }
+            if (typeof o[oi].ActualText!='undefined') {
+              el.appendChild(rd.createTextNode(o[oi].ActualText));
+            } else if (typeof o[oi].Alt!='undefined') {
+              el.appendChild(rd.createTextNode(o[oi].Alt));
+            } else if (o[oi].children!=null && o[oi].children.length>0 && !bDontDig) {
+              renderDocStructureLevel(o[oi].children,newEl!==null?newEl:el,blr.W15yQC.fnJoin(sPath,s,'|'),true);
+            }
+            bDontDig=false;
+            if (bInLabeledBlock==true) {
+              p=rd.createElement('p');
+              p.appendChild(rd.createTextNode('EXITING: '+s+(typeof o[oi].T!=='undefined' && blr.W15yQC.fnStringHasContent(o[oi].T)?': '+o[oi].T:'')));
+              p.setAttribute('class','blockSectionType');
+              newEl.appendChild(p);
+              bInLabeledBlock=false;
+            }
+          } else if (typeof o[oi].MCID!=='undefined') {
+            el.appendChild(rd.createTextNode(o[oi].text));
           }
         }
       }

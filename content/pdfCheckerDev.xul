@@ -20,7 +20,7 @@
 				sURL=document.getElementById('tbURL').value;
 				ds=null;
 
-				if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)) {
+				if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)||/^file:.+\.pdf$/i.test(sURL)) {
 				  document.getElementById('tbURL').readonly=true;
 					document.getElementById('button-loadPDF').disabled=true;
 					getPdfForFullCheck(sURL);
@@ -48,8 +48,8 @@
 		</xul:hbox>
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0" flex="1">
 				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
-				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="10" flex="1" />
-				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="5" style="overflow:auto" charset="UTF-8"/>
+				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="3" flex="1" />
+				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="15" style="overflow:auto" charset="UTF-8"/>
       </xul:vbox>
       <xul:hbox id="box-button" align="right">
 				 <xul:button id="button-makeSemanticView"
