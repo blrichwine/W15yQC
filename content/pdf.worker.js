@@ -5395,23 +5395,27 @@ var PDFDocument = (function PDFDocumentClosure() {
       }
       if (rootDict) {
         if (rootDict.has('Lang')) {
-          value = rootDict.get('Lang')+' (from document root)';
-          if (rootDict.has('StructTreeRoot')) {
-           str = rootDict.get('StructTreeRoot');
-           if(str!==null && typeof str.map!='undefined' && typeof str.map.K != 'undefined' && typeof str.map.K.gen != 'undefined' && str.map.K.num != 'undefined') {
-             rootStrucEntry=this.xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
-             if(rootStrucEntry!==null && typeof rootStrucEntry.map != 'undefined' && typeof rootStrucEntry.map.Lang != 'undefined') {
-               if(/\w/.test(rootStrucEntry.map.Lang)) {
-                if(value != '') {
-                  value=rootStrucEntry.map.Lang + ' (from StructTreeRoot which overrides \''+rootDict.get('Lang')+'\' entry in the document root)';
-                } else
-                {
-                  value=rootStrucEntry.map.Lang + ' (from StructTreeRoot)';
+          value = '\''+rootDict.get('Lang')+'\' (from document root)';
+        }
+        if (rootDict.has('StructTreeRoot')) {
+         str = rootDict.get('StructTreeRoot');
+         if(str!==null && typeof str.map!='undefined' && typeof str.map.K != 'undefined' && typeof str.map.K.gen != 'undefined' && str.map.K.num != 'undefined') {
+           rootStrucEntry=this.xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
+           if(rootStrucEntry!==null && typeof rootStrucEntry.map != 'undefined' && typeof rootStrucEntry.map.Lang != 'undefined') {
+             if(/\w/.test(rootStrucEntry.map.Lang)) {
+              if(value != '') {
+                if(rootDict.get('Lang')!==rootStrucEntry.map.Lang) {
+                  value='\''+rootStrucEntry.map.Lang + '\' (from StructTreeRoot which overrides \''+rootDict.get('Lang')+'\' entry in the document root)';
+                } else {
+                  value='\''+rootStrucEntry.map.Lang + '\' (in both the Document Root and the StructTreeRoot)';
                 }
-               }
+              } else
+              {
+                value='\''+rootStrucEntry.map.Lang + '\' (from StructTreeRoot)';
+              }
              }
            }
-          }
+         }
         } else {
          value='(not specified)';
         }

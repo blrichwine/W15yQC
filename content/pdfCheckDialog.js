@@ -162,6 +162,7 @@
 
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
+      ds.effectiveLanguages=[];
       ds.title=pdf.pdfInfo!==null?(pdf.pdfInfo.info!=null?pdf.pdfInfo.info.Title:null):null;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
           K, text, item, bFound=false, i=-1,
