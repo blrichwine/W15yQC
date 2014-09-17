@@ -5509,6 +5509,11 @@ var PDFDocument = (function PDFDocumentClosure() {
              if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
              if(typeof strecc.map.E != 'undefined') { children[indx].E=filter(strecc.map.E); }
              if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
+             if(typeof strecc.map.RowSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.RowSpan); }
+             if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.ColSpan); }
+             if(typeof strecc.map.Headers != 'undefined') { children[indx].ActualText=filter(strecc.map.Headers); }
+             if(typeof strecc.map.Scope != 'undefined') { children[indx].ActualText=filter(strecc.map.Scope); }
+             if(typeof strecc.map.Summary != 'undefined') { children[indx].ActualText=filter(strecc.map.Summary); }
              if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
              if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
             }
@@ -5527,6 +5532,11 @@ var PDFDocument = (function PDFDocumentClosure() {
            if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
            if(typeof strecc.map.E != 'undefined') { children[indx].E=filter(strecc.map.E); }
            if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
+           if(typeof strecc.map.RowSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.RowSpan); }
+           if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.ColSpan); }
+           if(typeof strecc.map.Headers != 'undefined') { children[indx].ActualText=filter(strecc.map.Headers); }
+           if(typeof strecc.map.Scope != 'undefined') { children[indx].ActualText=filter(strecc.map.Scope); }
+           if(typeof strecc.map.Summary != 'undefined') { children[indx].ActualText=filter(strecc.map.Summary); }
            if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
            if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
          } else if(typeof strec.map.K === 'number') {

@@ -451,7 +451,7 @@
     }
 
     function renderDocStructureLevel(o,el,currentLang) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText'], efIndex, efPLen;
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen;
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {

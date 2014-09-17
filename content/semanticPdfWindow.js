@@ -26,16 +26,15 @@
  * 2012.12.10 - Created!
  *
  * TODO:
- *    - Working on proper display off PDFUA in a nutshell
- *       -- need to handle table column and row spans
- *       -- having issues with cut off list items
- *       -- consecutive figure elements seem interlinked
- *    - Internationalize?
- *    - How is this handling buttons? Buttons with ARIA Labels that override child text?
- *    - How is this handling links with ARIA Labels?
- *    - DIV and SPAN elements with title attribute?
- *    - HTML5 and ARIA state info?
- *    - FIELDSET+LEGEND text?
+ *    -- need to handle table column and row spans
+ *    -- be nice to indicate th scope values if any are present
+ *    -- need to handle form controls
+ *    -- display language changes
+ *    -- document summary at top; same as screen-readers provide
+ *    -- collect common list lbl chars and try to translate into correct list types
+ *    -- indent content based upon heading levels in screen-reader view
+ *    -- in semantic view label heading levels
+ *    -- in semantic view label list boundaries
  *
  */
 "use strict";
