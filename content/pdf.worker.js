@@ -16410,6 +16410,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         styles: Object.create(null)
       };
       var MCIDStack = [];
+      var MCParamsStack = [];
       var bidiTexts = textContent.items;
       var SPACE_FACTOR = 0.35;
       var MULTI_SPACE_FACTOR = 1.5;
@@ -16444,6 +16445,7 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
           width: 0,
           height: 0,
           mcid: MCIDStack!=null && MCIDStack.length>0 ? MCIDStack.slice(0) : null,
+          mcparams: MCParamsStack!=null && MCParamsStack.length>0 ? MCParamsStack[MCParamsStack.length-1] : null,
           transform: null,
           fontName: font.loadedName
         };
@@ -16561,13 +16563,24 @@ var PartialEvaluator = (function PartialEvaluatorClosure() {
         var args = operation.args;
         switch (fn | 0) {
           case OPS.beginMarkedContentProps:
-            if(typeof args[1].MCID != 'undefined') {
-             MCIDStack.push(args[1].MCID);
+            var currentMCID=null;
+            if(typeof args[1].MCID!='undefined') {
+              currentMCID=args[1].MCID;
+            } else {
+              for(var MCIDindx=MCIDStack.length-1;MCIDindx>=0;MCIDindx--) {
+                if(MCIDStack[MCIDindx]!==null) {
+                  currentMCID=MCIDStack[MCIDindx];
+                  break;
+                }
+              }
             }
+            MCIDStack.push(currentMCID);
+            MCParamsStack.push({"type":(typeof args[0].name!='undefined'?args[0].name:null), "Lang":(typeof args[1].Lang!='undefined'?args[1].Lang:null)});
             break;
           case OPS.endMarkedContent:
             if(MCIDStack.length>0) {
              MCIDStack.pop();
+             MCParamsStack.pop();
             }
             break;
           case OPS.setFont:

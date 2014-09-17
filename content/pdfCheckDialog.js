@@ -273,6 +273,7 @@
                       if (mcid==tc.items[item].mcid[i]) {
                         bFound=true;
                         text=text+tc.items[item].str;
+                        dsStack[dsi][dsiIndexes[dsi]].MCParams=typeof tc.items[item].mcparams!='undefined'?tc.items[item].mcparams:null;
                         break;
                       }
                     }
@@ -301,6 +302,7 @@
                           if (mcid==tc.items[item].mcid[i]) {
                             bFound=true;
                             text=text+tc.items[item].str;
+                            dsStack[dsi][dsiIndexes[dsi]].MCParams=typeof tc.items[item].mcparams!='undefined'?tc.items[item].mcparams:null;
                             break;
                           }
                         }
@@ -472,7 +474,7 @@
           if (typeof o[oi].S!='undefined') {
             oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
           } else if (typeof o[oi].MCID!='undefined') {
-            oli.appendChild(rd.createTextNode('[MCID='+o[oi].MCID+']'+(typeof o[oi].text!='undefined'?':'+o[oi].text:'')));
+            oli.appendChild(rd.createTextNode((typeof o[oi].MCParams!='undefined'?o[oi].MCParams.type:'')+'[MCID='+o[oi].MCID+(typeof o[oi].MCParams!='undefined' && o[oi].MCParams.Lang!==null ?', Lang="'+o[oi].MCParams.Lang+'"':'')+']'+(typeof o[oi].text!='undefined'?':'+o[oi].text:'')));
           } else {
             oli.appendChild(rd.createTextNode('ERROR'));
           }
