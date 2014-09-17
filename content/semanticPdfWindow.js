@@ -26,7 +26,10 @@
  * 2012.12.10 - Created!
  *
  * TODO:
- *
+ *    - Working on proper display off PDFUA in a nutshell
+ *       -- need to handle table column and row spans
+ *       -- having issues with cut off list items
+ *       -- consecutive figure elements seem interlinked
  *    - Internationalize?
  *    - How is this handling buttons? Buttons with ARIA Labels that override child text?
  *    - How is this handling links with ARIA Labels?
@@ -82,33 +85,59 @@ if (typeof blr==='undefined') {
     var pgNum=-1, prevPg=-8482, lastPgNumDisplayed=-234;
 
     function getRecursiveText(o) {
-      var text='', oi;
-
-      if (typeof o.MCID != 'undefined') {
-        text=o.text;
-      } else if (typeof o.ActualText!='undefined') {
-        text=o.ActualText;
-      } else if (typeof o.Alt!='undefined') {
-        text=o.Alt;
-      } else if (o.length) {
+      var rText='', oi;
+      if (o===null) {
+        return '';
+      } else if (typeof o.MCID !== 'undefined') {
+        rText=o.text;
+      } else if (typeof o.ActualText!=='undefined') {
+        rText=o.ActualText;
+      } else if (typeof o.Alt!=='undefined') {
+        rText=o.Alt;
+      } else if (o.length || (typeof o.children!='undefined' && o.children.length)) {
+        if (typeof o.children!='undefined') {
+          o=o.children;
+        }
         for(oi=0;oi<o.length;oi++) {
-          if (typeof o[oi].MCID != 'undefined') {
-            text+=o[oi].text;
-          } else if (typeof o[oi].ActualText!='undefined') {
-            text+=o[oi].ActualText;
-          } else if (typeof o[oi].Alt!='undefined') {
-            text+=o[oi].Alt;
-          } else if (typeof o[oi].children != 'undefined') {
-            text+=getRecursiveText(o[oi].children);
+          if (typeof o[oi].MCID !== 'undefined') {
+            rText+=o[oi].text;
+          } else if (typeof o[oi].ActualText!=='undefined') {
+            rText+=o[oi].ActualText;
+          } else if (typeof o[oi].Alt!=='undefined') {
+            rText+=o[oi].Alt;
+          } else if (typeof o[oi].children !== 'undefined') {
+            rText+=getRecursiveText(o[oi].children);
           }
         }
       }
-      return text;
+      return rText;
+    }
+
+    // pass this function a children array, a string of the element type
+    function getRecursiveTextFromFirstChildOfType(o,seType,bRecursed) {
+      var oi, grText=null;
+      if (o===null) {
+        return '';
+      } else if (typeof o.S!='undefined' && o.S.toLowerCase()==seType.toLowerCase()) {
+        return getRecursiveText(o);
+      } else if (o.length) {
+        for(oi=0;oi<o.length;oi++) {
+          if (typeof o[oi].S!='undefined' && o[oi].S.toLowerCase()==seType.toLowerCase()) {
+            return getRecursiveText(o[oi]);
+          } else if (typeof o[oi].children !== 'undefined') {
+            grText=getRecursiveTextFromFirstChildOfType(o[oi].children,seType,true);
+            if (grText!==null) {
+              return grText;
+            }
+          }
+        }
+      }
+      return bRecursed ? null : grText;
     }
 
     function renderDocStructureLevel(o,el,sPath,bRecursive) {
       var oi,ol,oli,k,s,keys=['T','Lang','Alt','E','ActualText'],
-          div, newEl=null, p, bInLabeledBlock=false,bDontDig=false, childText;
+          div, newEl=null, p, bInLabeledBlock=false,bDontDig=false, childText, bAllowActualText=true, bAllowAlt=true;
       if (sPath==='null') {
         sPath='';
       }
@@ -139,6 +168,8 @@ if (typeof blr==='undefined') {
             newEl=null;
             bInLabeledBlock=false;
             bDontDig=false;
+            bAllowActualText=true;
+            bAllowAlt=true;
             switch(s) {
               case 'toci':
               case 'reference':
@@ -169,8 +200,11 @@ if (typeof blr==='undefined') {
                 p.appendChild(rd.createTextNode(' '+s+':'));
                 p.setAttribute('class','blockSectionType');
                 newEl.appendChild(p);
+                newEl.appendChild(rd.createTextNode(typeof o[oi].Alt!='undefined'?' "'+o[oi].Alt+'"':''));
                 bInLabeledBlock=false;
-                bDontDig=false;
+                bDontDig=true;
+                bAllowActualText=false;
+                bAllowAlt=false;
                 break;
               case 'h1':
               case 'h2':
@@ -185,7 +219,7 @@ if (typeof blr==='undefined') {
                 break;
               case 'l':
                 if (o[oi].children!=null && o[oi].children.length>0) {
-                  childText=getRecursiveText(o[oi]);
+                  childText=blr.W15yQC.fnTrim(getRecursiveTextFromFirstChildOfType(o[oi].children,'lbl'));
                   if (/i|v|x/.test(childText)) {
                     newEl=rd.createElement('ol');
                     newEl.setAttribute('type','i');
@@ -214,19 +248,27 @@ if (typeof blr==='undefined') {
               case 'lbl':
                 if (el.hasAttribute('type')==false && el.parentNode.hasAttribute('type')==false) {
                   newEl=rd.createElement('span');
+                  if (/\w/.test(getRecursiveText(o[oi]))==false) {
+                    bDontDig=true;
+                  }
+                } else {
+                  bDontDig=true;
                 }
                 break;
               case 'lbody':
-                el.appendChild(rd.createTextNode(getRecursiveText(o[oi])));
+                bDontDig=false;
                 break;
               case 'link':
                 newEl=rd.createElement('a');
                 newEl.setAttribute('href','#');
                 break;
               case 'table':
+                newEl=rd.createElement(s);
+                break;
               case 'thead':
               case 'tfoot':
-                newEl=rd.createElement(s);
+              case 'tbody':
+                newEl=null; // DONT RENDER Thead or Tfoot or Tbody
                 break;
               case 'tr':
               case 'th':
@@ -262,13 +304,15 @@ if (typeof blr==='undefined') {
                 prevPg=pgNum;
               }
             }
-            if (typeof o[oi].ActualText!='undefined') {
+            if (bAllowActualText && typeof o[oi].ActualText!='undefined') {
               el.appendChild(rd.createTextNode(o[oi].ActualText));
-            } else if (typeof o[oi].Alt!='undefined') {
+            } else if (bAllowAlt && typeof o[oi].Alt!='undefined') {
               el.appendChild(rd.createTextNode(o[oi].Alt));
             } else if (o[oi].children!=null && o[oi].children.length>0 && !bDontDig) {
               renderDocStructureLevel(o[oi].children,newEl!==null?newEl:el,blr.W15yQC.fnJoin(sPath,s,'|'),true);
             }
+            bAllowActualText=true;
+            bAllowAlt=true;
             bDontDig=false;
             if (bInLabeledBlock==true) {
               p=rd.createElement('p');

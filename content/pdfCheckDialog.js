@@ -173,7 +173,6 @@
       h.appendChild(rd.createTextNode('Document Structure:'));
       re.appendChild(h);
       if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
-        document.getElementById('button-makeSemanticView').disabled=false;
         h=rd.createElement('h3');
         h.appendChild(rd.createTextNode('Role Map:'));
         re.appendChild(h);
@@ -231,6 +230,14 @@
 
       function getTextForDsi() { // TODO: Index MCID to Items to speed this up
         var tc, mcid;
+
+        function filter(s) {
+         if(s!==null && s.replace) {
+          return s.replace(/^þÿ/,'');
+         }
+         return s;
+        }
+
         //blr.W15yQC.pdfCheckDialog.log('Starting getTextForDsi: ');
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
             //blr.W15yQC.pdfCheckDialog.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
@@ -273,7 +280,7 @@
                 }
               }
               if(bFound) {
-                dsStack[dsi][dsiIndexes[dsi]].text=text;
+                dsStack[dsi][dsiIndexes[dsi]].text=filter(text);
                 //blr.W15yQC.pdfCheckDialog.log('Found: '+text);
               } else {
                 dsStack[dsi][dsiIndexes[dsi]].text='';
@@ -301,7 +308,7 @@
                     }
                   }
                   if(bFound) {
-                    dsStack[dsi][dsiIndexes[dsi]].text=text;
+                    dsStack[dsi][dsiIndexes[dsi]].text=filter(text);
                     //blr.W15yQC.pdfCheckDialog.log('Found: '+text);
                   } else {
                     dsStack[dsi][dsiIndexes[dsi]].text='';
@@ -348,32 +355,32 @@
       }
 
       function getRecursiveText(o) {
-        var text='', oi;
-
+        var rText='', oi;
         if (o===null) {
           return '';
-        } else if (typeof o.MCID != 'undefined') {
-          text=o.text;
-        } else if (typeof o.ActualText!='undefined') {
-          text=o.ActualText;
-        } else if (typeof o.Alt!='undefined') {
-          text=o.Alt;
-        } else if (o.length) {
+        } else if (typeof o.MCID !== 'undefined') {
+          rText=o.text;
+        } else if (typeof o.ActualText!=='undefined') {
+          rText=o.ActualText;
+        } else if (typeof o.Alt!=='undefined') {
+          rText=o.Alt;
+        } else if (o.length || (typeof o.children!='undefined' && o.children.length)) {
+          if (typeof o.children!='undefined') {
+            o=o.children;
+          }
           for(oi=0;oi<o.length;oi++) {
-            if (typeof o[oi].MCID != 'undefined') {
-              text+=o[oi].text;
-            } else if (typeof o[oi].ActualText!='undefined') {
-              text+=o[oi].ActualText;
-            } else if (typeof o[oi].Alt!='undefined') {
-              text+=o[oi].Alt;
-            } else if (typeof o[oi].children != 'undefined') {
-              text+=getRecursiveText(o[oi].children);
+            if (typeof o[oi].MCID !== 'undefined') {
+              rText+=o[oi].text;
+            } else if (typeof o[oi].ActualText!=='undefined') {
+              rText+=o[oi].ActualText;
+            } else if (typeof o[oi].Alt!=='undefined') {
+              rText+=o[oi].Alt;
+            } else if (typeof o[oi].children !== 'undefined') {
+              rText+=getRecursiveText(o[oi].children);
             }
           }
-        } else if (typeof o.children!='undefined') {
-          text+=getRecursiveText(o.children);
         }
-        return text;
+        return rText;
       }
 
       while (dsiIndexes[dsi]<dsStack[dsi].length) {
@@ -505,6 +512,7 @@
       prevPg=-19392;
       pgNum=1;
       renderDocStructureLevel(ds,div);
+      document.getElementById('button-makeSemanticView').disabled=false;
       log('Finished.');
     }
 
@@ -605,11 +613,13 @@
           h=rd.createElement('h2');
           h.appendChild(rd.createTextNode('No document structure'));
           re.appendChild(h);
+          document.getElementById('button-makeSemanticView').disabled=true;
           log('Finished.');
         }
       }
     } else {
       log('Error: pdf or re objects are null');
+      document.getElementById('button-makeSemanticView').disabled=true;
       log('Finished.');
     }
   }
