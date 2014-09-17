@@ -163,6 +163,8 @@
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
       ds.effectiveLanguages=[];
+      ds.effectiveLanguagesPagesS=[];
+      ds.effectiveLanguagesPagesE=[];
       ds.title=pdf.pdfInfo!==null?(pdf.pdfInfo.info!=null?pdf.pdfInfo.info.Title:null):null;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
           K, text, item, bFound=false, i=-1,
@@ -448,8 +450,8 @@
       }
     }
 
-    function renderDocStructureLevel(o,el) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText'];
+    function renderDocStructureLevel(o,el,currentLang) {
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText'], efIndex, efPLen;
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
@@ -467,9 +469,49 @@
             s=blr.W15yQC.fnJoin(s,'Page: '+pgNum,', ');
             tick();
           }
+          if (typeof o[oi].Lang != 'undefined') {
+            currentLang=o[oi].Lang;
+          } else if (typeof o[oi].MCParams!='undefined' && o[oi].MCParams.Lang!==null ) {
+            currentLang=o[oi].MCParams.Lang;
+          }
           for(k=0;k<keys.length;k++) {
             if (typeof o[oi][keys[k]] != 'undefined') {
               s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
+            }
+          }
+          if (typeof o[oi].MCID !== 'undefined' || typeof o[oi].Alt !== 'undefined' || typeof o[oi].ActualText !== 'undefined') {
+            if (currentLang==='') {
+              s=blr.W15yQC.fnJoin(s, '[Natural language is UNDEFINED]', ', ');
+              efIndex=ds.effectiveLanguages.indexOf('UNDEFINED');
+            } else {
+              efIndex=ds.effectiveLanguages.indexOf(currentLang);
+            }
+            if (efIndex<0) {
+              ds.effectiveLanguages.push(currentLang!==''?currentLang:'UNDEFINED');
+              ds.effectiveLanguagesPagesS.push([pgNum]);
+              ds.effectiveLanguagesPagesE.push([pgNum]);
+            } else {
+              efPLen=ds.effectiveLanguagesPagesS[efIndex].length;
+              if(pgNum!== ds.effectiveLanguagesPagesE[efIndex][efPLen-1]) {
+                if(pgNum == ds.effectiveLanguagesPagesE[efIndex][efPLen-1]+1) {
+                  ds.effectiveLanguagesPagesE[efIndex][efPLen-1]=pgNum;
+                } else if(pgNum < ds.effectiveLanguagesPagesS[efIndex][efPLen-1]) { // TODO: Find existing range or add new one
+                  var bRangeFound=false;
+                  for(var ii=0;ii<efPLen;ii++) {
+                    if (pgNum >= ds.effectiveLanguagesPagesS[efIndex][ii] && pgNum <= ds.effectiveLanguagesPagesE[efIndex][ii]) {
+                      bRangeFound=true;
+                      break;
+                    }
+                  }
+                  if (!bRangeFound) {
+                    ds.effectiveLanguagesPagesS[efIndex].push(pgNum);
+                    ds.effectiveLanguagesPagesE[efIndex].push(pgNum);
+                  }
+                } else if (pgNum > ds.effectiveLanguagesPagesE[efIndex][efPLen-1]+1 && efPLen<20) {
+                  ds.effectiveLanguagesPagesS[efIndex].push(pgNum);
+                  ds.effectiveLanguagesPagesE[efIndex].push(pgNum);
+                }
+              }
             }
           }
           if (typeof o[oi].S!='undefined') {
@@ -481,15 +523,33 @@
           }
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
-            renderDocStructureLevel(o[oi].children,oli);
+            renderDocStructureLevel(o[oi].children,oli, currentLang);
           }
         }
         el.appendChild(ol);
       }
     }
 
+    function renderEffectiveLanguages() {
+      var el=rd.getElementById('langIndicationsList'), ol, efIndx, li, pgsIndx;
+      ol=rd.createElement('ol');
+      for(efIndx=0;efIndx<ds.effectiveLanguages.length;efIndx++) {
+        li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('"'+ds.effectiveLanguages[efIndx]+'" on pages: '));
+        for(pgsIndx=0;pgsIndx<ds.effectiveLanguagesPagesS[efIndx].length;pgsIndx++) {
+          if (ds.effectiveLanguagesPagesS[efIndx][pgsIndx]==ds.effectiveLanguagesPagesE[efIndx][pgsIndx]) {
+            li.appendChild(rd.createTextNode(ds.effectiveLanguagesPagesS[efIndx][pgsIndx]+(pgsIndx+1<ds.effectiveLanguagesPagesS[efIndx].length?', ':'')));
+          } else {
+            li.appendChild(rd.createTextNode(ds.effectiveLanguagesPagesS[efIndx][pgsIndx]+'-'+ds.effectiveLanguagesPagesE[efIndx][pgsIndx]+(pgsIndx+1<ds.effectiveLanguagesPagesS[efIndx].length?', ':'')));
+          }
+        }
+        ol.appendChild(li);
+      }
+      el.appendChild(ol);
+    }
+
     function renderAndCheckDocStructure(el) {
-      var rmi, ol, oli, div, p, keys, i=-1;
+      var rmi, ol, oli, div, p, keys, i=-1, dlM, defaultLang;
       //blr.W15yQC.pdfCheckDialog.log('DS:'+blr.W15yQC.objectToString(ds));
       //blr.W15yQC.pdfCheckDialog.log('Kids:'+blr.W15yQC.objectToString(ds.pages));
 
@@ -499,6 +559,13 @@
       div=rd.createElement('div');
       el.appendChild(div);
       renderElementStatistics(div);
+
+      h=rd.createElement('h3');
+      h.appendChild(rd.createTextNode('Effective Language Indications:'));
+      el.appendChild(h);
+      div=rd.createElement('div');
+      div.setAttribute('id','langIndicationsList');
+      el.appendChild(div); // Place holder for content that gets rendered later!
 
       h=rd.createElement('h3');
       h.appendChild(rd.createTextNode('Headings:'));
@@ -514,7 +581,14 @@
       el.appendChild(div);
       prevPg=-19392;
       pgNum=1;
-      renderDocStructureLevel(ds,div);
+      defaultLang='';
+      dlM=pdf.pdfInfo.defaultLang.match(/'([\w-]*)'/);
+      if (dlM!==null && dlM.length>1) {
+        defaultLang=dlM[1];
+      }
+      renderDocStructureLevel(ds,div,defaultLang);
+      renderEffectiveLanguages();
+
       document.getElementById('button-makeSemanticView').disabled=false;
       log('Finished.');
     }
