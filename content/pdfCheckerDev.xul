@@ -24,8 +24,10 @@
 				  document.getElementById('tbURL').readonly=true;
 					document.getElementById('button-loadPDF').disabled=true;
 					getPdfForFullCheck(sURL);
-				} else {
+				} else if(blr.W15yQC.fnStringHasContent(sURL)){
 					alert('URL looks invalid: '+sURL);
+				} else {
+					alert('Provide a URL to the PDF in the textbox.');
 				}
 			}
 
@@ -39,6 +41,7 @@
 					alert('No semantic structure');
 				}
 			}
+
    </xul:script>
    <!-- <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfChecker.js"/> -->
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
@@ -67,6 +70,9 @@
 		<![CDATA[
 			if(this.arguments[1]!==null && typeof this.arguments[1].documentURI !== 'undefined') {
 				document.getElementById('tbURL').value=this.arguments[1].documentURI;
+			  if(/^about:blank$/i.test(document.getElementById('tbURL').value)) {
+					document.getElementById('tbURL').value="";
+				}
 			}
 		]]>
 	 </xul:script>

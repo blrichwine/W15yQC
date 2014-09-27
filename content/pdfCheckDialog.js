@@ -36,6 +36,31 @@
  *
  * TODO:
  *
+ *   Report on:
+ *     # of figures
+ *     # of pages
+ *     # of headings
+ *     # of tables
+ *     # of links
+ *     # of bookmarks
+ *     # of characters
+ *
+ * Checks:
+ *   PDF has XMP Meta Data
+ *   Document title in XMP Meta Data
+ *   Document title configured to display
+ *   H1 heading present
+ *   Heading numbering correct
+ *   Headings have text
+ *   Headings are not the same within a group of the same level
+ *   All figures have Alt text
+ *   All figures have Alt text that does not appear to be default
+ *   All form controls have labels
+ *   Only standard elements are used
+ *   Structual element use / ordering appears valid
+ *   All text content is covered by a language indication
+ *
+ *
  *
  */
 "use strict";
@@ -714,6 +739,7 @@
           resolve(getPdfFullCheckResults(pdf,sURL,rd,re,le));
         },
         function() {
+          le.value=le.value+"\nError requesting PDF.";
           reject(null);
         });
     });
