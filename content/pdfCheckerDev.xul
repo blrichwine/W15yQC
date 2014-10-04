@@ -42,19 +42,47 @@
 				}
 			}
 
+			function makeScreenReaderView() {
+				var dialogID, dialogPath;
+			  if(ds!==null) {
+					dialogID = 'semanticPdfWindow';
+					dialogPath = 'chrome://W15yQC/content/semanticPdfWindow.xul';
+					window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,ds,true);
+				} else {
+					alert('No semantic structure');
+				}
+			}
+
    </xul:script>
-   <!-- <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfChecker.js"/> -->
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
  		<xul:hbox align="center">
-			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value="http://www.pdfa.org/wp-content/uploads/2014/06/MatterhornProtocol_1-02.pdf"/>
+			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value=""/>
 		</xul:hbox>
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0" flex="1">
-				 <xul:label control="note-text" value="Details:" style="margin: 5px 0 0 3px"/>
-				 <xul:textbox id="note-text" readonly="true" multiline="true" rows="3" flex="1" />
+				<xul:label id="note-text-label" control="note-text" value="Status:" style="margin: 5px 0 0 3px"/>
+				<xul:textbox id="note-text" readonly="true" multiline="true" rows="3" flex="1" />
+				<xul:label control="reportIFrame" value="Details:" style="margin: 5px 0 0 3px"/>
 				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="15" style="overflow:auto" charset="UTF-8"/>
-      </xul:vbox>
-      <xul:hbox id="box-button" align="right">
+     </xul:vbox>
+		 <xul:vbox>
+      <xul:hbox id="box-button">
+				 <xul:button id="button-savePDFReport"
+					 label="Save Report"
+					 disabled="true"
+					 oncommand="savePdfReport();"
+					 accesskey=""/>
+				 <xul:button id="button-printPDFReport"
+					 label="Print Report"
+					 disabled="true"
+					 oncommand="printPdfReport();"
+					 accesskey=""/>
+				 <xul:spacer flex="5"/>
+				 <xul:button id="button-makeScreenReaderView"
+					 label="Make Screen-Reader View"
+					 disabled="true"
+					 oncommand="makeScreenReaderView();"
+					 accesskey=""/>
 				 <xul:button id="button-makeSemanticView"
 					 label="Make Semantic View"
 					 disabled="true"
@@ -65,6 +93,7 @@
 					 oncommand="check();"
 					 accesskey=""/>
       </xul:hbox>
+		</xul:vbox>
    </xul:vbox>
    <xul:script>
 		<![CDATA[

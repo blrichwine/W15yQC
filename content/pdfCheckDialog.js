@@ -48,7 +48,7 @@
  * Checks:
  *   PDF has XMP Meta Data
  *   Document title in XMP Meta Data
- *   Document title configured to display
+ *   Document title configured to display: DisplayDocTitle
  *   H1 heading present
  *   Heading numbering correct
  *   Headings have text
@@ -475,8 +475,15 @@
       }
     }
 
+    /*
+     * punctuation: black
+     * tag: green
+     * attribute: red
+     * attribute value: blue
+     * text: orange
+     */
     function renderDocStructureLevel(o,el,currentLang) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen;
+      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets;
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
@@ -498,11 +505,6 @@
             currentLang=o[oi].Lang;
           } else if (typeof o[oi].MCParams!='undefined' && o[oi].MCParams.Lang!==null ) {
             currentLang=o[oi].MCParams.Lang;
-          }
-          for(k=0;k<keys.length;k++) {
-            if (typeof o[oi][keys[k]] != 'undefined') {
-              s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
-            }
           }
           if (typeof o[oi].MCID !== 'undefined' || typeof o[oi].Alt !== 'undefined' || typeof o[oi].ActualText !== 'undefined') {
             if (currentLang==='') {
@@ -540,12 +542,164 @@
             }
           }
           if (typeof o[oi].S!='undefined') {
-            oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
+//            oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
+            if (ds.rm.hasOwnProperty(o[oi].S)) {
+              span=rd.createElement('span');
+              if (standardElements.indexOf(ds.rm[o[oi].S].toLowerCase())>=0) {
+                span.setAttribute('class','pdfTag');
+              } else {
+                span.setAttribute('class','pdfTag nonStandardTag');
+              }
+              span.appendChild(rd.createTextNode(ds.rm[o[oi].S]));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode(' ('));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','mappedPdfTag');
+              span.appendChild(rd.createTextNode(o[oi].S));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode(')'));
+              oli.appendChild(span);
+            } else {
+              span=rd.createElement('span');
+              if (standardElements.indexOf(o[oi].S.toLowerCase())>=0) {
+                span.setAttribute('class','pdfTag');
+              } else {
+                span.setAttribute('class','pdfTag nonStandardTag');
+              }
+              span.appendChild(rd.createTextNode(o[oi].S));
+              oli.appendChild(span);
+            }
           } else if (typeof o[oi].MCID!='undefined') {
-            oli.appendChild(rd.createTextNode((typeof o[oi].MCParams!='undefined'?o[oi].MCParams.type:'')+'[MCID='+o[oi].MCID+(typeof o[oi].MCParams!='undefined' && o[oi].MCParams.Lang!==null ?', Lang="'+o[oi].MCParams.Lang+'"':'')+']'+(typeof o[oi].text!='undefined'?':'+o[oi].text:'')));
+//            oli.appendChild(rd.createTextNode((typeof o[oi].MCParams!='undefined'?o[oi].MCParams.type:'')+'[MCID='+o[oi].MCID+(typeof o[oi].MCParams!='undefined' && o[oi].MCParams.Lang!==null ?', Lang="'+o[oi].MCParams.Lang+'"':'')+']'+(typeof o[oi].text!='undefined'?':'+o[oi].text:'')));
+            if (typeof o[oi].MCParams!='undefined') {
+              span=rd.createElement('span');
+              span.setAttribute('class','contentTag');
+              span.appendChild(rd.createTextNode(o[oi].MCParams.type));
+              oli.appendChild(span);
+            }
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode('['));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','attr');
+            span.appendChild(rd.createTextNode('MCID'));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode('='));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','attrValue');
+            span.appendChild(rd.createTextNode(o[oi].MCID));
+            oli.appendChild(span);
+            if (typeof o[oi].MCParams!='undefined' && o[oi].MCParams.Lang!==null) {
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode(', '));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','attr');
+              span.appendChild(rd.createTextNode('Lang'));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode('="'));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','attrValue');
+              span.appendChild(rd.createTextNode(o[oi].MCParams.Lang));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode('"'));
+              oli.appendChild(span);
+            }
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode(']'));
+            oli.appendChild(span);
+            if (typeof o[oi].text!='undefined') {
+              span=rd.createElement('span');
+              span.setAttribute('class','pdfTextContent');
+              span.appendChild(rd.createTextNode(': '+o[oi].text));
+              oli.appendChild(span);
+            }
           } else {
-            oli.appendChild(rd.createTextNode('ERROR'));
+            span=rd.createElement('span');
+            span.setAttribute('class','structureError');
+            span.appendChild(rd.createTextNode('ERROR'));
+            oli.appendChild(span);
           }
+          bInBrackets=false;
+          if (s!=='') {
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode(' {"'));
+            oli.appendChild(span);
+            bInBrackets=true;
+            span=rd.createElement('span');
+            span.setAttribute('class','attr');
+            span.appendChild(rd.createTextNode('Page'));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode('": '));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','attrValue');
+            span.appendChild(rd.createTextNode(pgNum));
+            oli.appendChild(span);
+          }
+          for(k=0;k<keys.length;k++) {
+            if (typeof o[oi][keys[k]] != 'undefined') {
+              //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
+              if (!bInBrackets) {
+                span=rd.createElement('span');
+                span.setAttribute('class','punctuation');
+                span.appendChild(rd.createTextNode(' {'));
+                oli.appendChild(span);
+                bInBrackets=true;
+              } else {
+                span=rd.createElement('span');
+                span.setAttribute('class','punctuation');
+                span.appendChild(rd.createTextNode(', '));
+                oli.appendChild(span);
+              }
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode('"'));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','attr');
+              span.appendChild(rd.createTextNode('Page'));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode('": "'));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','attrValue');
+              span.appendChild(rd.createTextNode(pgNum));
+              oli.appendChild(span);
+              span=rd.createElement('span');
+              span.setAttribute('class','punctuation');
+              span.appendChild(rd.createTextNode('"'));
+              oli.appendChild(span);
+            }
+          }
+          if (bInBrackets) {
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode('}'));
+            oli.appendChild(span);
+          }
+          bInBrackets=false;
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
             renderDocStructureLevel(o[oi].children,oli, currentLang);
@@ -614,7 +768,7 @@
       renderDocStructureLevel(ds,div,defaultLang);
       renderEffectiveLanguages();
 
-      document.getElementById('button-makeSemanticView').disabled=false;
+      enableReportButtons(true,true);
       log('Finished.');
     }
 
@@ -642,7 +796,7 @@
         rd.head.appendChild(meta);
 
         style=rd.createElement('style');
-        style.appendChild(rd.createTextNode('li.newPage{border-top:1px solid black;}'));
+        style.appendChild(rd.createTextNode('li.newPage{border-top:1px solid black;}span.attr{color:red}span.attrValue{color:blue}span.pdfTextContent{color:#BA4700}span.pdfTag{color:green;font-weight:bold}span.contentTag{color:green}span.mappedPdfTag{color:green}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
         h=rd.createElement('h1');
         h.appendChild(rd.createTextNode('PDF Accessibility Report'));
@@ -715,13 +869,13 @@
           h=rd.createElement('h2');
           h.appendChild(rd.createTextNode('No document structure'));
           re.appendChild(h);
-          document.getElementById('button-makeSemanticView').disabled=true;
+          enableReportButtons(true,false);
           log('Finished.');
         }
       }
     } else {
       log('Error: pdf or re objects are null');
-      document.getElementById('button-makeSemanticView').disabled=true;
+      enableReportButtons(false,false);
       log('Finished.');
     }
   }
@@ -743,4 +897,60 @@
           reject(null);
         });
     });
+  }
+
+  function enableReportButtons (bSavePrint, bAltViews) {
+    document.getElementById('button-savePDFReport').disabled=!bSavePrint;
+    document.getElementById('button-printPDFReport').disabled=!bSavePrint;
+    document.getElementById('button-makeSemanticView').disabled=!bAltViews;
+    document.getElementById('button-makeScreenReaderView').disabled=!bAltViews;
+    document.getElementById('button-loadPDF').disabled=!bSavePrint;
+  }
+
+  function printPdfReport () {
+    var rd=document.getElementById('reportIFrame').contentDocument;
+
+    if (rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body &&
+        rd.body.children && rd.body.children.length && rd.defaultView && rd.defaultView.print) {
+      rd.defaultView.print();
+    } else {
+      alert("Nothing to print!");
+    }
+  }
+
+  function savePdfReport () {
+    var converter,
+    file,
+    foStream,
+    fp,
+    nsIFilePicker,
+    rv,
+    rd=document.getElementById('reportIFrame').contentDocument;
+
+    if (rd != null && rd.documentElement && rd.documentElement.innerHTML && rd.body && rd.body.children && rd.body.children.length) {
+      nsIFilePicker = Components.interfaces.nsIFilePicker;
+
+      fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+      fp.init(window, "Dialog Title", nsIFilePicker.modeSave);
+      fp.appendFilters(nsIFilePicker.filterHTML | nsIFilePicker.filterAll);
+      rv = fp.show();
+      if (rv == nsIFilePicker.returnOK || rv == nsIFilePicker.returnReplace) {
+
+        file = fp.file;
+        if (/\.html?$/.test(file.path) == false) {
+          file.initWithPath(file.path + '.html');
+        }
+
+        foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
+        createInstance(Components.interfaces.nsIFileOutputStream);
+
+        foStream.init(file, 0x2A, 438, 0);
+        converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+        converter.init(foStream, "UTF-8", 0, 0);
+        converter.writeString('<html>' + rd.documentElement.innerHTML + '</html>');
+        converter.close(); // this closes foStream
+      }
+    } else {
+      alert("Nothing to save!");
+    }
   }
