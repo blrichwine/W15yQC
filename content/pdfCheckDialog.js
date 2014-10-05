@@ -76,6 +76,22 @@
     var h,div,span,el,l,li, key, i, meta, style;
     var prevPg=-19392, pgNum=1;
 
+    var results={ "bDocHasXmpMetaData":null,
+                  "bDocTitleInXmpMetaData":null,
+                  "bDocTitleConfiguredToDisplay":null,
+                  "bH1Present":null,
+                  "bFirstHeadingIsH1":null,
+                  "bHeadingLevelsNotSkipped":null,
+                  "bHeadingsAllHaveText":null,
+                  "bHeadingsNotTheSameWithinALevel":null,
+                  "bAllFiguresHaveAltText":null,
+                  "bAllFiguresHaveAltTextNotDefault":null,
+                  "bAllFormControlsHaveLabels":null,
+                  "bAllFormControlsHaveUniqueLabels":null,
+                  "bOnlyStandardTagsAreUsed":null,
+                  "bTagUseAppearsValid":null,
+                  "bAllTextContentHasMarkedLang":null};
+
     function log(s) {
      le.value=blr.W15yQC.fnJoin(le.value,s,"\n");
      blr.W15yQC.fnDoEvents();
@@ -86,19 +102,79 @@
      blr.W15yQC.fnDoEvents();
     }
 
+    function renderResults() {
+      var el=rd.getElementById('a11yResults'), i, ul, li, span,
+          resultKeys=['bDocHasXmpMetaData',
+                      'bDocTitleInXmpMetaData',
+                      'bDocTitleConfiguredToDisplay',
+                      'bH1Present',
+                      'bFirstHeadingIsH1',
+                      'bHeadingLevelsNotSkipped',
+                      'bHeadingsAllHaveText',
+                      'bHeadingsNotTheSameWithinALevel',
+                      'bAllFiguresHaveAltText',
+                      'bAllFiguresHaveAltTextNotDefault',
+                      'bAllFormControlsHaveLabels',
+                      'bAllFormControlsHaveUniqueLabels',
+                      'bOnlyStandardTagsAreUsed',
+                      'bTagUseAppearsValid',
+                      'bAllTextContentHasMarkedLang'],
+          resultText=['bDocHasXmpMetaData',
+                      'bDocTitleInXmpMetaData',
+                      'bDocTitleConfiguredToDisplay',
+                      'bH1Present',
+                      'bFirstHeadingIsH1',
+                      'bHeadingLevelsNotSkipped',
+                      'bHeadingsAllHaveText',
+                      'bHeadingsNotTheSameWithinALevel',
+                      'bAllFiguresHaveAltText',
+                      'bAllFiguresHaveAltTextNotDefault',
+                      'bAllFormControlsHaveLabels',
+                      'bAllFormControlsHaveUniqueLabels',
+                      'bOnlyStandardTagsAreUsed',
+                      'bTagUseAppearsValid',
+                      'bAllTextContentHasMarkedLang'];
+      ul=rd.createElement('ul');
+      for(i=0;i<resultKeys.length;i++) {
+        li=rd.createElement('li');
+        span=rd.createElement('span');
+        span.setAttribute('class','a11yResultText')
+        span.appendChild(rd.createTextNode(resultText[i]));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        if (results[resultKeys[i]]===true) {
+          span.appendChild(rd.createTextNode('Passed'));
+          span.setAttribute('class','a11yPassResult');
+        } else if (results[resultKeys[i]]===false) {
+          span.appendChild(rd.createTextNode('FAILED'));
+          span.setAttribute('class','a11yFailResult');
+        } else {
+          span.appendChild(rd.createTextNode('?? Not checked ??'));
+          span.setAttribute('class','a11yResultNotChecked');
+        }
+        li.appendChild(span);
+        ul.appendChild(li);
+      }
+      el.appendChild(ul);
+    }
+
     function renderElementStatistics(d) {
-      var h, table, thead, tbody, tr, th, td, keys, mappedKey, i, span, mappedStats={};
+      var h, table, thead, tbody, tr, th, td, keys, mappedKey, i, span, mappedStats={}, bNonStandardTags=false, p;
       h=rd.createElement('h3');
       h.appendChild(rd.createTextNode('Un-Mapped'));
       d.appendChild(h);
       table=rd.createElement('table');
+      table.setAttribute('id','unMappedElements');
       thead=rd.createElement('thead');
       tr=rd.createElement('tr');
       th=rd.createElement('th');
+      th.setAttribute('class','tagNameHeader');
       th.setAttribute('scope','col');
       th.appendChild(rd.createTextNode('Element'));
       tr.appendChild(th);
       th=rd.createElement('th');
+      th.setAttribute('class','tagNameStatsHeader');
       th.setAttribute('scope','col');
       th.appendChild(rd.createTextNode('Count'));
       tr.appendChild(th);
@@ -116,8 +192,17 @@
           tr=rd.createElement('tr');
           td=rd.createElement('td');
           td.appendChild(rd.createTextNode(keys[i]));
+          if (standardElements.indexOf(keys[i].toLowerCase())<0) {
+            span=rd.createElement('span');
+            span.setAttribute('class','nonStandardTag');
+            span.setAttribute('title','Non-standard tag.');
+            span.appendChild(rd.createTextNode(' *'));
+            td.appendChild(span);
+            bNonStandardTags=true;
+          }
           tr.appendChild(td);
           td=rd.createElement('td');
+          td.setAttribute('class','tagStat');
           td.appendChild(rd.createTextNode(ds.stats[keys[i]]));
           if (ds.rm.hasOwnProperty(keys[i])) {
             mappedKey=ds.rm[keys[i]];
@@ -129,17 +214,17 @@
           } else {
             mappedStats[mappedKey]=ds.stats[keys[i]];
           }
-          if (standardElements.indexOf(keys[i].toLowerCase())<0) {
-            span=rd.createElement('span');
-            span.appendChild(rd.createTextNode(' (Not a standard element)'));
-            td.appendChild(span);
-          }
           tr.appendChild(td);
           tbody.appendChild(tr);
         }
       }
       table.appendChild(tbody);
       d.appendChild(table);
+      if (bNonStandardTags) {
+        p=rd.createElement('p');
+        p.setAttribute('class','hasNonStandardTags');
+        p.appendChild(rd.createTextNode('* = Non-standard tag.'));
+      }
 
       if (ds.rm!=null && Object.getOwnPropertyNames(ds.rm).length>0) {
         h=rd.createElement('h3');
@@ -149,10 +234,12 @@
         thead=rd.createElement('thead');
         tr=rd.createElement('tr');
         th=rd.createElement('th');
+        th.setAttribute('class','tagNameHeader');
         th.setAttribute('scope','col');
         th.appendChild(rd.createTextNode('Element'));
         tr.appendChild(th);
         th=rd.createElement('th');
+        th.setAttribute('class','tagNameStatsHeader');
         th.setAttribute('scope','col');
         th.appendChild(rd.createTextNode('Count'));
         tr.appendChild(th);
@@ -167,15 +254,19 @@
             tr=rd.createElement('tr');
             td=rd.createElement('td');
             td.appendChild(rd.createTextNode(keys[i]));
-            tr.appendChild(td);
-            td=rd.createElement('td');
-            td.appendChild(rd.createTextNode(mappedStats[keys[i]]));
             if (standardElements.indexOf(keys[i].toLowerCase())<0) {
               span=rd.createElement('span');
-              span.appendChild(rd.createTextNode(' (Not a standard element)'));
-              td.appendChild(span);
+              span.setAttribute('class','nonStandardTag');
+              span.setAttribute('title','Non-standard tag.');
+              span.appendChild(rd.createTextNode(' *'));
               td.setAttribute('class','error');
+              td.appendChild(span);
+              bNonStandardTags=true;
             }
+            tr.appendChild(td);
+            td=rd.createElement('td');
+            td.setAttribute('class','tagStat');
+            td.appendChild(rd.createTextNode(mappedStats[keys[i]]));
             tr.appendChild(td);
             tbody.appendChild(tr);
           }
@@ -193,7 +284,7 @@
       ds.title=pdf.pdfInfo!==null?(pdf.pdfInfo.info!=null?pdf.pdfInfo.info.Title:null):null;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
           K, text, item, bFound=false, i=-1,
-          h, div, ol, rmi, oli, p, keys;
+          h, div, ol, rmi, oli, p, keys, span;
 
       //blr.W15yQC.pdfCheckDialog.log('Starting getTextForDocStructure: ');
 
@@ -216,13 +307,33 @@
             rmi=keys[i];
             rm[rmi]=ds.RoleMap.map[rmi].name;
             oli=rd.createElement('li');
-            oli.appendChild(rd.createTextNode('"'+rmi+'": "'+ds.RoleMap.map[rmi].name+'"'));
+            oli.appendChild(rd.createTextNode('"'));
+            span=rd.createElement('span');
+            span.setAttribute('class','attr');
+            span.appendChild(rd.createTextNode(rmi));
+            oli.appendChild(span);
+            oli.appendChild(rd.createTextNode('": "'));
+            span=rd.createElement('span');
+            span.setAttribute('class','attrValue');
+            span.appendChild(rd.createTextNode(ds.RoleMap.map[rmi].name));
+            oli.appendChild(span);
+            oli.appendChild(rd.createTextNode('"'));
 
-            if (standardElements.indexOf(ds.RoleMap.map[rmi].name.toLowerCase())<0) {
+            if (standardElements.indexOf(rmi.toLowerCase())>=0) {
+              oli.appendChild(rd.createTextNode(' ('));
               span=rd.createElement('span');
-              span.appendChild(rd.createTextNode(' (Not a standard element)'));
+              span.appendChild(rd.createTextNode(' ERROR '));
+              span.setAttribute('class','error');
               oli.appendChild(span);
-              oli.setAttribute('class','error');
+              oli.appendChild(rd.createTextNode(': Redefining a standard element)'));
+            }
+            if (standardElements.indexOf(ds.RoleMap.map[rmi].name.toLowerCase())<0) {
+              oli.appendChild(rd.createTextNode(' ('));
+              span=rd.createElement('span');
+              span.appendChild(rd.createTextNode(' ERROR '));
+              span.setAttribute('class','error');
+              oli.appendChild(span);
+              oli.appendChild(rd.createTextNode(': Not mapped to a standard element)'));
             }
 
             ol.appendChild(oli);
@@ -364,7 +475,7 @@
     }
 
     function renderHeadings(el) {
-      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, prevHeadingLevel=0, hLevel, hList=[], lStack=[], elType, i, j, t;
+      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, prevHeadingLevel=0, hLevel, hList=[], lStack=[], elType, i, j, t, span, liList, str;
 
       function getNext() {
         if (dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
@@ -432,17 +543,35 @@
         }
       }
 
+      results.bH1Present=false;
+      results.bFirstHeadingIsH1=true;
+      results.bHeadingLevelsNotSkipped=true;
+      results.bHeadingsAllHaveText=true;
+      results.bHeadingsNotTheSameWithinALevel=true;
+
       if (hList.length>0) {
         prevHeadingLevel=1;
         ul=rd.createElement('ul');
+        ul.setAttribute('id','headingList');
         lStack=[ul];
         for(i=0;i<hList.length;i++) {
+          if (i==0 && hList[i].level!==1) {
+            results.bFirstHeadingIsH1=false;
+          }
+          if (hList[i].level===1 && blr.W15yQC.fnStringHasContent(hList[i].text)) {
+            results.bH1Present=true;
+          }
+          if (blr.W15yQC.fnStringHasContent(hList[i].text)==false) {
+            results.bHeadingsAllHaveText=false;
+          }
           hLevel=hList[i].level>0?hList[i].level:1;
           //blr.W15yQC.pdfCheckDialog.log('i:'+i+' hLevel:'+hLevel+' lStack.length:'+lStack.length);
           if (prevHeadingLevel<hLevel-1) {
             for(j=prevHeadingLevel+1;j<hLevel;j++) {
               li=rd.createElement('li');
+              li.setAttribute('class','error');
               li.appendChild(rd.createTextNode('<H'+j+' - Missing Heading>'));
+              results.bHeadingLevelsNotSkipped=false;
               lStack[lStack.length-1].appendChild(li);
               ul2=rd.createElement('ul');
               li.appendChild(ul2);
@@ -451,7 +580,9 @@
           } else if (prevHeadingLevel==hLevel-1) {
               if (i==0) {
                 li=rd.createElement('li');
+                li.setAttribute('class','error');
                 li.appendChild(rd.createTextNode('<H1 - Missing Heading>'));
+                results.bHeadingLevelsNotSkipped=false;
                 lStack[0].appendChild(li);
               }
               ul2=rd.createElement('ul');
@@ -463,7 +594,28 @@
             }
           }
           li=rd.createElement('li');
-          li.appendChild(rd.createTextNode('[H'+hLevel+']: '+hList[i].text))
+          span=rd.createElement('span');
+          span.setAttribute('class','pdfTag');
+          span.appendChild(rd.createTextNode('[H'+hLevel+']'))
+          li.appendChild(span);
+          span=rd.createElement('span');
+          span.setAttribute('class','punctuation');
+          span.appendChild(rd.createTextNode(': '));
+          li.appendChild(span);
+          span=rd.createElement('span');
+          span.setAttribute('class','pdfTextContent');
+          span.appendChild(rd.createTextNode(hList[i].text));
+          li.appendChild(span);
+
+          if (lStack[lStack.length-1]!==null) {
+            liList=lStack[lStack.length-1].getElementsByTagName('li');
+            str=li.innerHTML.toLowerCase();
+            for(j=0;j<liList.length;j++) {
+              if (liList[j].innerHTML.toLowerCase()==str) {
+                results.bHeadingsNotTheSameWithinALevel=false;
+              }
+            }
+          }
           lStack[lStack.length-1].appendChild(li);
           prevHeadingLevel=hLevel;
         }
@@ -483,12 +635,13 @@
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang) {
-      var oi,ol,oli, k,s, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets;
+      var oi,ol,oli, k, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets;
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
           oli=rd.createElement('li');
           s='';
+          errTxt='';
           if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
             pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
           } else if (/^(l|table|thead|tbody|tfoot|art|div|form|part|sect)$/i.test(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]:o[oi].S) && o[oi].children!=null && o[oi].children.length>0 &&
@@ -508,8 +661,9 @@
           }
           if (typeof o[oi].MCID !== 'undefined' || typeof o[oi].Alt !== 'undefined' || typeof o[oi].ActualText !== 'undefined') {
             if (currentLang==='') {
-              s=blr.W15yQC.fnJoin(s, '[Natural language is UNDEFINED]', ', ');
+              errTxt=blr.W15yQC.fnJoin(errTxt, '[Natural language is UNDEFINED]', ', ');
               efIndex=ds.effectiveLanguages.indexOf('UNDEFINED');
+              results.bAllTextContentHasMarkedLang=false;
             } else {
               efIndex=ds.effectiveLanguages.indexOf(currentLang);
             }
@@ -547,8 +701,12 @@
               span=rd.createElement('span');
               if (standardElements.indexOf(ds.rm[o[oi].S].toLowerCase())>=0) {
                 span.setAttribute('class','pdfTag');
+                if (/figure/i.test(ds.rm[o[oi].S]) && blr.W15yQC.fnStringHasContent(o[oi]['Alt']) && blr.W15yQC.fnStringHasContent(o[oi]['ActualText'])) {
+                  results.bAllFiguresHaveAltText=false;
+                }
               } else {
                 span.setAttribute('class','pdfTag nonStandardTag');
+                results.bOnlyStandardTagsAreUsed=false;
               }
               span.appendChild(rd.createTextNode(ds.rm[o[oi].S]));
               oli.appendChild(span);
@@ -566,10 +724,11 @@
               oli.appendChild(span);
             } else {
               span=rd.createElement('span');
-              if (standardElements.indexOf(o[oi].S.toLowerCase())>=0) {
+              if (o[oi].S!==null && standardElements.indexOf(o[oi].S.toLowerCase())>=0) {
                 span.setAttribute('class','pdfTag');
               } else {
                 span.setAttribute('class','pdfTag nonStandardTag');
+                results.bOnlyStandardTagsAreUsed=false;
               }
               span.appendChild(rd.createTextNode(o[oi].S));
               oli.appendChild(span);
@@ -656,6 +815,20 @@
             span.appendChild(rd.createTextNode(pgNum));
             oli.appendChild(span);
           }
+          if (errTxt!=='') {
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode(' ['));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','errorText');
+            span.appendChild(rd.createTextNode(errTxt));
+            oli.appendChild(span);
+            span=rd.createElement('span');
+            span.setAttribute('class','punctuation');
+            span.appendChild(rd.createTextNode(']'));
+            oli.appendChild(span);
+          }
           for(k=0;k<keys.length;k++) {
             if (typeof o[oi][keys[k]] != 'undefined') {
               //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
@@ -702,6 +875,9 @@
           bInBrackets=false;
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
+            results.bAllFiguresHaveAltText=true;
+            results.bOnlyStandardTagsAreUsed=true;
+            results.bAllTextContentHasMarkedLang=true;
             renderDocStructureLevel(o[oi].children,oli, currentLang);
           }
         }
@@ -710,11 +886,16 @@
     }
 
     function renderEffectiveLanguages() {
-      var el=rd.getElementById('langIndicationsList'), ol, efIndx, li, pgsIndx;
+      var el=rd.getElementById('langIndicationsList'), ol, efIndx, li, pgsIndx, span;
       ol=rd.createElement('ol');
       for(efIndx=0;efIndx<ds.effectiveLanguages.length;efIndx++) {
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('"'+ds.effectiveLanguages[efIndx]+'" on pages: '));
+        li.appendChild(rd.createTextNode('"'));
+        span=rd.createElement('span');
+        span.setAttribute('class','attrValue');
+        span.appendChild(rd.createTextNode(ds.effectiveLanguages[efIndx]));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode('" on pages: '));
         for(pgsIndx=0;pgsIndx<ds.effectiveLanguagesPagesS[efIndx].length;pgsIndx++) {
           if (ds.effectiveLanguagesPagesS[efIndx][pgsIndx]==ds.effectiveLanguagesPagesE[efIndx][pgsIndx]) {
             li.appendChild(rd.createTextNode(ds.effectiveLanguagesPagesS[efIndx][pgsIndx]+(pgsIndx+1<ds.effectiveLanguagesPagesS[efIndx].length?', ':'')));
@@ -769,6 +950,7 @@
       renderEffectiveLanguages();
 
       enableReportButtons(true,true);
+      renderResults();
       log('Finished.');
     }
 
@@ -796,7 +978,7 @@
         rd.head.appendChild(meta);
 
         style=rd.createElement('style');
-        style.appendChild(rd.createTextNode('li.newPage{border-top:1px solid black;}span.attr{color:red}span.attrValue{color:blue}span.pdfTextContent{color:#BA4700}span.pdfTag{color:green;font-weight:bold}span.contentTag{color:green}span.mappedPdfTag{color:green}span.nonStandardTag{text-decoration:underline}'));
+        style.appendChild(rd.createTextNode('.a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
         h=rd.createElement('h1');
         h.appendChild(rd.createTextNode('PDF Accessibility Report'));
@@ -856,6 +1038,13 @@
         div.appendChild(l);
 
         h=rd.createElement('h2');
+        h.appendChild(rd.createTextNode('Accessibility Check Results:'));
+        re.appendChild(h);
+        div=rd.createElement('div');
+        div.setAttribute('id','a11yResults');
+        re.appendChild(div);
+
+        h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('PDF Outline (Bookmarks):'));
         re.appendChild(h);
         div=rd.createElement('div');
@@ -870,6 +1059,7 @@
           h.appendChild(rd.createTextNode('No document structure'));
           re.appendChild(h);
           enableReportButtons(true,false);
+          renderResults();
           log('Finished.');
         }
       }
