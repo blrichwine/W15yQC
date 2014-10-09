@@ -5385,6 +5385,24 @@ var PDFDocument = (function PDFDocumentClosure() {
       return shadow(this, 'tagged', value);
     },
 
+    get setToDisplayTitle() {
+     var rootDict, str, viewerPreferencesEntry, value=false;
+     try {
+       rootDict = this.xref.trailer.get('Root');
+     } catch (err) {
+       info('The document root dictionary is invalid.');
+     }
+     if (rootDict) {
+      if (rootDict.has('ViewerPreferences')) {
+       viewerPreferencesEntry = rootDict.get('ViewerPreferences');
+       if(viewerPreferencesEntry!==null && typeof viewerPreferencesEntry.map != 'undefined' && typeof viewerPreferencesEntry.map.DisplayDocTitle != 'undefined') {
+        value=viewerPreferencesEntry.map.DisplayDocTitle;
+       }
+      }
+     }
+     return shadow(this, 'setToDisplayTitle', value);
+    },
+
     get defaultLang() {
       var rootDict, str, rootStrucEntry, value='';
 
@@ -37703,6 +37721,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         var fingerprintPromise = pdfManager.ensureDoc('fingerprint');
         var taggedPromise = pdfManager.ensureDoc('tagged');
         var defaultLangPromise = pdfManager.ensureDoc('defaultLang');
+        var setToDisplayTitlePromise = pdfManager.ensureDoc('setToDisplayTitle');
         var hasSuspectsPromise = pdfManager.ensureDoc('hasSuspects');
         var structuredPromise = pdfManager.ensureDoc('structured');
         var isLinearizedPromise = pdfManager.ensureDoc('isLinearized');
@@ -37713,7 +37732,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
         Promise.all([numPagesPromise, fingerprintPromise,
                      encryptedPromise, taggedPromise, outlinePromise,
                      docInfoPromise, metadataPromise, isLinearizedPromise,
-                     structuredPromise, hasSuspectsPromise, defaultLangPromise]).then(function onDocReady(results) {
+                     structuredPromise, hasSuspectsPromise, defaultLangPromise, setToDisplayTitlePromise]).then(function onDocReady(results) {
           var doc = {
             numPages: results[0],
             defaultLang: results[10],
@@ -37725,7 +37744,8 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
             metadata: results[6],
             isLinearized: results[7],
             fingerprint: results[1],
-            encrypted: !!results[2]
+            encrypted: !!results[2],
+            setToDisplayTitle: results[11]
           };
           loadDocumentCapability.resolve(doc);
         },

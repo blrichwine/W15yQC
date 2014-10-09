@@ -797,6 +797,8 @@ ys: 'whys'
                             out += '"'+ p + '": "' + o[p] + '"';
                           } else if(/^number$/i.test(typeof o[p])) {
                             out += '"'+ p + '": ' + o[p];
+                          } else if(/^boolean$/i.test(typeof o[p])) {
+                            out += '"'+ p + '": ' + o[p];
                           } else if(/^undefined$/i.test(typeof o[p])) {
                             out += '"'+ p + '": ' + 'undefined ';
                           } else if(o[p]===null) {

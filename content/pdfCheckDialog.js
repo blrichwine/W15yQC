@@ -1009,6 +1009,12 @@
         l.appendChild(li);
 
         li=rd.createElement('li');
+        li.appendChild(rd.createTextNode('Set to display title: '+(pdf.pdfInfo.setToDisplayTitle==true?'Yes':'No')));
+        l.appendChild(li);
+        results.bDocTitleConfiguredToDisplay=(pdf.pdfInfo.setToDisplayTitle==true?true:false);
+        results.bDocHasXmpMetaData=/xmpmeta/i.test(pdf.pdfInfo.metadata);
+        
+        li=rd.createElement('li');
         li.appendChild(rd.createTextNode('Default language: '+pdf.pdfInfo.defaultLang));
         l.appendChild(li);
 
