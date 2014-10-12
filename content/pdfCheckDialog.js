@@ -876,6 +876,9 @@
             if (typeof o[oi].objr.FT!='undefined') {
               oli.appendChild(spanAttrValue('Obj.FT','attr',o[oi].objr.FT,'attrValue'));
             }
+            if (typeof o[oi].objr.Ff!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.Ff','attr',o[oi].objr.Ff,'attrValue'));
+            }
             if (typeof o[oi].objr.T!='undefined') {
               oli.appendChild(spanAttrValue('Obj.T','attr',o[oi].objr.T,'attrValue'));
             }

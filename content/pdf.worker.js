@@ -5528,6 +5528,7 @@ var PDFDocument = (function PDFDocumentClosure() {
                if(objr!=null) {
                 children[indx].objr={};
                 if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
+                if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
                 if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
                 if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                }
@@ -5564,6 +5565,7 @@ var PDFDocument = (function PDFDocumentClosure() {
              if(objr!=null) {
               children[indx].objr={};
               if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
+              if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
               if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
               if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
              }
