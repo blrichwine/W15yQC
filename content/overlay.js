@@ -3146,9 +3146,11 @@ ys: 'whys'
 
     fnAppearsToBeDefaultAltText: function (sText) {
       // Strip punctuation
-      sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' '));
-      if (sText != null && sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|{{{[a-z_ ]+}}}|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
-        return true;
+      if (sText != null) {
+        sText = blr.W15yQC.fnCleanSpaces(sText.replace(/[^a-zA-Z\s]/g, ' '));
+        if (sText.match(/^\s*(thumb(nail)?|alt(ernat[ei](ve)?)? te?xt|photo|pic|picture|{{{[a-z_ ]+}}}|video title|image|img|img te?xt|article ima?ge?|title|icon|show name)\s*$/i)) {
+          return true;
+        }
       }
       return false;
     },

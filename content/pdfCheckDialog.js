@@ -73,7 +73,7 @@
     'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
     'Figure', 'Formula', 'Form'];
 
-    var h,div,span,el,l,li, key, i, meta, style;
+    var h, div, span, el, l, li, key, i, meta, style, pre, m, sTitle;
     var prevPg=-19392, pgNum=1;
 
     var results={ "bDocHasXmpMetaData":null,
@@ -278,16 +278,17 @@
 
     function getTextForDocStructure(docStructure, re) {
       ds=docStructure;
-      ds.effectiveLanguages=[];
-      ds.effectiveLanguagesPagesS=[];
-      ds.effectiveLanguagesPagesE=[];
-      ds.title=pdf.pdfInfo!==null?(pdf.pdfInfo.info!=null?pdf.pdfInfo.info.Title:null):null;
       var rm={}, dsStack=[ds], dsiIndexes=[0], dsi=0, pageCache={}, pgNum, pgTCCache={}, pgsInCache=[],
           K, text, item, bFound=false, i=-1,
           h, div, ol, rmi, oli, p, keys, span;
 
       //blr.W15yQC.pdfCheckDialog.log('Starting getTextForDocStructure: ');
-
+      if (ds!=null) {
+        ds.effectiveLanguages=[];
+        ds.effectiveLanguagesPagesS=[];
+        ds.effectiveLanguagesPagesE=[];
+        ds.title=pdf.pdfInfo!==null?(pdf.pdfInfo.info!=null?pdf.pdfInfo.info.Title:null):null;
+      }
       h=rd.createElement('h2');
       h.appendChild(rd.createTextNode('Document Structure:'));
       re.appendChild(h);
@@ -636,6 +637,44 @@
      */
     function renderDocStructureLevel(o,el,currentLang) {
       var oi,ol,oli, k, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets;
+
+      function spanAttrValue(attr,attrClass,value,valueClass) {
+        var df = document.createDocumentFragment(), span;
+        if (!bInBrackets) {
+          span=rd.createElement('span');
+          span.setAttribute('class','punctuation');
+          span.appendChild(rd.createTextNode(' {'));
+          df.appendChild(span);
+          bInBrackets=true;
+        } else {
+          span=rd.createElement('span');
+          span.setAttribute('class','punctuation');
+          span.appendChild(rd.createTextNode(', '));
+          df.appendChild(span);
+        }
+        span=rd.createElement('span');
+        span.setAttribute('class','punctuation');
+        span.appendChild(rd.createTextNode('"'));
+        df.appendChild(span);
+        span=rd.createElement('span');
+        span.setAttribute('class', attrClass);
+        span.appendChild(rd.createTextNode(attr));
+        df.appendChild(span);
+        span=rd.createElement('span');
+        span.setAttribute('class','punctuation');
+        span.appendChild(rd.createTextNode('": "'));
+        df.appendChild(span);
+        span=rd.createElement('span');
+        span.setAttribute('class', valueClass);
+        span.appendChild(rd.createTextNode(value));
+        df.appendChild(span);
+        span=rd.createElement('span');
+        span.setAttribute('class','punctuation');
+        span.appendChild(rd.createTextNode('"'));
+        df.appendChild(span);
+        return df;
+      }
+
       if (o!=null && o.length) {
         ol=rd.createElement('ul');
         for(oi=0;oi<o.length;oi++) {
@@ -695,14 +734,18 @@
               }
             }
           }
-          if (typeof o[oi].S!='undefined') {
+          if (typeof o[oi].S!='undefined' && o[oi].S!=null) {
 //            oli.appendChild(rd.createTextNode((ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]+' ('+o[oi].S+')':o[oi].S)+(s!=''?' {'+s+'}':'')));
             if (ds.rm.hasOwnProperty(o[oi].S)) {
               span=rd.createElement('span');
               if (standardElements.indexOf(ds.rm[o[oi].S].toLowerCase())>=0) {
                 span.setAttribute('class','pdfTag');
-                if (/figure/i.test(ds.rm[o[oi].S]) && blr.W15yQC.fnStringHasContent(o[oi]['Alt']) && blr.W15yQC.fnStringHasContent(o[oi]['ActualText'])) {
-                  results.bAllFiguresHaveAltText=false;
+                if (/figure/i.test(ds.rm[o[oi].S])) {
+                  if(blr.W15yQC.fnStringHasContent(o[oi]['Alt'])==false) {
+                    results.bAllFiguresHaveAltText=false;
+                  } else if(blr.W15yQC.fnAppearsToBeDefaultAltText(o[oi]['Alt'])) {
+                    results.bAllFiguresHaveAltTextNotDefault=false;
+                  }
                 }
               } else {
                 span.setAttribute('class','pdfTag nonStandardTag');
@@ -726,6 +769,16 @@
               span=rd.createElement('span');
               if (o[oi].S!==null && standardElements.indexOf(o[oi].S.toLowerCase())>=0) {
                 span.setAttribute('class','pdfTag');
+                if (/figure/i.test(o[oi].S)) {
+                  if(blr.W15yQC.fnStringHasContent(o[oi]['Alt'])==false) {
+                    results.bAllFiguresHaveAltText=false;
+                  } else if(blr.W15yQC.fnAppearsToBeDefaultAltText(o[oi]['Alt'])) {
+                    results.bAllFiguresHaveAltTextNotDefault=false;
+                  }
+                }
+                if (/form/i.test(o[oi].S)) {
+                  //alert('form: '+blr.W15yQC.objectToString(o[oi]));
+                }
               } else {
                 span.setAttribute('class','pdfTag nonStandardTag');
                 results.bOnlyStandardTagsAreUsed=false;
@@ -797,23 +850,7 @@
           }
           bInBrackets=false;
           if (s!=='') {
-            span=rd.createElement('span');
-            span.setAttribute('class','punctuation');
-            span.appendChild(rd.createTextNode(' {"'));
-            oli.appendChild(span);
-            bInBrackets=true;
-            span=rd.createElement('span');
-            span.setAttribute('class','attr');
-            span.appendChild(rd.createTextNode('Page'));
-            oli.appendChild(span);
-            span=rd.createElement('span');
-            span.setAttribute('class','punctuation');
-            span.appendChild(rd.createTextNode('": '));
-            oli.appendChild(span);
-            span=rd.createElement('span');
-            span.setAttribute('class','attrValue');
-            span.appendChild(rd.createTextNode(pgNum));
-            oli.appendChild(span);
+            oli.appendChild(spanAttrValue('Page','attr',pgNum,'attrValue'));
           }
           if (errTxt!=='') {
             span=rd.createElement('span');
@@ -832,38 +869,18 @@
           for(k=0;k<keys.length;k++) {
             if (typeof o[oi][keys[k]] != 'undefined') {
               //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
-              if (!bInBrackets) {
-                span=rd.createElement('span');
-                span.setAttribute('class','punctuation');
-                span.appendChild(rd.createTextNode(' {'));
-                oli.appendChild(span);
-                bInBrackets=true;
-              } else {
-                span=rd.createElement('span');
-                span.setAttribute('class','punctuation');
-                span.appendChild(rd.createTextNode(', '));
-                oli.appendChild(span);
-              }
-              span=rd.createElement('span');
-              span.setAttribute('class','punctuation');
-              span.appendChild(rd.createTextNode('"'));
-              oli.appendChild(span);
-              span=rd.createElement('span');
-              span.setAttribute('class','attr');
-              span.appendChild(rd.createTextNode('Page'));
-              oli.appendChild(span);
-              span=rd.createElement('span');
-              span.setAttribute('class','punctuation');
-              span.appendChild(rd.createTextNode('": "'));
-              oli.appendChild(span);
-              span=rd.createElement('span');
-              span.setAttribute('class','attrValue');
-              span.appendChild(rd.createTextNode(pgNum));
-              oli.appendChild(span);
-              span=rd.createElement('span');
-              span.setAttribute('class','punctuation');
-              span.appendChild(rd.createTextNode('"'));
-              oli.appendChild(span);
+              oli.appendChild(spanAttrValue(keys[k],'attr',blr.W15yQC.objectToString(o[oi][keys[k]],true),'attrValue'));
+            }
+          }
+          if (typeof o[oi].objr!='undefined') {
+            if (typeof o[oi].objr.FT!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.FT','attr',o[oi].objr.FT,'attrValue'));
+            }
+            if (typeof o[oi].objr.T!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.T','attr',o[oi].objr.T,'attrValue'));
+            }
+            if (typeof o[oi].objr.TU!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.TU','attr',o[oi].objr.TU,'attrValue'));
             }
           }
           if (bInBrackets) {
@@ -876,6 +893,7 @@
           ol.appendChild(oli);
           if (o[oi].children!=null && o[oi].children.length>0) {
             results.bAllFiguresHaveAltText=true;
+            results.bAllFiguresHaveAltTextNotDefault=true;
             results.bOnlyStandardTagsAreUsed=true;
             results.bAllTextContentHasMarkedLang=true;
             renderDocStructureLevel(o[oi].children,oli, currentLang);
@@ -978,11 +996,18 @@
         rd.head.appendChild(meta);
 
         style=rd.createElement('style');
-        style.appendChild(rd.createTextNode('.a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
+        style.appendChild(rd.createTextNode('h2,h3,h4,h5,h6{margin-bottom:0}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
         h=rd.createElement('h1');
         h.appendChild(rd.createTextNode('PDF Accessibility Report'));
         re.appendChild(h);
+
+        h=rd.createElement('h2');
+        h.appendChild(rd.createTextNode('Accessibility Check Results:'));
+        re.appendChild(h);
+        div=rd.createElement('div');
+        div.setAttribute('id','a11yResults');
+        re.appendChild(div);
 
         h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('PDF Info:'));
@@ -993,62 +1018,165 @@
         l=rd.createElement('ul');
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('URL: '+sURL));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('URL'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(sURL));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Number of pages: '+pdf.pdfInfo.numPages));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Number of pages'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.numPages));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Structured: '+(pdf.pdfInfo.isStructured==true?'Yes'+(pdf.pdfInfo.hasSuspects==true?', but has suspects':', and no suspects are indicated'):'No')));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Structured'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode((pdf.pdfInfo.isStructured==true?'Yes'+(pdf.pdfInfo.hasSuspects==true?', but has suspects':', and no suspects are indicated'):'No')));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Tagged: '+(pdf.pdfInfo.isTagged==true?'Yes':'No')));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Tagged'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.isTagged==true?'Yes':'No'));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Set to display title: '+(pdf.pdfInfo.setToDisplayTitle==true?'Yes':'No')));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Set to display title'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.setToDisplayTitle==true?'Yes':'No'));
+        li.appendChild(span);
         l.appendChild(li);
+
         results.bDocTitleConfiguredToDisplay=(pdf.pdfInfo.setToDisplayTitle==true?true:false);
         results.bDocHasXmpMetaData=/xmpmeta/i.test(pdf.pdfInfo.metadata);
-        
+
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Default language: '+pdf.pdfInfo.defaultLang));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Default language'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.defaultLang));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Outline/Bookmarks: '+((pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0)?'Yes':'No')));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Outline/Bookmarks'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode((pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0)?'Yes':'No'));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Linearized: '+(pdf.pdfInfo.isLinearized==true?'Yes':'No')));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Linearized'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.isLinearized==true?'Yes':'No'));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Encrypted: '+(pdf.pdfInfo.encrypted==true?'Yes':'No')));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Encrypted'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.encrypted==true?'Yes':'No'));
+        li.appendChild(span);
         l.appendChild(li);
 
         li=rd.createElement('li');
-        li.appendChild(rd.createTextNode('Fingerprint: '+pdf.pdfInfo.fingerprint));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoParam')
+        span.appendChild(rd.createTextNode('Fingerprint'));
+        li.appendChild(span);
+        li.appendChild(rd.createTextNode(': '));
+        span=rd.createElement('span');
+        span.setAttribute('class','pdfInfoValue')
+        span.appendChild(rd.createTextNode(pdf.pdfInfo.fingerprint));
+        li.appendChild(span);
         l.appendChild(li);
 
         for(key in pdf.pdfInfo.info) {
           if (pdf.pdfInfo.info.hasOwnProperty(key)) {
             li=rd.createElement('li');
-            li.appendChild(rd.createTextNode(key+': '+pdf.pdfInfo.info[key]));
+            span=rd.createElement('span');
+            span.setAttribute('class','pdfInfoParam')
+            span.appendChild(rd.createTextNode(key));
+            li.appendChild(span);
+            li.appendChild(rd.createTextNode(': '));
+            span=rd.createElement('span');
+            span.setAttribute('class','pdfInfoValue')
+            span.appendChild(rd.createTextNode(pdf.pdfInfo.info[key]));
+            li.appendChild(span);
             l.appendChild(li);
           }
         }
         div.appendChild(l);
 
         h=rd.createElement('h2');
-        h.appendChild(rd.createTextNode('Accessibility Check Results:'));
+        h.appendChild(rd.createTextNode('XMP Metadata:'));
         re.appendChild(h);
         div=rd.createElement('div');
-        div.setAttribute('id','a11yResults');
+        pre=rd.createElement('pre');
+        pre.appendChild(rd.createTextNode(pdf.pdfInfo.metadata));
+        div.appendChild(pre);
+        div.setAttribute('id','xmpMetadata');
         re.appendChild(div);
+
+        results.bDocTitleInXmpMetaData=false;
+        if (blr.W15yQC.fnStringHasContent(pdf.pdfInfo.metadata)) {
+          m=pdf.pdfInfo.metadata.match(/<dc:title>[\s\S]+<\/dc:title>/);
+          if (m!=null && m.length) {
+            sTitle=m[0].replace(/<[^>]+>/g,'');
+            if (blr.W15yQC.fnStringHasContent(sTitle)) {
+              results.bDocTitleInXmpMetaData=true;
+            }
+          }
+        }
 
         h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('PDF Outline (Bookmarks):'));
@@ -1059,7 +1187,26 @@
         renderOutlineLevel(pdf.pdfInfo.outline,div);
 
         if (pdf.pdfInfo.isStructured==true) {
-          pdf.getDocumentStructure().then(function(ds){getTextForDocStructure(ds,re);});
+          pdf.getDocumentStructure().then(function(ds){
+                                            if(ds!=null) {
+                                              getTextForDocStructure(ds,re);
+                                            } else {
+                                              h=rd.createElement('h2');
+                                              h.appendChild(rd.createTextNode('Error getting document structure'));
+                                              re.appendChild(h);
+                                              enableReportButtons(true,false);
+                                              renderResults();
+                                              log('Stopped due to errors.');
+                                            }
+                                          },
+                                          function(){
+                                            h=rd.createElement('h2');
+                                            h.appendChild(rd.createTextNode('Error getting document structure'));
+                                            re.appendChild(h);
+                                            enableReportButtons(true,false);
+                                            renderResults();
+                                            log('Stopped due to errors.');
+                                          });
         } else {
           h=rd.createElement('h2');
           h.appendChild(rd.createTextNode('No document structure'));

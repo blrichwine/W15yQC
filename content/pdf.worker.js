@@ -5496,7 +5496,7 @@ var PDFDocument = (function PDFDocumentClosure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
       info('readStructure STARTING');
       var rootDict, value=false;
-      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type;
+      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type, objr;
 
       function addStructElementChildren(strec) {
         var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, indx;
@@ -5522,6 +5522,19 @@ var PDFDocument = (function PDFDocumentClosure() {
              }
              children.push({"S":filter(type), "children":addStructElementChildren(strecc)});
              indx=children.length-1;
+             if(/form/i.test(type)) {
+              try{
+               objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num,strecc.map.K.map.Obj.gen));
+               if(objr!=null) {
+                children[indx].objr={};
+                if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
+                if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
+                if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
+               }
+              } catch(err) {
+                alert(blr.W15yQC.objectToString(err));
+              }
+             }
              if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
              if(typeof strecc.map.Lang != 'undefined') { children[indx].Lang=filter(strecc.map.Lang); }
              if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
@@ -5545,6 +5558,19 @@ var PDFDocument = (function PDFDocumentClosure() {
            }
            children.push({"S":filter(type), "children":addStructElementChildren(strecc)});
            indx=children.length-1;
+           if(/form/i.test(type)) {
+            try{
+             objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num,strecc.map.K.map.Obj.gen));
+             if(objr!=null) {
+              children[indx].objr={};
+              if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
+              if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
+              if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
+             }
+            } catch(err) {
+              alert(blr.W15yQC.objectToString(err));
+            }
+           }
            if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
            if(typeof strecc.map.Lang != 'undefined') { children[indx].Lang=filter(strecc.map.Lang); }
            if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
