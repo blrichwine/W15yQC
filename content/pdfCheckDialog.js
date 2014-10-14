@@ -869,7 +869,7 @@
           for(k=0;k<keys.length;k++) {
             if (typeof o[oi][keys[k]] != 'undefined') {
               //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
-              oli.appendChild(spanAttrValue(keys[k],'attr',blr.W15yQC.objectToString(o[oi][keys[k]],true),'attrValue'));
+              oli.appendChild(spanAttrValue(keys[k],'attr', /string/i.test(typeof o[oi][keys[k]])?o[oi][keys[k]]:blr.W15yQC.objectToString(o[oi][keys[k]],true),'attrValue'));
             }
           }
           if (typeof o[oi].objr!='undefined') {
@@ -1171,9 +1171,9 @@
         re.appendChild(div);
 
         results.bDocTitleInXmpMetaData=false;
-        if (blr.W15yQC.fnStringHasContent(pdf.pdfInfo.metadata)) {
+        if (results.bDocHasXmpMetaData!==false && blr.W15yQC.fnStringHasContent(pdf.pdfInfo.metadata)) {
           m=pdf.pdfInfo.metadata.match(/<dc:title>[\s\S]+<\/dc:title>/);
-          if (m!=null && m.length) {
+          if (m!==null && m.length) {
             sTitle=m[0].replace(/<[^>]+>/g,'');
             if (blr.W15yQC.fnStringHasContent(sTitle)) {
               results.bDocTitleInXmpMetaData=true;
