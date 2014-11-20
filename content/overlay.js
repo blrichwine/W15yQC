@@ -34,10 +34,10 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 57',
-    releaseDate: 'August 11, 2014',
+    releaseVersion: '1.0 - Beta 58',
+    releaseDate: 'November 19, 2014',
     mainVersion: 1.0,
-    betaVersion: 57,
+    betaVersion: 58,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
