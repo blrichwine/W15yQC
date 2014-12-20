@@ -11371,15 +11371,18 @@ try{
     },
 
     fnCheckForUpdates: function(bPromptUser) {
-      var i=Math.floor(Math.random() * (1000)) + 1;
+      var i=Math.floor(Math.random() * (1000)) + 1, lastUpdate, today=new Date(Date.now());
       blr.W15yQC.bPromptUserOfUpdate=(bPromptUser==true)?true:false;
-      if(blr.W15yQC.checkForUpdatesHttpRequest==null && (blr.W15yQC.updateCheckMade==false || bPromptUser==true)) {
-	blr.W15yQC.checkForUpdatesHttpRequest=new XMLHttpRequest();;
-	if(blr.W15yQC.checkForUpdatesHttpRequest!==null) {
+      lastUpdate=Application.prefs.getValue("extensions.W15yQC.dateLastCheckedForUpdate","");
+
+      if(lastUpdate!==today.toDateString() && blr.W15yQC.checkForUpdatesHttpRequest==null && (blr.W15yQC.updateCheckMade==false || bPromptUser==true)) {
+        Application.prefs.setValue("extensions.W15yQC.dateLastCheckedForUpdate",today.toDateString());
+        blr.W15yQC.checkForUpdatesHttpRequest=new XMLHttpRequest();
+        if(blr.W15yQC.checkForUpdatesHttpRequest!==null) {
           blr.W15yQC.checkForUpdatesHttpRequest.onreadystatechange = blr.W15yQC.fnHandleUpdateResponse;
           blr.W15yQC.checkForUpdatesHttpRequest.open('GET', 'http://blrichwine.github.io/W15yQC/index.html?i='+i.toString());
           blr.W15yQC.checkForUpdatesHttpRequest.send();
-	}
+        }
       }
     },
 
@@ -11436,7 +11439,9 @@ try{
           } catch(ex) {
             blr.W15yQC.checkForUpdatesHttpRequest=null;
             blr.W15yQC.fnLog('check for updates failed'+ex.toString());
-            if(blr.W15yQC.bPromptUserOfUpdate==true) { alert('check for updates failed'+ex.toString()); }
+            if(blr.W15yQC.bPromptUserOfUpdate==true) {
+              //alert('check for updates failed'+ex.toString());
+            }
             blr.W15yQC.bPromptUserOfUpdate=false;
           };
           blr.W15yQC.bPromptUserOfUpdate=false;
@@ -11444,7 +11449,9 @@ try{
         } else {
           blr.W15yQC.checkForUpdatesHttpRequest=null;
           blr.W15yQC.fnLog('handleUpdateRespone HTTP request failed.');
-          if(blr.W15yQC.bPromptUserOfUpdate==true) { alert('Check for updates HTTP request failed.'); }
+          if(blr.W15yQC.bPromptUserOfUpdate==true) {
+            //alert('Check for updates HTTP request failed.');
+          }
           blr.W15yQC.bPromptUserOfUpdate=false;
         }
       }
@@ -11455,19 +11462,13 @@ try{
         blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
       }
       if (blr.W15yQC.fnCleanSpaces(" this  is  a  test ") != "this is a test") {
-        blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
+        blr.W15yQC.fnLog("fnCleanSpaces test 1 failed.");
       }
       if (blr.W15yQC.fnTrim(" this  is  a  test ") != "this  is  a  test") {
-        blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
+        blr.W15yQC.fnLog("fnTrim test 1 failed.");
       }
       if (blr.W15yQC.fnJoin(" just a test ", " part two ", ",") != "just a test, part two") {
-        blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
-      }
-      if (blr.W15yQC.fnMaxDecimalPlaces(10.234324, 2).toString() != "10.23") {
-        blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
-      }
-      if (blr.W15yQC.fnMaxDecimalPlaces(10.234324, 2).toString() != "10.23") {
-        blr.W15yQC.fnLog("fnMaxDecimalPlaces test 1 failed.");
+        blr.W15yQC.fnLog("fnJoin test 1 failed.");
       }
     }
   };
