@@ -73,7 +73,7 @@
     'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
     'Figure', 'Formula', 'Form'];
 
-    var h, div, span, el, l, li, key, i, meta, style, pre, m, sTitle;
+    var h, div, span, el, l, li, key, i, meta, style, p, pre, m, sTitle;
     var prevPg=-19392, pgNum=1;
 
     var results={ "bDocHasXmpMetaData":null,
@@ -1164,9 +1164,15 @@
         h.appendChild(rd.createTextNode('XMP Metadata:'));
         re.appendChild(h);
         div=rd.createElement('div');
-        pre=rd.createElement('pre');
-        pre.appendChild(rd.createTextNode(pdf.pdfInfo.metadata));
-        div.appendChild(pre);
+        if (pdf.pdfInfo.metadata != null && blr.W15yQC.fnStringHasContent(pdf.pdfInfo.metadata)==true) {
+          pre=rd.createElement('pre');
+          pre.appendChild(rd.createTextNode(pdf.pdfInfo.metadata));
+          div.appendChild(pre);
+        } else {
+          p=rd.createElement('p');
+          p.appendChild(rd.createTextNode('None. The PDF does not contain any XMP metadata.'));
+          div.appendChild(p);
+        }
         div.setAttribute('id','xmpMetadata');
         re.appendChild(div);
 

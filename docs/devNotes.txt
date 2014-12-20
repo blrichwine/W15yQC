@@ -76,12 +76,13 @@
             -- Outlook Save email archive
             -- Presentor
             -- Powerpoint (various types)
-    -- text for accessibility checks
+    -- text for accessibility checks [DONE]
     -- debug list displays in semantic view
     -- finish semantic view
     -- finish screen-reader view
     -- auto check PDF when one is displayed (set pref for this)
     -- Create a PDF has form controls flag
+    -- Fix 'undefined' result when PDF does not contain XMP metadata [done]
 
       ** New spider checks:
         - symbols [done]
