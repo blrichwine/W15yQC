@@ -991,6 +991,36 @@
       }
     }
 
+    function formatPDFDate(sPdfDate) {
+      var sFormatedDate='', sAMPM='', sTZ='';
+      if (/^([dD]:)?\d\d\d\d\d\d\d\d\d\d\d\d\d\d([zZ\+\-]\d\d'\d\d')?$/.test(sPdfDate)) {
+        if (/^[dD]:\d\d\d\d\d\d\d\d\d\d\d\d\d\d$/.test(sPdfDate)) {
+          sPdfDate=sPdfDate+"L00'00'";
+        }
+        m=sPdfDate.toUpperCase().match(/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)([zZL\+\-])(\d\d)'(\d\d)'/);
+        if (m!=null && m.length>6) {
+          if (parseInt(m[4])>12) {
+            m[4]=(parseInt(m[4])-12).toString();
+            sAMPM=' PM';
+          } else {
+            sAMPM=' AM';
+          }
+          if (blr.W15yQC.timeZones.hasOwnProperty(m[7]+m[8]) && m[9]=='00') {
+            sTZ=blr.W15yQC.timeZones[m[7]+m[8]]+' time';
+          } else if(m[7]=='Z' && m[8]=='00' && m[9]=='00') {
+            sTZ='UTC';
+          } else if (m[7]=='L') {
+            sTZ='Local time';
+          } else {
+            sTZ='UTC'+m[7]+m[8]+':'+m[9];
+          }
+          sFormatedDate=m[2]+'/'+m[3]+'/'+m[1]+' '+m[4]+':'+m[5]+':'+m[6]+sAMPM+' '+sTZ+'  ('+sPdfDate+')';
+          return sFormatedDate;
+        }
+      }
+      return sPdfDate; // If not a match, return passed string
+    }
+
     if (pdf!=null && re!=null) {
       if (pdf.pdfInfo) {
         meta=rd.createElement('meta');
@@ -1153,7 +1183,7 @@
             li.appendChild(rd.createTextNode(': '));
             span=rd.createElement('span');
             span.setAttribute('class','pdfInfoValue')
-            span.appendChild(rd.createTextNode(pdf.pdfInfo.info[key]));
+            span.appendChild(rd.createTextNode(formatPDFDate(pdf.pdfInfo.info[key])));
             li.appendChild(span);
             l.appendChild(li);
           }
@@ -1256,7 +1286,7 @@
     document.getElementById('button-printPDFReport').disabled=!bSavePrint;
     document.getElementById('button-makeSemanticView').disabled=!bAltViews;
     document.getElementById('button-makeScreenReaderView').disabled=!bAltViews;
-    document.getElementById('button-loadPDF').disabled=!bSavePrint;
+    //document.getElementById('button-loadPDF').disabled=bSavePrint;
   }
 
   function printPdfReport () {

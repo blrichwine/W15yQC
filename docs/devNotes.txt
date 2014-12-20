@@ -83,6 +83,11 @@
     -- auto check PDF when one is displayed (set pref for this)
     -- Create a PDF has form controls flag
     -- Fix 'undefined' result when PDF does not contain XMP metadata [done]
+    -- Fix PDF report styling
+    -- Get rid of PDF checker status textbox, lock URL, disable "Check PDF" button once PDF Checking is complete.
+    -- Get rid of "OK" button on PDF Checker [DONE]
+    -- Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
+    -- Format PDF Creation and Modify Date entries as human readable dates [DONE]
 
       ** New spider checks:
         - symbols [done]

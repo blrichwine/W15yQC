@@ -73,6 +73,15 @@ if (!blr.W15yQC) {
     bOnStableUpdateChannel: false,
     checkForUpdatesHttpRequest: null,
 
+    timeZones: {
+      "-10": "Hawaii-Aleutian",
+      "-09": "Alaska",
+      "-08": "Pacific",
+      "-07": "Mountain",
+      "-06": "Central",
+      "-05": "Eastern",
+      "-04": "Atlantic"
+    },
 
     dominantAriaRoles: /\b(button|heading|checkbox|combobox|menuitem|menuitemcheckbox|menuitemradio|option|progressbar|radio|scrollbar|slider|spinbutton|tab|textbox|treeitem|listbox|tree|treegrid|img)\b/i,
 

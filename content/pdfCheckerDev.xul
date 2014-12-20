@@ -7,7 +7,7 @@
 	title="PDF Checker Dev - W15y Quick Check"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	buttons=""
+	buttons="cancel"
 	buttonlabelcancel="Close"
 	style="padding:0px"
 	onload="">
@@ -17,12 +17,13 @@
 			var sURL=null;
 
 			function check() {
-				sURL=document.getElementById('tbURL').value;
+			  var tbURL=document.getElementById('tbURL'), butCheckPDF=document.getElementById('button-loadPDF');
+				sURL=tbURL.value;
 				ds=null;
 
 				if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)||/^file:.+\.pdf$/i.test(sURL)) {
-				  document.getElementById('tbURL').readonly=true;
-					document.getElementById('button-loadPDF').disabled=true;
+				  tbURL.readOnly=true;
+					butCheckPDF.disabled=true;
 					getPdfForFullCheck(sURL);
 				} else if(blr.W15yQC.fnStringHasContent(sURL)){
 					alert('URL looks invalid: '+sURL);
