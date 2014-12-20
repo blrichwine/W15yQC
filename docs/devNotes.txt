@@ -53,9 +53,35 @@
          http://www.3playmedia.com/how-it-works/how-to-guides/html5-video-captioning/
          http://html5videoguide.net/presentations/WebVTT/#title-slide
          http://ie.microsoft.com/Testdrive/Graphics/VideoCaptions/Default.html
-    
+
  * Table dimensions: 12x1, 10x1, 8x1, 4x4, Average max Nesting Level is 3. Warn if greater than 5
  * TODO:
+
+   PDF Checker
+     -- Find PDFs to use as test suite
+        - include
+          * Image only
+          * text only
+          * text under image
+          * PDF with form controls
+          * PDF with text that does not contain spaces
+          * PDF with text that contains spaces
+          * PDF with multiple languages
+          * PDF with rtl and ltr text directions
+          * PDFs from common generators
+            -- Adobe Pro
+            -- Adobe Illustrator
+            -- Adobe InDesign
+            -- Word Save as PDF
+            -- Outlook Save email archive
+            -- Presentor
+            -- Powerpoint (various types)
+    -- text for accessibility checks
+    -- debug list displays in semantic view
+    -- finish semantic view
+    -- finish screen-reader view
+    -- auto check PDF when one is displayed (set pref for this)
+    -- Create a PDF has form controls flag
 
       ** New spider checks:
         - symbols [done]
@@ -118,7 +144,7 @@
     -- Detecting if inspector is enabled:
       pref("devtools.inspector.enabled", true);
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
-	  
+
     *** FIX ASAP***
   -- Check contrast between link text and surrounding text if link text is not underlined.
   -- is search role valid on a form element? WebAIM recommends it, so lets allow it.
@@ -136,8 +162,8 @@
   -- warn on role="application" that area of the page needs to be tested with assistive technologies (screen-readers), by someone who can't see and didn't write the widget
       look for meaningful content inside of role="application" and provide warning.
       Look for inappropriate role="application" use.
-      Be very careful with <body role="application">. 
-             + Users cannot easily leave forms mode. 
+      Be very careful with <body role="application">.
+             + Users cannot easily leave forms mode.
              + Screen reader sends all keystrokes to the page/browser/application.
              + Standard A.T. keystrokes are disabled. disables standard A.T. keystrokes to allow the page to function like a desktop application
       Some ARIA elements (tree view, slider, table, tabs, dialog, toolbar, menus, etc.) have an assumed application role.
@@ -157,13 +183,13 @@
   -- Display settings summary in the HTML Reports
   -- fnGetDocuments needs to be investigated for completeness
   -- verify highlighters get the right elements, the fnGetXXX routines need verified
-  -- role="radiogroup" how should this be handled? QA This!!    
+  -- role="radiogroup" how should this be handled? QA This!!
 Options came up incorrect. Why?
 
-What's up with this:	
-1	<UL id="menu" role="navigation" aria-label="Main Navigation">	1	Main Navigation navigation landmark	aria-label attribute, role attribute	navigation		
-    Warning: Landmark name does not need to be in the element label.	
-	
+What's up with this:
+1	<UL id="menu" role="navigation" aria-label="Main Navigation">	1	Main Navigation navigation landmark	aria-label attribute, role attribute	navigation
+    Warning: Landmark name does not need to be in the element label.
+
 
 HTML Headings results
   Hierarchy Display
@@ -171,7 +197,7 @@ HTML Headings results
   Elements Display
 
 HOME is immune to link text differences.
-  
+
   -- add linearize all tables button to semantic view
   -- add tool to resize text on webpage
   -- warn on use of br elements in paragraphs
@@ -207,7 +233,7 @@ HOME is immune to link text differences.
  <track kind=subtitles src=brave.fr.vtt srclang=fr lang=fr label="Franais">
  <track kind=subtitles src=brave.de.vtt srclang=de lang=de label="Deutsch">
 </video>
-  -- SVG -- how to handle, -- how to check: http://www.w3.org/TR/SVG-access/ 
+  -- SVG -- how to handle, -- how to check: http://www.w3.org/TR/SVG-access/
   -- audio element -- how to check?
   -- embed element -- how to check?
   -- object element -- how to check?
@@ -257,7 +283,7 @@ HOME is immune to link text differences.
   -- HTML report, inspector dialog should pass source document when called from inspector dialogs.
   -- Spider page titles
   -- What are meaningless page titles?
-       * Home, About, Contact, Title, Website, web site, web page, page, page title, 
+       * Home, About, Contact, Title, Website, web site, web page, page, page title,
   -- Landmark nesting. Main landmark should not be nested in other landmarks.
   -- how many landmarks is too many?
   -- how deeply nested for landmarks is too much?
@@ -461,13 +487,13 @@ HTML5 Elements to test
   -- FOOTER
   -- HGROUP
   -- ADDRESS
-  
+
   Google structured data tool: http://www.google.com/webmasters/tools/richsnippets
   Semantics: http://schema.org/docs/full.html
-  
 
 
-      
+
+
       Sounds the same CNN vs. CNNi
         -- for all cap tokens, should they be separated into individual letters?
         -- How should mixed case words be treated? CNNi, for instance? TEST WITH JAWS
@@ -515,8 +541,8 @@ HTML5 Elements to test
       audit each of the remove highlights routines to see if they really clean everything up.
       if link or button contains no text, but has text that is hidden with display:none or the such, provide a warning on the use of display:none
       look up common skip navigation link texts
-      
-      
+
+
       Moan about keyboard accessibility issues
         - A elements without HREF attributes that have onclick handlers
 
@@ -699,7 +725,7 @@ FIXED
     -- Display bug in ARIA results, Full report: http://news.indiana.edu/releases/iu/2014/02/philip-seymour-hoffman-marathon-iu-cinema.shtml [02/19/2014]
     -- Removing highlights leaves trash behind... clean that up! [01/26/2014]
     -- False failure whith AREA tags and alt attributes: https://www.indianactsi.org/ [10/21/2013]
-       <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov		
+       <AREA alt="National Institutes of Health" href="http://www.nih.gov" coords="120,0,196,68" shape="rect">	National Institutes of Health	alt attribute	http://www.nih.gov
        Failure: Link text should not come solely from the 'alt' attribute. The 'alt' attribute is not valid on the link element and is not generally considered accessible.
        Warning: 'alt' attributes are not valid on anchor elements. The contents will most likely be ignored by adaptive technologies.
 
@@ -881,4 +907,3 @@ FIXED
  *
  *    - Internationalize?
  */
-

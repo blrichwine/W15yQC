@@ -58,6 +58,10 @@
    <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
  		<xul:hbox align="center">
 			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value=""/>
+			<xul:button id="button-loadPDF"
+				label="Check PDF"
+				oncommand="check();"
+				accesskey=""/>
 		</xul:hbox>
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0" flex="1">
 				<xul:label id="note-text-label" control="note-text" value="Status:" style="margin: 5px 0 0 3px"/>
@@ -87,10 +91,6 @@
 					 label="Make Semantic View"
 					 disabled="true"
 					 oncommand="makeSemanticView();"
-					 accesskey=""/>
-				 <xul:button id="button-loadPDF"
-					 label="Load PDF"
-					 oncommand="check();"
 					 accesskey=""/>
       </xul:hbox>
 		</xul:vbox>

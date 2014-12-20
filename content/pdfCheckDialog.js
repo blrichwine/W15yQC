@@ -119,21 +119,21 @@
                       'bOnlyStandardTagsAreUsed',
                       'bTagUseAppearsValid',
                       'bAllTextContentHasMarkedLang'],
-          resultText=['bDocHasXmpMetaData',
-                      'bDocTitleInXmpMetaData',
-                      'bDocTitleConfiguredToDisplay',
-                      'bH1Present',
-                      'bFirstHeadingIsH1',
-                      'bHeadingLevelsNotSkipped',
-                      'bHeadingsAllHaveText',
-                      'bHeadingsNotTheSameWithinALevel',
-                      'bAllFiguresHaveAltText',
-                      'bAllFiguresHaveAltTextNotDefault',
-                      'bAllFormControlsHaveLabels',
-                      'bAllFormControlsHaveUniqueLabels',
-                      'bOnlyStandardTagsAreUsed',
-                      'bTagUseAppearsValid',
-                      'bAllTextContentHasMarkedLang'];
+          resultText=['The PDF contains XMP metadata',
+                      'The PDF contains a document title in the XMP metadata',
+                      'The PDF is configured to display the document title',
+                      'The PDF contains a level one heading',
+                      'The first heading in the PDF is a level 1 heading',
+                      'No heading levels are skipped in the PDF',
+                      'All headings in the PDF contain text',
+                      'The text of headings of the same level within a section are all unique',
+                      'All of the figures in the PDF have alternate text',
+                      'None of the figure alternate text appear to be a default',
+                      'All form controls have labels',
+                      'All form controls have unique labels',
+                      'Only standard PDF tags are used',
+                      'No invalid tag use was detected',
+                      'All text content has a specified text language'];
       ul=rd.createElement('ul');
       for(i=0;i<resultKeys.length;i++) {
         li=rd.createElement('li');
@@ -1235,7 +1235,7 @@
       le.value='Requesting: '+sURL;
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
-          le.value=le.value+"\nChecking document.";
+          le.value=le.value+"\nChecking document...";
           resolve(getPdfFullCheckResults(pdf,sURL,rd,re,le));
         },
         function() {
