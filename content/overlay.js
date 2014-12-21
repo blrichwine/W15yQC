@@ -1973,11 +1973,19 @@ ys: 'whys'
           dialogID = 'pdfCheckerDevDialog';
           dialogPath = 'chrome://W15yQC/content/pdfCheckerDev.xul';
           break;
+        case 'checkPDF':
+          dialogID = 'pdfCheckerDevDialog';
+          dialogPath = 'chrome://W15yQC/content/pdfCheckerDev.xul';
+          break;
         }
         if (dialogID != null) {
           blr.W15yQC.bQuick = false; // Make sure this has been reset
           blr.W15yQC.fnDoEvents();
-          win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,arg1);
+          if (sDialogName=='checkPDF') {
+            win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,arg1,true);
+          } else {
+            win=window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,arg1);
+          }
           blr.W15yQC.fnDoEvents();
           if(win!=null && win.focus) { win.focus(); }
           blr.W15yQC.fnDoEvents();

@@ -12,9 +12,11 @@
 	style="padding:0px"
 	onload="">
    <xul:script>
+//<![CDATA[
 			var blr=this.arguments[0];
 			var ds=null;
 			var sURL=null;
+			var bAutoCheckPDF=(this.arguments.length>2 && this.arguments[2]==true)?true:false;
 
 			function check() {
 			  var tbURL=document.getElementById('tbURL'), butCheckPDF=document.getElementById('button-loadPDF');
@@ -53,7 +55,7 @@
 					alert('No semantic structure');
 				}
 			}
-
+//]]>
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
@@ -103,6 +105,10 @@
 			  if(/^about:blank$/i.test(document.getElementById('tbURL').value)) {
 					document.getElementById('tbURL').value="";
 				}
+			}
+			sURL=document.getElementById('tbURL').value;
+			if(bAutoCheckPDF==true && ((blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)&&/\.pdf$/i.test(sURL))||/^file:.+\.pdf$/i.test(sURL))) {
+				window.setTimeout(function(){check();}, 50);
 			}
 		]]>
 	 </xul:script>

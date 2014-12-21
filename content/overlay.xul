@@ -147,7 +147,8 @@
           <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
           <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="blr.W15yQC.openDialog('idsCheck');"/>
           <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Project Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
-          <menuitem id="W15yTPBMI_pdfChecker" accesskey="" label="PDF Checker" oncommand="blr.W15yQC.openDialog('pdfChecker',window.top.content.document);"/>
+          <menuitem id="W15yTPBMI_pdfChecker" accesskey="" label="Check PDF" oncommand="blr.W15yQC.openDialog('checkPDF',window.top.content.document);"/>
+          <menuitem id="W15yTPBMI_pdfChecker" accesskey="" label="Open PDF Checker" oncommand="blr.W15yQC.openDialog('pdfChecker',window.top.content.document);"/>
       </menupopup>
     </toolbarbutton>
     <toolbarbutton id="W15yTPB-Options" label="Options" type="menu" onmouseover="" class="toolbarbutton">

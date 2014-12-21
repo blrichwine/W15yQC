@@ -80,7 +80,7 @@
     -- debug list displays in semantic view
     -- finish semantic view
     -- finish screen-reader view
-    -- auto check PDF when one is displayed (set pref for this)
+    -- auto check PDF when one is displayed and the check PDF tool is selected [DONE]
     -- Create a PDF has form controls flag
     -- Fix 'undefined' result when PDF does not contain XMP metadata [done]
     -- Fix PDF report styling
@@ -88,6 +88,8 @@
     -- Get rid of "OK" button on PDF Checker [DONE]
     -- Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
     -- Format PDF Creation and Modify Date entries as human readable dates [DONE]
+    -- Check formatting of text to see if headings are missing, number of sequential pages without headings or bookmarks
+    -- Check structure and formatting of tables
 
       ** New spider checks:
         - symbols [done]
