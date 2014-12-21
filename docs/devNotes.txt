@@ -81,10 +81,10 @@
     -- finish semantic view
     -- finish screen-reader view
     -- auto check PDF when one is displayed and the check PDF tool is selected [DONE]
-    -- Create a PDF has form controls flag
+    -- Create a PDF has form controls flag -- or does this already exist??? Can we use it to properly indicated why rules are not checked??
     -- Fix 'undefined' result when PDF does not contain XMP metadata [done]
     -- Fix PDF report styling
-    -- Get rid of PDF checker status textbox, lock URL, disable "Check PDF" button once PDF Checking is complete.
+    -- Get rid of PDF checker status textbox, lock URL, disable "Check PDF" button once PDF Checking is complete. [done]
     -- Get rid of "OK" button on PDF Checker [DONE]
     -- Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
     -- Format PDF Creation and Modify Date entries as human readable dates [DONE]
@@ -154,6 +154,7 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- Better detection of elements with background images (less false positives when checking contrast -- is this possible?)
   -- Check contrast between link text and surrounding text if link text is not underlined.
   -- is search role valid on a form element? WebAIM recommends it, so lets allow it.
   -- check for links in navigation role. Are the links in a list?

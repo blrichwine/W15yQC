@@ -65,7 +65,7 @@
  */
 "use strict";
 
-  function getPdfFullCheckResults(pdf,sURL,rd,re,le) {
+  function getPdfFullCheckResults(pdf,sURL,rd,re) {
     var standardElements=['Document', 'Part', 'Art', 'Sect', 'Div', 'BlockQuote', 'Caption',
     'TOC', 'TOCI', 'Index', 'NonStruct', 'Private', 'P', 'H', 'H1', 'H2', 'H3',
     'H4', 'H5', 'H6', 'L', 'LI', 'Lbl', 'LBody', 'Table', 'TR', 'TH', 'TD', 'THead',
@@ -74,7 +74,7 @@
     'Figure', 'Formula', 'Form'];
 
     var h, div, span, el, l, li, key, i, meta, style, p, pre, m, sTitle;
-    var prevPg=-19392, pgNum=1;
+    var prevPg=-19392, pgNum=1, numberOfPages=0, ticks=0;
 
     var results={ "bDocHasXmpMetaData":null,
                   "bDocTitleInXmpMetaData":null,
@@ -93,13 +93,27 @@
                   "bAllTextContentHasMarkedLang":null};
 
     function log(s) {
-     le.value=blr.W15yQC.fnJoin(le.value,s,"\n");
+     blr.W15yQC.fnDoEvents();
+     document.getElementById('progressMeterLabel').value=s;
      blr.W15yQC.fnDoEvents();
     }
 
     function tick() {
-     le.value+='.';
-     blr.W15yQC.fnDoEvents();
+      var progressPercentage=0;
+      ticks++;
+      if (numberOfPages>0) {
+        progressPercentage=50*ticks/numberOfPages;
+      } else {
+        progressPercentage=ticks;
+      }
+      if (progressPercentage<1) {
+        progressPercentage=1;
+      } else if (progressPercentage>100) {
+        progressPercentage=100;
+      }
+      blr.W15yQC.fnDoEvents();
+      document.getElementById('progressMeter').value=progressPercentage;
+      blr.W15yQC.fnDoEvents();
     }
 
     function renderResults() {
@@ -1071,6 +1085,7 @@
         span=rd.createElement('span');
         span.setAttribute('class','pdfInfoValue')
         span.appendChild(rd.createTextNode(pdf.pdfInfo.numPages));
+        numberOfPages=pdf.pdfInfo.numPages;
         li.appendChild(span);
         l.appendChild(li);
 
@@ -1264,18 +1279,17 @@
 
   function getPdfForFullCheck(sURL) {
     var rd=document.getElementById('reportIFrame').contentDocument,
-        re=rd.body,
-        le=document.getElementById('note-text');
+        re=rd.body;
 
     return new Promise(function(resolve, reject) {
-      le.value='Requesting: '+sURL;
+      document.getElementById('progressMeterLabel').value='Requesting: '+sURL;
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
-          le.value=le.value+"\nChecking document...";
-          resolve(getPdfFullCheckResults(pdf,sURL,rd,re,le));
+          document.getElementById('progressMeterLabel').value="Checking document...";
+          resolve(getPdfFullCheckResults(pdf,sURL,rd,re));
         },
         function() {
-          le.value=le.value+"\nError requesting PDF.";
+          document.getElementById('progressMeterLabel').value="Error requesting PDF.";
           reject(null);
         });
     });

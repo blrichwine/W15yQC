@@ -2,14 +2,14 @@
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://W15yQC/skin/overlay.css" type="text/css"?>
-<xul:dialog
+<xul:window
 	id="pdfCheckerDevDialog"
 	title="PDF Checker Dev - W15y Quick Check"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	buttons="cancel"
-	buttonlabelcancel="Close"
 	style="padding:0px"
+	onkeydown="windowOnKeyDown(this,event)"
+	onkeyup="windowOnKeyUp(event)"
 	onload="">
    <xul:script>
 //<![CDATA[
@@ -17,6 +17,7 @@
 			var ds=null;
 			var sURL=null;
 			var bAutoCheckPDF=(this.arguments.length>2 && this.arguments[2]==true)?true:false;
+      var bCmdIsPressed;
 
 			function check() {
 			  var tbURL=document.getElementById('tbURL'), butCheckPDF=document.getElementById('button-loadPDF');
@@ -55,6 +56,36 @@
 					alert('No semantic structure');
 				}
 			}
+
+
+
+			function windowOnKeyDown(dialog, evt) {
+				switch (evt.keyCode) {
+					case 224:
+						bCmdIsPressed = true;
+						break;
+					case 27:
+						dialog.close();
+						break;
+					case 87:
+						if (bCmdIsPressed == true) {
+								evt.stopPropagation();
+								evt.preventDefault();
+								dialog.close();
+						}
+						break;
+				}
+			}
+
+			function windowOnKeyUp(evt) {
+				switch (evt.keyCode) {
+					case 224:
+						bCmdIsPressed = false;
+						break;
+				}
+			}
+
+
 //]]>
    </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
@@ -67,8 +98,6 @@
 				accesskey=""/>
 		</xul:hbox>
      <xul:vbox id="listoflinks-groupbox-note" style="padding:0" flex="1">
-				<xul:label id="note-text-label" control="note-text" value="Status:" style="margin: 5px 0 0 3px"/>
-				<xul:textbox id="note-text" readonly="true" multiline="true" rows="3" flex="1" />
 				<xul:label control="reportIFrame" value="Details:" style="margin: 5px 0 0 3px"/>
 				<xul:iframe id="reportIFrame" src="about:blank" type="content" flex="15" style="overflow:auto" charset="UTF-8"/>
      </xul:vbox>
@@ -97,6 +126,9 @@
 					 accesskey=""/>
       </xul:hbox>
 		</xul:vbox>
+		<xul:hbox style="border-top:thin solid black">
+			<xul:label flex="5" id="progressMeterLabel" control="progressMeter" value=" "/><xul:progressmeter flex="12" id="progressMeter" mode="determined" value="0" max="100"/>
+		</xul:hbox>
    </xul:vbox>
    <xul:script>
 		<![CDATA[
@@ -112,4 +144,4 @@
 			}
 		]]>
 	 </xul:script>
-</xul:dialog>
+</xul:window>
