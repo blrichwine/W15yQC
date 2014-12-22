@@ -79,6 +79,7 @@
     var results={ "bDocHasXmpMetaData":null,
                   "bDocTitleInXmpMetaData":null,
                   "bDocTitleConfiguredToDisplay":null,
+                  "bIsStructuredNoSuspectsAndTagged":null,
                   "bH1Present":null,
                   "bFirstHeadingIsH1":null,
                   "bHeadingLevelsNotSkipped":null,
@@ -123,6 +124,7 @@
           resultKeys=['bDocHasXmpMetaData',
                       'bDocTitleInXmpMetaData',
                       'bDocTitleConfiguredToDisplay',
+                      'bIsStructuredNoSuspectsAndTagged',
                       'bH1Present',
                       'bFirstHeadingIsH1',
                       'bHeadingLevelsNotSkipped',
@@ -138,6 +140,7 @@
           resultText=['The PDF contains XMP metadata',
                       'The PDF contains a document title in the XMP metadata',
                       'The PDF is configured to display the document title',
+                      'The PDF is structured, contains no suspects, and is tagged',
                       'The PDF contains a level one heading',
                       'The first heading in the PDF is a level 1 heading',
                       'No heading levels are skipped in the PDF',
@@ -149,7 +152,23 @@
                       'All form controls have unique labels',
                       'Only standard PDF tags are used',
                       'No invalid tag use was detected',
-                      'All text content has a specified text language'];
+                      'All text content has a specified text language'],
+          whyNotChecked=['?? Not checked ??',
+                      '?? Not checked ??',
+                      '?? Not checked ??',
+                      '?? Not checked ??',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: No form controls were found',
+                      'Not checked because: No form controls were found',
+                      'Not checked because: PDF is not structured',
+                      'Not checked because: Check not yet implemented',
+                      'Not checked because: PDF is not structured'];
       ul=rd.createElement('ul');
       for(i=0;i<resultKeys.length;i++) {
         li=rd.createElement('li');
@@ -166,7 +185,7 @@
           span.appendChild(rd.createTextNode('FAILED'));
           span.setAttribute('class','a11yFailResult');
         } else {
-          span.appendChild(rd.createTextNode('?? Not checked ??'));
+          span.appendChild(rd.createTextNode(whyNotChecked[i]));
           span.setAttribute('class','a11yResultNotChecked');
         }
         li.appendChild(span);
@@ -1116,6 +1135,8 @@
         li.appendChild(span);
         l.appendChild(li);
 
+        results.bIsStructuredNoSuspectsAndTagged = pdf.pdfInfo.isStructured==true && pdf.pdfInfo.hasSuspects==false && pdf.pdfInfo.isTagged==true;
+
         li=rd.createElement('li');
         span=rd.createElement('span');
         span.setAttribute('class','pdfInfoParam')
@@ -1207,6 +1228,14 @@
           }
         }
         div.appendChild(l);
+
+        if (pdf.pdfInfo.isStructured!==true) {
+          results.bH1Present=false;
+          results.bOnlyStandardTagsAreUsed=false;
+          if (!blr.W15yQC.fnIsValidLocale(pdf.pdfInfo.defaultLang)) {
+            results.bAllTextContentHasMarkedLang=false;
+          }
+        }
 
         h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('XMP Metadata:'));
