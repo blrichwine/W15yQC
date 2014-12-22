@@ -9704,16 +9704,20 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           }
         }
         if (i<aLinksList.length) {
-          if (bCheckPDFs && /^(ftp|http).*\.pdf$/i.test(sURL)) { progressWindow.fnUpdateStatus('Checking: '+sURL);
-            blr.W15yQC.pdfChecker.getPDF(sURL).then(
-              function(r){ // Promise resolved
-                processCheckPdfResults(r);
-                i++; nextURL();
-              },
-              function(){ // Promise failed, nothing to process
-                i++; nextURL();
-              }
-            );
+          if (bCheckPDFs && /^(ftp|http).*\.pdf$/i.test(sURL)) { progressWindow.fnUpdateStatus('Checking: '+sURL); // TODO: Normalize this URL
+            try {
+              blr.W15yQC.pdfChecker.getPDF(sURL).then(
+                function(r){ // Promise resolved
+                  processCheckPdfResults(r);
+                  i++; nextURL();
+                },
+                function(){ // Promise failed, nothing to process
+                  i++; nextURL();
+                }
+              );
+            } catch(e) {
+              i++; nextURL();
+            }
           } else {
             i++; nextURL(); // Should never get here...
           }
@@ -11123,11 +11127,12 @@ try{
         }
 } catch(ex) {alert(ex.toString());}
 
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Cleaning up...', 100); }
 
         blr.W15yQC.fnDisplayFooter(reportDoc);
 
         reportDoc.defaultView.focus();
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Finished.', 100); }
         return reportDoc;
       }
       return null;
@@ -11179,11 +11184,12 @@ try{
         }
 } catch(ex) {alert(ex.toString());}
 
-        if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Cleaning up...'); }
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Cleaning up...', 100); }
 
         blr.W15yQC.fnDisplayFooter(reportDoc);
 
         reportDoc.defaultView.focus();
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress('Finished.', 100); }
         return reportDoc;
     },
 
@@ -11267,6 +11273,8 @@ try{
 
         blr.W15yQC.fnDisplayFooter(reportDoc);
 
+        if(progressWindow!=null) { progressWindow.fnUpdateProgress( 100, 'Finished.'); }
+
         reportDoc.defaultView.focus();
         blr.W15yQC.bQuick = false;
         return reportDoc;
@@ -11324,6 +11332,7 @@ try{
 
       if(progressWindow!=null) progressWindow.fnUpdateProgress('Cleaning up...', 100);
       Components.utils.forceShrinkingGC();
+      if(progressWindow!=null) progressWindow.fnUpdateProgress('Finished.', 100);
       return oW15yQCReport;
     },
 

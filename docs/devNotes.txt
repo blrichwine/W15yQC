@@ -84,8 +84,8 @@
     -- Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
     -- Check formatting of text to see if headings are missing, number of sequential pages without headings or bookmarks
     -- Check structure and formatting of tables
-    -- Add accessibility check for tagged PDF Pass/Fail to help explain all of the ?? Not Checked ?? messages when a PDF is not tagged.
 
+    -- Add accessibility check for tagged PDF Pass/Fail to help explain all of the ?? Not Checked ?? messages when a PDF is not tagged. [done]
     -- text for accessibility checks [DONE]
     -- auto check PDF when one is displayed and the check PDF tool is selected [DONE]
     -- Fix 'undefined' result when PDF does not contain XMP metadata [done]
@@ -157,6 +157,9 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- Check PDF URL check in fnCheckLinks function needs to normalize the URL to check relative links to pdfs
+  -- Add error checking to PDF quick checks in fnCheckLinks function
+  -- Get rid of "check links" option in option dialog, and add check links feature to links inspector dialog
   -- Better detection of elements with background images (less false positives when checking contrast -- is this possible?)
   -- Check contrast between link text and surrounding text if link text is not underlined.
   -- is search role valid on a form element? WebAIM recommends it, so lets allow it.
