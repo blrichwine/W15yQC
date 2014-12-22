@@ -98,10 +98,12 @@
      blr.W15yQC.fnDoEvents();
     }
 
-    function tick() {
+    function tick(p) {
       var progressPercentage=0;
       ticks++;
-      if (numberOfPages>0) {
+      if (p!=null && p>=0 && p<=100) {
+        progressPercentage=p;
+      } else if (numberOfPages>0) {
         progressPercentage=50*ticks/numberOfPages;
       } else {
         progressPercentage=ticks;
@@ -987,6 +989,7 @@
       enableReportButtons(true,true);
       renderResults();
       log('Finished.');
+      tick(100);
     }
 
     function renderOutlineLevel(o,el) {
@@ -1268,12 +1271,14 @@
           enableReportButtons(true,false);
           renderResults();
           log('Finished.');
+          tick(100);
         }
       }
     } else {
       log('Error: pdf or re objects are null');
       enableReportButtons(false,false);
       log('Finished.');
+      tick(100);
     }
   }
 
