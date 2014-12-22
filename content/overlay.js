@@ -9722,6 +9722,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             i++; nextURL(); // Should never get here...
           }
         } else { // Done!
+          blr.W15yQC.fnUpdateWarningAndFailureCounts(aLinksList);
           callBack(oW15yQCReport, reportDoc, sReports, progressWindow);
         }
       }
@@ -9729,6 +9730,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
       if((bCheckPDFs||bCheckLinks) && aLinksList!=null && aLinksList.length>0) {
         nextURL();
       } else {
+        blr.W15yQC.fnUpdateWarningAndFailureCounts(aLinksList);
         callBack(oW15yQCReport, reportDoc, sReports, progressWindow);
       }
     },

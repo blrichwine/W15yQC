@@ -157,8 +157,16 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
-  -- Check PDF URL check in fnCheckLinks function needs to normalize the URL to check relative links to pdfs
-  -- Add error checking to PDF quick checks in fnCheckLinks function
+  -- Develop unit test platform
+     -- run as separate dialog
+     -- include ability to run tests from a folder outside of package
+     -- ability to remember test configuration to ease running of tests
+     -- tests for each accessibility failure, warning, note
+     -- tests for color contrast computations
+     -- tests for string, url, etc. handling functions
+  -- ability to run project scanner on local files -- does this work?
+  -- Check PDF URL check in fnCheckLinks function needs to normalize the URL to check relative links to pdfs [done]
+  -- Add error checking to PDF quick checks in fnCheckLinks function [done]
   -- Get rid of "check links" option in option dialog, and add check links feature to links inspector dialog
   -- Better detection of elements with background images (less false positives when checking contrast -- is this possible?)
   -- Check contrast between link text and surrounding text if link text is not underlined.
