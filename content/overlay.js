@@ -1075,6 +1075,7 @@ ys: 'whys'
       docUsesFullJustifiedText: [false,2,0,true,null],
       docNonUniqueIDs: [false,1,1,false,null],
       docInvalidIDs: [false,1,1,false,null],
+      docTHRWGDetected: [true, 0,0,false,null],
 
       idIsNotUnique: [false,2,1,false,null],
       idIsNotValid: [false,1,1,false,null],
@@ -6060,6 +6061,7 @@ ys: 'whys'
         bAddedARIARole=false;
         if (oW15yResults == null) {
           blr.W15yQC.fnDoEvents(); // This one is magical. Leave it in place!
+
           total=doc.getElementsByTagName('a').length+
             doc.getElementsByTagName('h1').length+
             doc.getElementsByTagName('h2').length+
@@ -6085,6 +6087,15 @@ ys: 'whys'
           bAddedARIARole=false;
           bInScript=false;
           sPreviousInheritedRoles='';
+
+          oW15yResults.thRwgDetected=false;
+          el=doc.querySelector("span[id='textHelp']")
+          if (el!==null) {
+            if (el.querySelector("span[id='thScripts']")!==null) {
+              oW15yResults.thRwgDetected=true;
+            }
+          }
+
           oW15yResults.PageScore=new blr.W15yQC.PageScore();
           oW15yResults.PageScore.bAllContentContainedInLandmark=true;
           oW15yResults.PageScore.bUsesARIABesidesLandmarks=false;
@@ -6115,7 +6126,7 @@ ys: 'whys'
 
         if (rootNode == null) { rootNode = doc.body; }
         if (rootNode != null && rootNode.firstChild != null) {
-          // is this necessary to do for each element? looks like it takes some time! When does this change?
+          // TODO: FIX THIS!!! is this necessary to do for each element? looks like it takes some time! When does this change?
           for (i = 0; i < oW15yResults.aDocuments.length; i++) {
             if (doc === oW15yResults.aDocuments[i].doc) {
               docNumber = i;
@@ -6125,7 +6136,8 @@ ys: 'whys'
 
           for (node = rootNode.firstChild; node != null; node = node.nextSibling) {
             bInScript=false;
-            if (node.localName==='script' || bInScript==true) { // Don't dig into script content
+            if (node.localName==='script' || bInScript==true || (oW15yResults.thRwgDetected==true &&
+                ((node.localName==='span' && node.getAttribute('id')==='textHelp')||(node.localName==='div' && node.getAttribute('id')==='rwDrag')))) { // Don't dig into script content
               bInScript=true;
             } else {
               bAddedARIARole=false;
@@ -6753,6 +6765,9 @@ ys: 'whys'
       oW15yResults.PageScore.bAllDocumentsHaveDefaultHumanLanguage=true;
 
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+      if(oW15yResults.thRwgDetected==true && aDocumentsList !== null && aDocumentsList.length) {
+        blr.W15yQC.fnAddNote(aDocumentsList[0], 'docTHRWGDetected'); // TODO: QA This
+      }
       if (aDocumentsList !== null && aDocumentsList.length) {
         for (i = 0; i < aDocumentsList.length; i++) { // TODO: Add is meaningful document title check
           suspectCSS='';

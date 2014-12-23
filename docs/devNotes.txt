@@ -157,6 +157,7 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- Add option to detect rwg page insertions and ignore them. have it on by default.
   -- Develop unit test platform
      -- run as separate dialog
      -- include ability to run tests from a folder outside of package
