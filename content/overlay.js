@@ -5676,16 +5676,8 @@ ys: 'whys'
 
       if(listObj!=null && (iDisplayedWarningsCount>0 || iDisplayedFailuresCount>0)) {
         try{
-          if(iDisplayedWarningsCount==1) {
-            s=' (1 with warning, ';
-          } else {
-            s=' ('+iDisplayedWarningsCount.toString()+' with warnings, '; // TODO: i18n this!
-          }
-          if(iDisplayedFailuresCount==1) {
-            s=s+'1 failure)';
-          } else {
-            s=s+iDisplayedFailuresCount.toString()+' with failures)';
-          }
+            s=' ('+iDisplayedWarningsCount.toString()+' with warning(s), '; // TODO: i18n this!
+            s=s+iDisplayedFailuresCount.toString()+' with failure(s))';
         }
         catch(ex){ s='FAILED'+ex.toString();}
       }
