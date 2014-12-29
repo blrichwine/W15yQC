@@ -58,6 +58,7 @@
  * TODO:
 
    PDF Checker
+     -- spider PDFs and generate PDF tag nesting hash to study for incorrect tag nesting examples
      -- Find PDFs to use as test suite
         - include
           * Image only
@@ -79,9 +80,20 @@
     -- debug list displays in semantic view
     -- finish semantic view
     -- finish screen-reader view
-    -- Create a PDF has form controls flag -- or does this already exist??? Can we use it to properly indicated why rules are not checked??
-    -- Fix PDF report styling
-    -- Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
+    -- Create a PDF has form controls flag -- or does this already exist??? Can we use it to properly indicated why rules are not checked?? [done]
+    -- Fix PDF report styling [partially complete, revisit when finished]
+    -- Common PDF accessibility concerns
+        * Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
+        * Empty Tags
+        * Incorrect hyphens
+        * No spaces between words
+        * No spaces at end of lines
+        * Repeated formatting characters
+        * 'Invalid tag use'
+          -- table errors, warn if no table headers, if some cells with content have no table headers
+          -- list errors
+          -- bad nesting ('table' in a 'p'), missing required children
+        * Warn if no text is found on pages
     -- Check formatting of text to see if headings are missing, number of sequential pages without headings or bookmarks
     -- Check structure and formatting of tables
     -- Make a table of contents with links to sections of the PDF Accessibility report

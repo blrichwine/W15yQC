@@ -767,6 +767,10 @@
     function renderDocStructureLevel(o,el,currentLang) {
       var oi,ol,oli, k, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets;
 
+      if (blr.W15yQC.pdfTagNestingHash==null) {
+        blr.W15yQC.pdfTagNestingHash=new blr.W15yQC.HashTable();
+      }
+
       function spanAttrValue(attr,attrClass,value,valueClass) {
         var df = document.createDocumentFragment(), span;
         if (!bInBrackets) {
@@ -969,7 +973,7 @@
               span=rd.createElement('span');
               span.setAttribute('class','pdfTextContent');
               if (o[oi].text!=null) {
-                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪')));
+                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪').replace(//g,'•')));
               } else {
                 span.appendChild(rd.createTextNode(': '+o[oi].text));
               }
@@ -1165,7 +1169,7 @@
 
         style=rd.createElement('style');
         style.setAttribute('type','text/css');
-        style.appendChild(rd.createTextNode('table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin-left:60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
+        style.appendChild(rd.createTextNode('table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black;padding:3px 5px 3px 5px}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin-left:60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
 
         h=rd.createElement('h2');

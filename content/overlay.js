@@ -72,7 +72,7 @@ if (!blr.W15yQC) {
     bPromptUserOfUpdate: false,
     bOnStableUpdateChannel: false,
     checkForUpdatesHttpRequest: null,
-
+    pdfTagNestingHash: null,
     timeZones: {
       "-10": "Hawaii-Aleutian",
       "-09": "Alaska",
