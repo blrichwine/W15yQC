@@ -93,6 +93,72 @@
                   "bTagUseAppearsValid":null,
                   "bAllTextContentHasMarkedLang":null};
 
+    function appendReport() {
+      var mainDiv;
+
+      function buildTOC() {
+        var elH1, el, div, ul1, ul2, cl, li, a, subHeadings=re.querySelectorAll('h2,h3'), i, h, hid, divBanner, divNav;
+
+        elH1=rd.createElement('h1');
+        elH1.appendChild(rd.createTextNode('PDF Accessibility Report'));
+        elH1.setAttribute('tabindex','0');
+        divBanner=rd.createElement('div');
+        divBanner.setAttribute('role','banner');
+        divBanner.appendChild(elH1);
+        rd.body.appendChild(divBanner);
+
+        ul1=rd.createElement('ul');
+        cl=ul1;
+
+        for(i=0;i<subHeadings.length;i++) {
+          h=subHeadings[i];
+          h.setAttribute('tabindex','0');
+          if (h.hasAttribute('id')) {
+            hid=h.getAttribute('id');
+          } else {
+            hid='toc'+i.toString();
+            h.setAttribute('id',hid);
+          }
+          if (h.nodeName.toLowerCase()=='h3' && cl===ul1 && li!=null) {
+            ul2=rd.createElement('ul');
+            li.appendChild(ul2);
+            cl=ul2;
+          } else if (h.nodeName.toLowerCase()!=='h3') {
+            cl=ul1;
+          }
+          li=rd.createElement('li');
+          a=rd.createElement('a');
+          a.setAttribute('href','#'+hid);
+          a.appendChild(rd.createTextNode(h.textContent.replace(/:$/,'')));
+          a.setAttribute('onclick',"try{document.getElementById('"+hid+"').scrollIntoView(true);}catch(e){}window.setTimeout(function(){document.getElementById('"+hid+"').focus();},10);");
+          li.appendChild(a);
+          cl.appendChild(li);
+        }
+
+        divNav=rd.createElement('div');
+        divNav.setAttribute('role','navigation');
+        el=rd.createElement('h2');
+        el.appendChild(rd.createTextNode('Contents:'));
+        el.setAttribute('tabindex','0');
+        divNav.appendChild(el);
+        divNav.appendChild(ul1);
+        rd.body.appendChild(divNav);
+      }
+
+      while(rd!=null && rd.body!=null && rd.body.firstChild!=null) { // get rid of please wait message
+        rd.body.removeChild(rd.body.firstChild);
+      }
+      rd.title=blr.W15yQC.fnStringHasContent(sTitle)?sTitle:sURL;
+
+      buildTOC();
+
+      mainDiv=rd.createElement('div');
+      mainDiv.setAttribute('role','main');
+      mainDiv.appendChild(re);
+
+      rd.body.appendChild(mainDiv); // append in the report
+    }
+
     function log(s) {
      blr.W15yQC.fnDoEvents();
      document.getElementById('progressMeterLabel').value=s;
@@ -120,7 +186,7 @@
     }
 
     function renderResults() {
-      var el=rd.getElementById('a11yResults'), i, ul, li, span,
+      var el=re.getElementById('a11yResults'), i, ul, li, span,
           resultKeys=['bDocHasXmpMetaData',
                       'bDocTitleInXmpMetaData',
                       'bDocTitleConfiguredToDisplay',
@@ -195,18 +261,21 @@
     }
 
     function renderElementStatistics(d) {
-      var h, table, thead, tbody, tr, th, td, keys, mappedKey, i, span, mappedStats={}, bNonStandardTags=false, p;
-      h=rd.createElement('h3');
+      var h, table, caption, thead, tbody, tr, th, td, keys, mappedKey, i, span, mappedStats={}, bNonStandardTags=false, p;
+      h=rd.createElement('h4');
       h.appendChild(rd.createTextNode('Un-Mapped'));
       d.appendChild(h);
       table=rd.createElement('table');
+      caption=rd.createElement('caption');
+      caption.appendChild(rd.createTextNode('Table of the raw (unmapped) tag names used to mark up the document structure of the PDF.'));
+      table.appendChild(caption);
       table.setAttribute('id','unMappedElements');
       thead=rd.createElement('thead');
       tr=rd.createElement('tr');
       th=rd.createElement('th');
       th.setAttribute('class','tagNameHeader');
       th.setAttribute('scope','col');
-      th.appendChild(rd.createTextNode('Element'));
+      th.appendChild(rd.createTextNode('Tag Name'));
       tr.appendChild(th);
       th=rd.createElement('th');
       th.setAttribute('class','tagNameStatsHeader');
@@ -258,20 +327,30 @@
       if (bNonStandardTags) {
         p=rd.createElement('p');
         p.setAttribute('class','hasNonStandardTags');
-        p.appendChild(rd.createTextNode('* = Non-standard tag.'));
+        span=rd.createElement('span');
+        span.setAttribute('class','nonStandardTag');
+        span.appendChild(rd.createTextNode('*'));
+        p.appendChild(span);
+        p.appendChild(rd.createTextNode(' = Non-standard tag.'));
+        d.appendChild(p);
       }
 
       if (ds.rm!=null && Object.getOwnPropertyNames(ds.rm).length>0) {
-        h=rd.createElement('h3');
+        bNonStandardTags=false;
+        h=rd.createElement('h4');
         h.appendChild(rd.createTextNode('Mapped'));
         d.appendChild(h);
         table=rd.createElement('table');
+        table.setAttribute('class','mappedTags');
+        caption=rd.createElement('caption');
+        caption.appendChild(rd.createTextNode('Table of tag names used to mark up the document structure of the PDF as translated by the PDF\'s role map entries.'));
+        table.appendChild(caption);
         thead=rd.createElement('thead');
         tr=rd.createElement('tr');
         th=rd.createElement('th');
         th.setAttribute('class','tagNameHeader');
         th.setAttribute('scope','col');
-        th.appendChild(rd.createTextNode('Element'));
+        th.appendChild(rd.createTextNode('Tag Name'));
         tr.appendChild(th);
         th=rd.createElement('th');
         th.setAttribute('class','tagNameStatsHeader');
@@ -308,6 +387,16 @@
         }
         table.appendChild(tbody);
         d.appendChild(table);
+        if (bNonStandardTags) {
+          p=rd.createElement('p');
+          p.setAttribute('class','hasNonStandardTags');
+          span=rd.createElement('span');
+          span.setAttribute('class','nonStandardTag');
+          span.appendChild(rd.createTextNode('*'));
+          p.appendChild(span);
+          p.appendChild(rd.createTextNode(' = Non-standard tag.'));
+          d.appendChild(p);
+        }
       }
     }
 
@@ -622,7 +711,12 @@
                 lStack[0].appendChild(li);
               }
               ul2=rd.createElement('ul');
-              lStack[lStack.length-1].appendChild(ul2);
+              if (li==null) {
+                lStack[lStack.length-1].appendChild(ul2);
+              } else {
+                li.appendChild(ul2);
+              }
+
               lStack.push(ul2);
           } else if (prevHeadingLevel>hLevel) {
             for(j=prevHeadingLevel;j>hLevel;j--) {
@@ -874,7 +968,11 @@
             if (typeof o[oi].text!='undefined') {
               span=rd.createElement('span');
               span.setAttribute('class','pdfTextContent');
-              span.appendChild(rd.createTextNode(': '+o[oi].text));
+              if (o[oi].text!=null) {
+                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪')));
+              } else {
+                span.appendChild(rd.createTextNode(': '+o[oi].text));
+              }
               oli.appendChild(span);
             }
           } else {
@@ -942,7 +1040,7 @@
     }
 
     function renderEffectiveLanguages() {
-      var el=rd.getElementById('langIndicationsList'), ol, efIndx, li, pgsIndx, span;
+      var el=re.getElementById('langIndicationsList'), ol, efIndx, li, pgsIndx, span;
       ol=rd.createElement('ol');
       for(efIndx=0;efIndx<ds.effectiveLanguages.length;efIndx++) {
         li=rd.createElement('li');
@@ -970,7 +1068,7 @@
       //blr.W15yQC.pdfCheckDialog.log('Kids:'+blr.W15yQC.objectToString(ds.pages));
 
       h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Element Statistics:'));
+      h.appendChild(rd.createTextNode('Tag Usage Statistics:'));
       el.appendChild(h);
       div=rd.createElement('div');
       el.appendChild(div);
@@ -1009,6 +1107,7 @@
       renderResults();
       log('Finished.');
       tick(100);
+      appendReport();
     }
 
     function renderOutlineLevel(o,el) {
@@ -1065,11 +1164,9 @@
         rd.head.appendChild(meta);
 
         style=rd.createElement('style');
-        style.appendChild(rd.createTextNode('h2,h3,h4,h5,h6{margin-bottom:0}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
+        style.setAttribute('type','text/css');
+        style.appendChild(rd.createTextNode('table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin-left:60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
-        h=rd.createElement('h1');
-        h.appendChild(rd.createTextNode('PDF Accessibility Report'));
-        re.appendChild(h);
 
         h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('Accessibility Check Results:'));
@@ -1283,6 +1380,7 @@
                                               enableReportButtons(true,false);
                                               renderResults();
                                               log('Stopped due to errors.');
+                                              appendReport();
                                             }
                                           },
                                           function(){
@@ -1292,6 +1390,7 @@
                                             enableReportButtons(true,false);
                                             renderResults();
                                             log('Stopped due to errors.');
+                                            appendReport();
                                           });
         } else {
           h=rd.createElement('h2');
@@ -1301,29 +1400,43 @@
           renderResults();
           log('Finished.');
           tick(100);
+          appendReport();
         }
       }
     } else {
       log('Error: pdf or re objects are null');
       enableReportButtons(false,false);
-      log('Finished.');
+      //log('Finished.');
       tick(100);
+      appendReport();
     }
+
   }
 
   function getPdfForFullCheck(sURL) {
-    var rd=document.getElementById('reportIFrame').contentDocument,
-        re=rd.body;
+    var rd, re;
+
+    rd=document.getElementById('reportIFrame').contentDocument;
+    rd.body.setAttribute('lang','en-US');
+    re=rd.createDocumentFragment();
 
     return new Promise(function(resolve, reject) {
       document.getElementById('progressMeterLabel').value='Requesting: '+sURL;
       blr.PDFJS.getDocument(sURL).then(
         function(pdf){
-          document.getElementById('progressMeterLabel').value="Checking document...";
+          var el;
+          document.getElementById('progressMeterLabel').value="Checking PDF...";
+          el=rd.createElement('h1');
+          el.appendChild(rd.createTextNode('Checking PDF. Please wait...'));
+          rd.body.appendChild(el);
           resolve(getPdfFullCheckResults(pdf,sURL,rd,re));
         },
         function() {
+          var el;
           document.getElementById('progressMeterLabel').value="Error requesting PDF.";
+          el=rd.createElement('h1');
+          el.appendChild(rd.createTextNode('Error requesting PDF'));
+          rd.body.appendChild(el);
           reject(null);
         });
     });

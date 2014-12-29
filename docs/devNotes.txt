@@ -84,6 +84,7 @@
     -- Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
     -- Check formatting of text to see if headings are missing, number of sequential pages without headings or bookmarks
     -- Check structure and formatting of tables
+    -- Make a table of contents with links to sections of the PDF Accessibility report
 
     -- Add accessibility check for tagged PDF Pass/Fail to help explain all of the ?? Not Checked ?? messages when a PDF is not tagged. [done]
     -- text for accessibility checks [DONE]
@@ -157,7 +158,8 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
-  -- Add option to detect rwg page insertions and ignore them. have it on by default.
+  -- Not all failures are showing up in HTML report summary (i.e., documents without default lang cause failure, but it was not counted in summary when explaining the score)
+  -- Add option to detect rwg page insertions and ignore them. have it on by default. [Done]
   -- Develop unit test platform
      -- run as separate dialog
      -- include ability to run tests from a folder outside of package
