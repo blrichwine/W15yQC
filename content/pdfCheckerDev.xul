@@ -108,6 +108,11 @@
 					 disabled="true"
 					 oncommand="savePdfReport();"
 					 accesskey=""/>
+				 <xul:button id="button-savePDFTagNesting"
+					 label="Save Nesting Hash"
+					 disabled="false"
+					 oncommand="savePdfNestingReport();"
+					 accesskey=""/>
 				 <xul:button id="button-printPDFReport"
 					 label="Print Report"
 					 disabled="true"

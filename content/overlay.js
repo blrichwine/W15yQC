@@ -12374,6 +12374,7 @@ try{
     }
 
     this.each = function(fn) {
+      var k;
       for (k in this.items) {
         if (this.hasItem(k)) {
           fn(k, this.items[k]);
