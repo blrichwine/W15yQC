@@ -96,8 +96,8 @@
         * Warn if no text is found on pages
     -- Check formatting of text to see if headings are missing, number of sequential pages without headings or bookmarks
     -- Check structure and formatting of tables
-    -- Make a table of contents with links to sections of the PDF Accessibility report
 
+    -- Make a table of contents with links to sections of the PDF Accessibility report [done]
     -- Add accessibility check for tagged PDF Pass/Fail to help explain all of the ?? Not Checked ?? messages when a PDF is not tagged. [done]
     -- text for accessibility checks [DONE]
     -- auto check PDF when one is displayed and the check PDF tool is selected [DONE]

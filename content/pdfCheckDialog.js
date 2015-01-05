@@ -80,11 +80,12 @@
       "P": {
         requiredParents: null,
         invalidParents: ['P|H|H\d|TOC|TABLE|TR|TBody|THead|TFoot'],
-        allowedParents: ['Document|Part|Art|Sect|Div|TD|TH'],
+        allowedParents: ['Document|Part|Art|Sect|Div|TD|TH|Span'],
         requiredChildren: null,
         validRE: null,
         invalidRE: null,
         shouldNotBeEmpty: true,
+        shouldBeEmpty: false,
         shouldHaveAltText: false
       },
       "Table": {
@@ -93,19 +94,32 @@
         allowedParents: ['Document|Part|Art|Sect|Div'],
         requiredChildren: ['TR','TD'],
         validRE: [/Table\|(THead\|TR|TBody\|TR|TFoot\|TR)\|(TH|TD)/],
-        invalidRE: [/Table\|(Table|TD|TH|P)\b/,/\bTable\b.*\|Table\b/],
+        invalidRE: [/Table\|(Table|TD|TH|P)\b/,/\bTable\|.+\|Table\b/],
         shouldNotBeEmpty: true,
+        shouldBeEmpty: false,
         shouldHaveAltText: false
       },
       "Figure": {
         requiredParents: null,
         invalidParents: ['Figure'],
-        allowedParents: ['Document|Part|Art|Sect|Div'],
+        allowedParents: null,
         requiredChildren: null,
-        validRE: [/Table\|(THead\|TR|TBody\|TR|TFoot\|TR)\|(TH|TD)/],
-        invalidRE: [/Table\|(Table|TD|TH|P)\b/,/\bTable\b.*\|Table\b/],
-        shouldNotBeEmpty: true,
+        validRE: null,
+        invalidRE: null,
+        shouldNotBeEmpty: false,
+        shouldBeEmpty: true,
         shouldHaveAltText: true
+      },
+      "Form": {
+        requiredParents: null,
+        invalidParents: ['Form'],
+        allowedParents: null,
+        requiredChildren: null,
+        validRE: null,
+        invalidRE: null,
+        shouldNotBeEmpty: false,
+        shouldBeEmpty: true,
+        shouldHaveAltText: false
       }
     };
 
@@ -124,8 +138,26 @@
                   "bAllFormControlsHaveUniqueLabels":null,
                   "bOnlyStandardTagsAreUsed":null,
                   "bTagUseAppearsValid":null,
-                  "bAllTextContentHasMarkedLang":null};
+                  "bAllTextContentHasMarkedLang":null
+                };
 
+    var tagNestingResults={
+      "bNestedParagraphTags": [],
+      "bNestedTableTags": [],
+      "bNestedFormTags": [],
+      "bNestedFigureTags": [],
+      "bInvalidHeadingParent": [],
+      "bNonEmptyHeadingTag": [],
+      "bNonEmptyFigureTag": [],
+      "bNonEmptyFormTag": [],
+      "bMissingLabelOnFormTag": [],
+      "bMissingAltTextOnFigureTag": [],
+      "bInvalidUseOfTHead": [],
+      "bInvalidUseOfTBody": [],
+      "bInvalidUseOfTFoot": [],
+      "bLIShouldBeInL": [],
+      "bTOCIShouldBeInTOC:": []
+    }
     function appendReport() {
       var mainDiv;
 
@@ -256,11 +288,11 @@
                       '?? Not checked ??',
                       '?? Not checked ??',
                       '?? Not checked ??',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: PDF is not structured',
+                      'Not checked because: PDF contains no headings or is not structured',
+                      'Not checked because: PDF contains no headings or is not structured',
+                      'Not checked because: PDF contains no headings or is not structured',
+                      'Not checked because: PDF contains no headings or is not structured',
+                      'Not checked because: PDF contains no headings or is not structured',
                       'Not checked because: PDF is not structured',
                       'Not checked because: PDF is not structured',
                       'Not checked because: No form controls were found',
@@ -633,7 +665,7 @@
     }
 
     function renderHeadings(el) {
-      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, prevHeadingLevel=0, hLevel, hList=[], lStack=[], elType, i, j, t, span, liList, str;
+      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, liSpan, prevHeadingLevel=0, hLevel, hList=[], lStack=[], elType, i, j, t, span, liList, str, sEl;
 
       function getNext() {
         if (dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
@@ -727,8 +759,10 @@
           if (prevHeadingLevel<hLevel-1) {
             for(j=prevHeadingLevel+1;j<hLevel;j++) {
               li=rd.createElement('li');
-              li.setAttribute('class','error');
-              li.appendChild(rd.createTextNode('<H'+j+' - Missing Heading>'));
+              liSpan=rd.createElement('span');
+              li.appendChild(liSpan);
+              liSpan.setAttribute('class','error');
+              liSpan.appendChild(rd.createTextNode('<H'+j+' - Missing Heading>'));
               results.bHeadingLevelsNotSkipped=false;
               lStack[lStack.length-1].appendChild(li);
               ul2=rd.createElement('ul');
@@ -738,8 +772,10 @@
           } else if (prevHeadingLevel==hLevel-1) {
               if (i==0) {
                 li=rd.createElement('li');
-                li.setAttribute('class','error');
-                li.appendChild(rd.createTextNode('<H1 - Missing Heading>'));
+                liSpan=rd.createElement('span');
+                li.appendChild(liSpan);
+                liSpan.setAttribute('class','error');
+                liSpan.appendChild(rd.createTextNode('<H1 - Missing Heading>'));
                 results.bHeadingLevelsNotSkipped=false;
                 lStack[0].appendChild(li);
               }
@@ -757,25 +793,33 @@
             }
           }
           li=rd.createElement('li');
+          liSpan=rd.createElement('span');
+          if (!blr.W15yQC.fnStringHasContent(hList[i].text)) {
+            liSpan.setAttribute('class','error');
+          }
+          li.appendChild(liSpan);
           span=rd.createElement('span');
           span.setAttribute('class','pdfTag');
           span.appendChild(rd.createTextNode('[H'+hLevel+']'))
-          li.appendChild(span);
+          liSpan.appendChild(span);
           span=rd.createElement('span');
           span.setAttribute('class','punctuation');
           span.appendChild(rd.createTextNode(': '));
-          li.appendChild(span);
+          liSpan.appendChild(span);
           span=rd.createElement('span');
           span.setAttribute('class','pdfTextContent');
           span.appendChild(rd.createTextNode(hList[i].text));
-          li.appendChild(span);
+          liSpan.appendChild(span);
 
-          if (lStack[lStack.length-1]!==null) {
-            liList=lStack[lStack.length-1].getElementsByTagName('li');
-            str=li.innerHTML.toLowerCase();
+          if (lStack[lStack.length-1]!==null && blr.W15yQC.fnStringHasContent(hList[i].text)) {
+            liList=lStack[lStack.length-1].children;
+            str=hList[i].text.toLowerCase() // TODO: Fix this!!! QA This
             for(j=0;j<liList.length;j++) {
-              if (liList[j].innerHTML.toLowerCase()==str) {
+              sEl=liList[j].firstChild.querySelector('span.pdfTextContent');
+              if (sEl!=null && blr.W15yQC.fnStringsEffectivelyEqual(sEl.textContent,str)) {
                 results.bHeadingsNotTheSameWithinALevel=false;
+                liSpan.setAttribute('class','error');
+                sEl.parentNode.setAttribute('class','error');
               }
             }
           }
@@ -786,6 +830,11 @@
       } else {
         p=rd.createElement('p');
         p.appendChild(rd.createTextNode('No Headings'));
+        results.bFirstHeadingIsH1=false;
+        results.bH1Present=false;
+        results.bHeadingLevelsNotSkipped=false;
+        results.bHeadingsAllHaveText=null;
+        results.bHeadingsNotTheSameWithinALevel=null;
         el.appendChild(p);
       }
     }
@@ -798,12 +847,9 @@
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sNewNesting;
+      var oi,ol,oli, k, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
 
-      if (blr.W15yQC.pdfTagNestingHash==null) {
-        blr.W15yQC.pdfTagNestingHash=new blr.W15yQC.HashTable();
-      }
-      if (sNesting==null) {
+      if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
       }
 
@@ -1071,6 +1117,11 @@
           bInBrackets=false;
           ol.appendChild(oli);
 
+          if(sTagName!=='') {
+            sEndNesting=sNesting===''?sTagName:sNesting+' | '+sTagName;
+          } else {
+            sEndNesting=sNesting;
+          }
           if (o[oi].children!=null && o[oi].children.length>0) {
             if (results.bAllFiguresHaveAltText===null) {
               results.bAllFiguresHaveAltText=true;
@@ -1078,14 +1129,18 @@
               results.bOnlyStandardTagsAreUsed=true;
               results.bAllTextContentHasMarkedLang=true;
             }
-            renderDocStructureLevel(o[oi].children,oli, currentLang,sNewNesting);
+            renderDocStructureLevel(o[oi].children,oli, currentLang, sEndNesting);
           } else {
-            if (sTagName!='') {
-              sNewNesting=sNesting===''?sTagName:sNesting+'|'+sTagName;
-              if (blr.W15yQC.pdfTagNestingHash.hasItem(sNewNesting)) {
-                blr.W15yQC.pdfTagNestingHash.setItem(sNewNesting,blr.W15yQC.pdfTagNestingHash.getItem(sNewNesting)+1);
+            if (sTagName!='' || blr.W15yQC.fnStringHasContent(sEndNesting)) {
+              if (blr.W15yQC.pdfTagNestingHash.hasItem(sEndNesting)) {
+                nObj=blr.W15yQC.pdfTagNestingHash.getItem(sEndNesting);
+                nObj[0]++;
+                if (nObj[1][nObj[1].length-1]!==pgNum && nObj[1].length<20) {
+                  nObj[1].push(pgNum);
+                }
+                blr.W15yQC.pdfTagNestingHash.setItem(sEndNesting,nObj);
               } else {
-                blr.W15yQC.pdfTagNestingHash.setItem(sNewNesting,1);
+                blr.W15yQC.pdfTagNestingHash.setItem(sEndNesting,[1,[pgNum]]);
               }
             }
           }
@@ -1117,10 +1172,173 @@
       el.appendChild(ol);
     }
 
+    function checkTagNesting(sTagNesting, pli) {
+      var aTags, i, j, bFound, ol, li, errorsHash=new blr.W15yQC.HashTable();
+
+      ol=rd.createElement('ol');
+      if (blr.W15yQC.fnStringHasContent(sTagNesting)) {
+        aTags=sTagNesting.split(/\s*\|\s*/);
+        for(i=0;i<aTags.length;i++) {
+          bFound=false;
+          for (j=0;j<standardElements.length;j++) {
+            if(aTags[i].toLowerCase()==standardElements[j].toLowerCase()) {
+              bFound=true;
+              break;
+            }
+          }
+          if (bFound!=true && !/\(implied\)/i.test(aTags[i])) {
+            li=rd.createElement('li');
+            li.appendChild(rd.createTextNode('Non-standard tag: "'+aTags[i]+'"'));
+            ol.appendChild(li);
+          }
+          switch(blr.W15yQC.fnTrim(aTags[i]).replace(/^H\d$/i,'H')) {
+            case "H":
+              for(j=i-1;j>0;j--) {
+                if (/^(P|Figure|Table|TD|TH|THead|TBody|TFoot|TOCI|TOC|Form)$/.test(aTags[j]) && !errorsHash.hasItem('HInvalidParent')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Hx" (Heading) tag should not be a child of "'+aTags[j]+'".'));
+                errorsHash.setItem('HInvalidParent',1);
+                ol.appendChild(li);
+                }
+              }
+              break;
+            case "Figure":
+              if (i<aTags.length-1 && !errorsHash.hasItem('FigureHasChildren')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Figure" tag should not contain children.'));
+                errorsHash.setItem('FigureHasChildren',1);
+                ol.appendChild(li);
+              }
+              if (/\bFigure\s*\|.*\bFigure\b/i.test(sTagNesting) && !errorsHash.hasItem('FigureNested')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Figure" tags should not be nested.'));
+                ol.appendChild(li);
+                errorsHash.setItem('FigureNested',1);
+              }
+              break;
+            case "Form":
+              if (i<aTags.length-1 && !errorsHash.hasItem('FormHasChildren')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Form" tag should not contain children.'));
+                ol.appendChild(li);
+                errorsHash.setItem('FormHasChildren',1);
+              }
+              if (/\bForm\s*\|.*\bForm\b/i.test(sTagNesting) && !errorsHash.hasItem('FormNested')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Form" tags should not be nested.'));
+                ol.appendChild(li);
+                errorsHash.setItem('FormNested',1);
+              }
+              break;
+            case "P":
+              if (/\bP\s*\|.*\bP\b/i.test(sTagNesting) && !errorsHash.hasItem('PNested')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"P" tags should not be nested.'));
+                ol.appendChild(li);
+                errorsHash.setItem('PNested',1);
+              }
+              break;
+            case "Table":
+              if (/\bTable\s*\|.*\bTable\b/i.test(sTagNesting) && !errorsHash.hasItem('TableNested')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Table" tags should not be nested.'));
+                ol.appendChild(li);
+                errorsHash.setItem('TableNested',1);
+              }
+              if (i==aTags.length-1 && !errorsHash.hasItem('TableEmpty')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Table" tags should not be empty.'));
+                ol.appendChild(li);
+                errorsHash.setItem('TableEmpty',1);
+              } else if (!/^(THead|TBody|TFoot|TR)$/.test(blr.W15yQC.fnTrim(aTags[i+1])) && !errorsHash.hasItem('TableInvalidChild')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"Table" tag children should be either "THead", "TBody", "TFoot", or "TR" tags.'));
+                ol.appendChild(li);
+                errorsHash.setItem('TableInvalidChild',1);
+              }
+              break;
+            case "TD":
+              if ((i<1 || aTags[i-1]!=='TR') && !errorsHash.hasItem('TDShouldBeUnderTR')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"TD" tags should the child of a "TR" tag.'));
+                ol.appendChild(li);
+                errorsHash.setItem('TDShouldBeUnderTR',1);
+              }
+              break;
+            case "TH":
+              if ((i<1 || aTags[i-1]!=='TR') && !errorsHash.hasItem('THShouldBeUnderTR')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"TH" tags should the child of a "TR" tag.'));
+                ol.appendChild(li);
+                errorsHash.setItem('THShouldBeUnderTR',1);
+              }
+              break;
+            case "TR":
+              if ((i<2 || !((aTags[i-1]=='Table') || (aTags[i-2]=='Table' && /(THead|TBody|TFoot)/.test(aTags[i-1])))) && !errorsHash.hasItem('TRWrongParent')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"TR" tags should the child of a "Table" or a "Table" tag and either a "THead", "TBody", or "TFoot" tag.'));
+                ol.appendChild(li);
+                errorsHash.setItem('TRWrongParent',1);
+              }
+              break;
+            case "TOC":
+              if (i==aTags.length-1 && !errorsHash.hasItem('TOCShouldNotBeEmpty')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"TOC" (Table Of Contents) tags should not be empty.'));
+                ol.appendChild(li);
+                errorsHash.setItem('TOCShouldNotBeEmpty',1);
+              } else if (!/^TOCI$/.test(aTags[i+1]) && !errorsHash.hasItem('TOCInvalidChild')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"TOC" tag children should be "TOCI" tags, not "'+aTags[i+1]+'".'));
+                ol.appendChild(li);
+                errorsHash.setItem('TOCInvalidChild',1);
+              }
+              break;
+            case "TOCI":
+              if ((i<1 || !/^TOC$/.test(aTags[i-1])) && !errorsHash.hasItem('TOCIInvalidParent')) {
+                li=rd.createElement('li');
+                li.appendChild(rd.createTextNode('"TOCI" tag should be contained by a "TOC" tag, not "'+aTags[i-1]+'".'));
+                ol.appendChild(li);
+                errorsHash.setItem('TOCIInvalidParent',1);
+              }
+              break;
+          }
+          if (ol.firstElementChild!=null) {
+            ol.setAttribute('class','error');
+            pli.appendChild(ol);
+            results.bTagUseAppearsValid=false;
+          }
+        }
+      }
+    }
+
+    function renderUniqueTagNestings() {
+      var el=re.getElementById('uniqueTagListingsList'), ol, efIndx, li, pgsIndx, span, sPgs;
+      if(results.bTagUseAppearsValid===null) {
+        results.bTagUseAppearsValid=true;
+      }
+      ol=rd.createElement('ol');
+      ol.setAttribute('id','uniqueTagNestings');
+      blr.W15yQC.pdfTagNestingHash.each(function(k,v){
+          li=rd.createElement('li');
+          li.appendChild(rd.createTextNode(k+' : '+v[0].toString()+' on pages: '));
+          li.appendChild(rd.createTextNode(v[1].toString().replace(/,/g,', ')));
+          if (v[1].length>=20) {
+            li.appendChild(rd.createTextNode(', ...'));
+          }
+          ol.appendChild(li);
+          checkTagNesting(k,li);
+        });
+
+      el.appendChild(ol);
+    }
+
     function renderAndCheckDocStructure(el) {
       var rmi, ol, oli, div, p, keys, i=-1, dlM, defaultLang;
       //blr.W15yQC.pdfCheckDialog.log('DS:'+blr.W15yQC.objectToString(ds));
       //blr.W15yQC.pdfCheckDialog.log('Kids:'+blr.W15yQC.objectToString(ds.pages));
+
+      blr.W15yQC.pdfTagNestingHash=null;
 
       h=rd.createElement('h3');
       h.appendChild(rd.createTextNode('Tag Usage Statistics:'));
@@ -1134,6 +1352,13 @@
       el.appendChild(h);
       div=rd.createElement('div');
       div.setAttribute('id','langIndicationsList');
+      el.appendChild(div); // Place holder for content that gets rendered later!
+
+      h=rd.createElement('h3');
+      h.appendChild(rd.createTextNode('Unique Tag Nestings:'));
+      el.appendChild(h);
+      div=rd.createElement('div');
+      div.setAttribute('id','uniqueTagListingsList');
       el.appendChild(div); // Place holder for content that gets rendered later!
 
       h=rd.createElement('h3');
@@ -1155,8 +1380,12 @@
       if (dlM!==null && dlM.length>1) {
         defaultLang=dlM[1];
       }
+
+      blr.W15yQC.pdfTagNestingHash=new blr.W15yQC.HashTable();
+
       renderDocStructureLevel(ds,div,defaultLang);
       renderEffectiveLanguages();
+      renderUniqueTagNestings();
 
       enableReportButtons(true,true);
       renderResults();
