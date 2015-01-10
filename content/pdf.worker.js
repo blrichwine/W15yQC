@@ -5438,6 +5438,9 @@ var PDFDocument = (function PDFDocumentClosure() {
          value='(not specified)';
         }
       }
+      if(!/\w/.test(value)) {
+       value='(not specified)';
+      }
       return shadow(this, 'defaultLang', value);
     },
 

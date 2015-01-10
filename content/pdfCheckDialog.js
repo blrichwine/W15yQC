@@ -252,10 +252,10 @@
 
     function renderResults() {
       var el=re.getElementById('a11yResults'), i, ul, li, span,
-          resultKeys=['bDocHasXmpMetaData',
-                      'bDocTitleInXmpMetaData',
-                      'bDocTitleConfiguredToDisplay',
-                      'bIsStructuredNoSuspectsAndTagged',
+          resultKeys=['bIsStructuredNoSuspectsAndTagged',
+                      'bOnlyStandardTagsAreUsed',
+                      'bTagUseAppearsValid',
+                      'bAllTextContentHasMarkedLang',
                       'bH1Present',
                       'bFirstHeadingIsH1',
                       'bHeadingLevelsNotSkipped',
@@ -265,13 +265,13 @@
                       'bAllFiguresHaveAltTextNotDefault',
                       'bAllFormControlsHaveLabels',
                       'bAllFormControlsHaveUniqueLabels',
-                      'bOnlyStandardTagsAreUsed',
-                      'bTagUseAppearsValid',
-                      'bAllTextContentHasMarkedLang'],
-          resultText=['The PDF contains XMP metadata',
-                      'The PDF contains a document title in the XMP metadata',
-                      'The PDF is configured to display the document title',
-                      'The PDF is structured, contains no suspects, and is tagged',
+                      'bDocHasXmpMetaData',
+                      'bDocTitleInXmpMetaData',
+                      'bDocTitleConfiguredToDisplay'],
+          resultText=['The PDF is structured, contains no suspects, and is tagged',
+                      'Only standard PDF tags are used',
+                      'No invalid tag use was detected',
+                      'All text content has a specified text language',
                       'The PDF contains a level one heading',
                       'The first heading in the PDF is a level 1 heading',
                       'No heading levels are skipped in the PDF',
@@ -281,9 +281,9 @@
                       'None of the figure alternate text appear to be a default',
                       'All form controls have labels',
                       'All form controls have unique labels',
-                      'Only standard PDF tags are used',
-                      'No invalid tag use was detected',
-                      'All text content has a specified text language'],
+                      'The PDF contains XMP metadata',
+                      'The PDF contains a document title in the XMP metadata',
+                      'The PDF is configured to display the document title'],
           whyNotChecked=['?? Not checked ??',
                       '?? Not checked ??',
                       '?? Not checked ??',
@@ -1451,7 +1451,7 @@
 
         style=rd.createElement('style');
         style.setAttribute('type','text/css');
-        style.appendChild(rd.createTextNode('table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black;padding:3px 5px 3px 5px}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin-left:60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
+        style.appendChild(rd.createTextNode('h4{margin-top:5px}table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black;padding:3px 5px 3px 5px}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p,h3+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin:0 0 0 60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
 
         h=rd.createElement('h2');
@@ -1653,7 +1653,13 @@
         div=rd.createElement('div');
         re.appendChild(div);
 
-        renderOutlineLevel(pdf.pdfInfo.outline,div);
+        if (pdf.pdfInfo.outline!==null && pdf.pdfInfo.outline.length && pdf.pdfInfo.outline.length>0) {
+          renderOutlineLevel(pdf.pdfInfo.outline,div);
+        } else {
+          p=rd.createElement('p');
+          p.appendChild(rd.createTextNode('None. The PDF does not contain any bookmarks.'));
+          div.appendChild(p);
+        }
 
         if (pdf.pdfInfo.isStructured==true) {
           pdf.getDocumentStructure().then(function(ds){

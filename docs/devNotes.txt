@@ -179,7 +179,7 @@
 
     *** FIX ASAP***
   -- List abbreviation tags found and what the tag says the abbreviation is.
-  -- Add inspector for abbreviation tags
+  -- Add inspector for abbreviation tags [done]
   -- Spider web pages for abbr tags and see if anything can be learned from the results (default values, possible errors).
   -- List if abbreviation tags are found in the document stats
   -- Not all failures are showing up in HTML report summary (i.e., documents without default lang cause failure, but it was not counted in summary when explaining the score)
