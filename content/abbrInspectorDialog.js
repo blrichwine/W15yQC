@@ -135,6 +135,10 @@ blr.W15yQC.AbbrTagDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', ak.text);
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.title);
           treerow.appendChild(treecell);
 
@@ -183,7 +187,7 @@ blr.W15yQC.AbbrTagDialog = {
   },
 
   fnGetAbbrElements: function (aDocumentsList) {
-    var elList, doc, aAbbrList=[], i, j, node, xPath, sTitle, sRole, sFirstRole, nodeDescription, aLabel, effectiveLabel, effectiveLabelSource;
+    var elList, doc, aAbbrList=[], i, j, node, xPath, sText, sTitle, sRole, sFirstRole, nodeDescription, aLabel, effectiveLabel, effectiveLabelSource;
     try{
       if (aDocumentsList != null && aDocumentsList.length > 0) {
         for (i = 0; i < aDocumentsList.length; i++) {
@@ -201,12 +205,13 @@ blr.W15yQC.AbbrTagDialog = {
               } else {
                 sFirstRole='';
               }
+              sText=node.textContent;
               sTitle=elList[j].getAttribute('title');
               aLabel = blr.W15yQC.fnGetEffectiveLabel(node);
               effectiveLabel=aLabel[0];
               effectiveLabelSource=aLabel[1];
 
-              aAbbrList.push(new blr.W15yQC.abbrElement(node, xPath, nodeDescription, doc, aAbbrList.length, sFirstRole, sTitle, effectiveLabel, effectiveLabelSource));
+              aAbbrList.push(new blr.W15yQC.abbrElement(node, xPath, nodeDescription, doc, aAbbrList.length, sFirstRole, sText, sTitle, effectiveLabel, effectiveLabelSource));
               aAbbrList[aAbbrList.length-1].ownerDocumentNumber=i+1;
             }
           }

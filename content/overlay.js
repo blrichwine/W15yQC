@@ -12237,13 +12237,14 @@ try{
     stateDescription: null
   };
 
-  blr.W15yQC.abbrElement = function (node, xpath, nodeDescription, doc, orderNumber, role, title, effectiveLabel, effectiveLabelSource) {
+  blr.W15yQC.abbrElement = function (node, xpath, nodeDescription, doc, orderNumber, role, text, title, effectiveLabel, effectiveLabelSource) {
     this.node = node;
     this.xpath = xpath;
     this.nodeDescription = nodeDescription;
     this.doc = doc;
     this.orderNumber = orderNumber;
     this.role = role;
+    this.text = text;
     this.title = title;
     this.effectiveLabel = effectiveLabel;
     this.effectiveLabelSource = effectiveLabelSource;
@@ -12258,6 +12259,7 @@ try{
     ownerDocumentNumber: null,
     role: null,
     state: null,
+    text: null,
     title: null,
     effectiveLabel: null,
     effectiveLabelSource: null,
