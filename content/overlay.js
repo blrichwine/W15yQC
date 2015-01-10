@@ -1902,10 +1902,15 @@ ys: 'whys'
         dialogID = 'licenseDialog';
         dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+        dialogPath='';
       }
 
       if(Application.prefs.getValue("extensions.W15yQC.userAgreedToLicense",false)==true) {
         switch (sDialogName) {
+        case 'abbrs':
+          dialogID = 'abbrs';
+          dialogPath = 'chrome://W15yQC/content/abbrInspectorDialog.xul';
+          break;
         case 'accessKeys':
           dialogID = 'accessKeysResultDialog';
           dialogPath = 'chrome://W15yQC/content/accessKeysDialog.xul';
@@ -3990,6 +3995,9 @@ ys: 'whys'
                 aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset'],iRecursion,aStopElements,aElements);
             }
             // end tagName == input
+          } else if (sTagName == 'abbr') {
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title'],iRecursion,aStopElements,aElements);
+
           } else if (sTagName == 'button') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','alt','title','value','name', 'fieldset'],iRecursion,aStopElements,aElements);
 
@@ -12229,6 +12237,35 @@ try{
     stateDescription: null
   };
 
+  blr.W15yQC.abbrElement = function (node, xpath, nodeDescription, doc, orderNumber, role, title, effectiveLabel, effectiveLabelSource) {
+    this.node = node;
+    this.xpath = xpath;
+    this.nodeDescription = nodeDescription;
+    this.doc = doc;
+    this.orderNumber = orderNumber;
+    this.role = role;
+    this.title = title;
+    this.effectiveLabel = effectiveLabel;
+    this.effectiveLabelSource = effectiveLabelSource;
+  };
+
+  blr.W15yQC.abbrElement.prototype = {
+    node: null,
+    xpath: null,
+    nodeDescription: null,
+    doc: null,
+    orderNumber: null,
+    ownerDocumentNumber: null,
+    role: null,
+    state: null,
+    title: null,
+    effectiveLabel: null,
+    effectiveLabelSource: null,
+    notes: null,
+    failed: false,
+    warning: false,
+    stateDescription: null
+  };
 
   blr.W15yQC.badId = function (node, xpath, nodeDescription, doc, orderNumber, ownerDocumentNumber, sID) {
     this.node = node;

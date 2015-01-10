@@ -533,9 +533,11 @@
         }
       }
       if (i<0) {
+        div=rd.createElement('div');
         p=rd.createElement('p');
         p.appendChild(rd.createTextNode('No Role Map'));
-        re.appendChild(p);
+        div.appendChild(p);
+        re.appendChild(div);
       }
       ds.rm=rm;
 
@@ -967,7 +969,7 @@
                 results.bOnlyStandardTagsAreUsed=false;
               }
               sTagName=ds.rm[o[oi].S];
-              span.appendChild(rd.createTextNode(ds.rm[o[oi].S]));
+              span.appendChild(rd.createTextNode('<'+ds.rm[o[oi].S]+'>'));
               oli.appendChild(span);
               span=rd.createElement('span');
               span.setAttribute('class','punctuation');
@@ -1001,7 +1003,7 @@
                 results.bOnlyStandardTagsAreUsed=false;
               }
               sTagName=o[oi].S;
-              span.appendChild(rd.createTextNode(o[oi].S));
+              span.appendChild(rd.createTextNode('<'+o[oi].S+'>'));
               oli.appendChild(span);
             }
           } else if (typeof o[oi].MCID!='undefined') {

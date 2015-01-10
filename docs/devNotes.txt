@@ -96,7 +96,14 @@
         * Warn if no text is found on pages
     -- Check formatting of text to see if headings are missing, number of sequential pages without headings or bookmarks
     -- Check structure and formatting of tables
-
+    -- What does JAWS, NVDA, and VoiceOver do with list items that have special unicode symbols for bullets? How are they read / presented?
+    -- Display tags as <tags> in structure list
+    -- How do Note tags with alt attributes read in JAWS, NVDA, and VoiceOver? Pg 1 before footnote of: file:///Users/brian/Dropbox/dev/supsW15yQC/pdfs/Disability.pdf
+        - Do all note tags need an alt attribute?
+    -- Look at how PDFs with forms are coded.
+        - Which ones work with JAWS, NVDA, VoiceOver?
+        - What tests should we make?
+        - How does file:///Users/brian/Dropbox/dev/supsW15yQC/pdfs/Disability.pdf work? Are the form tags considered labeled in other testers, PAC?
     -- Make a table of contents with links to sections of the PDF Accessibility report [done]
     -- Add accessibility check for tagged PDF Pass/Fail to help explain all of the ?? Not Checked ?? messages when a PDF is not tagged. [done]
     -- text for accessibility checks [DONE]
@@ -112,6 +119,7 @@
         - table summaries [done]
         - table captions [done]
         - Link texts [done]
+        - ABBR texts
         - button texts
         - axis values [done]
       ** Problem ID dialog
@@ -170,6 +178,10 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- List abbreviation tags found and what the tag says the abbreviation is.
+  -- Add inspector for abbreviation tags
+  -- Spider web pages for abbr tags and see if anything can be learned from the results (default values, possible errors).
+  -- List if abbreviation tags are found in the document stats
   -- Not all failures are showing up in HTML report summary (i.e., documents without default lang cause failure, but it was not counted in summary when explaining the score)
   -- Add option to detect rwg page insertions and ignore them. have it on by default. [Done]
   -- Develop unit test platform

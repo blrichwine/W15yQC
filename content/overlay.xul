@@ -114,6 +114,7 @@
     <toolbarbutton id="W15yTPB-HTMLFullReport" label="&W15yQCFullReport;" class="toolbarbutton" oncommand="blr.W15yQC.openHTMLReportWindow(false, '', window.top.content.document);" />
     <toolbarbutton id="W15yTPB-InspectorDialogs" label="Inspectors" type="menu" onmouseover="" class="toolbarbutton">
       <menupopup onpopupshowing="">
+          <menuitem id="W15yTPBMI-AbbrsDialog" accesskey="" label="Abbreviations" oncommand="blr.W15yQC.openDialog('abbrs');"/>
           <menuitem id="W15yTPBMI-AccessKeysDialog" accesskey="" label="Access Keys" oncommand="blr.W15yQC.openDialog('accessKeys');"/>
           <menuitem id="W15yTPBMI-LandmarksDialog" accesskey="" label="ARIA Landmarks" oncommand="blr.W15yQC.openDialog('ariaLandmarks');"/>
           <menuitem id="W15yTPBMI-DocumentsDialog" accesskey="" label="Documents" oncommand="blr.W15yQC.openDialog('documents');"/>
