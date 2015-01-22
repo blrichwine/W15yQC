@@ -5484,9 +5484,10 @@ var PDFDocument = (function PDFDocumentClosure() {
 
     get documentStructure() {
       var obj = null;
+
       try {
         obj = this.readStructure();
-      } catch (ex) {
+      } catch (ex) { alert("ERROR READING STRUCTURE!!!"+blr.W15yQC.objectToString(ex));
         if (ex instanceof MissingDataException) {
           throw ex;
         }
@@ -5499,7 +5500,7 @@ var PDFDocument = (function PDFDocumentClosure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
       info('readStructure STARTING');
       var rootDict, value=false;
-      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type, objr;
+      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type, objr, bErrors=false;
 
       function addStructElementChildren(strec) {
         var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, indx, i;
@@ -5511,6 +5512,14 @@ var PDFDocument = (function PDFDocumentClosure() {
          return s;
         }
 
+        function filter2(s) {
+         if(s!==null && s.replace) {
+          return s.replace(/þÿ/g,'');
+         }
+         return s;
+        }
+
+try{
         if (strec!=null && strec.map!=null && typeof strec.map.K!='undefined') { // TODO: what is better here? typeof or hasOwnProperty?
          if(typeof strec.map.K.length != 'undefined' && strec.map.K.length !==null) { // Have an array
           for (k=0;k<strec.map.K.length;k++) {
@@ -5520,50 +5529,72 @@ var PDFDocument = (function PDFDocumentClosure() {
             strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
             if (strecc!=null && strecc.map) {
              type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
+             if(/form/i.test(type)){
+              // alert("Have a form! (1)");
+             }
              if (type!=null) {
               strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
              }
              children.push({"S":filter(type), "children":addStructElementChildren(strecc)});
              indx=children.length-1;
-             if(/form/i.test(type) && typeof strecc.map !='undefined' && typeof strecc.map.K !='undefined' &&
-               (typeof strecc.map.K.Obj !='undefined' || (strecc.map.K.length && strecc.map.K[0].map && strecc.map.K[0].map.Obj))) {
-              try{
-               if(typeof strecc.map.K.Obj !='undefined') {
-                objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num, strecc.map.K.map.Obj.gen));
-                if(objr!=null) {
-                 children[indx].objr={};
-                 if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
-                 if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
-                 if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
-                 if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
-                }
-               } else {
-                for(i=0;i<strecc.map.K.length;i++) {
-                 objr=xref.fetch(new Ref(strecc.map.K[i].map.Obj.num, strecc.map.K[i].map.Obj.gen));
-                 if(objr!=null) {
-                  children[indx].objr={};
-                  if(typeof objr.map.FT != 'undefined' && typeof children[indx].objr.FT === 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
-                  if(typeof objr.map.Ff != 'undefined' && typeof children[indx].objr.Ff === 'undefined') { children[indx].objr.Ff=objr.map.Ff }
-                  if(typeof objr.map.T != 'undefined' && typeof children[indx].objr.T === 'undefined') { children[indx].objr.T=filter(objr.map.T); }
-                  if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
-                 }
-                }
+              // if(/form/i.test(type)) { alert("START(1)\n"+blr.W15yQC.objectToString(strecc));}
+           if(/form/i.test(type) && typeof strecc.map !='undefined' && typeof strecc.map.K !='undefined') {
+              // alert("inside");
+            try{
+             if(typeof strecc.map.K.map !='undefined' && typeof strecc.map.K.map.Obj !='undefined') {
+                // alert("fetching 1 object from K");
+              objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num, strecc.map.K.map.Obj.gen));
+              if(objr!=null) {
+                 // alert("have object:"+blr.W15yQC.objectToString(objr));
+               children[indx].objr={};
+               if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
+               if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
+               if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
+               if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
+               if(typeof objr.map.Opt != 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
+               if(typeof objr.map.V != 'undefined') { children[indx].objr.V=filter(objr.map.V); }
+               if(typeof objr.map.Type != 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
+              }
+             } else {
+              // alert("Looking at K as an array");
+              for(i=0;i<strecc.map.K.length;i++) {
+               // alert("Fetching object:"+i+" from K");
+               objr=xref.fetch(new Ref(strecc.map.K[i].map.Obj.num, strecc.map.K[i].map.Obj.gen));
+               if(objr!=null) {
+                 // alert("Have object: "+blr.W15yQC.objectToString(objr));
+                if(typeof children[indx].objr === 'undefined') { children[indx].objr={}; }
+                if(typeof objr.map.FT != 'undefined' && typeof children[indx].objr.FT === 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
+                if(typeof objr.map.Ff != 'undefined' && typeof children[indx].objr.Ff === 'undefined') { children[indx].objr.Ff=objr.map.Ff }
+                if(typeof objr.map.T != 'undefined' && typeof children[indx].objr.T === 'undefined') { children[indx].objr.T=filter(objr.map.T); }
+                if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
+                if(typeof objr.map.Opt != 'undefined' && typeof children[indx].objr.Opt === 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
+                if(typeof objr.map.V != 'undefined' && typeof children[indx].objr.V === 'undefined') { children[indx].objr.V=filter(objr.map.V); }
+                if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
                }
-              } catch(err) {
-                alert(blr.W15yQC.objectToString(err));
-                alert(blr.W15yQC.objectToString(strecc));
               }
              }
+            } catch(err) {
+              alert(blr.W15yQC.objectToString(err));
+            }
+             // alert("End of form tag processing");
+           } else if(/form/i.test(type)){
+             // alert("NOT HANDLING THIS FORM TAG!!!! (1): "+blr.W15yQC.objectToString(strecc));
+           }
              if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
+             if(typeof strecc.map.FT != 'undefined') { children[indx].FT=filter(strecc.map.FT); }
+             if(typeof strecc.map.Ff != 'undefined') { children[indx].Ff=filter(strecc.map.Ff); }
+             if(typeof strecc.map.TU != 'undefined') { children[indx].TU=filter(strecc.map.TU); }
+             if(typeof strecc.map.Opt != 'undefined') { children[indx].Opt=filter2(blr.W15yQC.objectToString(strecc.map.Opt)); }
+             if(typeof strecc.map.V != 'undefined') { children[indx].V=filter(strecc.map.V); }
              if(typeof strecc.map.Lang != 'undefined') { children[indx].Lang=filter(strecc.map.Lang); }
              if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
              if(typeof strecc.map.E != 'undefined') { children[indx].E=filter(strecc.map.E); }
              if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
-             if(typeof strecc.map.RowSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.RowSpan); }
-             if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.ColSpan); }
-             if(typeof strecc.map.Headers != 'undefined') { children[indx].ActualText=filter(strecc.map.Headers); }
-             if(typeof strecc.map.Scope != 'undefined') { children[indx].ActualText=filter(strecc.map.Scope); }
-             if(typeof strecc.map.Summary != 'undefined') { children[indx].ActualText=filter(strecc.map.Summary); }
+             if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); }
+             if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ColSpan=filter(strecc.map.ColSpan); }
+             if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
+             if(typeof strecc.map.Scope != 'undefined') { children[indx].Scope=filter(strecc.map.Scope); }
+             if(typeof strecc.map.Summary != 'undefined') { children[indx].Summary=filter(strecc.map.Summary); }
              if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
              if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
             }
@@ -5572,63 +5603,110 @@ var PDFDocument = (function PDFDocumentClosure() {
          } else if(typeof strec.map.K.num === 'number') {
            strecc=xref.fetch(new Ref(strec.map.K.num,strec.map.K.gen));
            type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
+             if(/form/i.test(type)){
+              // alert("Have a form! (2)");
+             }
            if (type!=null) {
             strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
            }
            children.push({"S":filter(type), "children":addStructElementChildren(strecc)});
            indx=children.length-1;
-           if(/form/i.test(type) && typeof strecc.map !='undefined' && typeof strecc.map.K !='undefined' && typeof strecc.map.K.Obj !='undefined') {
+              // if(/form/i.test(type)) { alert("START(2)\n"+blr.W15yQC.objectToString(strecc));}
+           if(/form/i.test(type) && typeof strecc.map !='undefined' && typeof strecc.map.K !='undefined') {
+              // alert("inside");
             try{
-             if(typeof strecc.map.K.Obj !='undefined') {
+             if(typeof strecc.map.K.map !='undefined' && typeof strecc.map.K.map.Obj !='undefined') {
+                // alert("fetching 1 object from K");
               objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num, strecc.map.K.map.Obj.gen));
               if(objr!=null) {
+                 // alert("have object:"+blr.W15yQC.objectToString(objr));
                children[indx].objr={};
                if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
                if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
                if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
                if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
+               if(typeof objr.map.Opt != 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
+               if(typeof objr.map.V != 'undefined') { children[indx].objr.V=filter(objr.map.V); }
+               if(typeof objr.map.Type != 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
               }
              } else {
+              // alert("Looking at K as an array");
               for(i=0;i<strecc.map.K.length;i++) {
+               // alert("Fetching object:"+i+" from K");
                objr=xref.fetch(new Ref(strecc.map.K[i].map.Obj.num, strecc.map.K[i].map.Obj.gen));
                if(objr!=null) {
-                children[indx].objr={};
+                 // alert("Have object");
+                if(typeof children[indx].objr === 'undefined') { children[indx].objr={}; }
                 if(typeof objr.map.FT != 'undefined' && typeof children[indx].objr.FT === 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
                 if(typeof objr.map.Ff != 'undefined' && typeof children[indx].objr.Ff === 'undefined') { children[indx].objr.Ff=objr.map.Ff }
                 if(typeof objr.map.T != 'undefined' && typeof children[indx].objr.T === 'undefined') { children[indx].objr.T=filter(objr.map.T); }
                 if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
+                if(typeof objr.map.Opt != 'undefined' && typeof children[indx].objr.Opt === 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
+                if(typeof objr.map.V != 'undefined' && typeof children[indx].objr.V === 'undefined') { children[indx].objr.V=filter(objr.map.V); }
+                if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
                }
               }
              }
             } catch(err) {
               alert(blr.W15yQC.objectToString(err));
             }
+             // alert("End of form tag processing");
+           } else if(/form/i.test(type)){
+             // alert("NOT HANDLING THIS FORM TAG!!!! (2): "+blr.W15yQC.objectToString(strecc));
            }
            if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
+           if(typeof strecc.map.FT != 'undefined') { children[indx].FT=filter(strecc.map.FT); }
+           if(typeof strecc.map.Ff != 'undefined') { children[indx].Ff=filter(strecc.map.Ff); }
+           if(typeof strecc.map.TU != 'undefined') { children[indx].TU=filter(strecc.map.TU); }
+           if(typeof strecc.map.Opt != 'undefined') { children[indx].Opt=filter2(blr.W15yQC.objectToString(strecc.map.Opt)); }
+           if(typeof strecc.map.V != 'undefined') { children[indx].V=filter(strecc.map.V); }
            if(typeof strecc.map.Lang != 'undefined') { children[indx].Lang=filter(strecc.map.Lang); }
            if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
            if(typeof strecc.map.E != 'undefined') { children[indx].E=filter(strecc.map.E); }
            if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
-           if(typeof strecc.map.RowSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.RowSpan); }
-           if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ActualText=filter(strecc.map.ColSpan); }
-           if(typeof strecc.map.Headers != 'undefined') { children[indx].ActualText=filter(strecc.map.Headers); }
-           if(typeof strecc.map.Scope != 'undefined') { children[indx].ActualText=filter(strecc.map.Scope); }
-           if(typeof strecc.map.Summary != 'undefined') { children[indx].ActualText=filter(strecc.map.Summary); }
+           if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); }
+           if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ColSpan=filter(strecc.map.ColSpan); }
+           if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
+           if(typeof strecc.map.Scope != 'undefined') { children[indx].Scope=filter(strecc.map.Scope); }
+           if(typeof strecc.map.Summary != 'undefined') { children[indx].Summary=filter(strecc.map.Summary); }
            if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
            if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
          } else if(typeof strec.map.K === 'number') {
           children.push({"MCID":strec.map.K});
+          if(/form/i.test(type)){
+             // alert("NOT HANDLING THIS FORM TAG!!!! (3): "+blr.W15yQC.objectToString(strecc));
+          }
+         } else if(/form/i.test(type)){
+             // alert("NOT HANDLING THIS FORM TAG!!!! (4): "+blr.W15yQC.objectToString(strecc));
          }
         }
-
+} catch(ex) {
+ bErrors=true;
+}
         return children;
       }
 
       function indexPagesByRef(pages,iNum,iGen) {
-       var pi;
+       var pi, obj;
        if (typeof pages.map!='undefined' && typeof pages.map.Kids!='undefined' ) {
         for (pi=0;pi<pages.map.Kids.length;pi++) {
-         indexPagesByRef(xref.fetch(new Ref(pages.map.Kids[pi].num,pages.map.Kids[pi].gen)),pages.map.Kids[pi].num,pages.map.Kids[pi].gen);
+         obj=null;
+         try {
+           obj=xref.fetch(new Ref(pages.map.Kids[pi].num,pages.map.Kids[pi].gen));
+         } catch(ex) {
+          try {
+           blr.W15yQC.fnDoEvents();
+           obj=xref.fetch(new Ref(pages.map.Kids[pi].num,pages.map.Kids[pi].gen));
+          } catch(ex) {
+           try {
+            blr.W15yQC.fnDoEvents();
+            obj=xref.fetch(new Ref(pages.map.Kids[pi].num,pages.map.Kids[pi].gen));
+           } catch(ex) {
+             bErrors=true;
+           }
+          }
+         }
+         if(obj!==null) { indexPagesByRef(obj,pages.map.Kids[pi].num,pages.map.Kids[pi].gen); }
         }
        } else {
         if(typeof pageIndexByRef[iNum]=='undefined') {
@@ -5679,7 +5757,11 @@ var PDFDocument = (function PDFDocumentClosure() {
               }
               so={"S":'Sect (implied)', "children":[]}; // Assuming a Sect as root since multiple K values is technically a syntax error
               for(i=0;i<str.map.K.length;i++) {
-               stre=xref.fetch(new Ref(str.map.K[i].num,str.map.K[i].gen));
+               try {
+                stre=xref.fetch(new Ref(str.map.K[i].num,str.map.K[i].gen));
+               } catch(ex) {
+                bErrors=true;
+               }
                if (stre!=null && stre.map) {
                 ca=addStructElementChildren(stre);
                 for (j=0;j<ca.length;j++) {
@@ -5689,7 +5771,11 @@ var PDFDocument = (function PDFDocumentClosure() {
               }
               structure.push(so);
              } else if(str.map.K && str.map.K.num) {
-               stre=xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
+               try {
+                stre=xref.fetch(new Ref(str.map.K.num,str.map.K.gen));
+               } catch(ex) {
+                 bErrors=true;
+               }
                if (stre!=null && stre.map) {
                 type=(stre.map.S && stre.map.S.name)?stre.map.S.name:null;
                 if (type!=null) {
@@ -5712,6 +5798,8 @@ var PDFDocument = (function PDFDocumentClosure() {
       if (structure!=null) {
        structure.stats=strStats;
       }
+      structure.errors=bErrors;
+
       return structure;
     },
 

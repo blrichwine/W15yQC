@@ -4025,9 +4025,8 @@ ys: 'whys'
           } else if (sTagName == 'iframe' || sTagName == 'frame') { // JAWS 14 FF19 Win8: ignore doc title, title attribute, aria-labelledby, aria-label
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','title','aria-labelledby', 'aria-label'],iRecursion,aStopElements,aElements);
 
-          } else if (sTagName == 'article' || sTagName == 'aside' || sTagName == 'header' || sTagName == 'footer' || sTagName == 'nav' || sTagName == 'section') { // TODO: QA This
+          } else if (sTagName == 'article' || sTagName == 'aside' || sTagName == 'header' || sTagName == 'footer' || sTagName == 'main' || sTagName == 'nav' || sTagName == 'section') { // TODO: QA This
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first', 'aria', 'title'],iRecursion,aStopElements,aElements);
-
           } else if (blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnStringHasContent(sRole)) { // TODO: Vet this, not checked with JAWS
             if(/^(button|checkbox|columnheader|directory|gridcell|heading|landmark|link|listitem|menuitem|menuitemcheckbox|menuitemradio|option|radio|row|rowgroup|rowheader|section|sectionhead|tab|treeitem)/.test(sRole)==true) {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','child text','fieldset'],iRecursion,aStopElements,aElements); // TODO: Does the title attribute really trump child text for 'Name From: Contents' roles?

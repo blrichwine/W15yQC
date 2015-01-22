@@ -58,6 +58,7 @@
  * TODO:
 
    PDF Checker
+     -- why missing last page: http://www.adobe.com/content/dam/Adobe/en/accessibility/products/acrobat/pdfs/acrobat-xi-accessible-forms.pdf ???
      -- spider PDFs and generate PDF tag nesting hash to study for incorrect tag nesting examples
      -- Find PDFs to use as test suite
         - include
@@ -178,6 +179,8 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- Link text too long warning: http://www.uindy.edu/
+  -- HTML section element (like main) should not be labeled by child text, see: http://www.washington.edu/
   -- List abbreviation tags found and what the tag says the abbreviation is.
   -- Add inspector for abbreviation tags [done]
   -- Spider web pages for abbr tags and see if anything can be learned from the results (default values, possible errors).

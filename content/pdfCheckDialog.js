@@ -76,57 +76,19 @@
     var h, div, span, el, l, li, key, i, meta, style, p, pre, m, sTitle;
     var prevPg=-19392, pgNum=1, numberOfPages=0, ticks=0;
 
-    var tagNestingChecks = {
-      "P": {
-        requiredParents: null,
-        invalidParents: ['P|H|H\d|TOC|TABLE|TR|TBody|THead|TFoot'],
-        allowedParents: ['Document|Part|Art|Sect|Div|TD|TH|Span'],
-        requiredChildren: null,
-        validRE: null,
-        invalidRE: null,
-        shouldNotBeEmpty: true,
-        shouldBeEmpty: false,
-        shouldHaveAltText: false
-      },
-      "Table": {
-        requiredParents: null,
-        invalidParents: ['P|H|H\d|TOC|TABLE|TR|TBody|THead|TFoot|TH|TD'],
-        allowedParents: ['Document|Part|Art|Sect|Div'],
-        requiredChildren: ['TR','TD'],
-        validRE: [/Table\|(THead\|TR|TBody\|TR|TFoot\|TR)\|(TH|TD)/],
-        invalidRE: [/Table\|(Table|TD|TH|P)\b/,/\bTable\|.+\|Table\b/],
-        shouldNotBeEmpty: true,
-        shouldBeEmpty: false,
-        shouldHaveAltText: false
-      },
-      "Figure": {
-        requiredParents: null,
-        invalidParents: ['Figure'],
-        allowedParents: null,
-        requiredChildren: null,
-        validRE: null,
-        invalidRE: null,
-        shouldNotBeEmpty: false,
-        shouldBeEmpty: true,
-        shouldHaveAltText: true
-      },
-      "Form": {
-        requiredParents: null,
-        invalidParents: ['Form'],
-        allowedParents: null,
-        requiredChildren: null,
-        validRE: null,
-        invalidRE: null,
-        shouldNotBeEmpty: false,
-        shouldBeEmpty: true,
-        shouldHaveAltText: false
-      }
-    };
+    var formControlTypes = { "Btn":"Button",
+                      "Tx":"Text",
+                      "Ch":"Choice",
+                      "Sig":"Signature"
+                    };
+
+    var formControls=[];
 
     var results={ "bDocHasXmpMetaData":null,
                   "bDocTitleInXmpMetaData":null,
                   "bDocTitleConfiguredToDisplay":null,
                   "bIsStructuredNoSuspectsAndTagged":null,
+                  "bNoErrorsParsingDocumentStructure":null,
                   "bH1Present":null,
                   "bFirstHeadingIsH1":null,
                   "bHeadingLevelsNotSkipped":null,
@@ -158,6 +120,7 @@
       "bLIShouldBeInL": [],
       "bTOCIShouldBeInTOC:": []
     }
+
     function appendReport() {
       var mainDiv;
 
@@ -253,6 +216,7 @@
     function renderResults() {
       var el=re.getElementById('a11yResults'), i, ul, li, span,
           resultKeys=['bIsStructuredNoSuspectsAndTagged',
+                      'bNoErrorsParsingDocumentStructure',
                       'bOnlyStandardTagsAreUsed',
                       'bTagUseAppearsValid',
                       'bAllTextContentHasMarkedLang',
@@ -269,6 +233,7 @@
                       'bDocTitleInXmpMetaData',
                       'bDocTitleConfiguredToDisplay'],
           resultText=['The PDF is structured, contains no suspects, and is tagged',
+                      'Document structure was parsed successfully',
                       'Only standard PDF tags are used',
                       'No invalid tag use was detected',
                       'All text content has a specified text language',
@@ -586,7 +551,9 @@
             //blr.W15yQC.pdfCheckDialog.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
             //blr.W15yQC.pdfCheckDialog.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
           if (typeof dsStack[dsi][dsiIndexes[dsi]].Pg!='undefined') { // Track the page number
-            pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
+            try {
+              pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
+            } catch(ex) {}
             getNext();
             getTextForDsi();
           } else if (typeof dsStack[dsi][dsiIndexes[dsi]].MCID!='undefined') {
@@ -849,7 +816,7 @@
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
+      var oi,ol,oli, k, l, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
@@ -899,12 +866,14 @@
           s='';
           sTagName='';
           errTxt='';
-          if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
-            pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
-          } else if (/^(l|table|thead|tbody|tfoot|art|div|form|part|sect)$/i.test(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]:o[oi].S) && o[oi].children!=null && o[oi].children.length>0 &&
-                     typeof o[oi].children[0].Pg!='undefined' && typeof o[oi].children[0].Pg.gen!='undefined') {
-            pgNum=ds.pageIndexByRef[o[oi].children[0].Pg.num][o[oi].children[0].Pg.gen]+1;
-          }
+          try{
+            if (o[oi].Pg!=null && typeof o[oi].Pg.num!='undefined' && typeof o[oi].Pg.gen!='undefined') {
+              pgNum=ds.pageIndexByRef[o[oi].Pg.num][o[oi].Pg.gen]+1;
+            } else if (/^(l|table|thead|tbody|tfoot|art|div|form|part|sect)$/i.test(ds.rm.hasOwnProperty(o[oi].S)?ds.rm[o[oi].S]:o[oi].S) && o[oi].children!=null && o[oi].children.length>0 &&
+                       typeof o[oi].children[0].Pg!='undefined' && typeof o[oi].children[0].Pg.gen!='undefined') {
+              pgNum=ds.pageIndexByRef[o[oi].children[0].Pg.num][o[oi].children[0].Pg.gen]+1;
+            }
+          } catch(ex) {}
           if (pgNum!=prevPg) {
             if(prevPg>0) { oli.setAttribute('class','newPage'); }
             prevPg=pgNum;
@@ -983,7 +952,6 @@
               span.setAttribute('class','punctuation');
               span.appendChild(rd.createTextNode(')'));
               oli.appendChild(span);
-
             } else {
               span=rd.createElement('span');
               if (o[oi].S!==null && standardElements.indexOf(o[oi].S.toLowerCase())>=0) {
@@ -994,9 +962,6 @@
                   } else if(blr.W15yQC.fnAppearsToBeDefaultAltText(o[oi]['Alt'])) {
                     results.bAllFiguresHaveAltTextNotDefault=false;
                   }
-                }
-                if (/form/i.test(o[oi].S)) {
-                  //alert('form: '+blr.W15yQC.objectToString(o[oi]));
                 }
               } else {
                 span.setAttribute('class','pdfTag nonStandardTag');
@@ -1108,6 +1073,52 @@
             }
             if (typeof o[oi].objr.TU!='undefined') {
               oli.appendChild(spanAttrValue('Obj.TU','attr',o[oi].objr.TU,'attrValue'));
+            }
+            if (typeof o[oi].objr.Opt!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.Opt','attr',o[oi].objr.Opt,'attrValue'));
+            }
+            if (typeof o[oi].objr.V!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.V','attr',o[oi].objr.V,'attrValue'));
+            }
+          }
+          if (/form/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
+            if(results.bAllFormControlsHaveLabels===null) { // Must be first form control
+              formControls=[];
+              results.bAllFormControlsHaveLabels=true;
+              results.bAllFormControlsHaveUniqueLabels=true;
+            }
+            formControls.push({"FT":null, "Ff":null, "T":null, "TU":null, "Opt":null, "V":null, "Pg":null, "Unique":true});
+            k=formControls.length-1;
+            if (typeof o[oi].objr=='undefined' || typeof o[oi].objr.TU=='undefined' || !blr.W15yQC.fnStringHasContent(o[oi].objr.TU)) {
+              results.bAllFormControlsHaveLabels=false;
+              formControls[k].TU='';
+            } else {
+              formControls[k].TU=o[oi].objr.TU;
+            }
+            if (typeof o[oi].objr!='undefined') {
+              if (typeof o[oi].objr.FT!='undefined') {
+                formControls[k].FT=o[oi].objr.FT;
+              }
+              if (typeof o[oi].objr.Ff!='undefined') {
+                formControls[k].Ff=o[oi].objr.Ff;
+              }
+              if (typeof o[oi].objr.T!='undefined') {
+                formControls[k].T=o[oi].objr.T;
+              }
+              if (typeof o[oi].objr.Opt!='undefined') {
+                formControls[k].Opt=o[oi].objr.Opt;
+              }
+              if (typeof o[oi].objr.V!='undefined') {
+                formControls[k].V=o[oi].objr.V;
+              }
+            }
+            formControls[k].Pg=pgNum;
+            for(l=0;l<k;l++) {
+              if (blr.W15yQC.fnStringsEffectivelyEqual(formControls[k].TU,formControls[l].TU)) {
+                formControls[k].Unique=false;
+                formControls[l].Unique=false;
+                results.bAllFormControlsHaveUniqueLabels=false;
+              }
             }
           }
           if (bInBrackets) {
@@ -1335,6 +1346,95 @@
       el.appendChild(ol);
     }
 
+    function renderFormControlsTable() {
+      var el=re.getElementById('formControlsTable'), i, table, th, td, tr, thead, tbody, p, sNotes;
+
+      if (formControls!==null && formControls.length>0) {
+        table=rd.createElement('table');
+        table.setAttribute('id','formControlsTable');
+
+        thead=rd.createElement('thead');
+        tr=rd.createElement('tr');
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('#'));
+        th.setAttribute('aria-label','Number');
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Page'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Type'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Name'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Label'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Options'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Value'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Notes'));
+        tr.appendChild(th);
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+        tbody=rd.createElement('tbody');
+
+        for(i=0;i<formControls.length; i++) {
+          tr=rd.createElement('tr');
+          sNotes='';
+          if (!formControlTypes.hasOwnProperty(formControls[i].FT)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Not a valid use of the form tag',', ');
+          }
+          if (!formControls[i].Unique) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Label is not unique',', ');
+          }
+          if (!blr.W15yQC.fnStringHasContent(formControls[i].TU)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Control is not labeled',', ');
+          }
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode((i+1).toString()));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(formControls[i].Pg));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.setAttribute('class','formControlType');
+          td.appendChild(rd.createTextNode(formControls[i].FT+' ('+(formControlTypes.hasOwnProperty(formControls[i].FT)?formControlTypes[formControls[i].FT]:'Invalid')+')'));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(formControls[i].T));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(formControls[i].TU));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(formControls[i].Opt));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(formControls[i].V));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(sNotes));
+          tr.appendChild(td);
+
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+
+        el.appendChild(table);
+      } else {
+        p=rd.createElement('p');
+        p.appendChild(rd.createTextNode('No form controls found.'));
+        el.appendChild(p);
+      }
+    }
+
     function renderAndCheckDocStructure(el) {
       var rmi, ol, oli, div, p, keys, i=-1, dlM, defaultLang;
       //blr.W15yQC.pdfCheckDialog.log('DS:'+blr.W15yQC.objectToString(ds));
@@ -1364,6 +1464,13 @@
       el.appendChild(div); // Place holder for content that gets rendered later!
 
       h=rd.createElement('h3');
+      h.appendChild(rd.createTextNode('Form Controls:'));
+      el.appendChild(h);
+      div=rd.createElement('div');
+      div.setAttribute('id','formControlsTable');
+      el.appendChild(div); // Place holder for content that gets rendered later!
+
+      h=rd.createElement('h3');
       h.appendChild(rd.createTextNode('Headings:'));
       el.appendChild(h);
       div=rd.createElement('div');
@@ -1385,9 +1492,12 @@
 
       blr.W15yQC.pdfTagNestingHash=new blr.W15yQC.HashTable();
 
+      results.bNoErrorsParsingDocumentStructure=ds.errors===false;
+
       renderDocStructureLevel(ds,div,defaultLang);
       renderEffectiveLanguages();
       renderUniqueTagNestings();
+      renderFormControlsTable();
 
       enableReportButtons(true,true);
       renderResults();
