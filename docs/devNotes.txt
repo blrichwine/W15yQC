@@ -179,8 +179,14 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- Privacy information
+  -- Feedback / Comments feature
+  -- How others can help
+  -- Known bugs list
+  -- Auto configure project scanner
+  -- Does "not all text contained in a landmark" failure include HTML5 section elements appropriately?
   -- Link text too long warning: http://www.uindy.edu/
-  -- HTML section element (like main) should not be labeled by child text, see: http://www.washington.edu/
+  -- HTML section element (like main) should not be labeled by child text, see: http://www.washington.edu/ [done 1/22/2015]
   -- List abbreviation tags found and what the tag says the abbreviation is.
   -- Add inspector for abbreviation tags [done]
   -- Spider web pages for abbr tags and see if anything can be learned from the results (default values, possible errors).

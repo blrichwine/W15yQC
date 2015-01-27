@@ -29,9 +29,9 @@
   *** FAQ Entries
     -- Why do some links not appear in the list?
     --
-  
-  
-  
+
+
+
 	  video and support page for the color chooser tool
 	  video and support page for the contrast inspect tool
 	  video and support page for the problem ID tool
@@ -68,7 +68,15 @@ Simple protocol development:
         Text Reading Order
         Charts & Accessibility
 
-
+Who are the people that might visit the site
+  -- who would get there by mistake?
+  -- People who don't know anything about accessibility
+       -- What is accessibility?
+       -- How should I learn it?
+       -- What are the best resources for learning it?
+       -- Who can help me with it?
+  -- People wondering if this is the tool for them?
+       -- 
 Background for Phase II features:
 
 Are there any decent enterprise accessibility testing tools?

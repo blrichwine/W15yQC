@@ -2930,6 +2930,7 @@ ys: 'whys'
           case 'get more':
           case 'get details':
           case 'learn more':
+          case 'link':
           case 'here':
           case 'no':
           case 'yes':
