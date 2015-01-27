@@ -986,6 +986,16 @@ ys: 'whys'
       return s;
     },
 
+    countWords: function(s){
+      if (s!==null) {
+        s = s.replace(/(^\s*)|(\s*$)/g,"");//exclude  start and end white-space
+        s = s.replace(/\s{2,}/g," ");//2 or more space to 1
+        s = s.replace(/[\n\r]\s+/,"\n"); // exclude newline with a start spacing
+        return s.split(' ').length;
+      }
+      return 0;
+    },
+
     fnFormatList: function (s) {
       if(s!=null ) {s = s.replace(/,/g, ', ');}
       return s;
@@ -1264,6 +1274,8 @@ ys: 'whys'
       lnkTargetIDisNotUnique: [false,2,0,false,null],
       lnkTargetIDNotValid: [false,1,0,false,null],
       lnkServerSideImageMap: [false,2,0,false,null],
+      lnkTextTooLong: [false,2,0,false,null],
+      lnkTextTooManyWords: [false,1,0,false,null],
       lnkNotInTabOrder: [false,2,0,true,null],
       lnkIDNotValid: [false,1,0,false,null],
       lnkIDNotUnique: [false,2,0,false,null],
@@ -9451,6 +9463,11 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
         linkText = blr.W15yQC.fnTrim(aLinksList[i].effectiveLabel.toLowerCase());
 
+        if (linkText.length>140) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextTooLong', [linkText.length,140]); // QA This
+        } else if (blr.W15yQC.countWords(linkText)>18) {
+          blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTextTooManyWords', [blr.W15yQC.countWords(linkText),18]); // QA This
+        }
         if (aLinksList[i].text == null && blr.W15yQC.fnStringHasContent(aLinksList[i].effectiveLabel)==false) {
           oW15yResults.PageScore.bAllLinksHaveText=false;
           blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTxtMissing'); //
