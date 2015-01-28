@@ -179,20 +179,18 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- create a settings object and consider how it would be used. How do settings differ from plug-in prefs?
   -- Privacy information
   -- Feedback / Comments feature
   -- How others can help
   -- Known bugs list
   -- Auto configure project scanner
   -- Does "not all text contained in a landmark" failure include HTML5 section elements appropriately?
-  -- Link text too long warning: http://www.uindy.edu/
-  -- HTML section element (like main) should not be labeled by child text, see: http://www.washington.edu/ [done 1/22/2015]
   -- List abbreviation tags found and what the tag says the abbreviation is.
   -- Add inspector for abbreviation tags [done]
   -- Spider web pages for abbr tags and see if anything can be learned from the results (default values, possible errors).
   -- List if abbreviation tags are found in the document stats
   -- Not all failures are showing up in HTML report summary (i.e., documents without default lang cause failure, but it was not counted in summary when explaining the score)
-  -- Add option to detect rwg page insertions and ignore them. have it on by default. [Done]
   -- Develop unit test platform
      -- run as separate dialog
      -- include ability to run tests from a folder outside of package
@@ -201,8 +199,6 @@
      -- tests for color contrast computations
      -- tests for string, url, etc. handling functions
   -- ability to run project scanner on local files -- does this work?
-  -- Check PDF URL check in fnCheckLinks function needs to normalize the URL to check relative links to pdfs [done]
-  -- Add error checking to PDF quick checks in fnCheckLinks function [done]
   -- Get rid of "check links" option in option dialog, and add check links feature to links inspector dialog
   -- Better detection of elements with background images (less false positives when checking contrast -- is this possible?)
   -- Check contrast between link text and surrounding text if link text is not underlined.
@@ -756,6 +752,11 @@ HTML5 Elements to test
       - Allow configurable values that are listed as not meaningful
 
 FIXED
+    -- Check PDF URL check in fnCheckLinks function needs to normalize the URL to check relative links to pdfs [done]
+    -- Add error checking to PDF quick checks in fnCheckLinks function [done]
+    -- Link text too long warning: http://www.uindy.edu/ [done 1/26/2015]
+    -- HTML section element (like main) should not be labeled by child text, see: http://www.washington.edu/ [done 1/22/2015]
+    -- Add option to detect rwg page insertions and ignore them. have it on by default. [Done]
     -- Landmarks should only be placed on div, span and selected HTML5 sectioning elements [7/12/2014]
     -- improve list highlighter to highlight role="list" [7/12/2014]
     -- Semantic view tool does not appear to support aria-label on buttons. google search results for example. [7/12/2014]

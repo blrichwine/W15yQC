@@ -30,6 +30,7 @@
 				<xul:menu id="file-menu" label="File">
 					<xul:menupopup id="file-popup">
 						<xul:menuitem label="New Project" oncommand="blr.W15yQC.ScannerWindow.newProject()"/>
+						<xul:menuitem label="New Project from URL" oncommand="blr.W15yQC.ScannerWindow.newProject(true)"/>
 						<xul:menuitem label="Open Project" oncommand="blr.W15yQC.ScannerWindow.openProject()"/>
 	 					<xul:menu label="Recent Files" id="recentFiles-menu">
 								<xul:menupopup id="recentFiles-menupopup">

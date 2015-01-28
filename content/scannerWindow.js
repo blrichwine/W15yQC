@@ -154,6 +154,7 @@ Components.utils.import("resource://gre/modules/osfile.jsm");
  * Returns:
  */
 blr.W15yQC.ScannerWindow = {
+  passedURL: null,
   urlList: [],
   urlDisplayOrder: [],
   urlToRowMap: [],
@@ -189,9 +190,9 @@ blr.W15yQC.ScannerWindow = {
   bUpdatingProject: false,
   bWindowClosing: false,
   bCmdIsPressed: false,
-  
+
   reTitleNotMeaningful: /^{*(block *title|default|default *page|default *title|default *page *title|home|home *page|main|main *page|main *page *content|page|page *title|redirect(ing)?|title|web *page|web *site|welcome)}*$/i,
-  
+
   fnUpdateStatus: function(sLabel) {
     document.getElementById('progressMeterLabel').value=sLabel;
     blr.W15yQC.fnDoEvents();
@@ -231,6 +232,12 @@ blr.W15yQC.ScannerWindow = {
 
   init: function (dialog) {
     if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
+    try {
+      blr.W15yQC.ScannerWindow.passedURL=window.opener.parent.content.location.href;
+    } catch(e) {
+      blr.W15yQC.ScannerWindow.passedURL=null;
+    }
+
     blr.W15yQC.fnReadUserPrefs();
     blr.W15yQC.fnSetIsEnglishLocale(blr.W15yQC.fnGetUserLocale()); // TODO: This probably should be a user pref, or at least overrideable
     blr.W15yQC.bQuick = false; // Make sure this has been reset
@@ -304,7 +311,7 @@ blr.W15yQC.ScannerWindow = {
     row.children[12].setAttribute('label',url.textSize);
     row.children[13].setAttribute('label',url.downloadsCount);
     row.children[14].setAttribute('label',url.mandateFailuresCount);
-    
+
     row.children[15].setAttribute('label',url.framesCount);
     row.children[16].setAttribute('label',url.framesWarnings);
     row.children[17].setAttribute('label',url.framesFailures);
@@ -338,7 +345,7 @@ blr.W15yQC.ScannerWindow = {
     } else if (url.windowTitleNotMeaningful==true) {
       row.setAttribute('properties', 'warning');
     }
-    
+
     if(bNew) {
       treeitem.appendChild(row);
       tbc.appendChild(treeitem);
@@ -489,7 +496,7 @@ blr.W15yQC.ScannerWindow = {
     }
     return bCancel;
   },
-  
+
   doClose: function() {
     var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService), result;
     if(blr.W15yQC.ScannerWindow.stateScanning==false) {
@@ -499,7 +506,7 @@ blr.W15yQC.ScannerWindow = {
           return false;
         }
       }
-      
+
       blr.W15yQC.ScannerWindow.cleanup();
       Components.utils.forceShrinkingGC();
       if (!blr.W15yQC.ScannerWindow.bWindowClosing) {
@@ -564,7 +571,7 @@ blr.W15yQC.ScannerWindow = {
           if(blr.W15yQC.fnStringHasContent(sURL) && (blr.W15yQC.ScannerWindow.bManualURLAdd==true ||
               (blr.W15yQC.ScannerWindow.urlMatchesProjectMustMatchList(sURL) && !blr.W15yQC.ScannerWindow.urlMatchesProjectMustNotMatchList(sURL))) &&
                !blr.W15yQC.ScannerWindow.urlIsBlackListed(sURL) && !blr.W15yQC.ScannerWindow.urlAlreadyInList(sURL)) {
-  
+
             url=new blr.W15yQC.ProjectURL(sURL, source, priority);
             if(blr.W15yQC.ScannerWindow.stateScanning==true) {
               url.linkDepth=parseInt(blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.stateCurrentIndex].linkDepth) + 1;
@@ -755,10 +762,34 @@ blr.W15yQC.ScannerWindow = {
     return count>0 ? "                    ".slice(0,count-1) : "";
   },
 
-  newProject: function() {
-    // blr.W15yQC.fnLog('scanner-newProject');
-    blr.W15yQC.ScannerWindow.resetProjectToNew();
-    blr.W15yQC.ScannerWindow.updateProjectDisplay();
+  newProject: function(bFromURL) {
+    var projectQuickSettings={"sURL": blr.W15yQC.ScannerWindow.passedURL, "matchSpec": null, "matchTypeIsRegEx": null},
+        dialogID = 'quickScannerProjectConfigDialog',
+        dialogPath = 'chrome://W15yQC/content/quickScannerProjectConfigDialog.xul';
+
+    if(blr.W15yQC.ScannerWindow.stateScanning==false) {
+      blr.W15yQC.ScannerWindow.resetProjectToNew();
+      if (bFromURL==true && blr.W15yQC.ScannerWindow.projectHasUnsavedChanges==false && blr.W15yQC.ScannerWindow.urlList.length==0) {
+        // open dialog with passedURL as default
+        // have checkbox for restricting URLs to match
+        // generate the match string and let it be edited
+        // have create or cancel buttons
+
+        window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr, projectQuickSettings);
+        if(projectQuickSettings != null && projectQuickSettings.sURL !=null) {
+          blr.W15yQC.ScannerWindow.addUrlToProject(projectQuickSettings.sURL, projectQuickSettings.sURL, 'Manual', 1.0, false);
+          if (blr.W15yQC.fnStringHasContent(projectQuickSettings.matchSpec)) {
+            blr.W15yQC.ScannerWindow.urlMustMatchList.push(projectQuickSettings.matchSpec);
+            blr.W15yQC.ScannerWindow.urlMustMatchListType.push(false);
+          }
+          if (blr.W15yQC.ScannerWindow.urlList.length>0) {
+            blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
+            blr.W15yQC.ScannerWindow.sProjectTitle=projectQuickSettings.sURL.replace(/^\w+:\/\//,'').replace(/[#\?].+$/,'').replace(/\/([\w %_-]+\.)+\w+$/,'/');
+          }
+        }
+      }
+      blr.W15yQC.ScannerWindow.updateProjectDisplay();
+    }
   },
 
   readDOMEncodedString: function(rootNode, tagName, defaultValue) {
@@ -1373,14 +1404,14 @@ try{
   urlAppearsToBeHomePage: function(sURL) {
     return (/:\/\/[^\/]+(\/(~[^\/]+\/)?((index|home).[a-z]+))?$/i.test(sURL));
   },
-  
-  wordCount: function(s) {    
+
+  wordCount: function(s) {
     if (blr.W15yQC.fnStringHasContent(s)) {
       return blr.W15yQC.fnCleanSpaces(s).split(' ',10).length;
     }
     return 0;
   },
-  
+
   pageTitleDoesNotAppearToBeMeaningful: function(sURL, sTitle) { // TODO: Internationalize this
     if (blr.W15yQC.fnStringHasContent(sTitle)) {
       sTitle=blr.W15yQC.fnCleanSpaces(sTitle.replace(/[^a-zA-Z0-9\s]/g,' '));
@@ -1394,7 +1425,7 @@ try{
     }
     return true;
   },
-  
+
   inspectPageTitle: function(pti) { // Call when one URL is added, windowTitleNotMeaningful
     var i, sPageTitle, url;
     if(pti && blr.W15yQC.ScannerWindow.urlList!=null && pti<blr.W15yQC.ScannerWindow.urlList.length) {
@@ -1501,7 +1532,7 @@ try{
       buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
       buttonAddNewURL=document.getElementById('button-addNewURL'),
       buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');
-    
+
     if(selectedRow==null) { selectedRow=-1;}
 
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
@@ -1611,7 +1642,7 @@ try{
           row++;
         }
         blr.W15yQC.ScannerWindow.stateCurrentIndex=blr.W15yQC.ScannerWindow.urlToRowMap[row];
-  
+
         if( blr.W15yQC.ScannerWindow.stateScanningAllLinks!=true && !blr.W15yQC.ScannerWindow.stateScanningOneLink) {
           while(row < blr.W15yQC.ScannerWindow.urlToRowMap.length &&
                 blr.W15yQC.ScannerWindow.urlList[blr.W15yQC.ScannerWindow.urlToRowMap[row]].dateScanned!=null) {
@@ -2256,7 +2287,7 @@ try{
     blr.W15yQC.ScannerWindow.updateProjectDisplay();
     blr.W15yQC.ScannerWindow.updateControlStates();
   },
-  
+
   showUnscannedURLs: function() {
     var chkbx=document.getElementById('cbHideURLsNotYetScanned');
     if (chkbx.checked===true) {
@@ -2266,7 +2297,7 @@ try{
       blr.W15yQC.ScannerWindow.updateControlStates();
     }
   },
-  
+
   showAllCounts: function() {
     document.getElementById('col-header-results-text').hidden=false;
     document.getElementById('col-header-results-d').hidden=false;
@@ -2381,7 +2412,7 @@ try{
     document.getElementById('col-header-results-akf').hidden=true;
     document.getElementById('col-header-results-tf').hidden=true;
   },
-  
+
   windowOnKeyDown: function (dialog, evt) {
     switch (evt.keyCode) {
       case 224:
