@@ -3757,9 +3757,10 @@ ys: 'whys'
     },
 
 
-    fnBuildLabel: function(node, aConfig, iRecursion, aStopElements,aElements) {
+    fnBuildLabel: function(node, aConfig, iRecursion, aStopElements,aElements, bIncludeAriaDescription) {
       var sLabelText='',
           sLabelSource='',
+          sDescriptiveText='',
           bFirst=false,
           bFieldsetHandled=false,
           bSkipToFieldset=false,
@@ -3893,7 +3894,13 @@ ys: 'whys'
         //  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
         //}
 
+        if (bIncludeAriaDescription===true && /describedby/i.test(sLabelSource)==false && node.hasAttribute('aria-describedby')==true) {
+          sDescriptiveText=blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'));
+          sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sDescriptiveText, doc),' ');
+          if (blr.W15yQC.fnStringHasContent(sDescriptiveText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby', ', '); }
+        }
        }
+
       return [sLabelText, sLabelSource];
     },
 
@@ -4015,10 +4022,10 @@ ys: 'whys'
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','alt','title','value','name', 'fieldset'],iRecursion,aStopElements,aElements);
 
           } else if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
-            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements);
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements, true);
 
           } else if (sTagName == 'h1' || sTagName == 'h2' || sTagName == 'h3' || sTagName == 'h4' || sTagName == 'h5' || sTagName == 'h6') { // TODO: Vet this with JAWS!!!
-            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements);
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements, true);
 
           } else if (sTagName == 'select') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset'],iRecursion,aStopElements,aElements);

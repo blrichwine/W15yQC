@@ -179,12 +179,16 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- is aria-describedby working on links? http://www.uchicago.edu/
+       Hmmm... OK: http://www.w3.org/WAI/GL/wiki/Using_aria-describedby_for_link_purpose , so it does...
+       Do links use effectiveLabel routine? Not seeing a label source... need to dig further
+  -- what elements does aria-describedby work on? How should it be considered as far as labeling
   -- create a settings object and consider how it would be used. How do settings differ from plug-in prefs?
   -- Privacy information
   -- Feedback / Comments feature
   -- How others can help
   -- Known bugs list
-  -- Auto configure project scanner
+  -- Improve Auto configure project scanner
   -- Does "not all text contained in a landmark" failure include HTML5 section elements appropriately?
   -- List abbreviation tags found and what the tag says the abbreviation is.
   -- Add inspector for abbreviation tags [done]
