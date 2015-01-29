@@ -182,6 +182,7 @@
   -- is aria-describedby working on links? http://www.uchicago.edu/
        Hmmm... OK: http://www.w3.org/WAI/GL/wiki/Using_aria-describedby_for_link_purpose , so it does...
        Do links use effectiveLabel routine? Not seeing a label source... need to dig further
+  -- explore how jaws and NVDA and window eyes come up with link text
   -- what elements does aria-describedby work on? How should it be considered as far as labeling
   -- create a settings object and consider how it would be used. How do settings differ from plug-in prefs?
   -- Privacy information

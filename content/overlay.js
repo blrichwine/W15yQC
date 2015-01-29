@@ -3761,6 +3761,7 @@ ys: 'whys'
       var sLabelText='',
           sLabelSource='',
           sDescriptiveText='',
+          sNewText='',
           bFirst=false,
           bFieldsetHandled=false,
           bSkipToFieldset=false,
@@ -3793,12 +3794,14 @@ ys: 'whys'
 
               case 'aria':
                 if (blr.W15yQC.bHonorARIA==true) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute('aria-label'), ' '));
-                  if(sLabelText.length>l) {
+                  sNewText=node.getAttribute('aria-label');
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText, ' '));
+                  if(blr.W15yQC.fnStringHasContent(sNewText)) {
                     sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-label attribute', ', ');
                   } else if (node.hasAttribute('aria-labelledby')) {
-                    sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
-                    if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
+                    sNewText=blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc);
+                    sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText,' '));
+                    if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
                   }
                 }
                 break;
@@ -3806,64 +3809,72 @@ ys: 'whys'
               case 'aria-describedby':
                 if (blr.W15yQC.bHonorARIA==true) {
                   if (node.hasAttribute('aria-describedby')) {
-                    sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc),' '));
-                    if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
+                    sNewText=blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc);
+                    sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText,' '));
+                    if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
                   }
                 }
                 break;
 
               case 'aria-labelledby':
                 if (blr.W15yQC.bHonorARIA==true && node.hasAttribute('aria-labelledby')) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc),' '));
-                  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
+                  sNewText=blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-labelledby'), doc);
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText,' '));
+                  if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-labelledby elements', ', '); }
                 }
                 break;
 
               case 'implicit label':
                 implicitLabelNode = blr.W15yQC.fnFindImplicitLabelNode(node);
                 if (implicitLabelNode != null) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(implicitLabelNode,iRecursion,aStopElements,aElements),' '));
-                  if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'implicit label', ', '); }
+                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(implicitLabelNode,iRecursion,aStopElements,aElements);
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText,' '));
+                  if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'implicit label', ', '); }
                 }
                 break;
 
               case 'explicit label':
                 explictLabelsList = blr.W15yQC.fnFindLabelNodesForId(node.getAttribute('id'), doc);
+                sNewText='';
                 for (j = 0; j < explictLabelsList.length; j++) {
-                  sLabelText = blr.W15yQC.fnJoin(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(explictLabelsList[j],iRecursion,aStopElements,aElements), ' ');
+                  sNewText = blr.W15yQC.fnJoin(sNewText, blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(explictLabelsList[j],iRecursion,aStopElements,aElements), ' ');
                 }
-                sLabelText = blr.W15yQC.fnCleanSpaces(sLabelText);
-                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'explicit label', ', '); }
+                sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText, ' '));
+                if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'explicit label', ', '); }
                 break;
 
               case 'child text':
                 if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
-                  sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText, blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,['ul','ol','dl','li','dt','dl','dd'],aElements),' ');
+                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,['ul','ol','dl','li','dt','dl','dd'],aElements);
+                  sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText, sNewText,' ');
                 } else {
-                  sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText,blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,aStopElements,aElements),' ');
+                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,aStopElements,aElements);
+                  sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText,sNewText,' ');
                 }
-                if(blr.W15yQC.fnStringHasContent(sLabelText.length)) {
+                if(blr.W15yQC.fnStringHasContent(sNewText)) {
                   sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'child text', ', ');
                 }
                 break;
 
               case 'svgtext':
-                sLabelText = blr.W15yQC.fnGetSVGLabel(node);
-                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'SVG Text', ', '); }
+                sNewText = blr.W15yQC.fnGetSVGLabel(node);
+                sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText,sNewText,' ');
+                if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'SVG Text', ', '); }
                 break;
 
               case 'default':
                 if(aConfig.length>i+1) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, aConfig[i+1], ' '));
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, aConfig[i+1], ' ')); // Text comes from next config entry
                   i++;
                 }
-                if(sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'default text', ', '); }
+                if(blr.W15yQC.fnStringHasContent(aConfig[i+1])) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'default text', ', '); }
                 break;
 
               case 'aria-label':
                 if (blr.W15yQC.bHonorARIA==true && node.hasAttribute(aConfig[i])) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute(aConfig[i]), ' '));
-                  if (sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, aConfig[i]+' attribute', ', '); }
+                  sNewText=node.getAttribute(aConfig[i]);
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText, ' '));
+                  if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, aConfig[i]+' attribute', ', '); }
                 }
                 break;
 
@@ -3874,8 +3885,9 @@ ys: 'whys'
               case 'id':
               case 'src':
                 if (node.hasAttribute(aConfig[i])) {
-                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, node.getAttribute(aConfig[i]), ' '));
-                  if (sLabelText.length > l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, aConfig[i]+' attribute', ', '); }
+                  sNewText=node.getAttribute(aConfig[i]);
+                  sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sNewText, ' '));
+                  if(blr.W15yQC.fnStringHasContent(sNewText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, aConfig[i]+' attribute', ', '); }
                 }
                 break;
 
@@ -3894,9 +3906,9 @@ ys: 'whys'
         //  if(sLabelText.length>l) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby elements', ', '); }
         //}
 
-        if (bIncludeAriaDescription===true && /describedby/i.test(sLabelSource)==false && node.hasAttribute('aria-describedby')==true) {
-          sDescriptiveText=blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'));
-          sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sDescriptiveText, doc),' ');
+        if (bIncludeAriaDescription==true && /describedby/i.test(sLabelSource)==false && node.hasAttribute('aria-describedby')==true) {
+          sDescriptiveText=blr.W15yQC.fnGetTextFromIdList(node.getAttribute('aria-describedby'), doc);
+          sLabelText = blr.W15yQC.fnCleanSpaces(blr.W15yQC.fnJoin(sLabelText, sDescriptiveText),' ');
           if (blr.W15yQC.fnStringHasContent(sDescriptiveText)) { sLabelSource = blr.W15yQC.fnJoin(sLabelSource, 'aria-describedby', ', '); }
         }
        }
