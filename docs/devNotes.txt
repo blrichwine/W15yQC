@@ -179,6 +179,7 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- Add option for including ARIA-DESCRIBEDBY text in effectiveLabels
   -- is aria-describedby working on links? http://www.uchicago.edu/
        Hmmm... OK: http://www.w3.org/WAI/GL/wiki/Using_aria-describedby_for_link_purpose , so it does...
        Do links use effectiveLabel routine? Not seeing a label source... need to dig further

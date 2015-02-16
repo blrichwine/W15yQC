@@ -37942,7 +37942,7 @@ var WorkerMessageHandler = PDFJS.WorkerMessageHandler = {
       });
       var fullRequestXhrId = networkManager.requestFull({
         onHeadersReceived: function onHeadersReceived() {
-          if (disableRange) {
+          if (disableRange || 5>2) {
             return;
           }
 
