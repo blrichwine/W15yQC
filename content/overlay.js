@@ -37,7 +37,7 @@ if (!blr.W15yQC) {
     releaseVersion: '1.0 - Beta 60',
     releaseDate: 'Febuary 15, 2015',
     mainVersion: 1.0,
-    betaVersion: 50,
+    betaVersion: 60,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
