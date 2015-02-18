@@ -232,7 +232,7 @@
                       'bDocHasXmpMetaData',
                       'bDocTitleInXmpMetaData',
                       'bDocTitleConfiguredToDisplay'],
-          resultText=['The PDF is structured, contains no suspects, and is tagged',
+          resultChk =['The PDF is structured, contains no suspects, and is tagged',
                       'Document structure was parsed successfully',
                       'Only standard PDF tags are used',
                       'No invalid tag use was detected',
@@ -270,7 +270,7 @@
         li=rd.createElement('li');
         span=rd.createElement('span');
         span.setAttribute('class','a11yResultText')
-        span.appendChild(rd.createTextNode(resultText[i]));
+        span.appendChild(rd.createTextNode(resultChk[i]));
         li.appendChild(span);
         li.appendChild(rd.createTextNode(': '));
         span=rd.createElement('span');
@@ -281,12 +281,59 @@
           span.appendChild(rd.createTextNode('FAILED'));
           span.setAttribute('class','a11yFailResult');
         } else {
-          span.appendChild(rd.createTextNode(whyNotChecked[i]));
+          switch(resultKeys[i]) {
+
+            case 'bAllFiguresHaveAltText':
+            case 'bAllFiguresHaveAltTextNotDefault':
+            case 'bOnlyStandardTagsAreUsed':
+            case 'bTagUseAppearsValid':
+              if (!pdf.pdfInfo.isStructured) {
+                span.appendChild(rd.createTextNode('Not checked because: PDF is not structured.'));
+              } else {
+                span.appendChild(rd.createTextNode('??? Should be not checked because PDF is not structured, but PDF Info says PDF is structured.'));
+              }
+              break;
+
+            case '':
+              span.appendChild(rd.createTextNode('??? Not checked because: Check not yet implemented.'));
+              break;
+
+            case 'bAllFormControlsHaveLabels':
+            case 'bAllFormControlsHaveUniqueLabels':
+              if (!pdf.pdfInfo.isStructured) {
+                span.appendChild(rd.createTextNode('Not checked because: PDF is not structured.'));
+              } else {
+                span.appendChild(rd.createTextNode('Not checked because: No form controls were found.'));
+              }
+              break;
+
+            case 'bH1Present':
+            case 'bFirstHeadingIsH1':
+            case 'bHeadingLevelsNotSkipped':
+            case 'bHeadingsAllHaveText':
+            case 'bHeadingsNotTheSameWithinALevel':
+              if (!pdf.pdfInfo.isStructured) {
+                span.appendChild(rd.createTextNode('Not checked because: PDF is not structured.'));
+              } else {
+                span.appendChild(rd.createTextNode('Not checked because: PDF contains no headings.'));
+              }
+              break;
+
+            case 'bDocHasXmpMetaData':
+            case 'bDocTitleInXmpMetaData':
+            case 'bDocTitleConfiguredToDisplay':
+            case 'bAllTextContentHasMarkedLang':
+            case 'bIsStructuredNoSuspectsAndTagged':
+            case 'bNoErrorsParsingDocumentStructure':
+            default:
+              span.appendChild(rd.createTextNode('??? Not checked ???'));
+          }
           span.setAttribute('class','a11yResultNotChecked');
         }
         li.appendChild(span);
         ul.appendChild(li);
       }
+
       el.appendChild(ul);
     }
 
@@ -731,7 +778,7 @@
               liSpan=rd.createElement('span');
               li.appendChild(liSpan);
               liSpan.setAttribute('class','error');
-              liSpan.appendChild(rd.createTextNode('<H'+j+' - Missing Heading>'));
+              liSpan.appendChild(rd.createTextNode('<H'+j+' - Skipped Heading Level>'));
               results.bHeadingLevelsNotSkipped=false;
               lStack[lStack.length-1].appendChild(li);
               ul2=rd.createElement('ul');
@@ -744,7 +791,7 @@
                 liSpan=rd.createElement('span');
                 li.appendChild(liSpan);
                 liSpan.setAttribute('class','error');
-                liSpan.appendChild(rd.createTextNode('<H1 - Missing Heading>'));
+                liSpan.appendChild(rd.createTextNode('<H1 - Skipped Heading Level>'));
                 results.bHeadingLevelsNotSkipped=false;
                 lStack[0].appendChild(li);
               }
@@ -1172,7 +1219,7 @@
         span.setAttribute('class','attrValue');
         span.appendChild(rd.createTextNode(ds.effectiveLanguages[efIndx]));
         li.appendChild(span);
-        li.appendChild(rd.createTextNode('" on pages: '));
+        li.appendChild(rd.createTextNode('" appears on pages: '));
         for(pgsIndx=0;pgsIndx<ds.effectiveLanguagesPagesS[efIndx].length;pgsIndx++) {
           if (ds.effectiveLanguagesPagesS[efIndx][pgsIndx]==ds.effectiveLanguagesPagesE[efIndx][pgsIndx]) {
             li.appendChild(rd.createTextNode(ds.effectiveLanguagesPagesS[efIndx][pgsIndx]+(pgsIndx+1<ds.effectiveLanguagesPagesS[efIndx].length?', ':'')));

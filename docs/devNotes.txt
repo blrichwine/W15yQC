@@ -58,7 +58,8 @@
  * TODO:
 
    PDF Checker
-     -- why missing last page: http://www.adobe.com/content/dam/Adobe/en/accessibility/products/acrobat/pdfs/acrobat-xi-accessible-forms.pdf ???
+     -- List images
+     -- If no images, set image result to null and indicate not checked because no images were found
      -- spider PDFs and generate PDF tag nesting hash to study for incorrect tag nesting examples
      -- Find PDFs to use as test suite
         - include
@@ -81,7 +82,6 @@
     -- debug list displays in semantic view
     -- finish semantic view
     -- finish screen-reader view
-    -- Create a PDF has form controls flag -- or does this already exist??? Can we use it to properly indicated why rules are not checked?? [done]
     -- Fix PDF report styling [partially complete, revisit when finished]
     -- Common PDF accessibility concerns
         * Check TOC entries for ........ and warn on them. Do they all have ..... or just some of them?
@@ -113,6 +113,7 @@
     -- Get rid of PDF checker status textbox, lock URL, disable "Check PDF" button once PDF Checking is complete. [done]
     -- Get rid of "OK" button on PDF Checker [DONE]
     -- Format PDF Creation and Modify Date entries as human readable dates [DONE]
+    -- Create a PDF has form controls flag -- or does this already exist??? Can we use it to properly indicated why rules are not checked?? [done]
 
 
       ** New spider checks:

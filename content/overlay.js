@@ -4902,7 +4902,7 @@ ys: 'whys'
                 }
                 break;
               case 'aria-autocomplete':
-                if(/^(combobox|textbox)$/.test(sRole)==false && /^(select|textbox)$/.test(tagName)==false) {
+                if(/^(combobox|listbox|textbox)$/.test(sRole)==false && /^(input|select|textbox)$/.test(tagName)==false) {
                   if(blr.W15yQC.fnStringHasContent(sRole)) {
                     blr.W15yQC.fnAddNote(no, 'ariaAttributeWithUnexpectedRole', [attrName,tagName,sRole]); // TODO: QA This
                   } else {
