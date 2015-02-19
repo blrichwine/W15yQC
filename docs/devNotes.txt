@@ -58,6 +58,16 @@
  * TODO:
 
    PDF Checker
+     -- Make role map listing a definition list
+     -- create word document with language changes in the text, headings, etc. to see how they show up
+     -- check that headings are all either h, or are correctly numbered
+     -- Check for explicit ListNumbering attribute in L tags for ordered lists (14.8.5.5)
+     -- How are running headers and footers handled? 14.8.2.2.2
+     -- Footnotes 14.8.4.4
+     -- Handle page labels
+     -- Check if bookmarks have destinations
+     -- What to do if errors in reading map dictionary? http://pdf-accessible.com/wp-content/uploads/2015/01/making-PDF-accessible-Acrobat.pdf
+     -- Add a text description describing the accessibility of the document.
      -- List images
      -- If no images, set image result to null and indicate not checked because no images were found
      -- spider PDFs and generate PDF tag nesting hash to study for incorrect tag nesting examples

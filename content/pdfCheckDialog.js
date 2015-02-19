@@ -73,7 +73,7 @@
     'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
     'Figure', 'Formula', 'Form'];
 
-    var h, div, span, el, l, li, key, i, meta, style, p, pre, m, sTitle;
+    var h, div, span, el, l, li, key, i, meta, script, style, p, pre, m, sTitle;
     var prevPg=-19392, pgNum=1, numberOfPages=0, ticks=0;
 
     var formControlTypes = { "Btn":"Button",
@@ -122,7 +122,7 @@
     }
 
     function appendReport() {
-      var mainDiv;
+      var mainDiv, p;
 
       function buildTOC() {
         var elH1, el, div, ul1, ul2, cl, li, a, subHeadings=re.querySelectorAll('h2,h3'), i, h, hid, divBanner, divNav;
@@ -182,6 +182,15 @@
 
       mainDiv=rd.createElement('div');
       mainDiv.setAttribute('role','main');
+      if (ds != null && ds.errors != null && ds.errors==true) {
+        p=rd.createElement('p');
+        p.setAttribute('class','dsReadError');
+        p.appendChild(rd.createTextNode('Errors reading document structure. PDF might be corrupted.'));
+        if (ds.errorMsg != null) {
+          p.appendChild(rd.createTextNode(' '+ds.errorMsg));
+        }
+        mainDiv.appendChild(p);
+      }
       mainDiv.appendChild(re);
 
       rd.body.appendChild(mainDiv); // append in the report
@@ -496,6 +505,7 @@
       if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
         h=rd.createElement('h3');
         h.appendChild(rd.createTextNode('Role Map:'));
+        h.setAttribute('onclick','ec(this)');
         re.appendChild(h);
         div=rd.createElement('div');
         ol=rd.createElement('ul');
@@ -506,36 +516,42 @@
             standardElements[i]=standardElements[i].toLowerCase();
           }
           for (i=0;i<keys.length;i++) {
+            oli=rd.createElement('li');
+
             rmi=keys[i];
             rm[rmi]=ds.RoleMap.map[rmi].name;
-            oli=rd.createElement('li');
-            oli.appendChild(rd.createTextNode('"'));
-            span=rd.createElement('span');
-            span.setAttribute('class','attr');
-            span.appendChild(rd.createTextNode(rmi));
-            oli.appendChild(span);
-            oli.appendChild(rd.createTextNode('": "'));
-            span=rd.createElement('span');
-            span.setAttribute('class','attrValue');
-            span.appendChild(rd.createTextNode(ds.RoleMap.map[rmi].name));
-            oli.appendChild(span);
-            oli.appendChild(rd.createTextNode('"'));
 
-            if (standardElements.indexOf(rmi.toLowerCase())>=0) {
-              oli.appendChild(rd.createTextNode(' ('));
+            if (keys[i]!=null && ds.RoleMap.map[rmi]!=null && ds.RoleMap.map[rmi].name != null) {
+              oli.appendChild(rd.createTextNode('"'));
               span=rd.createElement('span');
-              span.appendChild(rd.createTextNode(' ERROR '));
-              span.setAttribute('class','error');
+              span.setAttribute('class','attr');
+              span.appendChild(rd.createTextNode(rmi));
               oli.appendChild(span);
-              oli.appendChild(rd.createTextNode(': Redefining a standard element)'));
-            }
-            if (standardElements.indexOf(ds.RoleMap.map[rmi].name.toLowerCase())<0) {
-              oli.appendChild(rd.createTextNode(' ('));
+              oli.appendChild(rd.createTextNode('": "'));
               span=rd.createElement('span');
-              span.appendChild(rd.createTextNode(' ERROR '));
-              span.setAttribute('class','error');
+              span.setAttribute('class','attrValue');
+              span.appendChild(rd.createTextNode(ds.RoleMap.map[rmi].name));
               oli.appendChild(span);
-              oli.appendChild(rd.createTextNode(': Not mapped to a standard element)'));
+              oli.appendChild(rd.createTextNode('"'));
+
+              if (standardElements.indexOf(rmi.toLowerCase())>=0) {
+                oli.appendChild(rd.createTextNode(' ('));
+                span=rd.createElement('span');
+                span.appendChild(rd.createTextNode(' ERROR '));
+                span.setAttribute('class','error');
+                oli.appendChild(span);
+                oli.appendChild(rd.createTextNode(': Redefining a standard element)'));
+              }
+              if (standardElements.indexOf(ds.RoleMap.map[rmi].name.toLowerCase())<0) {
+                oli.appendChild(rd.createTextNode(' ('));
+                span=rd.createElement('span');
+                span.appendChild(rd.createTextNode(' ERROR '));
+                span.setAttribute('class','error');
+                oli.appendChild(span);
+                oli.appendChild(rd.createTextNode(': Not mapped to a standard element)'));
+              }
+            } else {
+              oli.appendChild(rd.createTextNode('Error in role map. Entry: '+i+', Key: '+keys[i]));
             }
 
             ol.appendChild(oli);
@@ -969,7 +985,7 @@
             }
           }
           if (typeof o[oi].S!='undefined' && o[oi].S!=null) {
-            if (ds.rm.hasOwnProperty(o[oi].S)) {
+            if (ds.rm.hasOwnProperty(o[oi].S) && ds.rm[o[oi].S]!=null) {
               span=rd.createElement('span');
               if (standardElements.indexOf(ds.rm[o[oi].S].toLowerCase())>=0) {
                 span.setAttribute('class','pdfTag');
@@ -1608,8 +1624,12 @@
 
         style=rd.createElement('style');
         style.setAttribute('type','text/css');
-        style.appendChild(rd.createTextNode('h4{margin-top:5px}table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black;padding:3px 5px 3px 5px}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p,h3+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin:0 0 0 60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
+        style.appendChild(rd.createTextNode('.hideSibling+*{display:none;}h4{margin-top:5px}table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black;padding:3px 5px 3px 5px}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p,h3+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin:0 0 0 60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
         rd.head.appendChild(style);
+
+        script=rd.createElement('script');
+        script.appendChild(rd.createTextNode("function ec(node) {if (node.getAttribute('class') == 'hideSibling') {node.setAttribute('class', '');} else {node.setAttribute('class', 'hideSibling');}}"));
+        rd.head.appendChild(script);
 
         h=rd.createElement('h2');
         h.appendChild(rd.createTextNode('Accessibility Check Results:'));
@@ -1880,11 +1900,14 @@
           rd.body.appendChild(el);
           resolve(getPdfFullCheckResults(pdf,sURL,rd,re));
         },
-        function() {
+        function(eee) {
           var el;
           document.getElementById('progressMeterLabel').value="Error requesting PDF.";
           el=rd.createElement('h1');
-          el.appendChild(rd.createTextNode('Error requesting PDF'));
+          el.appendChild(rd.createTextNode('Error requesting PDF:'));
+          rd.body.appendChild(el);
+          el=rd.createElement('p');
+          el.appendChild(rd.createTextNode('Error: '+blr.W15yQC.objectToString(eee)));
           rd.body.appendChild(el);
           reject(null);
         });

@@ -5501,6 +5501,7 @@ var PDFDocument = (function PDFDocumentClosure() {
       info('readStructure STARTING');
       var rootDict, value=false;
       var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type, objr, bErrors=false;
+      structure.errors=false;
 
       function addStructElementChildren(strec) {
         var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, indx, i;
@@ -5743,7 +5744,14 @@ try{
          info('root.StructTreeRoot.map: '+blr.W15yQC.objectToString(str.map, false));
          if(str!=null && str.map!=null) {
            if (str.map.RoleMap && str.map.RoleMap!=null) {
-            structure.RoleMap=str.get('RoleMap'); //xref.fetch(new Ref(str.map.RoleMap.num,str.map.RoleMap.gen));
+            try {
+              structure.RoleMap=str.get('RoleMap'); //xref.fetch(new Ref(str.map.RoleMap.num,str.map.RoleMap.gen));
+            } catch(e) {
+             structure.RoleMap=null;
+             structure.errors=true;
+             structure.errorMsg='Errors reading role map dictionary.';
+             info('Errors reading role map. PDF is likely corrupt.');
+            }
             info('root.StructTreeRoot.map.RoleMap: '+blr.W15yQC.objectToString(structure.RoleMap, true));
            } else {
             info('No RoleMap');
@@ -35013,6 +35021,8 @@ var Lexer = (function LexerClosure() {
     getName: function Lexer_getName() {
       var ch;
       var strBuf = this.strBuf;
+      var s;
+      var cutIndex;
       strBuf.length = 0;
       while ((ch = this.nextChar()) >= 0 && !specialChars[ch]) {
         if (ch === 0x23) { // '#'
@@ -35032,8 +35042,8 @@ var Lexer = (function LexerClosure() {
         }
       }
       if (strBuf.length > 128) {
-        error('Warning: name token is longer than allowed by the spec: ' +
-              strBuf.length);
+        error('Error: name token is longer than allowed by the spec (limit 128): ' +
+              strBuf.length+', "'+strBuf.join(''));
       }
       return Name.get(strBuf.join(''));
     },
