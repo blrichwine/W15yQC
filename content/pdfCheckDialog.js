@@ -94,6 +94,8 @@
                   "bHeadingLevelsNotSkipped":null,
                   "bHeadingsAllHaveText":null,
                   "bHeadingsNotTheSameWithinALevel":null,
+                  "bHeadingsAreAllExplicit":null,
+                  "bHeadingsAreAllImplicit":null,
                   "bAllFiguresHaveAltText":null,
                   "bAllFiguresHaveAltTextNotDefault":null,
                   "bAllFormControlsHaveLabels":null,
@@ -234,6 +236,7 @@
                       'bHeadingLevelsNotSkipped',
                       'bHeadingsAllHaveText',
                       'bHeadingsNotTheSameWithinALevel',
+                      'bHeadingsAreAllExplicit',
                       'bAllFiguresHaveAltText',
                       'bAllFiguresHaveAltTextNotDefault',
                       'bAllFormControlsHaveLabels',
@@ -251,6 +254,7 @@
                       'No heading levels are skipped in the PDF',
                       'All headings in the PDF contain text',
                       'The text of headings of the same level within a section are all unique',
+                      'All of the headings are explicit (H1, H2, H3, etc. -- no \'H\' tags)',
                       'All of the figures in the PDF have alternate text',
                       'None of the figure alternate text appear to be a default',
                       'All form controls have labels',
@@ -258,22 +262,7 @@
                       'The PDF contains XMP metadata',
                       'The PDF contains a document title in the XMP metadata',
                       'The PDF is configured to display the document title'],
-          whyNotChecked=['?? Not checked ??',
-                      '?? Not checked ??',
-                      '?? Not checked ??',
-                      '?? Not checked ??',
-                      'Not checked because: PDF contains no headings or is not structured',
-                      'Not checked because: PDF contains no headings or is not structured',
-                      'Not checked because: PDF contains no headings or is not structured',
-                      'Not checked because: PDF contains no headings or is not structured',
-                      'Not checked because: PDF contains no headings or is not structured',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: No form controls were found',
-                      'Not checked because: No form controls were found',
-                      'Not checked because: PDF is not structured',
-                      'Not checked because: Check not yet implemented',
-                      'Not checked because: PDF is not structured'];
+
       ul=rd.createElement('ul');
       for(i=0;i<resultKeys.length;i++) {
         li=rd.createElement('li');
@@ -321,6 +310,7 @@
             case 'bHeadingLevelsNotSkipped':
             case 'bHeadingsAllHaveText':
             case 'bHeadingsNotTheSameWithinALevel':
+            case 'bHeadingsAreAllExplicit':
               if (!pdf.pdfInfo.isStructured) {
                 span.appendChild(rd.createTextNode('Not checked because: PDF is not structured.'));
               } else {
@@ -697,7 +687,7 @@
     }
 
     function renderHeadings(el) {
-      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, liSpan, prevHeadingLevel=0, hLevel, hList=[], lStack=[], elType, i, j, t, span, liList, str, sEl;
+      var dsStack=[ds], dsiIndexes=[0], dsi=0, bFoundHeadings=false, p, ul, ul2, li, liSpan, prevHeadingLevel=0, lastHLevel, hLevel, hList=[], lStack=[], elType, i, j, t, span, liList, str, sEl;
 
       function getNext() {
         if (dsStack[dsi][dsiIndexes[dsi]].children!=null && dsStack[dsi][dsiIndexes[dsi]].children.length>0) { // Children?
@@ -746,11 +736,12 @@
         return rText;
       }
 
+      lastHLevel=1;
       while (dsiIndexes[dsi]<dsStack[dsi].length) {
         while (dsiIndexes[dsi]<dsStack[dsi].length) {
           elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
             //blr.W15yQC.pdfCheckDialog.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
-          if (/^H\d+$/i.test(elType)) {
+          if (/^H\d*$/i.test(elType)) {
             break;
           }
           getNext();
@@ -760,7 +751,9 @@
           break;
         } else {
           t=getRecursiveText(dsStack[dsi][dsiIndexes[dsi]]);
-          hList.push({level:parseInt(elType.substring(1),10), text:t});
+          hLevel=/^H\d*$/i.test(elType)?parseInt(elType.substring(1),10):lastHLevel;
+          hList.push({level:hLevel, text:t, S:elType});
+          lastHLevel=hLevel;
           getNext();
         }
       }
@@ -770,6 +763,8 @@
       results.bHeadingLevelsNotSkipped=true;
       results.bHeadingsAllHaveText=true;
       results.bHeadingsNotTheSameWithinALevel=true;
+      results.bHeadingsAreAllExplicit=true;
+      results.bHeadingsAreAllImplicit=true;
 
       if (hList.length>0) {
         prevHeadingLevel=1;
@@ -832,7 +827,7 @@
           li.appendChild(liSpan);
           span=rd.createElement('span');
           span.setAttribute('class','pdfTag');
-          span.appendChild(rd.createTextNode('[H'+hLevel+']'))
+          span.appendChild(rd.createTextNode('['+hList[i].S+']'))
           liSpan.appendChild(span);
           span=rd.createElement('span');
           span.setAttribute('class','punctuation');
@@ -989,7 +984,7 @@
               span=rd.createElement('span');
               if (standardElements.indexOf(ds.rm[o[oi].S].toLowerCase())>=0) {
                 span.setAttribute('class','pdfTag');
-                if (/figure/i.test(ds.rm[o[oi].S])) {
+                if (/^figure$/i.test(ds.rm[o[oi].S])) {
                   if(blr.W15yQC.fnStringHasContent(o[oi]['Alt'])==false) {
                     results.bAllFiguresHaveAltText=false;
                   } else if(blr.W15yQC.fnAppearsToBeDefaultAltText(o[oi]['Alt'])) {
@@ -1144,7 +1139,7 @@
               oli.appendChild(spanAttrValue('Obj.V','attr',o[oi].objr.V,'attrValue'));
             }
           }
-          if (/form/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
+          if (/^formS/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
             if(results.bAllFormControlsHaveLabels===null) { // Must be first form control
               formControls=[];
               results.bAllFormControlsHaveLabels=true;
@@ -1183,7 +1178,14 @@
                 results.bAllFormControlsHaveUniqueLabels=false;
               }
             }
+          } else if (/^H$/i.test(sTagName)) {
+            //alert(sTagName);
+            results.bHeadingsAreAllExplicit=false;
+          } else if (/^H\d+$/i.test(sTagName)) {
+            //alert(sTagName);
+            results.bHeadingsAreAllImplicit=false;
           }
+
           if (bInBrackets) {
             span=rd.createElement('span');
             span.setAttribute('class','punctuation');
@@ -1558,6 +1560,10 @@
       results.bNoErrorsParsingDocumentStructure=ds.errors===false;
 
       renderDocStructureLevel(ds,div,defaultLang);
+      if(results.bHeadingsAreAllImplicit==true && results.bHeadingsAreAllExplicit==true) {
+        results.bHeadingsAreAllImplicit=null;
+        results.bHeadingsAreAllExplicit=null;
+      }
       renderEffectiveLanguages();
       renderUniqueTagNestings();
       renderFormControlsTable();
