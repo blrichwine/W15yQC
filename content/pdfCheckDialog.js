@@ -123,11 +123,23 @@
       "bTOCIShouldBeInTOC:": []
     }
 
+    function makeExpandoCollapsoHeading(sTagName, sText) {
+      var hTag, aTag;
+        hTag=rd.createElement(sTagName);
+        aTag=rd.createElement('a');
+        aTag.appendChild(rd.createTextNode(sText));
+        aTag.setAttribute('onclick','ec(this);return false;');
+        aTag.setAttribute('aria-expanded','true');
+        aTag.setAttribute('href','#');
+        hTag.appendChild(aTag);
+        hTag.setAttribute('class','ec');
+        return hTag;
+    }
     function appendReport() {
       var mainDiv, p;
 
       function buildTOC() {
-        var elH1, el, div, ul1, ul2, cl, li, a, subHeadings=re.querySelectorAll('h2,h3'), i, h, hid, divBanner, divNav;
+        var elH1, el, div, ul1, ul2, cl, li, a, subHeadings=re.querySelectorAll('h2,h3'), i, hid, divBanner, divNav;
 
         elH1=rd.createElement('h1');
         elH1.appendChild(rd.createTextNode('PDF Accessibility Report'));
@@ -142,7 +154,7 @@
 
         for(i=0;i<subHeadings.length;i++) {
           h=subHeadings[i];
-          h.setAttribute('tabindex','0');
+          h.setAttribute('tabindex','-1');
           if (h.hasAttribute('id')) {
             hid=h.getAttribute('id');
           } else {
@@ -160,7 +172,7 @@
           a=rd.createElement('a');
           a.setAttribute('href','#'+hid);
           a.appendChild(rd.createTextNode(h.textContent.replace(/:$/,'')));
-          a.setAttribute('onclick',"try{document.getElementById('"+hid+"').scrollIntoView(true);}catch(e){}window.setTimeout(function(){document.getElementById('"+hid+"').focus();},10);");
+          a.setAttribute('onclick',"try{document.getElementById('"+hid+"').scrollIntoView(true);}catch(e){}window.setTimeout(function(){try{document.getElementById('"+hid+"').focus();document.getElementById('"+hid+"').firstChild.focus();}catch(e){}},10);");
           li.appendChild(a);
           cl.appendChild(li);
         }
@@ -493,10 +505,12 @@
       h.appendChild(rd.createTextNode('Document Structure:'));
       re.appendChild(h);
       if (ds!=null && typeof ds.RoleMap!='undefined' && ds.RoleMap!==null && typeof ds.RoleMap.map!='undefined') {
-        h=rd.createElement('h3');
-        h.appendChild(rd.createTextNode('Role Map:'));
-        h.setAttribute('onclick','ec(this)');
-        re.appendChild(h);
+        re.appendChild(makeExpandoCollapsoHeading('h3','Role Map:'));
+        //h=rd.createElement('h3');
+        //h.appendChild(rd.createTextNode('Role Map:'));
+        //h.setAttribute('onclick','ec(this)');
+        //h.setAttribute('class','ec'); h.setAttribute('aria-expanded','true');
+        //re.appendChild(h);
         div=rd.createElement('div');
         ol=rd.createElement('ul');
         keys=Object.getOwnPropertyNames(ds.RoleMap.map);
@@ -1507,44 +1521,32 @@
 
       blr.W15yQC.pdfTagNestingHash=null;
 
-      h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Tag Usage Statistics:'));
-      el.appendChild(h);
+      el.appendChild(makeExpandoCollapsoHeading('h3','Tag Usage Statistics:'));
       div=rd.createElement('div');
       el.appendChild(div);
       renderElementStatistics(div);
 
-      h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Effective Language Indications:'));
-      el.appendChild(h);
+      el.appendChild(makeExpandoCollapsoHeading('h3','Effective Language Indications:'));
       div=rd.createElement('div');
       div.setAttribute('id','langIndicationsList');
       el.appendChild(div); // Place holder for content that gets rendered later!
 
-      h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Unique Tag Nestings:'));
-      el.appendChild(h);
+      el.appendChild(makeExpandoCollapsoHeading('h3','Unique Tag Nestings:'));
       div=rd.createElement('div');
       div.setAttribute('id','uniqueTagListingsList');
       el.appendChild(div); // Place holder for content that gets rendered later!
 
-      h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Form Controls:'));
-      el.appendChild(h);
+      el.appendChild(makeExpandoCollapsoHeading('h3','Form Controls:'));
       div=rd.createElement('div');
       div.setAttribute('id','formControlsTable');
       el.appendChild(div); // Place holder for content that gets rendered later!
 
-      h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Headings:'));
-      el.appendChild(h);
+      el.appendChild(makeExpandoCollapsoHeading('h3','Headings:'));
       div=rd.createElement('div');
       el.appendChild(div);
       renderHeadings(div);
 
-      h=rd.createElement('h3');
-      h.appendChild(rd.createTextNode('Structure:'));
-      el.appendChild(h);
+      el.appendChild(makeExpandoCollapsoHeading('h3','Structure:'));
       div=rd.createElement('div');
       el.appendChild(div);
       prevPg=-19392;
@@ -1631,22 +1633,19 @@
         style=rd.createElement('style');
         style.setAttribute('type','text/css');
         style.appendChild(rd.createTextNode('.hideSibling+*{display:none;}h4{margin-top:5px}table.mappedTags{margin-bottom:25px}table+p,h3+h4{margin-top:0}caption{text-align:left;width:100% !important}table{margin-top:5px;border-collapse: collapse;border:thin solid black}th,td{border:thin solid black;padding:3px 5px 3px 5px}th{font-weight: bold;background: #CCC}tr:nth-child(even) {background: #EEE}tr:nth-child(odd) {background: #FFF}h1{margin:0 10px 0 0}h2,h3,h4,h5,h6{margin-bottom:0}h2{margin-left:15px}h1+h2{margin-top:0}h2+div{margin:0 0 0 30px}h2+div>p,h3+div>p{margin:0}h3{margin:10px 0px 0px 45px}h3+div{margin:0 0 0 60px}ul,ol{margin-top:0}.pdfInfoParam, .a11yResultText{font-weight:bold}.a11yPassResult{color:028A00}.a11yFailResult{color:red}.a11yResultNotChecked{color:blue}th.tagNameStatsHeader{width:3em}th.tagNameHeader{width:12em}.error{background-color:#FF9696}li.newPage{border-top:1px solid black;}td.tagStat{text-align:right}td span.nonStandardTag,p span.nonStandardTag{color:#aa0000;text-decoration:none}span.attr{color:#DE0000}span.attrValue{color:#0000FA}span.pdfTextContent{color:#BA4700}span.pdfTag{color:#028A00;font-weight:bold}span.contentTag{color:#028A00}span.mappedPdfTag{color:#028A00}span.nonStandardTag{text-decoration:underline}'));
+        style.appendChild(rd.createTextNode('.hideSibling a{ background-image:url(data:image/gif;base64,R0lGODlhEAAQANUAAO7t7urp6uXk5dPS0+3t7unp6tvb3Onq6uTl5eLj49vc29bX1urq6e7t7dfW1v////n5+fHx8e3t7enp6eXl5ePj4+Dg4Nvb29fX19PT09DQ0MzMzMTExK2trZqampSUlDg4OP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAACEALAAAAAAQABAAAAZ6wJBwSCwOMZykcsnZDDmah3Q61XyeUSrVioV4O6COF8IVQiNocAcdKYc4g0mn4wF55pPM1byogP6AIAkOe28GF3N1dx0KBoUcFpEWapIWjxQUAgJqFAiYjwEHDAUMoxOjB48AqwQSDQQNEhIEhRsft7i5H05Gvb6/QkEAOw%3D%3D);background-repeat: no-repeat;padding-left: 20px;}.ec a{ cursor:pointer;background-position:left center;background-image:url(data:image/gif;base64,R0lGODlhDQANAOYAAK6xr8/Drvz8++Hj5dfSx9ze39fX1r7Bwf/+97m7vPz8+rO2teHi5NTW1M7BrNXY2bq9u7m5utLV2Obn6c/KxN/f3v/99MXIyP336dnUzMLExv//9v///Orbxd/h4tnOva+xsNrb2NHT1e7m2v358uzj1Pj06s/CrsPExeDg383Aq9fX09zY0NDS09fY1djGrNLMwK2wrv//+9HEsba3tv//+NXJtuXn6NPV1+Tm57/Cw9XPxL65sOfp6tHT1O3z9tPW2f/98sLDwd7e3a6wr8/PzdfSyLCxrf39+8vO0eLk5kxMTKCnrrK3vKassf///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAANAA0AAAeEgElNTE6Fhk5MTYISA0qOj0oDQIM9T5aXlxOEDE9InkgCAgocBYUFmJgWIoU3TygGQxUpIQdBOIU/FEu7vEs8HoU5T0INKwYuRREYPoUPG08yNQgIJCYlGoUtIywZRgQEOzAfB4gXHTYzJwEBDiovNIk6EAsgRAAAMQBHCYqDh4aJkgQCADs%3D);background-repeat: no-repeat;padding-left:20px;}'));
         rd.head.appendChild(style);
 
         script=rd.createElement('script');
-        script.appendChild(rd.createTextNode("function ec(node) {if (node.getAttribute('class') == 'hideSibling') {node.setAttribute('class', '');} else {node.setAttribute('class', 'hideSibling');}}"));
+        script.appendChild(rd.createTextNode("function ec(node) {if (node.parentNode.getAttribute('class') == 'hideSibling') {node.parentNode.setAttribute('class', 'ec');node.setAttribute('aria-expanded','true');} else {node.parentNode.setAttribute('class', 'hideSibling');node.setAttribute('aria-expanded','false');}}"));
         rd.head.appendChild(script);
 
-        h=rd.createElement('h2');
-        h.appendChild(rd.createTextNode('Accessibility Check Results:'));
-        re.appendChild(h);
+        re.appendChild(makeExpandoCollapsoHeading('h2','Accessibility Check Results:'));
         div=rd.createElement('div');
         div.setAttribute('id','a11yResults');
         re.appendChild(div);
 
-        h=rd.createElement('h2');
-        h.appendChild(rd.createTextNode('PDF Info:'));
-        re.appendChild(h);
+        re.appendChild(makeExpandoCollapsoHeading('h2','PDF Info:'));
 
         div=rd.createElement('div');
         re.appendChild(div);
@@ -1803,9 +1802,7 @@
           }
         }
 
-        h=rd.createElement('h2');
-        h.appendChild(rd.createTextNode('XMP Metadata:'));
-        re.appendChild(h);
+        re.appendChild(makeExpandoCollapsoHeading('h2','XMP Metadata:'));
         div=rd.createElement('div');
         if (pdf.pdfInfo.metadata != null && blr.W15yQC.fnStringHasContent(pdf.pdfInfo.metadata)==true) {
           pre=rd.createElement('pre');
@@ -1830,9 +1827,7 @@
           }
         }
 
-        h=rd.createElement('h2');
-        h.appendChild(rd.createTextNode('PDF Outline (Bookmarks):'));
-        re.appendChild(h);
+        re.appendChild(makeExpandoCollapsoHeading('h2','PDF Outline (Bookmarks):'));
         div=rd.createElement('div');
         re.appendChild(div);
 
