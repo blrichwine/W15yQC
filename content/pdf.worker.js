@@ -5596,6 +5596,7 @@ try{
              if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
              if(typeof strecc.map.Scope != 'undefined') { children[indx].Scope=filter(strecc.map.Scope); }
              if(typeof strecc.map.Summary != 'undefined') { children[indx].Summary=filter(strecc.map.Summary); }
+             if(typeof strecc.map.ListNumbering != 'undefined') { children[indx].Summary=filter(strecc.map.ListNumbering); }
              if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
              if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
             }
@@ -5670,6 +5671,7 @@ try{
            if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
            if(typeof strecc.map.Scope != 'undefined') { children[indx].Scope=filter(strecc.map.Scope); }
            if(typeof strecc.map.Summary != 'undefined') { children[indx].Summary=filter(strecc.map.Summary); }
+           if(typeof strecc.map.ListNumbering != 'undefined') { children[indx].Summary=filter(strecc.map.ListNumbering); }
            if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
            if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
          } else if(typeof strec.map.K === 'number') {

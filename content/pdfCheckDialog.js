@@ -83,6 +83,7 @@
                     };
 
     var formControls=[];
+    var figureTags=[];
 
     var results={ "bDocHasXmpMetaData":null,
                   "bDocTitleInXmpMetaData":null,
@@ -888,7 +889,7 @@
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, l, s, errTxt, keys=['T','Lang','Alt','E','ActualText','RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
+      var oi,ol,oli, k, l, s, errTxt, keys=['T','Lang','Alt','E','ActualText', 'ListNumbering', 'RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
@@ -1097,7 +1098,7 @@
               span=rd.createElement('span');
               span.setAttribute('class','pdfTextContent');
               if (o[oi].text!=null) {
-                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪').replace(//g,'•')));
+                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪').replace(//g,'•').replace(//g,'•')));
               } else {
                 span.appendChild(rd.createTextNode(': '+o[oi].text));
               }
@@ -1153,7 +1154,7 @@
               oli.appendChild(spanAttrValue('Obj.V','attr',o[oi].objr.V,'attrValue'));
             }
           }
-          if (/^formS/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
+          if (/^form$/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
             if(results.bAllFormControlsHaveLabels===null) { // Must be first form control
               formControls=[];
               results.bAllFormControlsHaveLabels=true;
@@ -1198,6 +1199,13 @@
           } else if (/^H\d+$/i.test(sTagName)) {
             //alert(sTagName);
             results.bHeadingsAreAllImplicit=false;
+          } else if (/^figure$/i.test(sTagName)) {
+            if(blr.W15yQC.fnStringHasContent(o[oi]['Alt'])==false) {
+              results.bAllFiguresHaveAltText=false;
+            } else if(blr.W15yQC.fnAppearsToBeDefaultAltText(o[oi]['Alt'])) {
+              results.bAllFiguresHaveAltTextNotDefault=false;
+            }
+            figureTags.push({"Alt":o[oi]['Alt'], "ActualText":o[oi]['ActualText'], "Pg":pgNum});
           }
 
           if (bInBrackets) {
@@ -1430,7 +1438,7 @@
 
       if (formControls!==null && formControls.length>0) {
         table=rd.createElement('table');
-        table.setAttribute('id','formControlsTable');
+        table.setAttribute('id','formControlsTableTable');
 
         thead=rd.createElement('thead');
         tr=rd.createElement('tr');
@@ -1514,6 +1522,94 @@
       }
     }
 
+    function renderFigureControlsTable() {
+      var el=re.getElementById('figureControlsTable'), i, table, th, td, tr, thead, tbody, p, sNotes, bHasActualText=false, sText;
+
+      if (figureTags!==null && figureTags.length>0) {
+        for(i=0;i<figureTags.length; i++) {
+          if (figureTags[i].ActualText!=null) {
+            bHasActualText=true;
+          }
+        }
+        table=rd.createElement('table');
+        table.setAttribute('id','figureControlsTableTable');
+
+        thead=rd.createElement('thead');
+        tr=rd.createElement('tr');
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('#'));
+        th.setAttribute('aria-label','Number');
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Page'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Alt'));
+        tr.appendChild(th);
+        if (bHasActualText) {
+          th=rd.createElement('th');
+          th.appendChild(rd.createTextNode('ActualText'));
+          tr.appendChild(th);
+        }
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Notes'));
+        tr.appendChild(th);
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+        tbody=rd.createElement('tbody');
+        for(i=0;i<figureTags.length; i++) {
+          sText='';
+          if (figureTags[i].Alt!=null) {
+            sText=figureTags[i].Alt;
+          } else if (figureTags[i].ActualText!=null) {
+            sText=figureTags[i].ActualText;
+          }
+          tr=rd.createElement('tr');
+          sNotes='';
+          if (!blr.W15yQC.fnStringHasContent(sText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Missing alternate text for figure.',', ');
+          }
+          if (blr.W15yQC.fnAppearsToBeDefaultAltText(sText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Figure alternate text appears to be default.',', ');
+          }
+          if (blr.W15yQC.fnStringHasContent(figureTags[i].ActualText) && blr.W15yQC.fnStringHasContent(figureTags[i].Alt) && !blr.W15yQC.fnStringsEffectivelyEqual(figureTags[i].Alt,figureTags[i].ActualText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Figure has conflicting Alt and ActualText.',', ');
+          }
+          if (blr.W15yQC.fnStringHasContent(figureTags[i].ActualText) && !blr.W15yQC.fnStringHasContent(figureTags[i].Alt) && !blr.W15yQC.fnStringsEffectivelyEqual(figureTags[i].Alt,figureTags[i].ActualText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Figure alternate text should come from Alt instead of ActualText.',', ');
+          }
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode((i+1).toString()));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(figureTags[i].Pg));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.setAttribute('class','Alt');
+          td.appendChild(rd.createTextNode(figureTags[i].Alt!=null?figureTags[i].Alt:''));
+          tr.appendChild(td);
+          if (bHasActualText) {
+            td=rd.createElement('td');
+            td.appendChild(rd.createTextNode(figureTags[i].ActualText!=null?figureTags[i].ActualText:''));
+            tr.appendChild(td);
+          }
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(sNotes));
+          tr.appendChild(td);
+
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+
+        el.appendChild(table);
+      } else {
+        p=rd.createElement('p');
+        p.appendChild(rd.createTextNode('No figure tags found.'));
+        el.appendChild(p);
+      }
+    }
+
     function renderAndCheckDocStructure(el) {
       var rmi, ol, oli, div, p, keys, i=-1, dlM, defaultLang;
       //blr.W15yQC.pdfCheckDialog.log('DS:'+blr.W15yQC.objectToString(ds));
@@ -1534,6 +1630,11 @@
       el.appendChild(makeExpandoCollapsoHeading('h3','Unique Tag Nestings:'));
       div=rd.createElement('div');
       div.setAttribute('id','uniqueTagListingsList');
+      el.appendChild(div); // Place holder for content that gets rendered later!
+
+      el.appendChild(makeExpandoCollapsoHeading('h3','Figure Tags:'));
+      div=rd.createElement('div');
+      div.setAttribute('id','figureControlsTable');
       el.appendChild(div); // Place holder for content that gets rendered later!
 
       el.appendChild(makeExpandoCollapsoHeading('h3','Form Controls:'));
@@ -1569,6 +1670,7 @@
       renderEffectiveLanguages();
       renderUniqueTagNestings();
       renderFormControlsTable();
+      renderFigureControlsTable();
 
       enableReportButtons(true,true);
       renderResults();

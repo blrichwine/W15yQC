@@ -49,6 +49,9 @@ if (typeof blr==='undefined') {
  */
 
   var bCmdIsPressed=false,
+      aDocumentsList=null,
+      aHeadingsList=null,
+      bScreenReaderView=false,
       aHeadingsList=null,
       prompts=null,
       rd=null,
@@ -57,6 +60,11 @@ if (typeof blr==='undefined') {
 
   function init(w) {
     win=w;
+
+    if (w && w.arguments && w.arguments.length) {
+      if (w.arguments.length > 2) { bScreenReaderView = w.arguments[2]; }
+    }
+
     rm=(ds!==null)?(ds.RoleMap!==null?ds.RoleMap:null):null;
     rd = document.getElementById("HTMLReportIFrame").contentDocument;
     blr.W15yQC.fnReadUserPrefs();
@@ -67,7 +75,7 @@ if (typeof blr==='undefined') {
     var styleElement;
     try{
       prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-      document.title = 'PDF Semantic View2 - ' + (ds.title!=null?ds.title:'') + ' - W15yQC';
+      document.title = 'PDF Semantic View - ' + (ds.title!=null?ds.title:'') + ' - W15yQC';
 
       styleElement = rd.createElement('style');
       styleElement.innerHTML = "*{font-family:'Open Sans Light',Arial,Helvetica,sans-serif;}a{}button{min-height:20px;min-width:64.72px;cursor:pointer;box-shadow:inset 0 1px 0 0 #bee2f9;background:-moz-linear-gradient(center top,#e8f7ff 5%,#9ec8f2 100%);background-color:#e8f7ff;border-radius:11px;border:2px solid #2f5d99;display:inline-block;color:#14396a;font-size:15px;font-weight:700;padding:1px 8px;text-decoration:none;text-shadow:1px 1px 3px #e9edf2}span.blockSection{margin:3px;padding:3px;border:thin solid black}span.blockSectionType{background-color:#eee;}div.blockSection{margin:5px;padding:3px;border:solid thin black}p.blockSectionType{margin:0px;padding:3px;border:solid thin black;background-color:#eee}}button:hover{background:-moz-linear-gradient(center top,#9ec8f2 5%,#e8f7ff 100%);background-color:#9ec8f2}button:active{position:relative;top:1px}textarea:focus,input:focus,button:focus{box-shadow: 0 0 2px 4px rgba(73, 173, 227, 0.4) !important}textarea, input[type='email'], input[type='password'], input[type='text'] {background: none repeat scroll 0 0 #FFFFFF;border-color: #B2B2B2;border-radius: 3px 3px 3px 3px;border-style: solid;border-width: 1px;box-shadow: 0 1px rgba(255, 255, 255, 0.5)}table{border-collapse:collapse;border:2px solid black}td,th{border:1px solid black}div.rawPdfPageNum{background-color:#ffc;margin:5px 0px 5px 0px;padding-left:5px}";
@@ -180,6 +188,10 @@ if (typeof blr==='undefined') {
               case 'sect':
               case 'div':
               case 'toc':
+                if (bScreenReaderView) {
+                  newEl=rd.createElement('div'); // Don't announce these
+                  break;
+                }
               case 'blockquote':
               case 'form':
               case 'formula':
@@ -334,7 +346,7 @@ if (typeof blr==='undefined') {
       }
     }
 
-    rd.title = 'PDF Semantic View2 - ' + (ds.title!=null?ds.title:'') + ' - W15yQC';
+    rd.title = 'PDF Semantic View - ' + (ds.title!=null?ds.title:'') + ' - W15yQC';
     renderDocStructureLevel(ds,rd.body);
   }
 
@@ -596,14 +608,14 @@ if (typeof blr==='undefined') {
     // Landmarks
     // ARIA Labels
     // Language markup
-    if (blr.W15yQC.SemanticPdfWindow.aDocumentsList == null) {
-      blr.W15yQC.SemanticPdfWindow.aDocumentsList = blr.W15yQC.fnGetDocuments(blr.W15yQC.SemanticPdfWindow.rd);
-      blr.W15yQC.SemanticPdfWindow.aHeadingsList = blr.W15yQC.fnGetHeadings(blr.W15yQC.SemanticPdfWindow.rd);
+    if (aDocumentsList == null) {
+      aDocumentsList = blr.W15yQC.fnGetDocuments(rd);
+      aHeadingsList = blr.W15yQC.fnGetHeadings(rd);
     }
-    blr.W15yQC.Highlighters.highlightHeadings(blr.W15yQC.SemanticPdfWindow.aDocumentsList, blr.W15yQC.SemanticPdfWindow.aHeadingsList);
-    blr.W15yQC.Highlighters.highlightLists(blr.W15yQC.SemanticPdfWindow.aDocumentsList);
-    blr.W15yQC.Highlighters.highlightTables(blr.W15yQC.SemanticPdfWindow.aDocumentsList);
-    blr.W15yQC.Highlighters.highlightBasicElement('blockquote', blr.W15yQC.SemanticPdfWindow.aDocumentsList);
+    blr.W15yQC.Highlighters.highlightHeadings(aDocumentsList, aHeadingsList);
+    blr.W15yQC.Highlighters.highlightLists(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightTables(aDocumentsList);
+    blr.W15yQC.Highlighters.highlightBasicElement('blockquote', aDocumentsList);
   }
 
   function forceMinSize(dialog) {

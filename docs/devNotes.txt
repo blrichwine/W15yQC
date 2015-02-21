@@ -58,6 +58,8 @@
  * TODO:
 
    PDF Checker
+     -- 14.9.5 abbreviations in content stream
+     -- 14.9.4 ActualText in content stream
      -- Make role map listing a definition list
      -- create word document with language changes in the text, headings, etc. to see how they show up
      -- check that headings are all either h, or are correctly numbered [done]
