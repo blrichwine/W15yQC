@@ -83,6 +83,8 @@
                       oncommand="blr.W15yQC.openDialog('lumCheck');"/>
             <menuitem id="W15yQC_menuEntry_idsChecker" accesskey="p" label="Problem IDs Checker"
                       oncommand="blr.W15yQC.openDialog('idsCheck');"/>
+            <menuitem id="W15yQC_menuEntry_unitTests" accesskey="u" label="Unit Tests"
+                      oncommand="blr.W15yQC.openDialog('unitTests');"/>
           </menupopup>
         </menu>
         <menuseparator/>

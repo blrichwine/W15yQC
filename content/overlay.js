@@ -1995,6 +1995,10 @@ ys: 'whys'
           dialogID = 'pdfCheckerDevDialog';
           dialogPath = 'chrome://W15yQC/content/pdfCheckerDev.xul';
           break;
+        case 'unitTests':
+          dialogID = 'testsDialog';
+          dialogPath = 'chrome://W15yQC/content/testsDialog.xul';
+          break;
         }
         if (dialogID != null) {
           blr.W15yQC.bQuick = false; // Make sure this has been reset
