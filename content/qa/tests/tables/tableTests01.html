@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Table tests 01</title>
+  <style>
+/*	table {border: thin solid blue;}
+	th {border: thin solid black;}
+	td {border: thin dotted black;}
+*/	</style>
+</head>
+<body>
+<h1>Table Tests 01</h1>
+<h2>Table 1</h2>
+<p>Table should pass, but be flagged as a layout table</p>
+<table>
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 2</h2>
+<p>Table should pass, but be flagged as a layout table. This table has a title.</p>
+<table title="Table 2 Title">
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 3</h2>
+<p>This table should fail. It has a table summary which should make it a data table,
+   but it fails because there are no table headers.</p>
+<table title="Table 3 Title" summary="Table 3 Summary">
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 4</h2>
+<p>This table should fail. It has a caption which should make it a data table,
+   but it fails because there are no table headers.</p>
+<table title="Table 4 Title">
+	<caption>Table 4 Caption</caption>
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 5</h2>
+<p>This table should fail because it has a th making it a data table, but
+it fails because it doesn't have a caption or a summary.</p>
+<table title="Table 5 Title">
+	 <tr><th>Cell 1</th><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 5b</h2>
+<p>This table should fail because it has ths making it a data table, but
+it fails because it doesn't have a caption or a summary.</p>
+<table title="Table 5b Title">
+	 <tr><th>Cell 1,1</th><th>Cell 2,1</th></tr>
+	 <tr><td>Cell 1,2</td><td>Cell 2,2</td></tr>
+</table>
+
+<h2>Table 5c</h2>
+<p>This table should fail because it has ths making it a data table, but
+it fails because it doesn't have a caption or a summary.</p>
+<table title="Table 5c Title">
+	 <tr><th>Cell 1,1</td><td>Cell 2,1</td></tr>
+	 <tr><th>Cell 1,2</td><td>Cell 2,2</td></tr>
+</table>
+
+<h2>Table 6</h2>
+<p>This table tests a simple rowspan example. It should not have any rowspan or
+colspan problems, but will fail due to lack of table headers</p>
+<table title="Table 6 Title">
+	<caption>Table 6 Caption</caption>
+	 <tr><td>Cell 1</td><td rowspan="2">Cell 2</td></tr>
+	 <tr><td>Cell 1</td></tr>
+</table>
+
+<h2>Table 7</h2>
+<p>This table should fail because the third row has one more cell
+than the rest of the rows which only have two.</p>
+<table title="Table 7 Title">
+	<caption>Table 7 Caption</caption>
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+	 <tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr>
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 8</h2>
+<p>This table should pass because colspan attributes are used
+to make each row have effectively the same column coverage.</p>
+<table title="Table 8 Title">
+	<caption>Table 8 Caption</caption>
+	 <tr><td>Cell 1</td><td colspan="2">Cell 2</td></tr>
+	 <tr><td>Cell 1</td><td axis="history, indiana" colspan="2">Cell 2</td></tr>
+	 <tr><td>Cell 1</td><td>Cell 2</td><td axis="history">Cell 3</td></tr>
+	 <tr><td>Cell 1</td><td colspan="2">Cell 2</td></tr>
+</table>
+
+<h2>Table 9</h2>
+<p>Simple rowspan test. This table should pass because the rowspan in
+row 1, col 1 should create another column in row two.</p>
+<table title="Table 9 Title">
+	<caption>Table 9 Caption</caption>
+	 <tr><td rowspan="2">Cell 1</td><td>Cell 2</td></tr>
+	 <tr><td>Cell 2</td></tr>
+</table>
+
+<h2>Table 10</h2>
+<p>Another simple rowspan test. This table should pass because the rowspan in
+row 1 col 2 should create another column in row two.</p>
+<table title="Table 10 Title">
+	<caption>Table 10 Caption</caption>
+	 <tr><td>Cell 1</td><td rowspan="2">Cell 2</td><td>Cell 3</td></tr>
+	 <tr><td>Cell 1</td><td>Cell 3</td></tr>
+</table>
+
+<h2>Table 11</h2>
+<p>A complicated rowspan, colsapn test. Includes headers for each col and row.
+Should Pass.</p>
+<table border="1" cellpadding="4">
+<caption>Table 11 Caption</caption>
+  <tr>
+    <th scope="col">1,1</th>
+    <th scope="col">Col 2</th>
+    <th scope="col">Col 3</th>
+    <th scope="col">Col 4</th>
+    <th scope="col">Col 5</th>
+    <th scope="col">Col 6</th>
+    <th scope="col">Col 7</th>
+    <th scope="col">Col 8</th>
+  </tr>
+  <tr>
+    <th scope="row">Row 2</th>
+    <td>2,2</td>
+    <td>3,2</td>
+    <td rowspan="4">&nbsp;</td>
+    <td>5,2</td>
+    <td rowspan="7">6,2-8</td>
+    <td>7,2</td>
+    <td>8,2</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 3</th>
+    <td colspan="2">2-3,3</td>
+    <td rowspan="2">5,3-4</td>
+    <td colspan="2" rowspan="2">7-8,3-4</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 4</th>
+    <td colspan="2" rowspan="2">2-3,4-5</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 5</th>
+    <td>5,5</td>
+    <td>7,5</td>
+    <td>8,5</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 6</th>
+    <td colspan="4">2-5,6</td>
+    <td>7,6</td>
+    <td rowspan="2">8,6-7</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 7</th>
+    <td colspan="2">2-3,7</td>
+    <td>4,7</td>
+    <td>5,7</td>
+    <td rowspan="2">7,7-8</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 8</th>
+    <td>2,8</td>
+    <td>3,8</td>
+    <td colspan="2">4-5,8</td>
+    <td>8,8</td>
+  </tr>
+</table>
+
+<h2>Table 12</h2>
+<p>A complicated rowspan, colsapn test. Includes headers for each col and row.</p>
+<table border="1" cellpadding="4">
+<caption>Table 12 Caption</caption>
+  <tr>
+    <th scope="col">1,1</th>
+    <th scope="col">Col 2</th>
+    <th scope="col">Col 3</th>
+    <th scope="col">Col 4</th>
+    <th scope="col">Col 5</th>
+    <th scope="col">Col 6</th>
+    <th scope="col">Col 7</th>
+    <th scope="col">Col 8</th>
+  </tr>
+  <tr>
+    <th scope="row">Row 2</th>
+    <td>2,2</td>
+    <td>3,2</td>
+    <td rowspan="4">&nbsp;</td>
+    <td>5,2</td>
+    <td rowspan="7">6,2-8</td>
+    <td>7,2</td>
+    <td>8,2</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 3</th>
+    <td colspan="2">2-3,3</td>
+    <td rowspan="2">5,3-4</td>
+    <td colspan="2" rowspan="2">7-8,3-4</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 4</th>
+    <td colspan="2" rowspan="2">2-3,4-5</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 5</th>
+    <td>5,5</td>
+    <td>7,5</td>
+    <td>8,5</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 6</th>
+    <td colspan="5">2-6,6</td>
+    <td>7,6</td>
+    <td rowspan="2">8,6-7</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 7</th>
+    <td colspan="2">2-3,7</td>
+    <td>4,7</td>
+    <td>5,7</td>
+    <td rowspan="2">7,7-8</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 8</th>
+    <td>2,8</td>
+    <td>3,8</td>
+    <td colspan="2">4-5,8</td>
+    <td>8,8</td>
+  </tr>
+</table>
+
+
+
+<h2>Tables 13, 14, and 15</h2>
+<p>Three nested tables</p>
+<table title="Table 13 Title">
+	<caption>Table 13 Caption</caption>
+	 <tr><td>Cell 1</td><td>Cell 2</td></tr>
+	 <tr><td>Cell 1</td><td><table><tr><td>Table 14 Nested in Table 13 Cell 1,1</td><td><table><tr><td>Table 15 Nested inside table 14</td></tr></table></td></tr></table></td></tr>
+</table>
+
+<h2>Table 16</h2>
+<p>A large data table with no markup as such. Should be called out for being larger than most layout tables.</p>
+<table border="1" cellpadding="4" id="table16">
+  <tr>
+    <td>Row 2</td>
+    <td>2,2</td>
+    <td>3,2</td>
+    <td rowspan="4">&nbsp;</td>
+    <td>5,2</td>
+    <td rowspan="7">6,2-8</td>
+    <td>7,2</td>
+    <td>8,2</td>
+  </tr>
+  <tr>
+    <td>Row 3</td>
+    <td colspan="2">2-3,3</td>
+    <td rowspan="2">5,3-4</td>
+    <td colspan="2" rowspan="2">7-8,3-4</td>
+  </tr>
+  <tr>
+    <td>Row 4</td>
+    <td colspan="2" rowspan="2">2-3,4-5</td>
+  </tr>
+  <tr>
+    <td>Row 5</td>
+    <td>5,5</td>
+    <td>7,5</td>
+    <td>8,5</td>
+  </tr>
+  <tr>
+    <td>Row 6</td>
+    <td colspan="5">2-6,6</td>
+    <td>7,6</td>
+    <td rowspan="2">8,6-7</td>
+  </tr>
+  <tr>
+    <td>Row 7</td>
+    <td colspan="2">2-3,7</td>
+    <td>4,7</td>
+    <td>5,7</td>
+    <td rowspan="2">7,7-8</td>
+  </tr>
+  <tr>
+    <td>Row 8</td>
+    <td>2,8</td>
+    <td>3,8</td>
+    <td colspan="2">4-5,8</td>
+    <td>8,8</td>
+  </tr>
+</table>
+
+<h2>Table 17</h2>
+<p>Data table with the same caption and summary.</p>
+<table border="1" cellpadding="4" summary="17This is the table caption and the table summary text.">
+	<caption>This is the table caption and the table summary text.</caption>
+  <tr>
+    <th scope="row">Row 1</td>
+    <td>1,2</td>
+	</tr>
+  <tr>
+    <th scope="row">Row 2</td>
+    <td>2,2</td>
+	</tr>
+</table>
+
+<h2>Table 18</h2>
+<p>Data table with row missing table header.</p>
+<table border="1" cellpadding="4" summary="18This table has row th's. One row has content that does not have a header.">
+  <tr>
+    <th scope="row">Row 1</td>
+    <td>1,2</td>
+	</tr>
+  <tr>
+    <td>Row 2</td>
+    <td>2,2</td>
+	</tr>
+  <tr>
+    <th scope="row">Row 3</td>
+    <td>3,2</td>
+	</tr>
+</table>
+
+<h2>Table 19</h2>
+<p>Data table with column missing table header.</p>
+<table border="1" cellpadding="4" summary="19This table has column th's. One column has content that does not have a header.">
+  <tr>
+    <th scope="col">Col 1</td>
+    <td>Col 2</td>
+    <th scope="col">Col 3</td>
+	</tr>
+  <tr>
+    <td>2,1</td>
+    <td>2,2</td>
+    <td>2,3</td>
+	</tr>
+  <tr>
+    <td>3,1</td>
+    <td>3,2</td>
+    <td>3,3</td>
+	</tr>
+</table>
+
+<h2>Table 20</h2>
+<p>Data table with combination of table headers and headers attributes.</p>
+<table border="1" cellpadding="4" summary="20This table has column headers and header attributes. All cells have either a header or headers attribute.">
+  <tr>
+    <th id="t20ha" scope="col" abbr="C1">Col 1</td>
+    <td id="t20h1" headers="t20ha">Col 2</td>
+    <th scope="col">Col 3</td>
+	</tr>
+  <tr>
+    <td>2,1</td>
+    <td headers="t20h1">2,2</td>
+    <td>2,3</td>
+	</tr>
+  <tr>
+    <td>3,1</td>
+    <td headers="t20h1">3,2</td>
+    <td>3,3</td>
+	</tr>
+</table>
+
+</body>
+</html>

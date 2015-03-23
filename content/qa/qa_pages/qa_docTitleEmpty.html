@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<!-- Page TITLE Tag Empty On Purpose! -->
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="w15yqc_qa.css" type="text/css">
+</head>
+<body>
+	<div>
+		<h1>W15yQC Quality Assurance Page - code:docTitleEmpty</h1>
+		<p>This page should generate the following failures:
+			<ul>
+				<li>Failure: Document Title is empty. (for document #1 - the main page)</li>
+				<li>Failure: Document Title is empty. (for document #2 - the page in the iframe)</li>
+			</ul>
+		</p>
+		<h1>IFRAME that points to a HTML page without a document title in it.</h1>
+		<iframe src="demo_content/emptydoctitle.html" title="IFRAME that points to a HTML file an empty document title element"></iframe>
+	</div>
+</body>
+</html>

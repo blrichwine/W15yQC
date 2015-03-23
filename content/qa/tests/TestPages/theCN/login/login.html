@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="fragment" content="!">
+        <meta charset="utf-8">
+        <meta name="description" content="CourseNetworking is an academic social networking site. It is a different product and fills a different niche in the educational landscape.">
+        <title>Site - CourseNetworking</title>
+        <script src="login_files/main.js" data-requiremodule="main" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><script src="login_files/home.js" data-requiremodule="views/site/index/home" data-requirecontext="_" async="" charset="utf-8" type="text/javascript"></script><!-- base href="http://thecn.com/" -->
+        <!--[if IE]><script type="text/javascript">
+            // Fix for IE ignoring relative base tags.
+            (function() {
+                var baseTag = document.getElementsByTagName('base')[0];
+                baseTag.href = baseTag.href;
+            })();
+        </script><![endif]-->
+        <link rel="stylesheet" href="login_files/jquery-ui-1.css" id="jqueryUi_style"><link rel="stylesheet" href="login_files/jquery.css" id="fancybox_style"><link href="login_files/cn.css" rel="stylesheet">
+    </head>
+    <body class="cn-windows">
+        <div id="fb-root"></div>
+        <div id="wrapper"><div class="wrap-web wrap-site">
+	<!-- head -->
+	<div class="head">
+		<div class="box">
+			<div class="center web-fixed-width">
+				<a class="l-float" href="" title="CourseNetworking">
+					<b class="logo text-hide">theCN logo</b>
+				</a>
+				<div class="r-float" id="block_login_from"><div class="block-login"><form method="post">
+	<table colspan="0" cellspacing="0">
+		<tbody>
+			<tr class="title">
+				<td colspan="3">
+					<span>Have an account? Log in below:</span>
+				</td>
+			</tr>
+			<tr class="body">
+				<td>
+					<input class="username" name="username" placeholder="Email Address or CN#" required="required" autofocus="autofocus" type="text">
+				</td>
+				<td>
+					<input class="password" name="password" placeholder="Password" required="required" type="password">
+				</td>
+				<td>
+					<button id="" type="submit" class="bt bt-blue">
+						LOG IN
+					</button>
+				</td>
+			</tr>
+			<tr class="foot">
+				<td>
+					<input class="remember" checked="checked" name="remember" value="" type="checkbox">
+					<label for="remember">Remember Me</label>
+					<div class="clear"></div>
+				</td>
+				<td>
+					<a class="forgot_password" href="javascript:;">Forgot Password?</a>
+				</td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+</div></div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+	<!-- /head -->
+	
+	<!-- main -->
+	<div class="main">
+		<div class="center">
+            <div id="block_site_main"><div class="main-site web-fixed-width"><div class="left l-float">
+    <div id="block_site_map"><div class="block-map">
+	<div class="head">
+		<a class="text_about_cn" href="javascript:;">
+			About theCN.com
+		</a>
+	</div>
+	<div class="main">
+		<img src="login_files/map.png" alt="theCN world map">
+	</div>
+<!--	<div class="foot horizontal-center">
+		<a class="l-float text-hide bt-app bt-app-ios" href="https://itunes.apple.com/app/thecn/id531484941?mt=8" target="_blank">
+			Available on the App Store
+		</a>
+		<a class="r-float text-hide bt-app bt-app-androld" href="https://play.google.com/store/apps/details?id=coursenetworking.app&feature=search_result#?t=W251bGwsMSwxLDEsImNvdXJzZW5ldHdvcmtpbmcuYXBwIl0" target="_blank">
+			Androld app on Google play
+		</a>
+		<div class="clear"></div>
+	</div>-->
+</div></div>
+</div>
+<div class="right r-float">
+    <div class="block-register-wrap">
+        <h2>Create CN Account</h2>
+        <div id="block_register_from"><div class="block-register-forms-wrap"><div class="head">
+	<div class="block-register-form">
+		<div class="main">
+			<form id="register_form" method="post" action="">
+				<table colspan="0" cellspacing="0">
+					<tbody><tr>
+						<td>
+							<input id="User_fullname" name="display_name" placeholder="Full Name" required="required" type="text">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="User_email" class="user_register_field" name="email" placeholder="Email Address" required="required" type="email">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input id="User_password" class="user_register_field" name="password" placeholder="Password" required="required" type="password">
+						</td>
+					</tr>
+                    
+					<tr>
+						<td>
+							<div class="wrap-checkbox " style="min-height: 33px;">
+                                <div class="left l-float">
+                                    <input id="register_have_id" type="checkbox">
+                                    <label for="register_have_id">
+                                        I have a Course or Conexus ID.
+                                    </label>
+                                </div>
+                                <div class="right r-float">
+                                    <div class="id-wrap display-none" id="course_or_conexus_input_wrap">
+                                        <input id="course_or_conexus_input" placeholder="Example: 0010038" type="text">
+                                    </div>
+                                </div>
+								<div class="clear"></div>
+							</div>
+							<div class="club-wrap">
+								<div class="pin-wrap display-none course_code_wrap">
+									<label for="course_code">Create a Course PIN:</label>
+									<input id="course_code" maxlength="4" type="password">
+									<div class="clear"></div>
+								</div>
+								<div class="error-wrap error_wrap"></div>
+							</div>
+						</td>
+					</tr>
+                    
+					<tr>
+						<td>
+							<div class="r-float">
+								<button class="bt bt-blue" type="submit">
+									SIGN UP
+								</button>
+							</div>
+						</td>
+					</tr>
+				</tbody></table>
+			</form>
+		</div>
+	</div>
+</div>
+</div></div>
+        <div class="block-register-connect">
+            <h2>Or Create Your CN Account Through:</h2>
+            <ul>
+                <li class="l-float">
+                    <a class="text-hide bt-connect bt-connect-facebook show_facebook_register" href="javascript:;">
+                        facebook
+                    </a>
+                </li>
+                <li class="l-float">
+                    <a class="text-hide bt-connect bt-connect-twitter show_twitter_register" href="javascript:;">
+                        twitter
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="clear"></div></div></div>
+		</div>
+        
+		<!-- bottom -->
+		<div id="block_foot"><div class="block-foot"><div class="head">
+	<div class="web-fixed-width">
+		<ul class="l-float">
+			<li>
+				<a class="text_terms_of_use" href="javascript:;">
+					Terms of Use
+				</a>
+			</li>
+			<li>
+				<a class="text_privacy_policy" href="javascript:;">
+					Privacy Policy
+				</a>
+			</li>
+			<li>
+				<a href="mailto:help@theCN.com">
+					help@theCN.com
+				</a>
+			</li>
+		</ul>
+		<p class="r-float">
+			Copyright © 2011-13.  CourseNetworking LLC.  All rights reserved.
+		</p>
+		<div class="clear"></div>
+	</div>
+</div>
+<div class="foot">
+	<div class="web-fixed-width">
+		<p class="r-float">
+			Rumi: V3.1.6 Beta,  Apr 3, 2013
+		</p>
+		<div class="clear"></div>
+	</div>
+</div></div></div>
+		<!-- /bottom -->
+		
+	</div>
+	<!-- /main -->
+</div></div>
+        <script src="login_files/ga.js" async="" type="text/javascript"></script><script type="text/javascript" src="login_files/require-jquery.js"></script>
+        <script type="text/javascript">
+            window.CN_DEBUG = false;
+            window.CN_API_HOST = '';
+            window.STATIC_FILE_HOST = 'http://d2z8znphybti6g.cloudfront.net/static/201304031700/';
+            window.CN_URL_ARGS = window.CN_DEBUG ? ('bust=' + new Date().getTime()) : '';
+            window.cn = (function() {
+                var _cache = {};
+                var _log = [];//Ex. [{"category":"chat", "message":"test message", "time":"2013-03-20 10:07"}]
+                var _err = [];//Ex. the same as log
+
+                var _logLog = function(message, category, collection) {
+                    var timeNow = new Date();
+                    collection.push({
+                        message: message,
+                        category: category ? category : "default",
+                        time: timeNow.getHours() + ":" + timeNow.getMinutes() + ":" + timeNow.getSeconds()
+                    });
+                };
+
+                var _formatLog = function(collection) {
+                    var alertMessage = '';
+                    for (var i = 0; i < collection.length; i++)
+                    {
+                        alertMessage += collection[i].time + " " + collection[i].category + ": " + collection[i].message;
+                        alertMessage += "\n";
+                    }
+
+                    return alertMessage;
+                };
+
+                return {
+                    get: function(key) {
+                        return _cache[key];
+                    },
+                    set: function(key, value) {
+                        _cache[key] = value;
+                    },
+                    log: function(message, category) {
+                        _logLog(message, category, _log);
+                        if (console && window.CN_DEBUG)
+                        {
+                            if (category)
+                                console.log("#" + category + "#: " + message);
+                            else
+                                console.log(message);
+                        }
+                    },
+                    error: function(message, category) {
+                        _logLog(message, category, _err);
+                        if (console && window.CN_DEBUG)
+                        {
+                            if (category)
+                                console.error("#" + category + "#: " + message);
+                            else
+                                console.error(message);
+                        }
+                    },
+                    showLog: function() {
+                        if (console)
+                            console.log(_formatLog(_log));
+                        else
+                            alert(_formatLog(_log));
+                    },
+                    showError: function() {
+                        if (console)
+                            console.log(_formatLog(_err));
+                        else
+                            alert(_formatLog(_err));
+                    },
+                    cleanLog: function() {
+                        _log = [];
+                    },
+                    cleanError: function() {
+                        _err = [];
+                    }
+                };
+            })();
+            window.CN_CONFIG = {
+                baseUrl: "http://d2z8znphybti6g.cloudfront.net/static/201304031700/js/",
+                urlArgs: window.CN_URL_ARGS,
+                waitSeconds: 15,
+                deps: ["main"],
+                paths: {
+                    //jquery: 'libs/jquery/jquery-min',
+                    jquery:  'empty:',
+                    json2: 'libs/json2/json2',
+                    underscore: [
+                        'libs/underscore/underscore-min',
+                        'http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.3/underscore-min'
+                    ],
+                    backbone: [
+                        'libs/backbone/backbone-min',
+                        'http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min'
+                    ],
+                    mustache: [
+                        'libs/mustache/mustache',
+                        'http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min'
+                    ],
+                    text: 'libs/require/text',
+                    templates: '../templates',
+                    /* Backbone plugins */
+                    backboneLayoutManager: 'plugins/backbone.layoutmanager',
+                    /* Jquery plugins */
+                    jqueryUi: 'plugins/jquery.ui/require',
+                    jqueryScrollPagination: 'plugins/jquery.cn.scrollpagination',
+                    jquerySerializeObject: 'plugins/jquery.serializeObject.min',
+                    jqueryFancybox: 'ui/fancybox/source/require',
+                    jqueryFancyMedia: 'ui/fancybox/source/helpers/jquery.fancybox-media.min',
+                    jquerySharrre: 'plugins/jquery.sharrre/full',
+                    jcrop: 'ui/jcrop/js/jquery.Jcrop.min',
+                    jqueryAutoTextArea: 'plugins/jquery.cn.autoTextarea',
+                    plupload: 'ui/plupload/plupload',
+                    pluploadFull: 'ui/plupload/plupload.full',
+                    pluploadBrowserplus: 'ui/plupload/plupload.browserplus',
+                    pluploadFlash: 'ui/plupload/plupload.flash',
+                    pluploadGears: 'ui/plupload/plupload.gears',
+                    pluploadHtml4: 'ui/plupload/plupload.html4',
+                    pluploadHtml5: 'ui/plupload/plupload.html5',
+                    pluploadSilverlight: 'ui/plupload/plupload.silverlight',
+                    jwplayer: 'ui/jwplayer/jwplayer',
+                    jwplayerHtml5: 'ui/jwplayer/jwplayer.html5',
+                    amplify: 'plugins/cn-amplify/jquery.amplify.min',
+                    cookie: 'plugins/cn-amplify/cookie.min',
+                    cnamplify: 'plugins/cn-amplify/cn-amplify',
+                    editor: 'plugins/editor/editor',
+                    dateFormat: 'plugins/date.format',
+                    /* Node modules */
+                    nowjs: 'http://thecn.com:8080/nowjs/now', //'http://t3.com:8080/nowjs/now',
+                    socketio: 'http://thecn.com:8080/socket.io/socket.io'//'http://t3.com:8080/socket.io/socket.io'
+                },
+                shim: {
+                    'backbone': {
+                        deps: ['underscore', 'jquery'],
+                        exports: 'Backbone'
+                    },
+                    'underscore': {
+                        deps: ['jquery'],
+                        exports: '_'
+                    },
+                    'backboneLayoutManager': ['backbone'],
+                    'jqueryUi': ['jquery'],
+                    'jqueryScrollPagination': ['jquery'],
+                    'jquerySerializeObject': ['jquery'],
+                    'jqueryFancybox': ['jquery'],
+                    'jqueryFancyMedia': ['jquery', 'jqueryFancybox'],
+                    'jcrop': ['jquery'],
+                    'amplify': ['jquery', 'json2'],
+                    'cnamplify': ['jquery', 'json2', 'amplify', 'cookie'],
+                    'jqueryAutoTextArea': ['jquery'],
+                    'plupload': ['jquery'],
+                    'pluploadFull': ['jquery'],
+                    'pluploadBrowserplus': ['jquery', 'plupload'],
+                    'pluploadFlash': ['jquery', 'plupload'],
+                    'pluploadGears': ['jquery', 'plupload'],
+                    'pluploadHtml4': ['jquery', 'plupload'],
+                    'pluploadHtml5': ['jquery', 'plupload'],
+                    'pluploadSilverlight': ['jquery', 'plupload'],
+                    'jwplayer': ['jquery'],
+                    'jwplayerHtml5': ['jquery', 'jwplayer'],
+                    'nowjs': ['socketio']
+                },
+                facebook: {
+                    appId: '216000381800259'//cndev: 348431525260908 //thecn: 216000381800259
+                },
+                twitter: {
+                    appId: '2Zo2cstrfHtntlPuK4uhQ'//cndev MdsjWCQWmqmR4Qk6t71pPA //thecn: 2Zo2cstrfHtntlPuK4uhQ
+                },
+                nodeApps: {
+                    enable: true
+                }
+            };
+            window.CN_REQUIRE_ERROR = false;
+            require.config(window.CN_CONFIG);
+            requirejs.onError = function (err) {
+                if ('timeout'==err.requireType){
+                    var loadingElement = document.getElementById('loading_wrap');
+                    if( ! window.CN_REQUIRE_ERROR)
+                    {
+                        if(loadingElement)
+                        {
+                            window.CN_REQUIRE_ERROR = true;
+                            var url = window.location.href;
+                            var indexOfParam = url.indexOf('?');
+                            var reloadTime =1;
+                            if(indexOfParam>-1)
+                            {
+                                var paraString = url.substring(indexOfParam, url.length);
+                                var params = paraString.substr(1).split('&'); 
+                                var paraObj = {} 
+                                for(var i=0, len=params.length; len>i; i++)
+                                {
+                                     var j = params[i];
+                                     paraObj[j.substring(0, j.indexOf('='))] = j.substring(j.indexOf('=')+1, j.length); 
+                                }
+                                reloadTime = paraObj['reload'] = ('undefined'!=typeof(paraObj['reload'])) ? ( parseInt(paraObj['reload']) + 1) : 1;
+                                var tmps = [];  
+                                for (var key in paraObj)  
+                                    tmps.push(key + '=' + paraObj[key]);  
+                                url = url.replace(paraString, '?'+tmps.join('&'));
+                            }
+                            else
+                                url = url+'?reload='+reloadTime;
+ 
+                            if(4>reloadTime)
+                                window.location.href = url;
+                            else
+                                loadingElement.innerHTML = '<h1 style="font-size:18px;text-align: center; margin-top: 20px;">Server connection timeout, click <a href="javascript:;" onClick="document.location.reload(true)">here</a> to refresh your page now.</h1>';
+                        }
+                        else
+                        {
+                            if(confirm('Server connection timed out, please refresh your page to try again.'))
+                            {
+                                window.CN_REQUIRE_ERROR = true;
+                                window.location.reload();
+                            }
+                        }
+                    }
+                }
+            };
+        </script>
+        <script type="text/javascript">
+            if (!window.CN_DEBUG)
+            {
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', 'UA-29468807-1']);
+                _gaq.push(['_setDomainName', 'thecn.com']);
+                _gaq.push(['_trackPageview']);
+                (function() {
+                    var ga = document.createElement('script');
+                    ga.type = 'text/javascript';
+                    ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(ga, s);
+                })();
+            }
+        </script>
+    
+
+</body></html>

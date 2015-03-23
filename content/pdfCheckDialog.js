@@ -73,6 +73,25 @@
     'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
     'Figure', 'Formula', 'Form'];
 
+    var FfBitNames={"1":"ReadOnly",
+                    "2":"Required",
+                    "3":"NoExport",
+                    "13":"Multiline",
+                    "14":"Password",
+                    "15":"NoToggleToOff",
+                    "16":"Radio",
+                    "17":"PushButton",
+                    "18":"Combo",
+                    "19":"Edit",
+                    "20":"Sort",
+                    "21":"FileSelect",
+                    "22":"MultiSelect",
+                    "23":"DoNotSpellCheck",
+                    "24":"DoNotScroll",
+                    "25":"Comb",
+                    "26":"RichText-RadiosInUnison",
+                    "27":"CommitOnSelChange"};
+
     var h, div, span, el, l, li, key, i, meta, script, style, p, pre, m, sTitle;
     var prevPg=-19392, pgNum=1, numberOfPages=0, ticks=0;
 
@@ -81,7 +100,7 @@
                       "Ch":"Choice",
                       "Sig":"Signature"
                     };
-
+Components.utils.import("resource://gre/modules/devtools/Console.jsm");
     var formControls=[];
     var figureTags=[];
 
@@ -495,7 +514,7 @@
           K, text, item, bFound=false, i=-1,
           h, div, ol, rmi, oli, p, keys, span;
 
-      //blr.W15yQC.pdfCheckDialog.log('Starting getTextForDocStructure: ');
+      //console.log('Starting getTextForDocStructure: ');
       if (ds!=null) {
         ds.effectiveLanguages=[];
         ds.effectiveLanguagesPagesS=[];
@@ -542,8 +561,8 @@
               if (standardElements.indexOf(rmi.toLowerCase())>=0) {
                 oli.appendChild(rd.createTextNode(' ('));
                 span=rd.createElement('span');
-                span.appendChild(rd.createTextNode(' ERROR '));
-                span.setAttribute('class','error');
+                span.appendChild(rd.createTextNode(' Warning '));
+                span.setAttribute('class','warning');
                 oli.appendChild(span);
                 oli.appendChild(rd.createTextNode(': Redefining a standard element)'));
               }
@@ -602,33 +621,33 @@
          return s;
         }
 
-        //blr.W15yQC.pdfCheckDialog.log('Starting getTextForDsi: ');
+        //console.log('Starting getTextForDsi: ');
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
-            //blr.W15yQC.pdfCheckDialog.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
+            //console.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
           if ((typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined') || (typeof dsStack[dsi][dsiIndexes[dsi]].MCID != 'undefined')) {
-            //blr.W15yQC.pdfCheckDialog.log('Found: '+dsStack[dsi][dsiIndexes[dsi]].S);
+            //console.log('Found: '+dsStack[dsi][dsiIndexes[dsi]].S);
             break;
           }
           getNext();
         }
         if (dsiIndexes[dsi]>=dsStack[dsi].length && dsi<1) {
-          //blr.W15yQC.pdfCheckDialog.log('Calling renderAndCheckDocStructure');
+          //console.log('Calling renderAndCheckDocStructure');
           renderAndCheckDocStructure(re);
         } else {
-            //blr.W15yQC.pdfCheckDialog.log('Checking2: '+dsStack[dsi][dsiIndexes[dsi]].S);
-            //blr.W15yQC.pdfCheckDialog.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
-            //blr.W15yQC.pdfCheckDialog.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
+            //console.log('Checking2: '+dsStack[dsi][dsiIndexes[dsi]].S);
+            //console.log('Checking2: '+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]]));
+            //console.log('Checking2Index: '+blr.W15yQC.objectToString(ds.pageIndexByRef));
           if (typeof dsStack[dsi][dsiIndexes[dsi]].Pg!='undefined') { // Track the page number
             try {
               pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].Pg.num][dsStack[dsi][dsiIndexes[dsi]].Pg.gen];
-            } catch(ex) {}
+            } catch(ex) { }
             getNext();
             getTextForDsi();
           } else if (typeof dsStack[dsi][dsiIndexes[dsi]].MCID!='undefined') {
             mcid=dsStack[dsi][dsiIndexes[dsi]].MCID;
-            //blr.W15yQC.pdfCheckDialog.log('Page Number:'+pgNum+'  K:'+K);
+            //console.log('Page Number:'+pgNum+'  K:'+K);
             if (typeof pgTCCache[pgNum]!='undefined') {
-              //blr.W15yQC.pdfCheckDialog.log('Using Cache');
+              //console.log('Using Cache');
               tc=pgTCCache[pgNum];
               bFound=false;
               text=''
@@ -648,15 +667,15 @@
               }
               if(bFound) {
                 dsStack[dsi][dsiIndexes[dsi]].text=filter(text);
-                //blr.W15yQC.pdfCheckDialog.log('Found: '+text);
+                //console.log('Found: '+text);
               } else {
                 dsStack[dsi][dsiIndexes[dsi]].text='';
-                //blr.W15yQC.pdfCheckDialog.log('Not Found: ');
+                //console.log('Not Found: ');
               }
               getNext();
               getTextForDsi();
             } else {
-              //blr.W15yQC.pdfCheckDialog.log('Calling getPage');
+              //console.log('Calling getPage');
               pdf.getPage(pgNum+1).then(function(page){
                 page.getTextContent().then(function(tc){
                   bFound=false;
@@ -677,16 +696,16 @@
                   }
                   if(bFound) {
                     dsStack[dsi][dsiIndexes[dsi]].text=filter(text);
-                    //blr.W15yQC.pdfCheckDialog.log('Found: '+text);
+                    //console.log('Found: '+text);
                   } else {
                     dsStack[dsi][dsiIndexes[dsi]].text='';
-                      //blr.W15yQC.pdfCheckDialog.log('Not Found: ');
+                      //console.log('Not Found: ');
                   }
-                  if (pgsInCache.length>4) {
+                  if (pgsInCache.length>100) {
                     pgTCCache[pgsInCache[0]]=null;
                     pgsInCache.shift();
                   }
-                  //blr.W15yQC.pdfCheckDialog.log("TC:\n"+blr.W15yQC.objectToString(tc)+"\n\n");
+                  //console.log("TC:\n"+blr.W15yQC.objectToString(tc)+"\n\n");
                   pgTCCache[pgNum]=tc;
                   pgsInCache.push(pgNum);
                   tick();
@@ -755,14 +774,14 @@
       while (dsiIndexes[dsi]<dsStack[dsi].length) {
         while (dsiIndexes[dsi]<dsStack[dsi].length) {
           elType=(ds.rm.hasOwnProperty(dsStack[dsi][dsiIndexes[dsi]].S))?ds.rm[dsStack[dsi][dsiIndexes[dsi]].S]:dsStack[dsi][dsiIndexes[dsi]].S;
-            //blr.W15yQC.pdfCheckDialog.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
+            //console.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
           if (/^H\d*$/i.test(elType)) {
             break;
           }
           getNext();
         }
         if (dsiIndexes[dsi]>=dsStack[dsi].length && dsi<1) {
-          //blr.W15yQC.pdfCheckDialog.log('Calling renderAndCheckDocStructure');
+          //console.log('Calling renderAndCheckDocStructure');
           break;
         } else {
           t=getRecursiveText(dsStack[dsi][dsiIndexes[dsi]]);
@@ -889,7 +908,7 @@
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, l, s, errTxt, keys=['T','Lang','Alt','E','ActualText', 'ListNumbering', 'RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
+      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm, keys=['T','Lang','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
@@ -1155,35 +1174,66 @@
             }
           }
           if (/^form$/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
+            //alert("Form:"+blr.W15yQC.objectToString(o[oi].objr));
             if(results.bAllFormControlsHaveLabels===null) { // Must be first form control
               formControls=[];
               results.bAllFormControlsHaveLabels=true;
               results.bAllFormControlsHaveUniqueLabels=true;
             }
-            formControls.push({"FT":null, "Ff":null, "T":null, "TU":null, "Opt":null, "V":null, "Pg":null, "Unique":true});
-            k=formControls.length-1;
-            if (typeof o[oi].objr=='undefined' || typeof o[oi].objr.TU=='undefined' || !blr.W15yQC.fnStringHasContent(o[oi].objr.TU)) {
-              results.bAllFormControlsHaveLabels=false;
-              formControls[k].TU='';
-            } else {
-              formControls[k].TU=o[oi].objr.TU;
+            bFoundFormInAcroForm=false;
+            for(k=0;k<ds.formFields.length;k++) {
+              if (ds.formFields[k].AnnotObjr!=null) {
+                if (ds.formFields[k].AnnotObjr.gen===o[oi].objr.AnnotObjr.gen && ds.formFields[k].AnnotObjr.num===o[oi].objr.AnnotObjr.num) {
+                  bFoundFormInAcroForm=true;
+                  //alert(blr.W15yQC.objectToString(ds.formFields[k]));
+                  formControls.push({"FT":ds.formFields[k].FT, "Ff":ds.formFields[k].Ff, "T":ds.formFields[k].T, "TU":ds.formFields[k].TU, "Opt":null, "V":null, "Pg":null, "Unique":true});
+                  if (ds.formFields[k].FT!=null) {
+                    o[oi].objr.FT=ds.formFields[k].FT;
+                  }
+                  if (ds.formFields[k].Ff!=null) {
+                    o[oi].objr.Ff=ds.formFields[k].Ff;
+                  }
+                  if (ds.formFields[k].T!=null) {
+                    o[oi].objr.T=ds.formFields[k].T;
+                  }
+                  if (ds.formFields[k].TU!=null) {
+                    o[oi].objr.TU=ds.formFields[k].TU;
+                  }
+                  //alert(blr.W15yQC.objectToString(formControls[formControls.length-1]));
+                  break;
+                }
+              }
             }
+
+            if(!bFoundFormInAcroForm) {
+              formControls.push({"FT":null, "Ff":null, "T":null, "TU":null, "Opt":null, "V":null, "Pg":null, "Unique":true});
+              alert("not found");
+            }
+
+            k=formControls.length-1;
+
             if (typeof o[oi].objr!='undefined') {
-              if (typeof o[oi].objr.FT!='undefined') {
+              if (typeof o[oi].objr.FT!='undefined' && formControls[k].FT===null) {
                 formControls[k].FT=o[oi].objr.FT;
               }
-              if (typeof o[oi].objr.Ff!='undefined') {
+              if (typeof o[oi].objr.TU!='undefined' && formControls[k].TU===null) {
+                formControls[k].TU=o[oi].objr.TU;
+              }
+              if (typeof o[oi].objr.Ff!='undefined' && formControls[k].Ff===null) {
                 formControls[k].Ff=o[oi].objr.Ff;
               }
-              if (typeof o[oi].objr.T!='undefined') {
+              if (typeof o[oi].objr.T!='undefined' && formControls[k].T===null) {
                 formControls[k].T=o[oi].objr.T;
               }
-              if (typeof o[oi].objr.Opt!='undefined') {
+              if (typeof o[oi].objr.Opt!='undefined' && formControls[k].Opt===null) {
                 formControls[k].Opt=o[oi].objr.Opt;
               }
-              if (typeof o[oi].objr.V!='undefined') {
+              if (typeof o[oi].objr.V!='undefined' && formControls[k].V===null) {
                 formControls[k].V=o[oi].objr.V;
               }
+            }
+            if (!blr.W15yQC.fnStringHasContent(formControls[k].TU)) {
+              results.bAllFormControlsHaveLabels=false;
             }
             formControls[k].Pg=pgNum;
             for(l=0;l<k;l++) {
@@ -1434,7 +1484,7 @@
     }
 
     function renderFormControlsTable() {
-      var el=re.getElementById('formControlsTable'), i, table, th, td, tr, thead, tbody, p, sNotes;
+      var el=re.getElementById('formControlsTable'), i, k, table, th, td, tr, thead, tbody, p, sNotes, sFf, iFf;
 
       if (formControls!==null && formControls.length>0) {
         table=rd.createElement('table');
@@ -1451,6 +1501,9 @@
         tr.appendChild(th);
         th=rd.createElement('th');
         th.appendChild(rd.createTextNode('Type'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Flags'));
         tr.appendChild(th);
         th=rd.createElement('th');
         th.appendChild(rd.createTextNode('Name'));
@@ -1493,6 +1546,31 @@
           td=rd.createElement('td');
           td.setAttribute('class','formControlType');
           td.appendChild(rd.createTextNode(formControls[i].FT+' ('+(formControlTypes.hasOwnProperty(formControls[i].FT)?formControlTypes[formControls[i].FT]:'Invalid')+')'));
+          tr.appendChild(td);
+          //(dec >>> 0).toString(2)
+          td=rd.createElement('td');
+          td.setAttribute('class','formControlFlags');
+          if (parseInt(formControls[i].Ff)!=NaN) {
+            iFf=parseInt(formControls[i].Ff,10);
+            sFf=(parseInt(formControls[i].Ff,10) >>> 0).toString(2);
+            while (sFf.length<28) {
+              sFf='0'+sFf;
+            }
+            sFf=sFf.replace(/(.{4})/g,"$1-").trim().replace(/-$/,'');
+            for(k=27;k>=0;k--) {
+              if ((iFf & (1 << k)) && blr.W15yQC.fnStringHasContent(FfBitNames[(k+1).toString().trim()])) {
+                sFf=blr.W15yQC.fnJoin(sFf,FfBitNames[(k+1).toString().trim()]+'(bit'+(k+1)+')',', ');
+              }
+            }
+            if (/Radio\(/.test(sFf)) {
+              sFf=sFf.replace('RichText-','');
+            } else {
+              sFf=sFf.replace('-RadiosInUnison','');
+            }
+            td.appendChild(rd.createTextNode(sFf));
+          } else {
+            td.appendChild(rd.createTextNode(formControls[i].Ff));
+          }
           tr.appendChild(td);
           td=rd.createElement('td');
           td.appendChild(rd.createTextNode(formControls[i].T));

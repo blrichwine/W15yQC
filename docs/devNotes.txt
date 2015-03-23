@@ -58,6 +58,23 @@
  * TODO:
 
    PDF Checker
+     -- Why does danish-form have form controls listed as unlabled?
+     -- Tables
+       -- 14.8.4.3.4 Pg 586 ISO 32000
+          Caption may be first or last child
+          Table may contain TR, THead, TBody, TFoot, Caption
+          Look for TextAlign attributes set to Justify
+       -- 14.8.5.5 ListNumbering valid values Table 347 pg. 608
+       -- Table 348 pg. 609 Form controls
+           -- Desc attribute is an alternate source for a form control's name
+           -- checked describes if the form control is set: on, off, neutral
+       -- Table attributes!!! Table 349, pg. 609
+          -- RolSpan, ColSpan can be found on TD and TH cells
+          -- Headers can be found on TD and TH cells, should point to ID in TH cell
+          -- Scope: Row, Column, Both. Only on TH cells
+          -- Summary: used only within table structure elements
+       -- 14.9.2.3 Language specification hierarchy pg. 612
+
      -- 14.9.5 abbreviations in content stream
      -- 14.9.4 ActualText in content stream
      -- Make role map listing a definition list
@@ -192,6 +209,7 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- How does JAWS read $56.23
   -- Add option for including ARIA-DESCRIBEDBY text in effectiveLabels
   -- is aria-describedby working on links? http://www.uchicago.edu/
        Hmmm... OK: http://www.w3.org/WAI/GL/wiki/Using_aria-describedby_for_link_purpose , so it does...

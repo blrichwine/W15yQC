@@ -307,29 +307,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
   },
 
   fnResetDefaults: function() {
-    // Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", "");
-    Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
-
-    Application.prefs.setValue("extensions.W15yQC.HTMLReport.collapsedByDefault", true);
-    Application.prefs.setValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", false);
-
-    Application.prefs.setValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls", true);
-    Application.prefs.setValue("extensions.W15yQC.getElements.includeHiddenElements", false);
-    Application.prefs.setValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", false);
-    Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
-    Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
-    Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
-    Application.prefs.setValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true);
-    Application.prefs.setValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false);
-    Application.prefs.setValue("extensions.W15yQC.HTMLReport.checkLinks", false);
-
-    Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
-    Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
-    Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", true);
-    Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
-    Application.prefs.setValue("extensions.W15yQC.mandatesEnabled", false);
-    Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
-    Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
+    blr.W15yQC.fnResetUserPrefsToDefaults();
   },
 
   spaces: function(count) {

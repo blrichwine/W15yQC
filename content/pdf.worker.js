@@ -180,6 +180,11 @@ var OPS = PDFJS.OPS = {
   constructPath: 91
 };
 
+function filter(s) {
+  if(s!==null && s.replace) { return s.replace(/^þÿ/,''); }
+  return s;
+}
+
 // A notice for devs. These are good for things that are helpful to devs, such
 // as warning that Workers were disabled, which is important to devs but not
 // end users.
@@ -5500,7 +5505,8 @@ var PDFDocument = (function PDFDocumentClosure() {
     // Hints on parsing found at: https://github.com/gpoo/poppler/blob/master/poppler/StructTreeRoot.cc
       info('readStructure STARTING');
       var rootDict, value=false;
-      var pgs, pi, str, i, j, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type, objr, bErrors=false;
+      var pgs, pi, str, i, j, k, ref, so, ca, stre, structure=[], pageCount=0, pageIndexByRef={}, strStats={}, xref=this.xref, type, objr, objr2, bErrors=false;
+      var af, formFields=[], fields=[], field_TU, field_T, field_Ff, field_FT, field_Type, field2_TU, field2_T, field2_Ff, field2_FT, field2_Type, field2_Keys;
       structure.errors=false;
 
       function addStructElementChildren(strec) {
@@ -5538,7 +5544,7 @@ try{
              }
              children.push({"S":filter(type), "children":addStructElementChildren(strecc)});
              indx=children.length-1;
-              // if(/form/i.test(type)) { alert("START(1)\n"+blr.W15yQC.objectToString(strecc));}
+              // if(/form/i.test(type)) { alert("START(1)\n"+blr.W15yQC.objectToString(strecc)); }
            if(/form/i.test(type) && typeof strecc.map !='undefined' && typeof strecc.map.K !='undefined') {
               // alert("inside");
             try{
@@ -5546,7 +5552,7 @@ try{
                 // alert("fetching 1 object from K");
               objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num, strecc.map.K.map.Obj.gen));
               if(objr!=null) {
-                 // alert("have object:"+blr.W15yQC.objectToString(objr));
+                // alert("have object(1):"+blr.W15yQC.objectToString(objr));
                children[indx].objr={};
                if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
                if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
@@ -5554,7 +5560,12 @@ try{
                if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                if(typeof objr.map.Opt != 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
                if(typeof objr.map.V != 'undefined') { children[indx].objr.V=filter(objr.map.V); }
-               if(typeof objr.map.Type != 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
+               if(typeof objr.map.Type != 'undefined') {
+                children[indx].objr.Type=filter(objr.map.Type.name);
+                if(objr.map.Type.name=='Annot') {
+                  children[indx].objr.AnnotObjr=strecc.map.K.map.Obj;
+                }
+               }
               }
              } else {
               // alert("Looking at K as an array");
@@ -5562,7 +5573,7 @@ try{
                // alert("Fetching object:"+i+" from K");
                objr=xref.fetch(new Ref(strecc.map.K[i].map.Obj.num, strecc.map.K[i].map.Obj.gen));
                if(objr!=null) {
-                 // alert("Have object: "+blr.W15yQC.objectToString(objr));
+                 // alert("Have object(2): "+blr.W15yQC.objectToString(objr));
                 if(typeof children[indx].objr === 'undefined') { children[indx].objr={}; }
                 if(typeof objr.map.FT != 'undefined' && typeof children[indx].objr.FT === 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
                 if(typeof objr.map.Ff != 'undefined' && typeof children[indx].objr.Ff === 'undefined') { children[indx].objr.Ff=objr.map.Ff }
@@ -5570,7 +5581,12 @@ try{
                 if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                 if(typeof objr.map.Opt != 'undefined' && typeof children[indx].objr.Opt === 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
                 if(typeof objr.map.V != 'undefined' && typeof children[indx].objr.V === 'undefined') { children[indx].objr.V=filter(objr.map.V); }
-                if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
+                if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') {
+                 children[indx].objr.Type=filter(objr.map.Type.name);
+                 if(objr.map.Type.name=='Annot') {
+                   children[indx].objr.AnnotObjr=strecc.map.K[i].map.Obj;
+                 }
+                }
                }
               }
              }
@@ -5579,7 +5595,7 @@ try{
             }
              // alert("End of form tag processing");
            } else if(/form/i.test(type)){
-             // alert("NOT HANDLING THIS FORM TAG!!!! (1): "+blr.W15yQC.objectToString(strecc));
+             alert("NOT HANDLING THIS FORM TAG!!!! (1): "+blr.W15yQC.objectToString(strecc));
            }
              if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
              if(typeof strecc.map.FT != 'undefined') { children[indx].FT=filter(strecc.map.FT); }
@@ -5591,6 +5607,8 @@ try{
              if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
              if(typeof strecc.map.E != 'undefined') { children[indx].E=filter(strecc.map.E); }
              if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
+             if(typeof strecc.map.Desc != 'undefined') { children[indx].Desc=filter(strecc.map.Desc); }
+             if(typeof strecc.map.checked != 'undefined') { children[indx].checked=filter(strecc.map.checked); }
              if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); }
              if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ColSpan=filter(strecc.map.ColSpan); }
              if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
@@ -5599,6 +5617,12 @@ try{
              if(typeof strecc.map.ListNumbering != 'undefined') { children[indx].Summary=filter(strecc.map.ListNumbering); }
              if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
              if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
+             if(typeof strecc.map.Type != 'undefined' && typeof children[indx].Type === 'undefined') {
+              children[indx].Type=filter(strecc.map.Type.name);
+              if(strecc.map.Type.name=='Annot') {
+                children[indx].AnnotObjr=strec.map.K[k];
+              }
+             }
             }
            }
           }
@@ -5621,7 +5645,7 @@ try{
                 // alert("fetching 1 object from K");
               objr=xref.fetch(new Ref(strecc.map.K.map.Obj.num, strecc.map.K.map.Obj.gen));
               if(objr!=null) {
-                 // alert("have object:"+blr.W15yQC.objectToString(objr));
+                 // alert("have object(3):"+blr.W15yQC.objectToString(objr));
                children[indx].objr={};
                if(typeof objr.map.FT != 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
                if(typeof objr.map.Ff != 'undefined') { children[indx].objr.Ff=objr.map.Ff }
@@ -5629,15 +5653,20 @@ try{
                if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                if(typeof objr.map.Opt != 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
                if(typeof objr.map.V != 'undefined') { children[indx].objr.V=filter(objr.map.V); }
-               if(typeof objr.map.Type != 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
+               if(typeof objr.map.Type != 'undefined') {
+                children[indx].objr.Type=filter(objr.map.Type.name);
+                if(objr.map.Type.name=='Annot') {
+                  children[indx].objr.AnnotObjr=strecc.map.K.map.Obj;
+                }
+               }
               }
              } else {
-              // alert("Looking at K as an array");
+             // alert("Looking at K as an array");
               for(i=0;i<strecc.map.K.length;i++) {
-               // alert("Fetching object:"+i+" from K");
+              // alert("Fetching object:"+i+" from K");
                objr=xref.fetch(new Ref(strecc.map.K[i].map.Obj.num, strecc.map.K[i].map.Obj.gen));
                if(objr!=null) {
-                 // alert("Have object");
+               // alert("have object(4):"+blr.W15yQC.objectToString(objr));
                 if(typeof children[indx].objr === 'undefined') { children[indx].objr={}; }
                 if(typeof objr.map.FT != 'undefined' && typeof children[indx].objr.FT === 'undefined') { children[indx].objr.FT=filter(objr.map.FT.name); }
                 if(typeof objr.map.Ff != 'undefined' && typeof children[indx].objr.Ff === 'undefined') { children[indx].objr.Ff=objr.map.Ff }
@@ -5645,7 +5674,18 @@ try{
                 if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                 if(typeof objr.map.Opt != 'undefined' && typeof children[indx].objr.Opt === 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
                 if(typeof objr.map.V != 'undefined' && typeof children[indx].objr.V === 'undefined') { children[indx].objr.V=filter(objr.map.V); }
-                if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') { children[indx].objr.Type=filter(objr.map.Type.name); }
+                if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') {
+                 children[indx].objr.Type=filter(objr.map.Type.name);
+                 if(objr.map.Type.name==='Annot') {
+                   children[indx].objr.AnnotObjr=strecc.map.K[i].map.Obj;
+                 }
+                }
+                if(typeof objr.map.Type != 'undefined') {
+                 children[indx].objr.Type=filter(objr.map.Type.name);
+                 if(objr.map.Type.name=='Annot') {
+                   children[indx].objr.AnnotObjr=strecc.map.K.map.Obj;
+                 }
+                }
                }
               }
              }
@@ -5666,6 +5706,8 @@ try{
            if(typeof strecc.map.Alt != 'undefined') { children[indx].Alt=filter(strecc.map.Alt); }
            if(typeof strecc.map.E != 'undefined') { children[indx].E=filter(strecc.map.E); }
            if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
+           if(typeof strecc.map.Desc != 'undefined') { children[indx].Desc=filter(strecc.map.Desc); }
+           if(typeof strecc.map.checked != 'undefined') { children[indx].checked=filter(strecc.map.checked); }
            if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); }
            if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ColSpan=filter(strecc.map.ColSpan); }
            if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
@@ -5674,6 +5716,12 @@ try{
            if(typeof strecc.map.ListNumbering != 'undefined') { children[indx].Summary=filter(strecc.map.ListNumbering); }
            if(typeof strecc.map.Pg != 'undefined') { children[indx].Pg=strecc.map.Pg; }
            if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
+           if(typeof strecc.map.Type != 'undefined' && typeof children[indx].Type === 'undefined') {
+            children[indx].Type=filter(strecc.map.Type.name);
+            if(strecc.map.Type.name=='Annot') {
+              children[indx].AnnotObjr=strec.map.K[k];
+            }
+           }
          } else if(typeof strec.map.K === 'number') {
           children.push({"MCID":strec.map.K});
           if(/form/i.test(type)){
@@ -5740,6 +5788,71 @@ try{
           structure.pageIndexByRef=pageIndexByRef;
          }
         }
+
+// **************************
+
+        if (rootDict.has('AcroForm')) { // Read form elements, non-recursive version
+         af =  rootDict.get('AcroForm');
+         // alert("af="+blr.W15yQC.objectToString(af));
+         if(af.map != null && af.map.Fields != null && af.map.Fields.length > 0) {
+          // alert("Fields="+blr.W15yQC.objectToString(af.map.Fields));
+          for(i=0;i<af.map.Fields.length;i++) {
+           try {
+            objr=xref.fetch(new Ref(af.map.Fields[i].num,af.map.Fields[i].gen));
+            // alert("Field "+i+" "+blr.W15yQC.objectToString(objr));
+
+            field_FT=(typeof objr.map.FT != 'undefined') ? filter(objr.map.FT.name) : null;
+            field_Ff=(typeof objr.map.Ff != 'undefined') ? objr.map.Ff : null;
+            field_T=(typeof objr.map.T != 'undefined') ? filter(objr.map.T) : null;
+            field_TU=(typeof objr.map.TU != 'undefined') ? filter(objr.map.TU) : null;
+            field_Type=(typeof objr.map.Type != 'undefined') ? filter(objr.map.Type.name) : null;
+
+            if(objr.map != null && objr.map.Kids != null && objr.map.Kids.length > 0) {
+             for(j=0;j<objr.map.Kids.length;j++) {
+              try {
+                objr2=xref.fetch(new Ref(objr.map.Kids[j].num,objr.map.Kids[j].gen));
+                // alert("Field "+i+" Kid "+j+" "+blr.W15yQC.objectToString(objr2));
+                field2_FT=(typeof objr2.map.FT != 'undefined') ? filter(objr2.map.FT.name) : field_FT;
+                field2_Ff=(typeof objr2.map.Ff != 'undefined') ? objr2.map.Ff : field_Ff;
+                field2_T=(typeof objr2.map.T != 'undefined') ? (field_T !== null ? field_T + '.' : '') + filter(objr2.map.T) : field_T;
+                field2_TU=(typeof objr2.map.TU != 'undefined') ? filter(objr2.map.TU) : field_TU;
+                field2_Type=(typeof objr2.map.Type != 'undefined') ? filter(objr2.map.Type.name) : field_Type;
+                if(field2_Type=='Annot' && typeof objr2.map.AP != 'undefined') {
+                 try {
+                  //alert('AP:'+blr.W15yQC.objectToString(objr2.map.AP.map.D.map));
+                  field2_Keys=Object.keys(objr2.map.AP.map.D.map);
+                  for(k=0;field2_Keys!=null && k<field2_Keys.length;k++) {
+                   if(field2_Keys[k]!=null && field2_Keys[k]!=='Off') {
+                     field2_TU=blr.W15yQC.fnJoin(field2_TU,field2_Keys[k],' ');
+                     break;
+                   }
+                  }
+                 } catch(ex) {
+                  alert('AP Opps:'+blr.W15yQC.objectToString(ex));
+                 }
+                 formFields.push({"FT":field2_FT, "Ff":field2_Ff, "T":field2_T, "TU":field2_TU, "Type":field2_Type, "AnnotObjr":objr.map.Kids[j]});
+                } else {
+                  alert('UNHANDLED FORM ENTRY');
+                }
+               } catch(ex) {
+                alert("Opps:"+blr.W15yQC.objectToString(ex));
+               }
+             }
+            } else { // Terminal field
+             formFields.push({"FT":field_FT, "Ff":field_Ff, "T":field_T, "TU":field_TU, "Type":field_Type, "AnnotObjr":af.map.Fields[i]});
+            }
+           } catch(ex) {
+            alert(blr.W15yQC.objectToString(ex));
+           }
+          }
+         }
+        } else {
+         formFields=null;
+        }
+        structure.formFields=formFields;
+
+        alert('formFields:'+blr.W15yQC.objectToString(formFields));
+
         if (rootDict.has('StructTreeRoot')) {
          str = rootDict.get('StructTreeRoot');
          //info('root.StructTreeRoot: '+blr.W15yQC.objectToString(str, false));
@@ -5792,11 +5905,13 @@ try{
                  strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
                 }
                 structure.push({"S":type, "children":addStructElementChildren(stre)});
-                if(typeof stre.map.T != 'undefined') { structure[structure.length-1].T=stre.map.T; }
+                if(typeof stre.map.T != 'undefined') { structure[structure.length-1].T=filter(stre.map.T); }
                 if(typeof stre.map.Lang != 'undefined') { structure[structure.length-1].Lang=stre.map.Lang; }
-                if(typeof stre.map.Alt != 'undefined') { structure[structure.length-1].Alt=stre.map.Alt; }
+                if(typeof stre.map.Alt != 'undefined') { structure[structure.length-1].Alt=filter(stre.map.Alt); }
                 if(typeof stre.map.E != 'undefined') { structure[structure.length-1].E=stre.map.E; }
-                if(typeof stre.map.ActualText != 'undefined') { structure[structure.length-1].ActualText=stre.map.ActualText; }
+                if(typeof stre.map.ActualText != 'undefined') { structure[structure.length-1].ActualText=filter(stre.map.ActualText); }
+                if(typeof stre.map.Desc != 'undefined') { structure[structure.length-1].Desc=filter(stre.map.Desc); }
+                if(typeof stre.map.checked != 'undefined') { structure[structure.length-1].checked=filter(stre.map.checked); }
                 if(typeof stre.map.Pg != 'undefined') { structure[structure.length-1].Pg=stre.map.Pg; }
                }
              }

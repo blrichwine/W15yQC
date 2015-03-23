@@ -1,0 +1,709 @@
+@import url('/library/skin/default/portal.css');
+
+
+/*
+Modified by Erik Scull - 11/2008
+See style rules created at the bottom of this document.
+These new rules override declarations made in the base portal.css file imported above,
+as well as some declarations made earlier in this file.
+
+Modified by Austin Lord - 12/2011
+*/
+
+body {
+	font-family:  Arial, "Helvetica Neue", "HelveticaNeue", Helvetica, "Lucida Grande", sans-serif;
+}
+
+/* IU ONCOURSE CL - Style for Side Tool Descriptions */
+p#hoverDescription {
+   background-color: #f3f6f6;
+   border: 1px solid #c0c0c0;
+   display: inline;
+   left: 0;
+   padding: 5px;
+   position: absolute;
+   top: 0;
+}
+
+/* IU ONCOURSE CL - Style for Search bar */
+#grandsearchboxcontainer:after { content: "."; display: block; height: 0; clear: both; visibility: hidden;}
+#grandsearchboxcontainer { display: inline-block; }
+#grandsearchboxcontainer { display: block; }
+
+div#searchbox ul li {
+	font-size: .8em;
+}
+
+div#searchbox a {
+	font-size: 1.2em;
+	color: #6A0101;
+}
+
+div#searchbox a:hover {
+	color: #D35353;
+	text-decoration: none;
+}
+
+#headerMax,#headerMin{
+	width: 100%; /* IU */
+	margin: 0; /* IU */
+}
+
+#headerMin{
+	border-bottom: none;
+}
+
+#container {
+   clear:both;
+   margin:0pt auto;
+   padding-top:0;
+   width:100%;
+}
+
+#linkNav {
+   background: #7D110C url(images/sitenav_tl.gif) no-repeat scroll left top;
+   z-index: 2000;
+}
+
+
+
+/* IU addition for IE6 issues */
+* html #toolMenuWrap {
+	top: 51px;
+}
+/* END IU addition */
+
+#toolMenuWrap:hover{
+	border-right:none;
+}
+
+.workspace #toolMenuWrap:hover{
+	border-right:none;
+}
+.course #toolMenuWrap:hover{
+	border-right:none;
+}
+.project #toolMenuWrap:hover{
+	border-right:none;
+}
+
+
+#footers{
+	color: inherit;
+	font-size: inherit;
+	margin: inherit;
+	padding: inherit;
+	width: inherit;
+	clear: inherit;
+	top: inherit;
+	text-align: inherit;
+	padding-left: inherit;
+}
+
+/*IU - turning off bottom borders */
+.workspace .siteNavWrap{
+	border-bottom:none;
+}
+.course .siteNavWrap{
+	border-bottom:none;
+}
+.project .siteNavWrap{
+	border-bottom:none;
+}
+/* end IU */
+
+#siteNavWrapper{
+	background-color: #7D110C; /* IU */
+	height: 45px; /* IU */
+}
+
+#tabBottom {
+	display: none;
+}
+
+/*the portal outputs an image that can be treated here or hidden with display:none*/
+#mastLogo img{
+	margin: 0;
+	padding:0;
+}
+
+
+/*another container wrapping branding images - portal outputs one /library/skin/<skin name>/images/banner_inst.gif
+that can be used or hidden,can also use a background:url(images/<image name>.<ext>) in this block,or both superimposing them*/
+#mastBanner{
+	width: auto;
+	vertical-align: top;
+	float: left;
+}
+
+/*the portal outputs an image that can be treated here or hidden with display:none*/
+#mastBanner img{
+	margin: 1em .5em;
+}
+
+/*container wrapping,depending on Sakai settings:1) a login form,2) a login link for CAS,3) a logout link*/
+#mastLogin{
+  color: #fff;
+	float: right;
+	text-align: right;
+	vertical-align: top;
+}
+
+#loginLinks {
+   margin: 0;
+}
+
+/*the anchor for the login link for CAS above can be an image - treated here*/
+#mastLogin img{
+	margin-top: 0;
+	border: 0;
+}
+
+/*login links for CAS,logout link*/
+#mastLogin a,#mastLogin a:visited{
+	color: #FFFFFF;
+}
+
+#mastLogin a:hover{
+	color: #FFFFFF;
+}
+
+#mastLogin a.loggedout, #mastLogin a#loginLink1 {
+	font-size: 1.8em;
+	font-weight: 400;
+	line-height: 44px;
+	color: #f0f0f0;
+	text-shadow: 1px 1px 0 #2d2d2d;
+
+    display: block;
+   	text-decoration: none;
+	text-align: left;
+}
+
+#mastLogin a.loggedout:hover {
+   color: #fff;
+}
+
+#loginForm label{
+	color: #FFFFFF;
+}
+
+#submit:hover{
+	color: #7D120C;
+}
+
+#roleswap {
+	padding: 10px 12px 10px 0;
+	position: relative !important;
+	right: 0 !important;
+	top: 0 !important;
+	color: #fff;
+} /* IU */
+#roleswap a:link, a:visited{ color: #fff; } /* IU */
+#roleswap a:hover{ background: #fff; color: #7d110c; } /* IU */
+
+.siteNavWrap {
+	position: static;
+	width: 100%;
+	background: #7D110C url(images/siteNavWrap_bg.gif) repeat-y scroll left top;
+	float: none;
+	clear: both;
+	font-size: inherit;
+	line-height: normal;
+	margin: .6em 0;
+	z-index: 0;
+}
+
+
+
+/*wrapper for the site links and site <select> blocks - children are #siteNav and #tabNav */
+#siteNav{
+	background: none;
+	margin-left: 10.6em;
+   width: auto;
+}
+
+/*wrapper for the site <select> that is displayed when more than x sites are in the link list*/
+#selectNav{
+	text-align: left;
+}
+
+#siteLinkList{
+	padding-left: 0.8em;
+}
+
+#siteLinkList li > a > span {
+   background: none;
+   padding: 8px 13px 5px 2px;
+}
+
+#siteLinkList li {
+	position: relative;
+	display:inline;
+	float:left;
+	padding: 0;
+	margin: 0 2px;
+	white-space: nowrap;
+}
+
+#siteLinkList .selectedTab,
+#siteLinkList li.more-active {
+   background: #FFF url(images/selectedtabl.gif) no-repeat 0 0;
+}
+
+#siteLinkList li:hover, #siteLinkList li.hover {
+background:#FFFFFF url(images/selectedtabl.gif) no-repeat 0 0;
+}
+
+#siteLinkList li a, #siteLinkList li a:link, #siteLinkList li a:visited {
+   color:#FFFFFF;
+   text-decoration:underline;
+   background: none;
+   border-bottom: none;
+}
+
+#siteLinkList li.more-tab a {
+   margin: 0 !important;
+}
+
+#siteLinkList li.more-tab a span.inner {
+   background: none;
+   padding: 0;
+}
+
+#siteLinkList li.hover a span.inner {
+   background-image: none; /*url(images/tab-arrow-down-active.gif);*/
+}
+
+#siteLinkList li.selectedTab a,
+	#siteLinkList li.selectedTab a:link,
+	#siteLinkList li.selectedTab a:visited,
+	#siteLinkList li.selectedTab a:hover,
+	#siteLinkList li.more-active a,
+	#siteLinkList li.more-active a:link,
+	#siteLinkList li.more-acitve a:visited,
+	#siteLinkList li.more-active a:hover {
+	background: transparent url(images/selectedtabr.gif) no-repeat scroll right top !important;
+	color: #7D110c !important;
+	cursor: text !important;
+	font-weight: bold !important;
+   margin: 0 !important;
+   text-decoration:none;
+   padding-right: 2px;
+}
+
+#siteLinkList li.selectedTab a span,
+#siteLinkList li.more-active a span {
+   background: none;
+}
+
+#siteLinkList li a:hover {
+   background:transparent url(images/selectedtabr.gif) no-repeat scroll right top;
+   color:#7D110C;
+   display:block;
+      margin-right: 0;
+      padding-right: 2px;
+}
+
+#siteLinkList li a {
+   margin-right: 0;
+}
+
+.dhtml_more_tabs {
+   border-color: #7D110c;
+}
+
+.dhtml_more_tabs a:link, .dhtml_more_tabs a:visited, .dhtml_more_tabs active {
+   color:#7D110c;
+}
+
+.dhtml_more_tabs a:hover {
+   color:#AF2824;
+}
+
+#toolMenu{
+	color: #fff;
+	background: none;
+}
+
+#toolMenu ul{
+	padding-bottom: 2.0em;
+}
+
+#toolMenu li{
+	border:none;
+}
+
+#toolMenu li.selectedTool{
+	background: url(images/triangle_bullet.gif) center right no-repeat;
+	font-weight: bold;
+}
+#toolMenu li a:hover {
+   background:transparent url(images/triangle_bullet.gif) no-repeat scroll right center;
+   color:#FFFFFF;
+   text-decoration:none;
+}
+
+#toolMenu li a:link,#toolMenu li a{
+	color: #fff;
+}
+#toolMenu li a:hover{
+	color: #fff;
+}
+/* IU addition for IE6 issues */
+* html #toolMenu li a:hover {
+	margin-right: -1.1em;
+}
+/* END IU addition */
+
+
+
+#toolMenu li a.selected{
+	color: #fff;
+}
+
+#toolMenu li a.selected:hover{
+	color: #fff;
+}
+
+/*wrapper for all elements of presence display */
+#presenceWrapper{
+	margin-top: 0.8em;
+}
+
+/*wrapper for title of iframe ("Users present")*/
+#presenceTitle{
+	font-size: .73em;
+	text-align: left;
+	margin-left: .5em;
+	padding-top: 0.8em;
+	border-top: 1.0px solid #FFFFFF;
+	color: #FFFFFF;
+}
+
+.portletTitleWrap {
+   border-bottom:2px solid #7D120C;
+}
+
+#col1 .portletTitleWrap{
+	border-bottom: 2px solid #7D120C;
+}
+
+#col1of2 .portletTitleWrap,#col2of2 .portletTitleWrap{
+	border-bottom: 2px solid #7D120C;
+}
+
+.portletTitle .title h2{
+	color: #7D120C;
+}
+
+#footer {
+   clear: left;
+   margin-left: 11em;
+   padding-bottom: 1em;
+   border: none;
+   font-size: small;
+}
+
+#footerInfo{
+	margin-left: 11em;
+}
+
+#footerInfo img{
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+/* Oncourse Added */
+.footerBucketWrap{
+   height: 25px;
+   overflow: visible;
+   width: 1000px;
+}
+/* Oncourse Added */
+.footerBucket{
+   float: left;
+   height: 15px;
+   margin-right: 50px;
+   padding-top: 5px;
+}
+
+/* Oncourse -- add the line on the top and text left align */
+.footerExtNav{
+   font-size: 90%; /* Oncourse */
+	margin: 0 auto;
+   overflow: hidden; /* Oncourse */
+   padding-top: .5em;
+	text-align: left;
+
+   border-top: 2px solid #4F0B08;
+}
+
+.footerExtNav img#poweredByImg{
+   margin-left: -3px;
+   margin-top: -5px;
+}
+
+
+/*the links displayed inside the wrapper above*/
+.footerExtNav a,.footerExtNav A:link,.footerExtNav A:visited{
+	color: #900;
+	text-decoration: none;
+	margin: 0;
+}
+
+.footerExtNav a:hover{
+   color: #900;
+	text-decoration: underline;
+	margin: 0;
+}
+
+
+/*Oncourse--set the position and style for the image*/
+#blockiu{
+	width:22px;
+	height:28px;
+	padding:0;
+	float: left;
+}
+
+#blockiu a {
+	display: block;
+	width: 22px;
+	height: 28px;
+	margin: 0;
+}
+
+#blockiu a img {
+	border:none;
+}
+.sakaiCopyrightInfo{
+   color: #000;
+	margin: 3px 0 0 30px;
+	font-size: 90%;
+	padding: 6px 0 0 0;
+}
+
+div#privacy_tool_popup {
+    border: 4px solid #7D110C;
+}
+
+div.tool_popup {
+   border: 4px solid #7D110C;
+}
+
+#roleswap {
+   position: absolute;
+   right: 1.2em;
+   top: 0.7em;
+}
+
+.portletTitle .title a{
+	background: url(images/arrow_up_to_top_2.png) center left no-repeat;
+	padding-top: 5px;
+	text-decoration: none !important;
+}
+
+.portletTitle .title a:hover{
+	background: url(images/arrow_up_to_top_2.png) center left no-repeat;
+}
+
+div#privacy_tool_popup {
+   z-index: 100001;
+}
+
+div#privacy_overlay {
+   z-index: 100000;
+}
+
+
+
+/* ADDED BY E.SCULL - 11/2008 ----------------------------------------------------------------------------- */
+
+img {
+	display:block;
+	border:none;
+	}
+
+/*outer wrapper for portal content (decorative - child is #portalContainer )*/
+#portalOuterContainer{
+	text-align:center;
+	background:#fff url(images/bg-horiz-stripe.png) top center repeat-x;
+}
+
+/*inner wrapper for portal content (decorative - children are #header #container and #footer )*/
+#portalContainer{
+	width:900px; /* 902px to allow for 1px border on either side */
+	margin:0 auto;
+	background-color:#fff;
+}
+
+
+
+#siteNavWrapper{
+	height:44px;
+}
+
+#headerMax{
+	height:44px;
+}
+
+#headerMin{
+	height:124px;
+	background: black url(images/full-header.png) top left no-repeat;
+}
+
+#mastLogo{
+	margin:0;
+}
+
+#mastBanner img{
+	display:none;
+}
+
+#loginForm {
+	margin:0;
+	margin-top:8px;
+}
+
+#container {
+	width:900px; /* 902px total */
+}
+
+#content {
+	margin:0;
+}
+
+/*margin tweak for IE to avoid float drop*/
+
+
+
+#worksiteLogo {
+	display:none; /* was causing space to appear in IE6+7 */
+}
+
+#toolMenuWrap{
+	float: none;
+	width: auto;
+	color:inherit;
+	padding:0;
+	margin:0;
+	border:none;
+}
+
+
+#toolMenu {
+	color:#FFFFFF;
+	background: #7d110c;
+	margin:0;
+	padding:0;
+}
+
+#toolMenu ul {
+    margin:0;
+    padding:0;
+    background: #7d110c;
+    width: 900px;
+    margin: 0 auto;
+    height:38px;
+}
+    #toolMenu ul:after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+
+#toolMenu li {
+    border: none;
+    margin:0;
+    padding:0;
+    float: left;
+            height:38px;
+}
+
+
+
+#toolMenu ul li a:link, #toolMenu ul li a {
+    display:block;
+    padding: 10px 10px !important;
+    margin: 0;
+    background-color: #7d110c;
+    border-left: 1px solid #AC1911;
+    border-right: 1px solid #4F0B08;
+    border-bottom: 1px solid #4F0B08;
+    border-top: 1px solid #AC1911;
+            color:#cdc4b6;
+    text-decoration: none;
+    transition: all .2s;
+    -webkit-transition: all .2s;
+    -moz-transition: all .2s;
+}
+
+#toolMenu span.icon-sakai-help, span.icon-sakai-iframe {background-image:none;}
+
+#toolMenu li.selectedTool span {
+    color:#fff !important;
+    background: #3d3d3d;
+    padding: 0;
+    filter: none !important;
+    opacity: 1 !important;
+    -moz-opacity: 1 !important;
+}
+#toolMenu li.selectedTool a {
+    display:block;
+    background: none repeat scroll 0 0 #3D3D3D;
+    border-top: 1px solid #5d5d5d;
+    border-left: 1px solid #5d5d5d;
+    border-right: 1px solid #1d1d1d;
+    border-bottom: 1px solid #1d1d1d;
+    padding:10px 10px;
+    opacity: 1;
+    color:#fff;
+}
+
+#toolMenu li a:hover {
+    padding: 5px 10px;
+    color:#fff !important;
+    background: #95150F !important;
+}
+
+#toolMenu li.selectedTool a:hover {
+
+    background: none repeat scroll 0 0 #3D3D3D !important;
+}
+
+.portletTitleWrap {
+   display:none;
+}
+
+.portletMainIframe {
+	height: 778px;
+}
+
+
+#footer {
+   margin-left: 0;
+	 padding:0;
+   width:  100%;
+}
+
+.footerExtNav{
+   padding:1em;
+}
+
+.footerBucketWrap{
+   /* Not sure why this width was set to 1000px, but it caused IE6 to break. */
+	 width: auto;
+}
+
+/*--------------------------------------------------*/
+
+
+
+.footerBucket       { margin-right: 15px; font-size: 95%;}
+div.clearboth       {clear:both; height:0;}
+
+
+/*--------------------------------------------------*/
+
+
+

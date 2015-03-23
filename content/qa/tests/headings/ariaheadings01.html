@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>ARIA Heading tests 01</title>
+  <style>
+	</style>
+</head>
+<body>
+<h4 style="display:none">This should be hidden</h4>
+<h1>Heading Tests 01</h1>
+<p id="dupe">Here is some text just below the heading level 1</p>
+<div role="heading" aria-level="2">Here is a level 2 sub heading</div>
+<p>And some text just below the level 2 heading.</p>
+<h2>Here is a second level 2 sub heading</h2>
+<p>Here is a little text between the headings.</p>
+<div role="heading" aria-level="6">Here is level 6 heading that skipped levels 3,4, and 5</div>
+<div role="heading" aria-level="3" aria-label="heading label override">Here is a level 3 heading just to jump back a little.</div>
+<div role="heading" aria-level="d">Here is an invalid aria-level value.</div>
+<h5 role="presentation">Here is a heading that is marked presentation.</h5>
+<div role="heading">Here is a role=heading without aria-level.</div>
+<h6>Here is a level 6 heading</h6>
+<h4></h4>
+<h4>&^%$*%</h4>
+<h4>ba</h4>
+<h3>Here is a level 3 heading</h3>
+<h6>Here is a level 6 heading</h6>
+<h1>Here is a level 1 heading</h1>
+<h2 id="dog[23]">Invalid ID</h2>
+<h3 id="dupe">Duplicate ID</h3>
+</body>
+</html>

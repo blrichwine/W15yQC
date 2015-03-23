@@ -759,7 +759,7 @@ ys: 'whys'
         } else if (o===null) {
           return ' null ';
         } else if (/^string$/i.test(typeof o)) {
-          return '"'+o.toString()+'"';
+          return '"'+o.toString().replace(/\"/g,'\\"')+'"';
         } else if (/^number$/i.test(typeof o)) {
           return o.toString();
         } else if (/^boolean$/i.test(typeof o)) {
@@ -803,7 +803,7 @@ ys: 'whys'
                       } else {
                         try {
                           if(/^string$/i.test(typeof o[p])) {
-                            out += '"'+ p + '": "' + o[p] + '"';
+                            out += '"'+ p + '": "' + o[p].replace(/\"/g,'\\"') + '"';
                           } else if(/^number$/i.test(typeof o[p])) {
                             out += '"'+ p + '": ' + o[p];
                           } else if(/^boolean$/i.test(typeof o[p])) {
@@ -910,16 +910,18 @@ ys: 'whys'
     },
 
     fnMaxDecimalPlaces: function (sNumber, iPlaces) {
-      if (/\d*\.\d+/.test(sNumber) && sNumber.toString().length - sNumber.toString().indexOf('.') - 1 > iPlaces) {
-        return parseFloat(sNumber).toFixed(iPlaces);
+      if (/\d\.\d+/.test(sNumber) && sNumber.toString().length - sNumber.toString().indexOf('.') - 1 > iPlaces) {
+        return (parseFloat(sNumber).toFixed(iPlaces)).toString();
+      } else if (/^\.\d+/.test(sNumber) && sNumber.toString().length - sNumber.toString().indexOf('.') - 1 > iPlaces) {
+        return (parseFloat(sNumber).toFixed(iPlaces)).toString().replace(/^0\./,'.');
       }
       return sNumber;
     },
 
     fnFormatArrayAsList: function(a,def) {
       var s;
-      if(a!=null && a.length && a.length>0) {
-        s=a.toString().replace(/(\w),(\w)/g,'$1, $2');
+      if(a!=null && a.join && Object.prototype.toString.call( a ) === '[object Array]' && a.length && a.length>0) {
+        s=a.join(', ');
       } else if (def!=null) {
           s=def;
       } else {
@@ -929,18 +931,18 @@ ys: 'whys'
     },
 
     fnCleanSpaces: function (str, bKeepNewLines) {
-      if (str && str.replace) {
+      if (str!=null && str.replace) {
         if (bKeepNewLines) {
-          str = blr.W15yQC.fnTrim(str.replace(/[ \t]+/g, ' '));
+          str = str.replace(/[ \t]+/g, ' ').replace(/^[ \t]*|[ \t]*$/g, '');
         } else {
-          str = blr.W15yQC.fnTrim(str.replace(/\s+/g, ' '));
+          str = str.replace(/\s+/g, ' ').trim();
         }
       }
       return str;
     },
 
     fnTrim: function (str) {
-      if(str != null && str.replace) { return str.replace(/^\s*|\s*$/g, ''); }
+      if(str != null && str.trim) { return str.trim(); }
       return str;
     },
 
@@ -988,16 +990,16 @@ ys: 'whys'
 
     countWords: function(s){
       if (s!==null) {
-        s = s.replace(/(^\s*)|(\s*$)/g,"");//exclude  start and end white-space
-        s = s.replace(/\s{2,}/g," ");//2 or more space to 1
-        s = s.replace(/[\n\r]\s+/,"\n"); // exclude newline with a start spacing
+        s = s.replace(/[\n\r\t\s]/,' '); // convert all whitespace to spaces
+        s = s.replace(/\s{2,}/g,' ');//2 or more space to 1
+        s = s.trim();//exclude  start and end white-space
         return s.split(' ').length;
       }
       return 0;
     },
 
     fnFormatList: function (s) {
-      if(s!=null ) {s = s.replace(/,/g, ', ');}
+      if(s!=null ) {s = s.replace(/,\s*/g, ', ');}
       return s;
     },
 
@@ -1563,6 +1565,12 @@ ys: 'whys'
     },
 
     fnStringsEffectivelyEqual: function (s1, s2) { // TODO: Improve this! What contexts is this used in?
+      if (s1==null) {
+        s1='';
+      }
+      if (s2==null) {
+        s2='';
+      }
       if (s1 == s2) { return true; }
       if (blr.W15yQC.fnCleanSpaces(s1+' ',false).toLowerCase() == blr.W15yQC.fnCleanSpaces(s2+' ',false).toLowerCase()) {
         return true;
@@ -1571,32 +1579,38 @@ ys: 'whys'
     },
 
     fnIsValidPositiveInt: function (sInt) {
-      sInt = blr.W15yQC.fnTrim(sInt);
-      if(sInt != null && sInt.length>0 && /^[0-9]+$/.test(sInt) && !isNaN(parseInt(sInt,10)) && parseInt(sInt,10)>=0) {
-        return true;
+      if (sInt!=null && sInt.length>0) {
+        sInt = sInt.trim();
+        if(/^[0-9]+$/.test(sInt) && !isNaN(parseInt(sInt,10)) && parseInt(sInt,10)>=0) {
+          return true;
+        }
       }
       return false;
     },
 
     fnIsValidNumber: function (sNumber) {
-      sNumber = blr.W15yQC.fnTrim(sNumber);
-      if(sNumber != null && sNumber.length>0 && /^[0-9e\.\,\+\-]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
-        return true;
+      if (sNumber!=null && sNumber.length>0) {
+        sNumber = sNumber.trim();
+        if(/^[0-9e\.\,\+\-]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
+          return true;
+        }
       }
       return false;
     },
 
     fnIsValidSimpleFloat: function (sNumber) {
-      sNumber = blr.W15yQC.fnTrim(sNumber);
-      if(sNumber != null && sNumber.length>0 && /^[0-9\.]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
-        return true;
+      if (sNumber!=null && sNumber.length>0) {
+        sNumber = sNumber.trim();
+        if(/^[0-9\.]+$/.test(sNumber) && !isNaN(parseFloat(sNumber))) {
+          return true;
+        }
       }
       return false;
     },
 
     fnStringIsTrueFalse: function(s) {
       if(s!=null) {
-        s=blr.W15yQC.fnTrim(s.toLowerCase());
+        s=s.trim().toLowerCase();
         if(s=='true'||s=='false') { return true; }
       }
       return false;
@@ -1612,7 +1626,7 @@ ys: 'whys'
     fnGetNodeAttribute: function (node, sAttributeName, sDefault) {
       var sAttributeValue = sDefault;
       if (node && node.hasAttribute && node.hasAttribute(sAttributeName)) {
-        sAttributeValue = blr.W15yQC.fnTrim(node.getAttribute(sAttributeName));
+        sAttributeValue = node.getAttribute(sAttributeName).trim();
       }
       return sAttributeValue;
     },
@@ -2364,8 +2378,8 @@ ys: 'whys'
           r6=/^([a-z]+:\/\/[^\/]+\/.*?)(\/\/)(.*$)/i;
       if(/^\s*(tel|mailto):/i.test(sUrl)==false) {
         if(docURL != null && sUrl != null && sUrl.length>0) {
-          docURL = blr.W15yQC.fnTrim(docURL);
-          sUrl = blr.W15yQC.fnTrim(sUrl);
+          docURL = docURL.trim();
+          sUrl = sUrl.trim();
           if(sUrl.slice(0,2) == '//') { // TODO: This needs QA'd
             firstPart = docURL.match(/^([a-z-]+:)\/\//);
               if(firstPart != null) {
@@ -2452,8 +2466,8 @@ ys: 'whys'
     fnScriptValuesAreDifferent: function(s1,s2) {
       // TODO: Make this more advanced!
       if(s1 == s2) { return false; }
-      if(s1 != null) { s1 = blr.W15yQC.fnTrim(s1); }
-      if(s2 != null) { s2 = blr.W15yQC.fnTrim(s2); }
+      if(s1 != null) { s1 = s1.trim(); }
+      if(s2 != null) { s2 = s2.trim(); }
       if(s1 == s2 && s1.match(/\bthis\b/) == false) {
         return false;
       }
@@ -2485,54 +2499,55 @@ ys: 'whys'
           iMagnitude,
           sThisPart;
 
-      sString = blr.W15yQC.fnTrim(sString);
-      sString = sString.replace(/\$\s+/, '$');
-      if (sString != null && sString.length && sString.length > 0) {
-        if (sString.indexOf('$') >= 0) {
-          bCurrency = true;
-          sString = sString.substring(sString.indexOf('$') + 1);
-        }
-        if (sString.indexOf('.') >= 0) {
-          sDecimalPart = blr.W15yQC.fnTrim(sString.substring(sString.indexOf('.') + 1));
-          sWholePart = blr.W15yQC.fnTrim(sString.substring(0, sString.indexOf('.')));
-        } else {
-          sWholePart = sString;
-        }
-
-        if (sWholePart.length < 16) {
-          iMagnitude = 0;
-          if (sWholePart == '0') {
-            sWholePartResult = "Zero";
+      if (sString != null) {
+        sString=sString.trim().replace(/\$\s+/, '$');
+        if (sString.length > 0) {
+          if (sString.indexOf('$') >= 0) {
+            bCurrency = true;
+            sString = sString.substring(sString.indexOf('$') + 1);
+          }
+          if (sString.indexOf('.') >= 0) {
+            sDecimalPart = blr.W15yQC.fnTrim(sString.substring(sString.indexOf('.') + 1));
+            sWholePart = blr.W15yQC.fnTrim(sString.substring(0, sString.indexOf('.')));
           } else {
-            while (sWholePart.length > 0) {
-              sThisPart = '00' + sWholePart;
-              sThisPart = sThisPart.substring(sThisPart.length - 3);
-              sWholePartResult = blr.W15yQC.fnSpellOutHundreds(sThisPart) + sMagnitude[iMagnitude] + " " + sWholePartResult;
-              iMagnitude += 1;
-              if (sWholePart.length > 3) {
-                sWholePart = sWholePart.substring(0, sWholePart.length - 3);
-              } else {
-                sWholePart = '';
+            sWholePart = sString;
+          }
+
+          if (sWholePart.length < 16) {
+            iMagnitude = 0;
+            if (sWholePart == '0') {
+              sWholePartResult = "Zero";
+            } else {
+              while (sWholePart.length > 0) {
+                sThisPart = '00' + sWholePart;
+                sThisPart = sThisPart.substring(sThisPart.length - 3);
+                sWholePartResult = blr.W15yQC.fnSpellOutHundreds(sThisPart) + sMagnitude[iMagnitude] + " " + sWholePartResult;
+                iMagnitude += 1;
+                if (sWholePart.length > 3) {
+                  sWholePart = sWholePart.substring(0, sWholePart.length - 3);
+                } else {
+                  sWholePart = '';
+                }
               }
             }
+          } else {
+            while (sWholePart.length > 0) {
+              sWholePartResult = sWholePartResult + " " + blr.W15yQC.fnSpellOutDigitWZero(sWholePart[0]);
+              sWholePart = sWholePart.substring(1);
+            }
           }
-        } else {
-          while (sWholePart.length > 0) {
-            sWholePartResult = sWholePartResult + " " + blr.W15yQC.fnSpellOutDigitWZero(sWholePart[0]);
-            sWholePart = sWholePart.substring(1);
+          if (bCurrency == true && sWholePartResult.length > 0 && sDecimalPart.length == 2) {
+            sDecimalPartResult = blr.W15yQC.fnSpellOutTens(sDecimalPart);
+            sResult = sWholePartResult + " Dollars And " + sDecimalPartResult + " Cents";
+          } else {
+            while (sDecimalPart.length > 0) {
+              sDecimalPartResult = sDecimalPartResult + " " + blr.W15yQC.fnSpellOutDigitWZero(sDecimalPart[0]);
+              sDecimalPart = sDecimalPart.substring(1);
+            }
+            sResult = sWholePartResult;
+            if (sDecimalPartResult.length > 0) { sResult += " Point " + sDecimalPartResult; }
+            if (bCurrency == true) { sResult += " Dollars"; }
           }
-        }
-        if (bCurrency == true && sWholePartResult.length > 0 && sDecimalPart.length == 2) {
-          sDecimalPartResult = blr.W15yQC.fnSpellOutTens(sDecimalPart);
-          sResult = sWholePartResult + " dollars and " + sDecimalPartResult + " cents";
-        } else {
-          while (sDecimalPart.length > 0) {
-            sDecimalPartResult = sDecimalPartResult + " " + blr.W15yQC.fnSpellOutDigitWZero(sDecimalPart[0]);
-            sDecimalPart = sDecimalPart.substring(1);
-          }
-          sResult = sWholePartResult;
-          if (sDecimalPartResult.length > 0) { sResult += " point " + sDecimalPartResult; }
-          if (bCurrency == true) { sResult += " dollars"; }
         }
       }
 
@@ -2545,7 +2560,7 @@ ys: 'whys'
         sString = "000" + sString;
         sString = sString.substring(sString.length - 3);
         if (sString[0] != '0') {
-          sResult = blr.W15yQC.fnSpellOutDigit(sString[0]) + " hundred ";
+          sResult = blr.W15yQC.fnSpellOutDigit(sString[0]) + " Hundred ";
         }
         if (sString[1] != '0') {
           sResult += blr.W15yQC.fnSpellOutTens(sString.substring(1));
@@ -2677,7 +2692,7 @@ ys: 'whys'
       }
 
       if (WordString == null || WordString.length<1) {
-        return ("");
+        return ('');
       }
 
     if(blr.W15yQC.homophones.hasOwnProperty(WordString.toLowerCase())) {
@@ -2809,15 +2824,15 @@ ys: 'whys'
     },
 
     fnOnlyASCIISymbolsWithNoLettersOrDigits: function (sText) {
-      if (sText && sText.length && sText.length > 0) {
+      if (sText!=null && sText.length && sText.length > 0) {
         if(blr.W15yQC.bEnglishLocale==true) {
-          sText = sText.replace(/[^a-zA-Z0-9€™“Øœæ–ƒÎÙå—ç¾˜„‚‡®Œˆèé•ŠŸŽ’…‹š‘ž†‰ì›ïËÌñßó]+/g, '');
+          sText = sText.replace(/[^a-zA-Z0-9€™“Øœæ–ƒÎÙå—ç¾˜„‚‡®Œˆèé•ŠŸŽ’…‹š‘ž†‰ì›ïËÌñßó]/g, '');
           if (sText.length > 0) {
             return false;
           }
           return true;
         } else { // TODO: Improve this by checking for unicode characters in common languages
-          sText = sText.replace(/[~`!@#$%^&*\(\)-_+=\[{\]}\\\|;:'",<\.>\/\?\sÃà ÑÂª¬¸·×©¤§±¹½¨¡¥²³¦ÅÖÈ]+/g, '');
+          sText = sText.replace(/[~`!@#$%^&*\(\)_+=\[{\]}\\\|;:'",<\.>\/\?\sÃà ÑÂª¬¸·×©¤§±¹½¨¡¥²³¦ÅÖÈ-]/g, '');
           if (sText.length > 0) {
             return false;
           }
@@ -11392,6 +11407,84 @@ try{
       Components.utils.forceShrinkingGC();
       if(progressWindow!=null) progressWindow.fnUpdateProgress('Finished.', 100);
       return oW15yQCReport;
+    },
+
+    fnResetUserPrefsToDefaults: function() {
+      // Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", "");
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 1);
+
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.collapsedByDefault", true);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", false);
+
+      Application.prefs.setValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls", true);
+      Application.prefs.setValue("extensions.W15yQC.getElements.includeHiddenElements", false);
+      Application.prefs.setValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", false);
+      Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
+      Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.checkLinks", false);
+
+      Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
+      Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", true);
+      Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
+      Application.prefs.setValue("extensions.W15yQC.mandatesEnabled", false);
+      Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
+      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
+    },
+
+    fnBackupUserPrefs: function() {
+      Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.Backup", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences", ""));
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel.Backup", Application.prefs.getValue("extensions.W15yQC.userExpertLevel", 1));
+
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.collapsedByDefault.Backup", Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault", true));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault.Backup", Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", false));
+
+      Application.prefs.setValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls", true));
+      Application.prefs.setValue("extensions.W15yQC.getElements.includeHiddenElements.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.includeHiddenElements", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true));
+      Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.honorARIA", true));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings.Backup", Application.prefs.getValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.quickCheckPDFs.Backup", Application.prefs.getValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.checkLinks.Backup", Application.prefs.getValue("extensions.W15yQC.HTMLReport.checkLinks", false));
+
+      Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements.Backup", Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true));
+      Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes.Backup", Application.prefs.getValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5.Backup", Application.prefs.getValue("extensions.W15yQC.getElements.honorHTML5", true));
+      Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW.Backup", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", true));
+      Application.prefs.setValue("extensions.W15yQC.mandatesEnabled.Backup", Application.prefs.getValue("extensions.W15yQC.mandatesEnabled", false));
+      Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec.Backup", Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA"));
+      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList.Backup", Application.prefs.getValue("extensions.W15yQC.rulesToExcludeList", ""));
+    },
+
+    fnRestoreUserPrefsFromBackup: function() {
+      Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.Backup", ""));
+      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", Application.prefs.getValue("extensions.W15yQC.userExpertLevel.Backup", 1));
+
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.collapsedByDefault", Application.prefs.getValue("extensions.W15yQC.HTMLReport.collapsedByDefault.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault", Application.prefs.getValue("extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault.Backup", false));
+
+      Application.prefs.setValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls", Application.prefs.getValue("extensions.W15yQC.getElements.includeLabelElementsInFormControls.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.getElements.includeHiddenElements", Application.prefs.getValue("extensions.W15yQC.getElements.includeHiddenElements.Backup", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", Application.prefs.getValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1.Backup", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", Application.prefs.getValue("extensions.W15yQC.getElements.mustHaveLevel1Heading.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", Application.prefs.getValue("extensions.W15yQC.getElements.onlyOneLevel1Heading.Backup", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", Application.prefs.getValue("extensions.W15yQC.getElements.honorARIA.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", Application.prefs.getValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", Application.prefs.getValue("extensions.W15yQC.HTMLReport.quickCheckPDFs.Backup", false));
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.checkLinks", Application.prefs.getValue("extensions.W15yQC.HTMLReport.checkLinks.Backup", false));
+
+      Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", Application.prefs.getValue("extensions.W15yQC.testContrast.suppressPassingCRNotes.Backup", false));
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", Application.prefs.getValue("extensions.W15yQC.getElements.honorHTML5.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW.Backup", true));
+      Application.prefs.setValue("extensions.W15yQC.mandatesEnabled", Application.prefs.getValue("extensions.W15yQC.mandatesEnabled.Backup", false));
+      Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec.Backup", "WCAG2 AA"));
+      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", Application.prefs.getValue("extensions.W15yQC.rulesToExcludeList.Backup", ""));
     },
 
     fnReadUserPrefs: function() {
