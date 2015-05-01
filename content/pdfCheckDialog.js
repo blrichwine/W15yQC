@@ -81,6 +81,7 @@
 
     var displayKeys=['T','Lang','A','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'];
     var tableData=[];
+    var tableStack=[];
 
     var FfBitNames={"1":"ReadOnly",
                     "2":"Required",
@@ -163,6 +164,20 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
         hTag.appendChild(aTag);
         hTag.setAttribute('class','ec');
         return hTag;
+    }
+    function countOccurancesOf(s1, s2) {
+      var count=0, pos=0;
+      if (s2!=null && s1!=null && s2.length>0 && s1.length>0) {
+        while(true) {
+         pos=s2.indexOf(s1,pos);
+         if (pos>0) {
+          count++;
+          pos+=s1.length;
+         } else break;
+        }
+        return count;
+      }
+      return 0;
     }
     function appendReport() {
       var mainDiv, p;
@@ -1248,6 +1263,22 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               results.bAllFiguresHaveAltTextNotDefault=false;
             }
             figureTags.push({"Alt":o[oi]['Alt'], "ActualText":o[oi]['ActualText'], "Pg":pgNum});
+          } else if (/^Table$/.test(sTagName)) {
+            // log new table
+            // log page #
+            // log nesting level
+            // set columnCount to 0
+            // set rowCount to 0
+            // init columnRowCount totals to 0
+            // init Table ID hash
+            // init Notes to ""
+            tableData.push({"page":pgNum, "nestingLevel":countOccurancesOf('|Table|','|'+sNesting+'|'), "columnCount":0, "rowCount":0, "columnRowCount":[], "IDs":{}, "Notes":""});
+            currentTable=tableData.length-1;
+            tableStack.push(currentTable);
+          } else if (/^Caption$/.test(sTagName) && /\bTable$/.test(sNesting)) {
+            if (oi>1) {
+              blr.W15yQC.fnJoin(tableData[currentTable].Notes,"Caption tag not first child in the table.",' ');
+            }
           }
 
           for(k=0;k<displayKeys.length;k++) {
@@ -1304,7 +1335,9 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               results.bOnlyStandardTagsAreUsed=true;
               results.bAllTextContentHasMarkedLang=true;
             }
+
             renderDocStructureLevel(o[oi].children,oli, currentLang, sEndNesting);
+
           } else {
             if (sTagName!='' || blr.W15yQC.fnStringHasContent(sEndNesting)) {
               if (blr.W15yQC.pdfTagNestingHash.hasItem(sEndNesting)) {
@@ -1317,6 +1350,13 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               } else {
                 blr.W15yQC.pdfTagNestingHash.setItem(sEndNesting,[1,[pgNum]]);
               }
+            }
+          }
+
+          if (/^Table$/.test(sTagName) && tableStack.length>0) {
+            tableStack.pop();
+            if (tableStack.length>0) {
+              currentTable=tableStack[tableStack.length-1];
             }
           }
         }
@@ -1764,6 +1804,8 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
       blr.W15yQC.pdfTagNestingHash=new blr.W15yQC.HashTable();
 
       results.bNoErrorsParsingDocumentStructure=ds.errors===false;
+      tableData=[];
+      tableStack=[];
 
       renderDocStructureLevel(ds,div,defaultLang);
       if(results.bHeadingsAreAllImplicit==true && results.bHeadingsAreAllExplicit==true) {
