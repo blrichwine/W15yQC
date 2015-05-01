@@ -59,8 +59,14 @@
  *   Only standard elements are used
  *   Structual element use / ordering appears valid
  *   All text content is covered by a language indication
- *
- *
+ *   Table Checks:
+ *    - Table is not nested
+ *    - Table tag's children are valid
+ *    - Caption tag is either the Table tag's first or last child
+ *    - Caption has content and is not default text (if present)
+ *    - Each row has the same number of cells as the first table row does
+ *    - Each TD cell has a heading
+ *    - Each ID listed in a Headers attribute exists in the table
  *
  */
 "use strict";
@@ -72,6 +78,9 @@
     'TBody', 'TFoot', 'Span', 'Quote', 'Note', 'Reference', 'BibEntry',
     'Code', 'Link', 'Annot', 'Ruby', 'Warichu', 'RB', 'RT', 'RP', 'WT', 'WP',
     'Figure', 'Formula', 'Form'];
+
+    var displayKeys=['T','Lang','A','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'];
+    var tableData=[];
 
     var FfBitNames={"1":"ReadOnly",
                     "2":"Required",
@@ -919,7 +928,8 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm, keys=['T','Lang','A','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
+      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm,
+        efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj, tables=[];
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
@@ -1128,7 +1138,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               span=rd.createElement('span');
               span.setAttribute('class','pdfTextContent');
               if (o[oi].text!=null) {
-                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪').replace(//g,'•').replace(//g,'•')));
+                span.appendChild(rd.createTextNode(': '+o[oi].text.replace(//g,'▪').replace(//g,'•').replace(//g,'•').replace(//g,'•')));
               } else {
                 span.appendChild(rd.createTextNode(': '+o[oi].text));
               }
@@ -1240,10 +1250,10 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             figureTags.push({"Alt":o[oi]['Alt'], "ActualText":o[oi]['ActualText'], "Pg":pgNum});
           }
 
-          for(k=0;k<keys.length;k++) {
-            if (typeof o[oi][keys[k]] != 'undefined') {
-              //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
-              oli.appendChild(spanAttrValue(keys[k],'attr', /string/i.test(typeof o[oi][keys[k]])?o[oi][keys[k]]:blr.W15yQC.objectToString(o[oi][keys[k]],true),'attrValue'));
+          for(k=0;k<displayKeys.length;k++) {
+            if (typeof o[oi][displayKeys[k]] != 'undefined') {
+              //s=blr.W15yQC.fnJoin(s,'"'+displayKeys[k]+'": '+blr.W15yQC.objectToString(o[oi][displayKeys[k]],true),', ');
+              oli.appendChild(spanAttrValue(displayKeys[k],'attr', /string/i.test(typeof o[oi][displayKeys[k]])?o[oi][displayKeys[k]]:blr.W15yQC.objectToString(o[oi][displayKeys[k]],true),'attrValue'));
             }
           }
           if (typeof o[oi].objr!='undefined') {
@@ -1755,7 +1765,6 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
 
       results.bNoErrorsParsingDocumentStructure=ds.errors===false;
 
-      alert(blr.W15yQC.objectToString(ds,true));
       renderDocStructureLevel(ds,div,defaultLang);
       if(results.bHeadingsAreAllImplicit==true && results.bHeadingsAreAllExplicit==true) {
         results.bHeadingsAreAllImplicit=null;
