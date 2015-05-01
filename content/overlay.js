@@ -4028,7 +4028,7 @@ ys: 'whys'
 
               case 'button':
                 // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','value','title','alt','name', 'fieldset'],iRecursion,aStopElements,aElements);
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','value','title','fieldset'],iRecursion,aStopElements,aElements);
                 break;
 
               case 'radio':
@@ -4036,21 +4036,21 @@ ys: 'whys'
               case 'checkbox':
                 // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
                 // TODO: Does an implicit label really preempt any explicit labels?
-                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset'],iRecursion,aStopElements,aElements);
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','fieldset'],iRecursion,aStopElements,aElements);
                 break;
 
               default:
                 // type='text' and unrecognized types
                 // type='text'  -- Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
                 // Mimic IE 9 + JAWS 12 behavior, FF 7 + JAWS 12 would add label elements along with aria-labelled by content.
-                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset'],iRecursion,aStopElements,aElements);
+                aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','fieldset'],iRecursion,aStopElements,aElements);
             }
             // end tagName == input
           } else if (sTagName == 'abbr') {
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title'],iRecursion,aStopElements,aElements);
 
           } else if (sTagName == 'button') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','alt','title','value','name', 'fieldset'],iRecursion,aStopElements,aElements);
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title','value','name', 'fieldset'],iRecursion,aStopElements,aElements);
 
           } else if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements, true);
@@ -4059,10 +4059,10 @@ ys: 'whys'
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements, true);
 
           } else if (sTagName == 'select') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset'],iRecursion,aStopElements,aElements);
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','fieldset'],iRecursion,aStopElements,aElements);
 
           } else if (sTagName == 'textarea') { // Vetted against JAWS Version 13.0.527 32 bit, IE 9.0.8112.16421, Windows 7 32 bit, 2-Dec-2011
-            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt', 'fieldset'],iRecursion,aStopElements,aElements);
+            aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','fieldset'],iRecursion,aStopElements,aElements);
 
           } else if (sTagName == 'img' || sTagName == 'area') { // JAWS 13: aria-label, alt, title, aria-labelledby -- TODO: Vet area with JAWS
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria-label','alt','title','aria-labelledby'],iRecursion,aStopElements,aElements);
@@ -4083,7 +4083,7 @@ ys: 'whys'
             if(/^(button|checkbox|columnheader|directory|gridcell|heading|landmark|link|listitem|menuitem|menuitemcheckbox|menuitemradio|option|radio|row|rowgroup|rowheader|section|sectionhead|tab|treeitem)/.test(sRole)==true) {
               aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','title','child text','fieldset'],iRecursion,aStopElements,aElements); // TODO: Does the title attribute really trump child text for 'Name From: Contents' roles?
             } else {
-              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title','alt'],iRecursion,aStopElements,aElements);
+              aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','implicit label','explicit label','title'],iRecursion,aStopElements,aElements);
             }
           } else {
             aLabel=blr.W15yQC.fnBuildLabel(node, ['first','aria','child text','title'],iRecursion,aStopElements,aElements);

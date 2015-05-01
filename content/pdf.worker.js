@@ -5526,6 +5526,46 @@ var PDFDocument = (function PDFDocumentClosure() {
          return s;
         }
 
+       function lookUpForm(annotObjr, child) {
+         var k, bFoundFormInAcroForm=false;
+         try {
+          //alert('INSIDE:'+blr.W15yQC.objectToString(annotObjr)+' '+blr.W15yQC.objectToString(child));
+          for(k=0;k<formFields.length;k++) {
+            if (formFields[k].AnnotObjr!=null) {
+              if (formFields[k].AnnotObjr.gen===annotObjr.gen && formFields[k].AnnotObjr.num===annotObjr.num) {
+                bFoundFormInAcroForm=true;
+                //alert('Found AcroForm Object:'+blr.W15yQC.objectToString(formFields[k]));
+                if (formFields[k].FT!=null) {
+                  child.objr.FT=formFields[k].FT;
+                }
+                if (formFields[k].Ff!=null) {
+                  child.objr.Ff=formFields[k].Ff;
+                }
+                if (formFields[k].T!=null) {
+                  child.objr.T=formFields[k].T;
+                }
+                if (formFields[k].TU!=null) {
+                  child.objr.TU=formFields[k].TU;
+                }
+                if (formFields[k].Opts!=null) {
+                  child.objr.Opts=formFields[k].Opts;
+                }
+                if (formFields[k].StructParent!=null) {
+                  child.objr.StructParent=formFields[k].StructParent;
+                }
+                if (formFields[k].P!=null) {
+                  child.objr.P=formFields[k].P;
+                }
+                //alert(blr.W15yQC.objectToString(formControls[formControls.length-1]));
+                break;
+              }
+            }
+          }
+
+         } catch(ex) {
+           alert('lookUpFormError:'+blr.W15yQC.objectToString(ex));
+         }
+       }
 try{
         if (strec!=null && strec.map!=null && typeof strec.map.K!='undefined') { // TODO: what is better here? typeof or hasOwnProperty?
          if(typeof strec.map.K.length != 'undefined' && strec.map.K.length !==null) { // Have an array
@@ -5536,9 +5576,6 @@ try{
             strecc=xref.fetch(new Ref(strec.map.K[k].num,strec.map.K[k].gen));
             if (strecc!=null && strecc.map) {
              type=(strecc.map.S && strecc.map.S.name)?strecc.map.S.name:null;
-             if(/form/i.test(type)){
-              // alert("Have a form! (1)");
-             }
              if (type!=null) {
               strStats[type]=1+(typeof strStats[type]=='number'?strStats[type]:0);
              }
@@ -5560,6 +5597,8 @@ try{
                if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                if(typeof objr.map.Opt != 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
                if(typeof objr.map.V != 'undefined') { children[indx].objr.V=filter(objr.map.V); }
+               if(typeof objr.map.StructParent != 'undefined') { children[indx].objr.StructParent=filter(objr.map.StructParent); }
+               if(typeof objr.map.P != 'undefined') { children[indx].objr.P=objr.map.P; }
                if(typeof objr.map.Type != 'undefined') {
                 children[indx].objr.Type=filter(objr.map.Type.name);
                 if(objr.map.Type.name=='Annot') {
@@ -5581,9 +5620,11 @@ try{
                 if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                 if(typeof objr.map.Opt != 'undefined' && typeof children[indx].objr.Opt === 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
                 if(typeof objr.map.V != 'undefined' && typeof children[indx].objr.V === 'undefined') { children[indx].objr.V=filter(objr.map.V); }
+                if(typeof objr.map.StructParent != 'undefined' && typeof children[indx].objr.StructParent === 'undefined') { children[indx].objr.StructParent=filter(objr.map.StructParent); }
+                if(typeof objr.map.P != 'undefined' && typeof children[indx].objr.P === 'undefined') { children[indx].objr.P=objr.map.P; }
                 if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') {
                  children[indx].objr.Type=filter(objr.map.Type.name);
-                 if(objr.map.Type.name=='Annot') {
+                 if(objr.map.Type.name=='Annot') { // TODO: FIX THIS???
                    children[indx].objr.AnnotObjr=strecc.map.K[i].map.Obj;
                  }
                 }
@@ -5594,6 +5635,9 @@ try{
               alert(blr.W15yQC.objectToString(err));
             }
              // alert("End of form tag processing");
+             // alert('EOFTP:'+blr.W15yQC.objectToString(children[indx]));
+             if(typeof children[indx].objr.AnnotObjr !=='undefined') { lookUpForm(children[indx].objr.AnnotObjr,children[indx]); }
+             //alert('AfterLookUpForm:'+blr.W15yQC.objectToString(children[indx]));
            } else if(/form/i.test(type)){
              alert("NOT HANDLING THIS FORM TAG!!!! (1): "+blr.W15yQC.objectToString(strecc));
            }
@@ -5619,7 +5663,7 @@ try{
              if(typeof strecc.map.K != 'undefined') { children[indx].K=strecc.map.K; }
              if(typeof strecc.map.Type != 'undefined' && typeof children[indx].Type === 'undefined') {
               children[indx].Type=filter(strecc.map.Type.name);
-              if(strecc.map.Type.name=='Annot') {
+              if(strecc.map.Type.name=='Annot' && typeof children[indx].objr.AnnotObjr==='undefined') {
                 children[indx].AnnotObjr=strec.map.K[k];
               }
              }
@@ -5652,6 +5696,8 @@ try{
                if(typeof objr.map.T != 'undefined') { children[indx].objr.T=filter(objr.map.T); }
                if(typeof objr.map.TU != 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                if(typeof objr.map.Opt != 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
+               if(typeof objr.map.StructParent != 'undefined') { children[indx].objr.StructParent=filter(objr.map.StructParent); }
+               if(typeof objr.map.P != 'undefined') { children[indx].objr.P=objr.map.P; }
                if(typeof objr.map.V != 'undefined') { children[indx].objr.V=filter(objr.map.V); }
                if(typeof objr.map.Type != 'undefined') {
                 children[indx].objr.Type=filter(objr.map.Type.name);
@@ -5673,17 +5719,13 @@ try{
                 if(typeof objr.map.T != 'undefined' && typeof children[indx].objr.T === 'undefined') { children[indx].objr.T=filter(objr.map.T); }
                 if(typeof objr.map.TU != 'undefined' && typeof children[indx].objr.TU === 'undefined') { children[indx].objr.TU=filter(objr.map.TU); }
                 if(typeof objr.map.Opt != 'undefined' && typeof children[indx].objr.Opt === 'undefined') { children[indx].objr.Opt=filter2(blr.W15yQC.objectToString(objr.map.Opt)); }
+                if(typeof objr.map.StructParent != 'undefined' && typeof children[indx].objr.StructParent === 'undefined') { children[indx].objr.StructParent=filter(objr.map.StructParent); }
+                if(typeof objr.map.P != 'undefined' && typeof children[indx].objr.P === 'undefined') { children[indx].objr.P=objr.map.P; }
                 if(typeof objr.map.V != 'undefined' && typeof children[indx].objr.V === 'undefined') { children[indx].objr.V=filter(objr.map.V); }
                 if(typeof objr.map.Type != 'undefined' && typeof children[indx].objr.Type === 'undefined') {
                  children[indx].objr.Type=filter(objr.map.Type.name);
                  if(objr.map.Type.name==='Annot') {
                    children[indx].objr.AnnotObjr=strecc.map.K[i].map.Obj;
-                 }
-                }
-                if(typeof objr.map.Type != 'undefined') {
-                 children[indx].objr.Type=filter(objr.map.Type.name);
-                 if(objr.map.Type.name=='Annot') {
-                   children[indx].objr.AnnotObjr=strecc.map.K.map.Obj;
                  }
                 }
                }
@@ -5693,6 +5735,9 @@ try{
               alert(blr.W15yQC.objectToString(err));
             }
              // alert("End of form tag processing");
+             //alert('EOFTP:'+blr.W15yQC.objectToString(children[indx]));
+            if(typeof children[indx].objr.AnnotObjr!=='undefined') { lookUpForm(children[indx].objr.AnnotObjr,children[indx]); }
+             //alert('AfterLookUpForm:'+blr.W15yQC.objectToString(children[indx]));
            } else if(/form/i.test(type)){
              // alert("NOT HANDLING THIS FORM TAG!!!! (2): "+blr.W15yQC.objectToString(strecc));
            }
@@ -5768,6 +5813,41 @@ try{
        }
       }
 
+      function digForm(annotKids, formAttrs) {
+        var i, objr, fa;
+
+        if(annotKids!=null && annotKids.length>0) {
+          for(i=0;i<annotKids.length;i++) {
+            fa={};
+            fa.FT=formAttrs.FT;
+            fa.Ff=formAttrs.Ff;
+            fa.T=formAttrs.T;
+            fa.TU=formAttrs.TU;
+            fa.Opts=formAttrs.Opts;
+            fa.StructParent=formAttrs.StructParent;
+            fa.P=formAttrs.P;
+
+            objr=xref.fetch(new Ref(annotKids[i].num,annotKids[i].gen));
+
+            fa.FT=(typeof objr.map.FT != 'undefined') ? filter(objr.map.FT.name) : fa.FT;
+            fa.Ff=(typeof objr.map.Ff != 'undefined') ? objr.map.Ff : fa.Ff;
+            fa.T=(typeof objr.map.T != 'undefined') ? (blr.W15yQC.fnStringHasContent(fa.T) ? fa.T + '.' : '') + filter(objr.map.T) : fa.T;
+            fa.TU=(typeof objr.map.TU != 'undefined') ? filter(objr.map.TU) : fa.TU;
+            fa.Opts=(typeof objr.map.Opts != 'undefined') ? filter(objr.map.Opts) : fa.Opts;
+            fa.P=(typeof objr.map.P != 'undefined') ? objr.map.P : fa.P;
+            fa.StructParent=(typeof objr.map.StructParent != 'undefined') ? filter(objr.map.StructParent) : fa.StructParent;
+            fa.Type=(typeof objr.map.Type != 'undefined') ? filter(objr.map.Type.name) : fa.Type;
+            if(fa.Type==='Annot') {
+             formFields.push({"FT":fa.FT, "Ff":fa.Ff, "T":fa.T, "TU":fa.TU, "Type":fa.Type, "Opts":fa.Opts, "P":fa.P, "StructParent":fa.StructParent, "AnnotObjr":annotKids[i]});
+             //alert(blr.W15yQC.objectToString(formFields[formFields.length-1]));
+            } else if(typeof objr.map.Kids != 'undefined' && objr.map.Kids!=null && objr.map.Kids.length>0) {
+             digForm(objr.map.Kids,fa);
+            }
+          }
+        }
+      }
+
+
       try {
         rootDict = xref.trailer.get('Root');
       } catch (err) {
@@ -5791,67 +5871,21 @@ try{
 
 // **************************
 
+
         if (rootDict.has('AcroForm')) { // Read form elements, non-recursive version
          af =  rootDict.get('AcroForm');
+         formFields=[];
          // alert("af="+blr.W15yQC.objectToString(af));
          if(af.map != null && af.map.Fields != null && af.map.Fields.length > 0) {
           // alert("Fields="+blr.W15yQC.objectToString(af.map.Fields));
-          for(i=0;i<af.map.Fields.length;i++) {
-           try {
-            objr=xref.fetch(new Ref(af.map.Fields[i].num,af.map.Fields[i].gen));
-            // alert("Field "+i+" "+blr.W15yQC.objectToString(objr));
-
-            field_FT=(typeof objr.map.FT != 'undefined') ? filter(objr.map.FT.name) : null;
-            field_Ff=(typeof objr.map.Ff != 'undefined') ? objr.map.Ff : null;
-            field_T=(typeof objr.map.T != 'undefined') ? filter(objr.map.T) : null;
-            field_TU=(typeof objr.map.TU != 'undefined') ? filter(objr.map.TU) : null;
-            field_Type=(typeof objr.map.Type != 'undefined') ? filter(objr.map.Type.name) : null;
-
-            if(objr.map != null && objr.map.Kids != null && objr.map.Kids.length > 0) {
-             for(j=0;j<objr.map.Kids.length;j++) {
-              try {
-                objr2=xref.fetch(new Ref(objr.map.Kids[j].num,objr.map.Kids[j].gen));
-                // alert("Field "+i+" Kid "+j+" "+blr.W15yQC.objectToString(objr2));
-                field2_FT=(typeof objr2.map.FT != 'undefined') ? filter(objr2.map.FT.name) : field_FT;
-                field2_Ff=(typeof objr2.map.Ff != 'undefined') ? objr2.map.Ff : field_Ff;
-                field2_T=(typeof objr2.map.T != 'undefined') ? (field_T !== null ? field_T + '.' : '') + filter(objr2.map.T) : field_T;
-                field2_TU=(typeof objr2.map.TU != 'undefined') ? filter(objr2.map.TU) : field_TU;
-                field2_Type=(typeof objr2.map.Type != 'undefined') ? filter(objr2.map.Type.name) : field_Type;
-                if(field2_Type=='Annot' && typeof objr2.map.AP != 'undefined') {
-                 try {
-                  //alert('AP:'+blr.W15yQC.objectToString(objr2.map.AP.map.D.map));
-                  field2_Keys=Object.keys(objr2.map.AP.map.D.map);
-                  for(k=0;field2_Keys!=null && k<field2_Keys.length;k++) {
-                   if(field2_Keys[k]!=null && field2_Keys[k]!=='Off') {
-                     field2_TU=blr.W15yQC.fnJoin(field2_TU,field2_Keys[k],' ');
-                     break;
-                   }
-                  }
-                 } catch(ex) {
-                  alert('AP Opps:'+blr.W15yQC.objectToString(ex));
-                 }
-                 formFields.push({"FT":field2_FT, "Ff":field2_Ff, "T":field2_T, "TU":field2_TU, "Type":field2_Type, "AnnotObjr":objr.map.Kids[j]});
-                } else {
-                  alert('UNHANDLED FORM ENTRY');
-                }
-               } catch(ex) {
-                alert("Opps:"+blr.W15yQC.objectToString(ex));
-               }
-             }
-            } else { // Terminal field
-             formFields.push({"FT":field_FT, "Ff":field_Ff, "T":field_T, "TU":field_TU, "Type":field_Type, "AnnotObjr":af.map.Fields[i]});
-            }
-           } catch(ex) {
-            alert(blr.W15yQC.objectToString(ex));
-           }
-          }
+          digForm(af.map.Fields,{"FT":null, "Ff":null, "T":null, "TU":null, "Opts":null, "P":null, "StructParent":null, "Type":null, "AnnotObjr":null})
          }
         } else {
          formFields=null;
         }
         structure.formFields=formFields;
 
-        alert('formFields:'+blr.W15yQC.objectToString(formFields));
+        //alert('formFields:'+blr.W15yQC.objectToString(formFields));
 
         if (rootDict.has('StructTreeRoot')) {
          str = rootDict.get('StructTreeRoot');

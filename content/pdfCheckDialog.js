@@ -624,7 +624,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
         //console.log('Starting getTextForDsi: ');
         while (dsiIndexes[dsi]<dsStack[dsi].length || dsi>0) {
             //console.log('Checking: '+dsStack[dsi][dsiIndexes[dsi]].S);
-          if ((typeof dsStack[dsi][dsiIndexes[dsi]].Pg != 'undefined') || (typeof dsStack[dsi][dsiIndexes[dsi]].MCID != 'undefined')) {
+          if ((typeof dsStack[dsi][dsiIndexes[dsi]].Pg !== 'undefined') || (typeof dsStack[dsi][dsiIndexes[dsi]].MCID !== 'undefined') || (typeof dsStack[dsi][dsiIndexes[dsi]].StructParent !== 'undefined')) {
             //console.log('Found: '+dsStack[dsi][dsiIndexes[dsi]].S);
             break;
           }
@@ -643,22 +643,32 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             } catch(ex) { }
             getNext();
             getTextForDsi();
-          } else if (typeof dsStack[dsi][dsiIndexes[dsi]].MCID!='undefined') {
-            mcid=dsStack[dsi][dsiIndexes[dsi]].MCID;
+          } else if (typeof dsStack[dsi][dsiIndexes[dsi]].MCID!=='undefined' || typeof dsStack[dsi][dsiIndexes[dsi]].StructParent!=='undefined') {
+            if (typeof dsStack[dsi][dsiIndexes[dsi]].StructParent!=='undefined') { //alert('here');
+              mcid=dsStack[dsi][dsiIndexes[dsi]].StructParent;
+              if (typeof dsStack[dsi][dsiIndexes[dsi]].P!='undefined') {
+                try {
+                  //alert('P:'+blr.W15yQC.objectToString(dsStack[dsi][dsiIndexes[dsi]].P));
+                  pgNum=ds.pageIndexByRef[dsStack[dsi][dsiIndexes[dsi]].P.num][dsStack[dsi][dsiIndexes[dsi]].P.gen];
+                } catch(ex) { alert('crap');}
+              }
+            } else {
+              mcid=dsStack[dsi][dsiIndexes[dsi]].MCID;
+            }
             //console.log('Page Number:'+pgNum+'  K:'+K);
-            if (typeof pgTCCache[pgNum]!='undefined') {
+            if (typeof pgTCCache[pgNum]!=='undefined') {
               //console.log('Using Cache');
               tc=pgTCCache[pgNum];
               bFound=false;
               text=''
-              if (tc!==null && typeof tc.items!='undefined') {
+              if (tc!==null && typeof tc.items!=='undefined') {
                 for(item=0;item<tc.items.length;item++) {
                   if (tc.items[item].mcid!==null) {
                     for(i=0;i<tc.items[item].mcid.length;i++) {
                       if (mcid==tc.items[item].mcid[i]) {
                         bFound=true;
                         text=text+tc.items[item].str;
-                        dsStack[dsi][dsiIndexes[dsi]].MCParams=typeof tc.items[item].mcparams!='undefined'?tc.items[item].mcparams:null;
+                        dsStack[dsi][dsiIndexes[dsi]].MCParams=typeof tc.items[item].mcparams!=='undefined'?tc.items[item].mcparams:null;
                         break;
                       }
                     }
@@ -680,14 +690,14 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
                 page.getTextContent().then(function(tc){
                   bFound=false;
                   text=''
-                  if (tc!==null && typeof tc.items!='undefined') {
+                  if (tc!==null && typeof tc.items!=='undefined') {
                     for(item=0;item<tc.items.length;item++) {
                       if (tc.items[item].mcid!==null) {
                         for(i=0;i<tc.items[item].mcid.length;i++) {
                           if (mcid==tc.items[item].mcid[i]) {
                             bFound=true;
                             text=text+tc.items[item].str;
-                            dsStack[dsi][dsiIndexes[dsi]].MCParams=typeof tc.items[item].mcparams!='undefined'?tc.items[item].mcparams:null;
+                            dsStack[dsi][dsiIndexes[dsi]].MCParams=typeof tc.items[item].mcparams!=='undefined'?tc.items[item].mcparams:null;
                             break;
                           }
                         }
@@ -716,7 +726,8 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             }
           }
         }
-      }
+      } // end function getTextForDsi
+
       getTextForDsi();
     }
 
@@ -1147,32 +1158,6 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             span.appendChild(rd.createTextNode(']'));
             oli.appendChild(span);
           }
-          for(k=0;k<keys.length;k++) {
-            if (typeof o[oi][keys[k]] != 'undefined') {
-              //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
-              oli.appendChild(spanAttrValue(keys[k],'attr', /string/i.test(typeof o[oi][keys[k]])?o[oi][keys[k]]:blr.W15yQC.objectToString(o[oi][keys[k]],true),'attrValue'));
-            }
-          }
-          if (typeof o[oi].objr!='undefined') {
-            if (typeof o[oi].objr.FT!='undefined') {
-              oli.appendChild(spanAttrValue('Obj.FT','attr',o[oi].objr.FT,'attrValue'));
-            }
-            if (typeof o[oi].objr.Ff!='undefined') {
-              oli.appendChild(spanAttrValue('Obj.Ff','attr',o[oi].objr.Ff,'attrValue'));
-            }
-            if (typeof o[oi].objr.T!='undefined') {
-              oli.appendChild(spanAttrValue('Obj.T','attr',o[oi].objr.T,'attrValue'));
-            }
-            if (typeof o[oi].objr.TU!='undefined') {
-              oli.appendChild(spanAttrValue('Obj.TU','attr',o[oi].objr.TU,'attrValue'));
-            }
-            if (typeof o[oi].objr.Opt!='undefined') {
-              oli.appendChild(spanAttrValue('Obj.Opt','attr',o[oi].objr.Opt,'attrValue'));
-            }
-            if (typeof o[oi].objr.V!='undefined') {
-              oli.appendChild(spanAttrValue('Obj.V','attr',o[oi].objr.V,'attrValue'));
-            }
-          }
           if (/^form$/i.test(sTagName)) { // TODO: Does this need to be limited to valid form tags? (ones with FT values?)
             //alert("Form:"+blr.W15yQC.objectToString(o[oi].objr));
             if(results.bAllFormControlsHaveLabels===null) { // Must be first form control
@@ -1181,37 +1166,34 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               results.bAllFormControlsHaveUniqueLabels=true;
             }
             bFoundFormInAcroForm=false;
-            for(k=0;k<ds.formFields.length;k++) {
-              if (ds.formFields[k].AnnotObjr!=null) {
-                if (ds.formFields[k].AnnotObjr.gen===o[oi].objr.AnnotObjr.gen && ds.formFields[k].AnnotObjr.num===o[oi].objr.AnnotObjr.num) {
-                  bFoundFormInAcroForm=true;
-                  //alert(blr.W15yQC.objectToString(ds.formFields[k]));
-                  formControls.push({"FT":ds.formFields[k].FT, "Ff":ds.formFields[k].Ff, "T":ds.formFields[k].T, "TU":ds.formFields[k].TU, "Opt":null, "V":null, "Pg":null, "Unique":true});
-                  if (ds.formFields[k].FT!=null) {
-                    o[oi].objr.FT=ds.formFields[k].FT;
-                  }
-                  if (ds.formFields[k].Ff!=null) {
-                    o[oi].objr.Ff=ds.formFields[k].Ff;
-                  }
-                  if (ds.formFields[k].T!=null) {
-                    o[oi].objr.T=ds.formFields[k].T;
-                  }
-                  if (ds.formFields[k].TU!=null) {
-                    o[oi].objr.TU=ds.formFields[k].TU;
-                  }
-                  //alert(blr.W15yQC.objectToString(formControls[formControls.length-1]));
-                  break;
-                }
-              }
-            }
+            //for(k=0;k<ds.formFields.length;k++) {
+            //  if (ds.formFields[k].AnnotObjr!=null) {
+            //    if (ds.formFields[k].AnnotObjr.gen===o[oi].objr.AnnotObjr.gen && ds.formFields[k].AnnotObjr.num===o[oi].objr.AnnotObjr.num) {
+            //      bFoundFormInAcroForm=true;
+            //      //alert(blr.W15yQC.objectToString(ds.formFields[k]));
+            //      formControls.push({"FT":ds.formFields[k].FT, "Ff":ds.formFields[k].Ff, "T":ds.formFields[k].T, "TU":ds.formFields[k].TU, "Opt":null, "V":null, "Pg":null, "Unique":true});
+            //      if (ds.formFields[k].FT!=null) {
+            //        o[oi].objr.FT=ds.formFields[k].FT;
+            //      }
+            //      if (ds.formFields[k].Ff!=null) {
+            //        o[oi].objr.Ff=ds.formFields[k].Ff;
+            //      }
+            //      if (ds.formFields[k].T!=null) {
+            //        o[oi].objr.T=ds.formFields[k].T;
+            //      }
+            //      if (ds.formFields[k].TU!=null) {
+            //        o[oi].objr.TU=ds.formFields[k].TU;
+            //      }
+            //      //alert(blr.W15yQC.objectToString(formControls[formControls.length-1]));
+            //      break;
+            //    }
+            //  }
+            //}
 
-            if(!bFoundFormInAcroForm) {
-              formControls.push({"FT":null, "Ff":null, "T":null, "TU":null, "Opt":null, "V":null, "Pg":null, "Unique":true});
-              alert("not found");
-            }
+            formControls.push({"FT":null, "Ff":null, "T":null, "TU":null, "Opt":null, "V":null, "Pg":null, "Unique":true});
 
             k=formControls.length-1;
-
+//alert(blr.W15yQC.objectToString(o[oi]));
             if (typeof o[oi].objr!='undefined') {
               if (typeof o[oi].objr.FT!='undefined' && formControls[k].FT===null) {
                 formControls[k].FT=o[oi].objr.FT;
@@ -1256,6 +1238,39 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               results.bAllFiguresHaveAltTextNotDefault=false;
             }
             figureTags.push({"Alt":o[oi]['Alt'], "ActualText":o[oi]['ActualText'], "Pg":pgNum});
+          }
+
+          for(k=0;k<keys.length;k++) {
+            if (typeof o[oi][keys[k]] != 'undefined') {
+              //s=blr.W15yQC.fnJoin(s,'"'+keys[k]+'": '+blr.W15yQC.objectToString(o[oi][keys[k]],true),', ');
+              oli.appendChild(spanAttrValue(keys[k],'attr', /string/i.test(typeof o[oi][keys[k]])?o[oi][keys[k]]:blr.W15yQC.objectToString(o[oi][keys[k]],true),'attrValue'));
+            }
+          }
+          if (typeof o[oi].objr!='undefined') {
+            if (typeof o[oi].objr.FT!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.FT','attr',o[oi].objr.FT,'attrValue'));
+            }
+            if (typeof o[oi].objr.Ff!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.Ff','attr',o[oi].objr.Ff,'attrValue'));
+            }
+            if (typeof o[oi].objr.T!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.T','attr',o[oi].objr.T,'attrValue'));
+            }
+            if (typeof o[oi].objr.TU!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.TU','attr',o[oi].objr.TU,'attrValue'));
+            }
+            if (typeof o[oi].objr.StructParent!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.StructParent','attr',o[oi].objr.StructParent,'attrValue'));
+            }
+            if (typeof o[oi].objr.TU!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.TU','attr',o[oi].objr.TU,'attrValue'));
+            }
+            if (typeof o[oi].objr.Opt!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.Opt','attr',o[oi].objr.Opt,'attrValue'));
+            }
+            if (typeof o[oi].objr.V!='undefined') {
+              oli.appendChild(spanAttrValue('Obj.V','attr',o[oi].objr.V,'attrValue'));
+            }
           }
 
           if (bInBrackets) {
@@ -1400,7 +1415,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
                 li.appendChild(rd.createTextNode('"Table" tags should not be empty.'));
                 ol.appendChild(li);
                 errorsHash.setItem('TableEmpty',1);
-              } else if (!/^(THead|TBody|TFoot|TR)$/.test(blr.W15yQC.fnTrim(aTags[i+1])) && !errorsHash.hasItem('TableInvalidChild')) {
+              } else if (!/^(Caption|THead|TBody|TFoot|TR)$/.test(blr.W15yQC.fnTrim(aTags[i+1])) && !errorsHash.hasItem('TableInvalidChild')) {
                 li=rd.createElement('li');
                 li.appendChild(rd.createTextNode('"Table" tag children should be either "THead", "TBody", "TFoot", or "TR" tags.'));
                 ol.appendChild(li);

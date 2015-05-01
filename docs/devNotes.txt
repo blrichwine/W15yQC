@@ -58,6 +58,13 @@
  * TODO:
 
    PDF Checker
+     -- Add checks for accessible security settings
+     -- Tab follows tag-structure (how?)
+     -- Flag lack of bookmarks / should be at least as many bookmarks as h1, h2 and h3 headings
+     -- Accessible font encodings (how?)
+     -- Spaces exist
+     -- Spaces at the end of the line
+     -- Sufficient text color contrast -- probably a real challenge
      -- Why does danish-form have form controls listed as unlabled?
      -- Tables
        -- 14.8.4.3.4 Pg 586 ISO 32000
@@ -209,6 +216,8 @@
       https://developer.mozilla.org/en-US/docs/Tools/DevToolsAPI
 
     *** FIX ASAP***
+  -- List domains / URLs not scanned
+
   -- How does JAWS read $56.23
   -- Add option for including ARIA-DESCRIBEDBY text in effectiveLabels
   -- is aria-describedby working on links? http://www.uchicago.edu/
