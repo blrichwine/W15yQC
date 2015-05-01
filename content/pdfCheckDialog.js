@@ -919,7 +919,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm, keys=['T','Lang','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
+      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm, keys=['T','Lang','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
@@ -1755,6 +1755,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
 
       results.bNoErrorsParsingDocumentStructure=ds.errors===false;
 
+      alert(blr.W15yQC.objectToString(ds,true));
       renderDocStructureLevel(ds,div,defaultLang);
       if(results.bHeadingsAreAllImplicit==true && results.bHeadingsAreAllExplicit==true) {
         results.bHeadingsAreAllImplicit=null;
