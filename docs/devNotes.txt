@@ -59,6 +59,7 @@
 
    PDF Checker
      -- Add checks for accessible security settings
+
      -- Tab follows tag-structure (how?)
      -- Flag lack of bookmarks / should be at least as many bookmarks as h1, h2 and h3 headings
      -- Accessible font encodings (how?)
