@@ -59,7 +59,7 @@
 
    PDF Checker
      -- Add checks for accessible security settings
-
+     -- Why is the article tag being declared non-standard? Document | Article ???
      -- Tab follows tag-structure (how?)
      -- Flag lack of bookmarks / should be at least as many bookmarks as h1, h2 and h3 headings
      -- Accessible font encodings (how?)
@@ -94,6 +94,7 @@
      -- Handle page labels
      -- Check if bookmarks have destinations
      -- What to do if errors in reading map dictionary? http://pdf-accessible.com/wp-content/uploads/2015/01/making-PDF-accessible-Acrobat.pdf
+        -- Simply declare the PDF as corrupt
      -- Add a text description describing the accessibility of the document.
      -- List images
      -- If no images, set image result to null and indicate not checked because no images were found
