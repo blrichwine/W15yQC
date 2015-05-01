@@ -779,7 +779,7 @@ ys: 'whys'
           }
           return out;
         } else {
-          if (level>14) {
+          if (level>18) {
             return '--ABORTING objectToString DUE TO TOO MANY LEVELS OF RECURSION--';
           }
           try {
