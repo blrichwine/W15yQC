@@ -4,10 +4,12 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Table tests 01</title>
   <style>
-/*	table {border: thin solid blue;}
-	th {border: thin solid black;}
-	td {border: thin dotted black;}
-*/	</style>
+	table {border: thin solid blue;}
+	th {border: thin solid black; padding: 4px;}
+	td {border: thin dotted black; padding: 4px;}
+	table table {border: thick solid blue;}
+	table table table {border: thick dashed blue;}
+	</style>
 </head>
 <body>
 <h1>Table Tests 01</h1>
@@ -57,8 +59,8 @@ it fails because it doesn't have a caption or a summary.</p>
 <p>This table should fail because it has ths making it a data table, but
 it fails because it doesn't have a caption or a summary.</p>
 <table title="Table 5c Title">
-	 <tr><th>Cell 1,1</td><td>Cell 2,1</td></tr>
-	 <tr><th>Cell 1,2</td><td>Cell 2,2</td></tr>
+	 <tr><th>Cell 1,1</th><td>Cell 2,1</td></tr>
+	 <tr><th>Cell 1,2</th><td>Cell 2,2</td></tr>
 </table>
 
 <h2>Table 6</h2>
@@ -113,7 +115,7 @@ row 1 col 2 should create another column in row two.</p>
 <h2>Table 11</h2>
 <p>A complicated rowspan, colsapn test. Includes headers for each col and row.
 Should Pass.</p>
-<table border="1" cellpadding="4">
+<table>
 <caption>Table 11 Caption</caption>
   <tr>
     <th scope="col">1,1</th>
@@ -175,7 +177,7 @@ Should Pass.</p>
 
 <h2>Table 12</h2>
 <p>A complicated rowspan, colsapn test. Includes headers for each col and row.</p>
-<table border="1" cellpadding="4">
+<table>
 <caption>Table 12 Caption</caption>
   <tr>
     <th scope="col">1,1</th>
@@ -247,7 +249,7 @@ Should Pass.</p>
 
 <h2>Table 16</h2>
 <p>A large data table with no markup as such. Should be called out for being larger than most layout tables.</p>
-<table border="1" cellpadding="4" id="table16">
+<table id="table16">
   <tr>
     <td>Row 2</td>
     <td>2,2</td>
@@ -298,23 +300,23 @@ Should Pass.</p>
 
 <h2>Table 17</h2>
 <p>Data table with the same caption and summary.</p>
-<table border="1" cellpadding="4" summary="17This is the table caption and the table summary text.">
+<table summary="17 This is the table caption and the table summary text.">
 	<caption>This is the table caption and the table summary text.</caption>
   <tr>
-    <th scope="row">Row 1</td>
+    <th scope="row">Row 1</th>
     <td>1,2</td>
 	</tr>
   <tr>
-    <th scope="row">Row 2</td>
+    <th scope="row">Row 2</th>
     <td>2,2</td>
 	</tr>
 </table>
 
 <h2>Table 18</h2>
 <p>Data table with row missing table header.</p>
-<table border="1" cellpadding="4" summary="18This table has row th's. One row has content that does not have a header.">
+<table summary="18 This table has row th's. One row has content that does not have a header.">
   <tr>
-    <th scope="row">Row 1</td>
+    <th scope="row">Row 1</th>
     <td>1,2</td>
 	</tr>
   <tr>
@@ -322,18 +324,18 @@ Should Pass.</p>
     <td>2,2</td>
 	</tr>
   <tr>
-    <th scope="row">Row 3</td>
+    <th scope="row">Row 3</th>
     <td>3,2</td>
 	</tr>
 </table>
 
 <h2>Table 19</h2>
 <p>Data table with column missing table header.</p>
-<table border="1" cellpadding="4" summary="19This table has column th's. One column has content that does not have a header.">
+<table summary="19 This table has column th's. One column has content that does not have a header.">
   <tr>
-    <th scope="col">Col 1</td>
+    <th scope="col">Col 1</th>
     <td>Col 2</td>
-    <th scope="col">Col 3</td>
+    <th scope="col">Col 3</th>
 	</tr>
   <tr>
     <td>2,1</td>
@@ -349,11 +351,11 @@ Should Pass.</p>
 
 <h2>Table 20</h2>
 <p>Data table with combination of table headers and headers attributes.</p>
-<table border="1" cellpadding="4" summary="20This table has column headers and header attributes. All cells have either a header or headers attribute.">
+<table summary="20 This table has column headers and header attributes. All cells have either a header or headers attribute.">
   <tr>
-    <th id="t20ha" scope="col" abbr="C1">Col 1</td>
+    <th id="t20ha" scope="col" abbr="C1">Col 1</th>
     <td id="t20h1" headers="t20ha">Col 2</td>
-    <th scope="col">Col 3</td>
+    <th scope="col">Col 3</th>
 	</tr>
   <tr>
     <td>2,1</td>
