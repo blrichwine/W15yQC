@@ -5510,7 +5510,7 @@ var PDFDocument = (function PDFDocumentClosure() {
       structure.errors=false;
 
       function addStructElementChildren(strec) {
-        var k, children=[], strecc, so2, ca2, type, text='', pageRef, ko, indx, i;
+        var k, children=[], strecc, streccc, strecccc, keys, so2, ca2, type, text='', pageRef, ko, indx, i;
 
         function filter(s) {
          if(s!==null && s.replace) {
@@ -5641,6 +5641,27 @@ try{
            } else if(/form/i.test(type)){
              alert("NOT HANDLING THIS FORM TAG!!!! (1): "+blr.W15yQC.objectToString(strecc));
            }
+             if(typeof strecc.map.A != 'undefined' && typeof strecc.map.A.gen === 'number' && typeof strecc.map.A.num === 'number') {
+              streccc=xref.fetch(new Ref(strecc.map.A.num,strecc.map.A.gen));
+              if(streccc!==null && streccc.map!==null) {
+                keys=Object.getOwnPropertyNames(streccc.map);
+                if(keys!=null && keys.length>0) {
+                  children[indx].A=[];
+                  for(i=0;i<keys.length;i++) {
+                    if(streccc.map[keys[i]]!==null) {
+                     if(typeof streccc.map[keys[i]].gen === 'number') {
+                       strecccc=xref.fetch(new Ref(streccc.map[keys[i]].num,streccc.map[keys[i]].gen));
+                       children[indx].A.push({});
+                       children[indx].A[children[indx].A.length-1][keys[i]]=strecccc;
+                     } else if(typeof streccc.map[keys[i]].name != 'undefined') {
+                       children[indx].A.push({});
+                       children[indx].A[children[indx].A.length-1][keys[i]]=streccc.map[keys[i]].name;
+                     }
+                    }
+                  }
+                }
+              }
+             }
              if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
              if(typeof strecc.map.FT != 'undefined') { children[indx].FT=filter(strecc.map.FT); }
              if(typeof strecc.map.Ff != 'undefined') { children[indx].Ff=filter(strecc.map.Ff); }
@@ -5653,9 +5674,10 @@ try{
              if(typeof strecc.map.ActualText != 'undefined') { children[indx].ActualText=filter(strecc.map.ActualText); }
              if(typeof strecc.map.Desc != 'undefined') { children[indx].Desc=filter(strecc.map.Desc); }
              if(typeof strecc.map.checked != 'undefined') { children[indx].checked=filter(strecc.map.checked); }
-             if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); }
+             if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); } // TODO: Should these be gone?
              if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ColSpan=filter(strecc.map.ColSpan); }
              if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
+             if(typeof strecc.map.ID != 'undefined') { children[indx].ID=filter(strecc.map.ID); }
              if(typeof strecc.map.Scope != 'undefined') { children[indx].Scope=filter(strecc.map.Scope); }
              if(typeof strecc.map.Summary != 'undefined') { children[indx].Summary=filter(strecc.map.Summary); }
              if(typeof strecc.map.ListNumbering != 'undefined') { children[indx].Summary=filter(strecc.map.ListNumbering); }
@@ -5741,6 +5763,28 @@ try{
            } else if(/form/i.test(type)){
              // alert("NOT HANDLING THIS FORM TAG!!!! (2): "+blr.W15yQC.objectToString(strecc));
            }
+             if(typeof strecc.map.A != 'undefined' && typeof strecc.map.A.gen === 'number' && typeof strecc.map.A.num === 'number') {
+              streccc=xref.fetch(new Ref(strecc.map.A.num,strecc.map.A.gen));
+              if(streccc!==null && streccc.map!==null) {
+                keys=Object.getOwnPropertyNames(streccc.map);
+                if(keys!=null && keys.length>0) {
+                  children[indx].A=[];
+                  for(i=0;i<keys.length;i++) {
+                    if(streccc.map[keys[i]]!==null) {
+                     if(typeof streccc.map[keys[i]].gen === 'number') {
+                       strecccc=xref.fetch(new Ref(streccc.map[keys[i]].num,streccc.map[keys[i]].gen));
+                       children[indx].A.push({});
+                       children[indx].A[children[indx].A.length-1][keys[i]]=strecccc;
+                     } else if(typeof streccc.map[keys[i]].name != 'undefined') {
+                       children[indx].A.push({});
+                       children[indx].A[children[indx].A.length-1][keys[i]]=streccc.map[keys[i]].name;
+                     }
+                    }
+                  }
+                }
+              }
+             }
+
            if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
            if(typeof strecc.map.FT != 'undefined') { children[indx].FT=filter(strecc.map.FT); }
            if(typeof strecc.map.Ff != 'undefined') { children[indx].Ff=filter(strecc.map.Ff); }
@@ -5756,6 +5800,7 @@ try{
            if(typeof strecc.map.RowSpan != 'undefined') { children[indx].RowSpan=filter(strecc.map.RowSpan); }
            if(typeof strecc.map.ColSpan != 'undefined') { children[indx].ColSpan=filter(strecc.map.ColSpan); }
            if(typeof strecc.map.Headers != 'undefined') { children[indx].Headers=filter(strecc.map.Headers); }
+           if(typeof strecc.map.ID != 'undefined') { children[indx].ID=filter(strecc.map.ID); }
            if(typeof strecc.map.Scope != 'undefined') { children[indx].Scope=filter(strecc.map.Scope); }
            if(typeof strecc.map.Summary != 'undefined') { children[indx].Summary=filter(strecc.map.Summary); }
            if(typeof strecc.map.ListNumbering != 'undefined') { children[indx].Summary=filter(strecc.map.ListNumbering); }

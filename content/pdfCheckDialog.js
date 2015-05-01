@@ -919,7 +919,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
      * text: orange
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
-      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm, keys=['T','Lang','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
+      var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm, keys=['T','Lang','A','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'], efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj;
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
