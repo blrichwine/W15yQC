@@ -81,7 +81,7 @@
 
     var displayKeys=['T','Lang','A','Alt','E','ActualText','Desc','checked','ListNumbering', 'RowSpan','ColSpan','Headers','ID','Scope','Summary'];
     var tableData=[];
-    var tableStack=[];
+    var tableStack=[], currentTable=null;
 
     var FfBitNames={"1":"ReadOnly",
                     "2":"Required",
@@ -1272,12 +1272,45 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             // init columnRowCount totals to 0
             // init Table ID hash
             // init Notes to ""
-            tableData.push({"page":pgNum, "nestingLevel":countOccurancesOf('|Table|','|'+sNesting+'|'), "columnCount":0, "rowCount":0, "columnRowCount":[], "IDs":{}, "Notes":""});
+            tableData.push({"page":pgNum, "nestingLevel":countOccurancesOf('|Table|','|'+sNesting+'|'), "firstRowColumnCount":0, "thisRowColumnCount":0, "bInRow":false, "rowCount":0, "columnRowCount":[], "IDs":{}, "bComplexTable":false, "Notes":""});
             currentTable=tableData.length-1;
             tableStack.push(currentTable);
           } else if (/^Caption$/.test(sTagName) && /\bTable$/.test(sNesting)) {
             if (oi>1) {
               blr.W15yQC.fnJoin(tableData[currentTable].Notes,"Caption tag not first child in the table.",' ');
+            }
+          } else if (/^TR$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
+            tableData[currentTable].bInRow=true;
+            tableData[currentTable].rowCount++;
+          } else if (/^TH$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
+            if (tableData[currentTable].bInRow!==true) {
+              blr.W15yQC.fnJoin(tableData[currentTable].Notes,"TH tag without being in a TR tag.",' ');
+            }
+            if (tableData[currentTable].rowCount==1) {
+              if (o[oi].A != null && o[oi].A.ColSpan>0) {
+                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+o[oi].A.ColSpan;
+                tableData[currentTable].bComplexTable=true;
+              } else {
+                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
+              }
+            }
+            if (o[oi].A != null && o[oi].A.RowSpan>0) {
+              tableData[currentTable].bComplexTable=true;
+            }
+          } else if (/^TD$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
+            if (tableData[currentTable].bInRow!==true) {
+              blr.W15yQC.fnJoin(tableData[currentTable].Notes,"TD tag without being in a TR tag.",' ');
+            }
+            if (tableData[currentTable].rowCount==1) {
+              if (o[oi].A != null && o[oi].A.ColSpan>0) {
+                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+o[oi].A.ColSpan;
+                tableData[currentTable].bComplexTable=true;
+              } else {
+                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
+              }
+            }
+            if (o[oi].A != null && o[oi].A.RowSpan>0) {
+              tableData[currentTable].bComplexTable=true;
             }
           }
 
@@ -1358,7 +1391,18 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             if (tableStack.length>0) {
               currentTable=tableStack[tableStack.length-1];
             }
+          } else if (/^TR$/.test(sTagName) && tableStack.length>0) {
+            if (tableData[currentTable].rowCount==1) {
+              tableData[currentTable].firstRowColumnCount=tableData[currentTable].thisRowColumnCount;
+            }
+            if (tableData[currentTable].firstRowColumnCount<1) {
+              blr.W15yQC.fnJoin(tableData[currentTable].Notes,'First row has zero columns.',' ');
+            } else if (tableData[currentTable].firstRowColumnCount!=tableData[currentTable].thisRowColumnCount) {
+              blr.W15yQC.fnJoin(tableData[currentTable].Notes,'Row '+tableData[currentTable].rowCount+' has '+tableData[currentTable].thisRowColumnCount+' columns which does not equal the '+tableData[currentTable].firstRowColumnCount+' columns in the first row.',' ');
+            }
+            tableData[currentTable].bInRow=false;
           }
+
         }
         el.appendChild(ol);
       }
@@ -1806,6 +1850,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
       results.bNoErrorsParsingDocumentStructure=ds.errors===false;
       tableData=[];
       tableStack=[];
+      currentTable=null;
 
       renderDocStructureLevel(ds,div,defaultLang);
       if(results.bHeadingsAreAllImplicit==true && results.bHeadingsAreAllExplicit==true) {
