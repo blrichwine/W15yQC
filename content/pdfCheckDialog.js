@@ -944,7 +944,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
      */
     function renderDocStructureLevel(o,el,currentLang,sNesting) {
       var oi,ol,oli, k, l, s, errTxt, bFoundFormInAcroForm,
-        efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj, tables=[];
+        efIndex, efPLen, span, bInBrackets, sTagName, sEndNesting, nObj, bThRowScope=false, bThColScope=false;
 
       if (sNesting==null || typeof sNesting=='undefined') {
         sNesting='';
@@ -1158,6 +1158,9 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
                 span.appendChild(rd.createTextNode(': '+o[oi].text));
               }
               oli.appendChild(span);
+              if (currentTable!==null && /\|\s*Caption\s*(\|\s*P)?\s*\|?\s*$/.test(sNesting)) {
+                tableData[currentTable].captionText=blr.W15yQC.fnJoin(tableData[currentTable].captionText, o[oi].text, '');
+              }
             }
           } else {
             span=rd.createElement('span');
@@ -1272,44 +1275,105 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             // init columnRowCount totals to 0
             // init Table ID hash
             // init Notes to ""
-            tableData.push({"page":pgNum, "nestingLevel":countOccurancesOf('|Table|','|'+sNesting+'|'), "firstRowColumnCount":0, "thisRowColumnCount":0, "bInRow":false, "rowCount":0, "columnRowCount":[], "IDs":{}, "bComplexTable":false, "Notes":""});
+            tableData.push({"Pg":pgNum, "columnCount":0, "bRowHeading":false, "bNotAllTDCellsHaveHeaders":false, "columnHasHeading":[], "rowSpans":[],
+                            "nestingLevel":countOccurancesOf('|Table|','|'+sNesting+'|'), "firstRowColumnCount":0, "thisRowColumnCount":0,
+                            "bInRow":false, "rowCount":0, "IDs":{}, "headerIDs":[], "bComplexTable":false, "captionText":null,
+                            "sNotes":""});
             currentTable=tableData.length-1;
             tableStack.push(currentTable);
           } else if (/^Caption$/.test(sTagName) && /\bTable$/.test(sNesting)) {
             if (oi>1) {
-              blr.W15yQC.fnJoin(tableData[currentTable].Notes,"Caption tag not first child in the table.",' ');
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,"Caption tag not first child in the table.",' ');
             }
           } else if (/^TR$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
             tableData[currentTable].bInRow=true;
+            tableData[currentTable].bRowHeading=false;
             tableData[currentTable].rowCount++;
+            tableData[currentTable].thisRowColumnCount=0;
           } else if (/^TH$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
+            while (tableData[currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+1) {
+              tableData[currentTable].rowSpans.push(0);
+            }
+            while (tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]>0) {
+              tableData[currentTable].thisRowColumnCount++;
+            }
+            if (o[oi].A != null && /row|both/i.test(o[oi].A.Scope) || (tableData[currentTable].rowCount>1 && tableData[currentTable].thisRowColumnCount<1)) {
+              bThRowScope=true;
+              tableData[currentTable].bRowHeading=true;
+            } else {
+              bThRowScope=false;
+            }
+            if (o[oi].A != null && /col|both/i.test(o[oi].A.Scope) || tableData[currentTable].rowCount==1) {
+              bThColScope=true;
+            } else {
+              bThColScope=false;
+            }
             if (tableData[currentTable].bInRow!==true) {
-              blr.W15yQC.fnJoin(tableData[currentTable].Notes,"TH tag without being in a TR tag.",' ');
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,"TH tag without being in a TR tag.",' ');
             }
-            if (tableData[currentTable].rowCount==1) {
-              if (o[oi].A != null && o[oi].A.ColSpan>0) {
-                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+o[oi].A.ColSpan;
-                tableData[currentTable].bComplexTable=true;
-              } else {
-                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
+            if (o[oi].A != null && o[oi].A.ColSpan>1) {
+              if (o[oi].A.RowSpan>0) {
+                for(i=0;i<o[oi].A.ColSpan;i++) {
+                  while (tableData[tableData[currentTable].currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+i+1) {
+                    tableData[tableData[currentTable].currentTable].rowSpans.push(0);
+                  }
+                  tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount+i]=o[oi].A.RowSpan;
+                }
               }
+              tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+o[oi].A.ColSpan;
+              tableData[currentTable].bComplexTable=true;
+            } else {
+              if (o[oi].A!=null && o[oi].A.RowSpan>1) {
+                while (tableData[currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+1) {
+                  tableData[tableData[currentTable].currentTable].rowSpans.push(0);
+                }
+                tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]=o[oi].A.RowSpan;
+              }
+              tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
             }
-            if (o[oi].A != null && o[oi].A.RowSpan>0) {
+            while(tableData[currentTable].columnHasHeading.length<tableData[currentTable].thisRowColumnCount) {
+              tableData[currentTable].columnHasHeading.push(bThColScope);
+            }
+            if (o[oi].A != null && o[oi].A.RowSpan>1) {
               tableData[currentTable].bComplexTable=true;
             }
           } else if (/^TD$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
+            while (tableData[currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+1) {
+              tableData[currentTable].rowSpans.push(0);
+            }
+            while (tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]>0) {
+              tableData[currentTable].thisRowColumnCount++;
+            }
             if (tableData[currentTable].bInRow!==true) {
-              blr.W15yQC.fnJoin(tableData[currentTable].Notes,"TD tag without being in a TR tag.",' ');
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,"TD tag without being in a TR tag.",' ');
             }
-            if (tableData[currentTable].rowCount==1) {
-              if (o[oi].A != null && o[oi].A.ColSpan>0) {
-                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+o[oi].A.ColSpan;
-                tableData[currentTable].bComplexTable=true;
-              } else {
-                tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
+            if (o[oi].A != null && o[oi].A.ColSpan>1) {
+              if (o[oi].A.RowSpan>0) {
+                for(i=0;i<o[oi].A.ColSpan;i++) {
+                  while (tableData[currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+i+1) {
+                    tableData[tableData[currentTable].currentTable].rowSpans.push(0);
+                  }
+                  tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount+i]=o[oi].A.RowSpan;
+                }
               }
+              tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+o[oi].A.ColSpan;
+              tableData[currentTable].bComplexTable=true;
+            } else {
+              if (o[oi].A!=null && o[oi].A.RowSpan>1) {
+                while (tableData[currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+1) {
+                  tableData[tableData[currentTable].currentTable].rowSpans.push(0);
+                }
+                tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]=o[oi].A.RowSpan;
+              }
+              tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
             }
-            if (o[oi].A != null && o[oi].A.RowSpan>0) {
+            while(tableData[currentTable].columnHasHeading.length<tableData[currentTable].thisRowColumnCount) {
+              tableData[currentTable].columnHasHeading.push(false);
+            }
+            if (tableData[currentTable].bRowHeading || tableData[currentTable].columnHasHeading.length<tableData[currentTable].thisRowColumnCount || tableData[currentTable].columnHasHeading[tableData[currentTable].thisRowColumnCount-1]) {
+              tableData[currentTable].bNotAllTDCellsHaveHeaders=true;
+            }
+            if (o[oi].A != null && o[oi].A.RowSpan>1) {
               tableData[currentTable].bComplexTable=true;
             }
           }
@@ -1387,20 +1451,40 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
           }
 
           if (/^Table$/.test(sTagName) && tableStack.length>0) {
+            if (tableData[currentTable].bComplexTable==true) {
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'Table is complex.',' ');
+            }
+            if (tableData[currentTable].bNotAllTDCellsHaveHeaders==true) {
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'Not all TD cells have a header.',' ');
+            }
+            tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'End of table checks.',' ');
             tableStack.pop();
             if (tableStack.length>0) {
               currentTable=tableStack[tableStack.length-1];
+            } else {
+              currentTable=null;
             }
           } else if (/^TR$/.test(sTagName) && tableStack.length>0) {
+            alert(tableData[currentTable].rowCount+' - '+tableData[currentTable].thisRowColumnCount+' - '+blr.W15yQC.objectToString(tableData[currentTable].rowSpans));
+            while (tableData[currentTable].rowSpans.length>tableData[currentTable].thisRowColumnCount && tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]>0) {
+              tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
+              alert(tableData[currentTable].rowCount+' - '+tableData[currentTable].thisRowColumnCount+' - '+blr.W15yQC.objectToString(tableData[currentTable].rowSpans));
+            }
             if (tableData[currentTable].rowCount==1) {
               tableData[currentTable].firstRowColumnCount=tableData[currentTable].thisRowColumnCount;
             }
             if (tableData[currentTable].firstRowColumnCount<1) {
-              blr.W15yQC.fnJoin(tableData[currentTable].Notes,'First row has zero columns.',' ');
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'First row has zero columns.',' ');
             } else if (tableData[currentTable].firstRowColumnCount!=tableData[currentTable].thisRowColumnCount) {
-              blr.W15yQC.fnJoin(tableData[currentTable].Notes,'Row '+tableData[currentTable].rowCount+' has '+tableData[currentTable].thisRowColumnCount+' columns which does not equal the '+tableData[currentTable].firstRowColumnCount+' columns in the first row.',' ');
+              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'Row '+tableData[currentTable].rowCount+' has '+tableData[currentTable].thisRowColumnCount+' columns which does not equal the '+tableData[currentTable].firstRowColumnCount+' columns in the first row.',' ');
             }
             tableData[currentTable].bInRow=false;
+            tableData[currentTable].thisRowColumnCount=0;
+            for (i=0;i<tableData[currentTable].rowSpans.length;i++) {
+              if (tableData[currentTable].rowSpans[i]>0) {
+                tableData[currentTable].rowSpans[i]=tableData[currentTable].rowSpans[i]-1;
+              }
+            }
           }
 
         }
@@ -1797,6 +1881,101 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
       }
     }
 
+    function renderTablesTable() {
+      var el=re.getElementById('tablesTable'), i, table, th, td, tr, thead, tbody, p, sNotes, bHasActualText=false, sText, sSize;
+
+      if (tableData!==null && tableData.length>0) {
+        for(i=0;i<tableData.length; i++) {
+          if (tableData[i].ActualText!=null) {
+            bHasActualText=true;
+          }
+        }
+        table=rd.createElement('table');
+        table.setAttribute('id','tablesTableTable');
+
+        thead=rd.createElement('thead');
+        tr=rd.createElement('tr');
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('#'));
+        th.setAttribute('aria-label','Number');
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Page'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Size'));
+        tr.appendChild(th);
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Caption'));
+        tr.appendChild(th);
+        if (bHasActualText) {
+          th=rd.createElement('th');
+          th.appendChild(rd.createTextNode('ActualText'));
+          tr.appendChild(th);
+        }
+        th=rd.createElement('th');
+        th.appendChild(rd.createTextNode('Notes'));
+        tr.appendChild(th);
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+        tbody=rd.createElement('tbody');
+        for(i=0;i<tableData.length; i++) {
+          sText='';
+          if (tableData[i].Alt!=null) {
+            sText=tableData[i].Alt;
+          } else if (tableData[i].ActualText!=null) {
+            sText=tableData[i].ActualText;
+          } else if (tableData[i].captionText!=null) {
+            sText=tableData[i].captionText;
+          }
+          tr=rd.createElement('tr');
+          sNotes=tableData[i].sNotes;
+          if (!blr.W15yQC.fnStringHasContent(sText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Missing caption or alternate text for table.',', ');
+          }
+          if (blr.W15yQC.fnAppearsToBeDefaultAltText(sText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Table caption or alternate text appears to be default.',', ');
+          }
+          if ((blr.W15yQC.fnStringHasContent(tableData[i].ActualText)||blr.W15yQC.fnStringHasContent(tableData[i].Alt)) && !blr.W15yQC.fnStringHasContent(tableData[i].captionText)) {
+            sNotes=blr.W15yQC.fnJoin(sNotes,'Table description text should come from a Caption instead of ActualText or Alt attributes.',', ');
+          }
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode((i+1).toString()));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(tableData[i].Pg));
+          tr.appendChild(td);
+          sSize=tableData[i].firstRowColumnCount.toString()+'C x '+tableData[i].rowCount.toString()+'R';
+          td=rd.createElement('td');
+          td.setAttribute('class','Size');
+          td.appendChild(rd.createTextNode(sSize));
+          tr.appendChild(td);
+          td=rd.createElement('td');
+          td.setAttribute('class','Caption');
+          td.appendChild(rd.createTextNode(sText));
+          tr.appendChild(td);
+          if (bHasActualText) {
+            td=rd.createElement('td');
+            td.appendChild(rd.createTextNode(tableData[i].ActualText!=null?tableData[i].ActualText:''));
+            tr.appendChild(td);
+          }
+          td=rd.createElement('td');
+          td.appendChild(rd.createTextNode(sNotes));
+          tr.appendChild(td);
+
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+
+        el.appendChild(table);
+      } else {
+        p=rd.createElement('p');
+        p.appendChild(rd.createTextNode('No table tags found.'));
+        el.appendChild(p);
+      }
+    }
+
     function renderAndCheckDocStructure(el) {
       var rmi, ol, oli, div, p, keys, i=-1, dlM, defaultLang;
       //blr.W15yQC.pdfCheckDialog.log('DS:'+blr.W15yQC.objectToString(ds));
@@ -1827,6 +2006,11 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
       el.appendChild(makeExpandoCollapsoHeading('h3','Form Controls:'));
       div=rd.createElement('div');
       div.setAttribute('id','formControlsTable');
+      el.appendChild(div); // Place holder for content that gets rendered later!
+
+      el.appendChild(makeExpandoCollapsoHeading('h3','Table Tags:'));
+      div=rd.createElement('div');
+      div.setAttribute('id','tablesTable');
       el.appendChild(div); // Place holder for content that gets rendered later!
 
       el.appendChild(makeExpandoCollapsoHeading('h3','Headings:'));
@@ -1861,6 +2045,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
       renderUniqueTagNestings();
       renderFormControlsTable();
       renderFigureControlsTable();
+      renderTablesTable();
 
       enableReportButtons(true,true);
       renderResults();

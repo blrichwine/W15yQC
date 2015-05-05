@@ -5641,21 +5641,27 @@ try{
            } else if(/form/i.test(type)){
              alert("NOT HANDLING THIS FORM TAG!!!! (1): "+blr.W15yQC.objectToString(strecc));
            }
-             if(typeof strecc.map.A != 'undefined' && typeof strecc.map.A.gen === 'number' && typeof strecc.map.A.num === 'number') {
-              streccc=xref.fetch(new Ref(strecc.map.A.num,strecc.map.A.gen));
+            if(typeof strecc.map.A != 'undefined' && ((typeof strecc.map.A.gen === 'number' && typeof strecc.map.A.num === 'number') ||
+               (strecc.map.A.length>0 && typeof strecc.map.A[0].gen) === 'number')) {
+             if(typeof strecc.map.A.gen === 'number') {
+               streccc=xref.fetch(new Ref(strecc.map.A.num,strecc.map.A.gen));
+             } else {
+               streccc=xref.fetch(new Ref(strecc.map.A[0].num,strecc.map.A[0].gen));
+              //alert(blr.W15yQC.objectToString(streccc,true));
+             }
               if(streccc!==null && streccc.map!==null) {
                 keys=Object.getOwnPropertyNames(streccc.map);
                 if(keys!=null && keys.length>0) {
-                  children[indx].A=[];
+                  children[indx].A={};
                   for(i=0;i<keys.length;i++) {
                     if(streccc.map[keys[i]]!==null) {
                      if(typeof streccc.map[keys[i]].gen === 'number') {
                        strecccc=xref.fetch(new Ref(streccc.map[keys[i]].num,streccc.map[keys[i]].gen));
-                       children[indx].A.push({});
-                       children[indx].A[children[indx].A.length-1][keys[i]]=strecccc;
+                       children[indx].A[keys[i]]=strecccc;
                      } else if(typeof streccc.map[keys[i]].name != 'undefined') {
-                       children[indx].A.push({});
-                       children[indx].A[children[indx].A.length-1][keys[i]]=streccc.map[keys[i]].name;
+                       children[indx].A[keys[i]]=streccc.map[keys[i]].name;
+                     } else if(typeof streccc.map[keys[i]] != 'undefined') {
+                       children[indx].A[keys[i]]=streccc.map[keys[i]];
                      }
                     }
                   }
@@ -5763,27 +5769,33 @@ try{
            } else if(/form/i.test(type)){
              // alert("NOT HANDLING THIS FORM TAG!!!! (2): "+blr.W15yQC.objectToString(strecc));
            }
-             if(typeof strecc.map.A != 'undefined' && typeof strecc.map.A.gen === 'number' && typeof strecc.map.A.num === 'number') {
+           if(typeof strecc.map.A != 'undefined' && ((typeof strecc.map.A.gen === 'number' && typeof strecc.map.A.num === 'number') ||
+              (strecc.map.A.length>0 && typeof strecc.map.A[0].gen) === 'number')) {
+            if(typeof strecc.map.A.gen === 'number') {
               streccc=xref.fetch(new Ref(strecc.map.A.num,strecc.map.A.gen));
-              if(streccc!==null && streccc.map!==null) {
-                keys=Object.getOwnPropertyNames(streccc.map);
-                if(keys!=null && keys.length>0) {
-                  children[indx].A=[];
-                  for(i=0;i<keys.length;i++) {
-                    if(streccc.map[keys[i]]!==null) {
-                     if(typeof streccc.map[keys[i]].gen === 'number') {
-                       strecccc=xref.fetch(new Ref(streccc.map[keys[i]].num,streccc.map[keys[i]].gen));
-                       children[indx].A.push({});
-                       children[indx].A[children[indx].A.length-1][keys[i]]=strecccc;
-                     } else if(typeof streccc.map[keys[i]].name != 'undefined') {
-                       children[indx].A.push({});
-                       children[indx].A[children[indx].A.length-1][keys[i]]=streccc.map[keys[i]].name;
-                     }
-                    }
+            } else {
+              streccc=xref.fetch(new Ref(strecc.map.A[0].num,strecc.map.A[0].gen));
+              alert(blr.W15yQC.objectToString(streccc,true));
+            }
+            if(streccc!==null && streccc.map!==null) {
+              keys=Object.getOwnPropertyNames(streccc.map);
+              if(keys!=null && keys.length>0) {
+                children[indx].A={};
+                for(i=0;i<keys.length;i++) {
+                  if(streccc.map[keys[i]]!==null) {
+                   if(typeof streccc.map[keys[i]].gen === 'number') {
+                     strecccc=xref.fetch(new Ref(streccc.map[keys[i]].num,streccc.map[keys[i]].gen));
+                     children[indx].A[keys[i]]=strecccc;
+                   } else if(typeof streccc.map[keys[i]].name != 'undefined') {
+                     children[indx].A[keys[i]]=streccc.map[keys[i]].name;
+                   } else if(typeof streccc.map[keys[i]] != 'undefined') {
+                     children[indx].A[keys[i]]=streccc.map[keys[i]];
+                   }
                   }
                 }
               }
-             }
+            }
+           }
 
            if(typeof strecc.map.T != 'undefined') { children[indx].T=filter(strecc.map.T); }
            if(typeof strecc.map.FT != 'undefined') { children[indx].FT=filter(strecc.map.FT); }
