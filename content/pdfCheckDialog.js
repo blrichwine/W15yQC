@@ -175,8 +175,10 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
           pos+=s1.length;
          } else break;
         }
+        alert('"'+s1+'"  "'+s2+'" >> '+count);
         return count;
       }
+      alert('"'+s1+'"  "'+s2+'" >> '+0);
       return 0;
     }
     function appendReport() {
@@ -1276,14 +1278,14 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             // init Table ID hash
             // init Notes to ""
             tableData.push({"Pg":pgNum, "columnCount":0, "bRowHeading":false, "bNotAllTDCellsHaveHeaders":false, "columnHasHeading":[], "rowSpans":[],
-                            "nestingLevel":countOccurancesOf('|Table|','|'+sNesting+'|'), "firstRowColumnCount":0, "thisRowColumnCount":0,
+                            "nestingLevel":countOccurancesOf('Table',sNesting), "firstRowColumnCount":0, "thisRowColumnCount":0,
                             "bInRow":false, "rowCount":0, "IDs":{}, "headerIDs":[], "bComplexTable":false, "captionText":null,
-                            "sNotes":""});
+                            "notes":[]});
             currentTable=tableData.length-1;
             tableStack.push(currentTable);
           } else if (/^Caption$/.test(sTagName) && /\bTable$/.test(sNesting)) {
             if (oi>1) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,"Caption tag not first child in the table.",' ');
+              tableData[currentTable].notes.push("Caption tag not first child in the table.");
             }
           } else if (/^TR$/.test(sTagName) && /\bTable\b/.test(sNesting)) {
             tableData[currentTable].bInRow=true;
@@ -1309,7 +1311,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               bThColScope=false;
             }
             if (tableData[currentTable].bInRow!==true) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,"TH tag without being in a TR tag.",' ');
+              tableData[currentTable].notes.push("TH tag without being in a TR tag.");
             }
             if (o[oi].A != null && o[oi].A.ColSpan>1) {
               if (o[oi].A.RowSpan>0) {
@@ -1345,7 +1347,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               tableData[currentTable].thisRowColumnCount++;
             }
             if (tableData[currentTable].bInRow!==true) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,"TD tag without being in a TR tag.",' ');
+              tableData[currentTable].notes.push("TD tag without being in a TR tag.");
             }
             if (o[oi].A != null && o[oi].A.ColSpan>1) {
               if (o[oi].A.RowSpan>0) {
@@ -1361,7 +1363,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             } else {
               if (o[oi].A!=null && o[oi].A.RowSpan>1) {
                 while (tableData[currentTable].rowSpans.length<tableData[currentTable].thisRowColumnCount+1) {
-                  tableData[tableData[currentTable].currentTable].rowSpans.push(0);
+                  tableData[tableData[currentTable].currentTable].rowSpans.push(0); // make sure rowSpans array is long enough
                 }
                 tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]=o[oi].A.RowSpan;
               }
@@ -1370,7 +1372,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             while(tableData[currentTable].columnHasHeading.length<tableData[currentTable].thisRowColumnCount) {
               tableData[currentTable].columnHasHeading.push(false);
             }
-            if (tableData[currentTable].bRowHeading || tableData[currentTable].columnHasHeading.length<tableData[currentTable].thisRowColumnCount || tableData[currentTable].columnHasHeading[tableData[currentTable].thisRowColumnCount-1]) {
+            if (tableData[currentTable].bRowHeading!=true && (tableData[currentTable].columnHasHeading.length<tableData[currentTable].thisRowColumnCount || tableData[currentTable].columnHasHeading[tableData[currentTable].thisRowColumnCount-1]!=true)) {
               tableData[currentTable].bNotAllTDCellsHaveHeaders=true;
             }
             if (o[oi].A != null && o[oi].A.RowSpan>1) {
@@ -1451,13 +1453,15 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
           }
 
           if (/^Table$/.test(sTagName) && tableStack.length>0) {
+            if (tableData[currentTable].nestingLevel>0) {
+              tableData[currentTable].notes.push('Table is nested in '+tableData[currentTable].nestingLevel+' other table(s).');
+            }
             if (tableData[currentTable].bComplexTable==true) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'Table is complex.',' ');
+              tableData[currentTable].notes.push('Table is complex.');
             }
             if (tableData[currentTable].bNotAllTDCellsHaveHeaders==true) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'Not all TD cells have a header.',' ');
+              tableData[currentTable].notes.push('Not all TD cells have a header.');
             }
-            tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'End of table checks.',' ');
             tableStack.pop();
             if (tableStack.length>0) {
               currentTable=tableStack[tableStack.length-1];
@@ -1465,18 +1469,18 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
               currentTable=null;
             }
           } else if (/^TR$/.test(sTagName) && tableStack.length>0) {
-            alert(tableData[currentTable].rowCount+' - '+tableData[currentTable].thisRowColumnCount+' - '+blr.W15yQC.objectToString(tableData[currentTable].rowSpans));
+            // alert(tableData[currentTable].rowCount+' - '+tableData[currentTable].thisRowColumnCount+' - '+blr.W15yQC.objectToString(tableData[currentTable].rowSpans)+' - '+blr.W15yQC.objectToString(tableData[currentTable].columnHasHeading));
             while (tableData[currentTable].rowSpans.length>tableData[currentTable].thisRowColumnCount && tableData[currentTable].rowSpans[tableData[currentTable].thisRowColumnCount]>0) {
               tableData[currentTable].thisRowColumnCount=tableData[currentTable].thisRowColumnCount+1;
-              alert(tableData[currentTable].rowCount+' - '+tableData[currentTable].thisRowColumnCount+' - '+blr.W15yQC.objectToString(tableData[currentTable].rowSpans));
+              // alert(tableData[currentTable].rowCount+' - '+tableData[currentTable].thisRowColumnCount+' - '+blr.W15yQC.objectToString(tableData[currentTable].rowSpans));
             }
             if (tableData[currentTable].rowCount==1) {
               tableData[currentTable].firstRowColumnCount=tableData[currentTable].thisRowColumnCount;
             }
             if (tableData[currentTable].firstRowColumnCount<1) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'First row has zero columns.',' ');
+              tableData[currentTable].notes.push('First row has zero columns.');
             } else if (tableData[currentTable].firstRowColumnCount!=tableData[currentTable].thisRowColumnCount) {
-              tableData[currentTable].sNotes=blr.W15yQC.fnJoin(tableData[currentTable].sNotes,'Row '+tableData[currentTable].rowCount+' has '+tableData[currentTable].thisRowColumnCount+' columns which does not equal the '+tableData[currentTable].firstRowColumnCount+' columns in the first row.',' ');
+              tableData[currentTable].notes.push('Row '+tableData[currentTable].rowCount+' has '+tableData[currentTable].thisRowColumnCount+' columns which does not equal the '+tableData[currentTable].firstRowColumnCount+' columns in the first row.');
             }
             tableData[currentTable].bInRow=false;
             tableData[currentTable].thisRowColumnCount=0;
@@ -1882,7 +1886,7 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
     }
 
     function renderTablesTable() {
-      var el=re.getElementById('tablesTable'), i, table, th, td, tr, thead, tbody, p, sNotes, bHasActualText=false, sText, sSize;
+      var el=re.getElementById('tablesTable'), i, j, table, th, td, tr, thead, tbody, p, sNotes, bHasActualText=false, sText, sSize, ul, li;
 
       if (tableData!==null && tableData.length>0) {
         for(i=0;i<tableData.length; i++) {
@@ -1930,15 +1934,14 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             sText=tableData[i].captionText;
           }
           tr=rd.createElement('tr');
-          sNotes=tableData[i].sNotes;
           if (!blr.W15yQC.fnStringHasContent(sText)) {
-            sNotes=blr.W15yQC.fnJoin(sNotes,'Missing caption or alternate text for table.',', ');
+            tableData[i].notes.push('Missing caption or alternate text for table.');
           }
           if (blr.W15yQC.fnAppearsToBeDefaultAltText(sText)) {
-            sNotes=blr.W15yQC.fnJoin(sNotes,'Table caption or alternate text appears to be default.',', ');
+            tableData[i].notes.push('Table caption or alternate text appears to be default.');
           }
           if ((blr.W15yQC.fnStringHasContent(tableData[i].ActualText)||blr.W15yQC.fnStringHasContent(tableData[i].Alt)) && !blr.W15yQC.fnStringHasContent(tableData[i].captionText)) {
-            sNotes=blr.W15yQC.fnJoin(sNotes,'Table description text should come from a Caption instead of ActualText or Alt attributes.',', ');
+            tableData[i].notes.push('Table description text should come from a Caption instead of ActualText or Alt attributes.');
           }
           td=rd.createElement('td');
           td.appendChild(rd.createTextNode((i+1).toString()));
@@ -1961,7 +1964,13 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
             tr.appendChild(td);
           }
           td=rd.createElement('td');
-          td.appendChild(rd.createTextNode(sNotes));
+          ul=rd.createElement('ul');
+          for (j=0;j<tableData[i].notes.length;j++) {
+            li=rd.createElement('li');
+            li.appendChild(rd.createTextNode(tableData[i].notes[j]));
+            ul.appendChild(li);
+          }
+          td.appendChild(ul);
           tr.appendChild(td);
 
           tbody.appendChild(tr);

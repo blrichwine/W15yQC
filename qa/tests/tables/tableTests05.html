@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Table tests 05 Row headers</title>
+  <style>
+	table {border: thin solid blue;}
+	th {border: thin solid black; padding: 4px;}
+	td {border: thin dotted black; padding: 4px;}
+	table table {border: thick solid blue;}
+	table table table {border: thick dashed blue;}
+	</style>
+</head>
+<body>
+<h1>Table Tests 05</h1>
+
+<h2>Complicated rowspan and colspan row headers example</h2>
+<p>A complicated rowspan, colspan test. Includes headers for each col and row.
+Should Pass.</p>
+<table>
+<caption>Table 11 Caption</caption>
+  <tr>
+    <th scope="row">Row 2</th>
+    <td>2,2</td>
+    <td>3,2</td>
+    <td rowspan="4">&nbsp;</td>
+    <td>5,2</td>
+    <td rowspan="7">6,2-8</td>
+    <td>7,2</td>
+    <td>8,2</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 3</th>
+    <td colspan="2">2-3,3</td>
+    <td rowspan="2">5,3-4</td>
+    <td colspan="2" rowspan="2">7-8,3-4</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 4</th>
+    <td colspan="2" rowspan="2">2-3,4-5</td>
+  </tr>
+  <tr>
+    <th scope="row" rowspan="2">Row 5-6</th>
+    <td>5,5</td>
+    <td>7,5</td>
+    <td>8,5</td>
+  </tr>
+  <tr>
+    <td colspan="4">2-5,6</td>
+    <td>7,6</td>
+    <td rowspan="2">8,6-7</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 7</th>
+    <td colspan="2">2-3,7</td>
+    <td>4,7</td>
+    <td>5,7</td>
+    <td rowspan="2">7,7-8</td>
+  </tr>
+  <tr>
+    <th scope="row">Row 8</th>
+    <td>2,8</td>
+    <td>3,8</td>
+    <td colspan="2">4-5,8</td>
+    <td>8,8</td>
+  </tr>
+</table>
+
+</body>
+</html>

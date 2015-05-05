@@ -58,6 +58,12 @@
  * TODO:
 
    PDF Checker
+     -- convert tableTests05.html into a PDF, set row and column spans, and then get the spanned row headers to work
+     -- track the table IDs and the headers attributes and then check once the table is updated
+     -- add overall table accessibility check flags for the accessibility summary
+           -- No complex tables
+           -- All tables have headers
+           -- All TD cells in tables are covered by headers
      -- Add checks for accessible security settings
      -- Why is the article tag being declared non-standard? Document | Article ???
      -- Tab follows tag-structure (how?)
