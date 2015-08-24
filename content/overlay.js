@@ -34,10 +34,10 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 62',
-    releaseDate: 'Febuary 20, 2015',
+    releaseVersion: '1.0 - Beta 63',
+    releaseDate: 'August 24, 2015',
     mainVersion: 1.0,
-    betaVersion: 62,
+    betaVersion: 63,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
@@ -61,6 +61,9 @@ if (!blr.W15yQC) {
     bOnlyOneLevel1Heading: false,
     bHonorARIA: true,
     bHonorHTML5: true,
+    bIgnoreArticleAsLandmark: true,
+    bIgnoreSectionAsLandmark: true,
+    rulesToExclude: null,
     bSuppressBGImgWarningCRNotes: true,
     bQuickCheckPDFs: false,
     bAutoScrollToSelectedElementInInspectorDialogs: true,
@@ -1276,7 +1279,7 @@ ys: 'whys'
       lnkTargetIDisNotUnique: [false,2,0,false,null],
       lnkTargetIDNotValid: [false,1,0,false,null],
       lnkServerSideImageMap: [false,2,0,false,null],
-      lnkTextTooLong: [false,2,0,false,null],
+      lnkTextTooLong: [false,1,0,false,null],
       lnkTextTooManyWords: [false,1,0,false,null],
       lnkNotInTabOrder: [false,2,0,true,null],
       lnkIDNotValid: [false,1,0,false,null],
@@ -1342,12 +1345,10 @@ ys: 'whys'
     },
 
     fnOkToIncludeNote: function(msgKey) {
-      var expertLevel=0, severityLevel=0, bIncludeInQuickReport=false;
-      if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey)) {
+      var bIncludeInQuickReport=false;
+      if(blr.W15yQC.noteDetails.hasOwnProperty(msgKey) && blr.W15yQC.rulesToExclude.indexOf(' '+msgKey+' ')<0) {
         bIncludeInQuickReport = blr.W15yQC.noteDetails[msgKey][0];
-        severityLevel = blr.W15yQC.noteDetails[msgKey][1];
-        expertLevel = blr.W15yQC.noteDetails[msgKey][2];
-        if((expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (bIncludeInQuickReport==true && blr.W15yQC.bQuick==true)) {
+        if (blr.W15yQC.bQuick==false || bIncludeInQuickReport==true) {
           return true;
         }
       }
@@ -2201,7 +2202,7 @@ ys: 'whys'
         t = y;
 
         o = 0.5;
-        if (x < 0 || y < 0) {
+        if ((x < 0 && x+w<1) || (y < 0 && y+h<1)) {
           o = 0.9;
           l = 4;
           t = 4;
@@ -3262,6 +3263,13 @@ ys: 'whys'
       return false;
     },
 
+    fnNodeHasTagNameOf(node, sTagName) {
+      if (node!=null && node.tagName) {
+        return node.tagName.toLowerCase()===sTagName;
+      }
+      return false;
+    },
+
     fnNodeIsHidden: function (node) { // TODO: Improve and QA This!, USE THE NODE's WINDOW, should this pay attention to aria-hidden?
       //returns true if element should be invisible to screen-readers.
       if(blr.W15yQC.bIncludeHidden) { return false; }
@@ -3864,10 +3872,10 @@ ys: 'whys'
 
               case 'child text':
                 if (sTagName == 'a' || sTagName=='li' || sTagName=='dt' || sTagName=='dd') { // TODO: Vet this with JAWS!!!
-                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,['ul','ol','dl','li','dt','dl','dd'],aElements);
+                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursively(node,iRecursion,['ul','ol','dl','li','dt','dl','dd'],aElements);
                   sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText, sNewText,' ');
                 } else {
-                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursivelyStrict(node,iRecursion,aStopElements,aElements);
+                  sNewText=blr.W15yQC.fnGetDisplayableTextRecursively(node,iRecursion,aStopElements,aElements);
                   sLabelText = blr.W15yQC.fnJoinNoClean(sLabelText,sNewText,' ');
                 }
                 if(blr.W15yQC.fnStringHasContent(sNewText)) {
@@ -6298,7 +6306,10 @@ ys: 'whys'
                       }
                     }
 
-                    if ((blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsARIALandmark(node)) || blr.W15yQC.fnIsHTML5SectionElement(node) ) {
+                    if ((blr.W15yQC.bHonorARIA==true && blr.W15yQC.fnIsARIALandmark(node)) ||
+                        (blr.W15yQC.fnIsHTML5SectionElement(node) &&
+                         (blr.W15yQC.bIgnoreArticleAsLandmark==false || blr.W15yQC.fnNodeHasTagNameOf(node,'article')==false) &&
+                         (blr.W15yQC.bIgnoreSectionAsLandmark==false || blr.W15yQC.fnNodeHasTagNameOf(node,'section')==false))) {
                       // Document landmark: node, nodeDescription, doc, orderNumber, role value, ariaLabel
                       ARIALandmarkLevel = 1;
                       for(i=oW15yResults.aARIALandmarks.length-1; i>=0; i--) {
@@ -11422,9 +11433,12 @@ try{
       Application.prefs.setValue("extensions.W15yQC.getElements.mustHaveLevel1Heading", true);
       Application.prefs.setValue("extensions.W15yQC.getElements.onlyOneLevel1Heading", false);
       Application.prefs.setValue("extensions.W15yQC.getElements.honorARIA", true);
+      Application.prefs.setValue("extensions.W15yQC.getElements.honorHTML5", true);
       Application.prefs.setValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true);
       Application.prefs.setValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false);
       Application.prefs.setValue("extensions.W15yQC.HTMLReport.checkLinks", false);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.landmarks.ignoreSection", true);
+      Application.prefs.setValue("extensions.W15yQC.HTMLReport.landmarks.ignoreArticle", true); // TODO: Check if this default is correct
 
       Application.prefs.setValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements", true);
       Application.prefs.setValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
@@ -11432,10 +11446,10 @@ try{
       Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", true);
       Application.prefs.setValue("extensions.W15yQC.mandatesEnabled", false);
       Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
-      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "");
+      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList", "hChildOfSectioningElementWOLevel");
     },
 
-    fnBackupUserPrefs: function() {
+    fnBackupUserPrefs: function() { // TODO: UPDATE THIS
       Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.Backup", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences", ""));
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel.Backup", Application.prefs.getValue("extensions.W15yQC.userExpertLevel", 1));
 
@@ -11458,10 +11472,10 @@ try{
       Application.prefs.setValue("extensions.W15yQC.DomainEquivalences.ignoreWWW.Backup", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW", true));
       Application.prefs.setValue("extensions.W15yQC.mandatesEnabled.Backup", Application.prefs.getValue("extensions.W15yQC.mandatesEnabled", false));
       Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec.Backup", Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA"));
-      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList.Backup", Application.prefs.getValue("extensions.W15yQC.rulesToExcludeList", ""));
+      Application.prefs.setValue("extensions.W15yQC.rulesToExcludeList.Backup", Application.prefs.getValue("extensions.W15yQC.rulesToExcludeList", "hChildOfSectioningElementWOLevel"));
     },
 
-    fnRestoreUserPrefsFromBackup: function() {
+    fnRestoreUserPrefsFromBackup: function() { // TODO: UPDATE THIS
       Application.prefs.setValue("extensions.W15yQC.DomainEquivalences", Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.Backup", ""));
       Application.prefs.setValue("extensions.W15yQC.userExpertLevel", Application.prefs.getValue("extensions.W15yQC.userExpertLevel.Backup", 1));
 
@@ -11492,6 +11506,10 @@ try{
       if(Application.prefs.getValue("extensions.W15yQC.testContrast.MinSpec",'')=='') {
         Application.prefs.setValue("extensions.W15yQC.testContrast.MinSpec", "WCAG2 AA");
       }
+
+      blr.W15yQC.rulesToExclude=Application.prefs.getValue("extensions.W15yQC.rulesToExcludeList", "hChildOfSectioningElementWOLevel")+'';
+      blr.W15yQC.rulesToExclude=' '+blr.W15yQC.rulesToExclude.replace(/\W/,' ','g')+' ';
+
       blr.W15yQC.userExpertLevel = Application.prefs.getValue("extensions.W15yQC.userExpertLevel",0);
       blr.W15yQC.bIncludeHidden = Application.prefs.getValue("extensions.W15yQC.getElements.includeHiddenElements",false);
       blr.W15yQC.bFirstHeadingMustBeLevel1 = Application.prefs.getValue("extensions.W15yQC.getElements.firstHeadingMustBeLevel1", true);
@@ -11500,6 +11518,8 @@ try{
       blr.W15yQC.bSuppressPassingCRNotes = Application.prefs.getValue("extensions.W15yQC.testContrast.suppressPassingCRNotes", false);
       blr.W15yQC.bSuppressBGImgWarningCRNotes = Application.prefs.getValue("extensions.W15yQC.HTMLReport.IgnoreBGImgCRWarnings", true);
       blr.W15yQC.bQuickCheckPDFs = Application.prefs.getValue("extensions.W15yQC.HTMLReport.quickCheckPDFs", false);
+      blr.W15yQC.bIgnoreSectionAsLandmark=Application.prefs.getValue("extensions.W15yQC.HTMLReport.landmarks.ignoreSection", true);
+      blr.W15yQC.bIgnoreArticleAsLandmark=Application.prefs.getValue("extensions.W15yQC.HTMLReport.landmarks.ignoreArticle", true); // TODO: Check if this default is correct
 
       blr.W15yQC.bAutoScrollToSelectedElementInInspectorDialogs = Application.prefs.getValue("extensions.W15yQC.inspectElements.autoScrollToSelectedElements",true);
 

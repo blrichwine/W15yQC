@@ -42,6 +42,8 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
           {n:'extensions.W15yQC.HTMLReport.showOnlyIssuesByDefault',t:'b'},
           {n:'extensions.W15yQC.HTMLReport.quickCheckPDFs',t:'b'},
           {n:'extensions.W15yQC.HTMLReport.checkLinks',t:'b'},
+          {n:'extensions.W15yQC.HTMLReport.landmarks.ignoreSection',t:'b'},
+          {n:'extensions.W15yQC.HTMLReport.landmarks.ignoreArticle',t:'b'},
           {n:'extensions.W15yQC.getElements.includeLabelElementsInFormControls',t:'b'},
           {n:'extensions.W15yQC.getElements.includeHiddenElements',t:'b'},
           {n:'extensions.W15yQC.getElements.firstHeadingMustBeLevel1',t:'b'},

@@ -58,6 +58,9 @@
  * TODO:
 
    PDF Checker
+     -- http://www.indiana.edu/%7Ep374/Analects_of_Confucius_(Eno-2015).pdf
+         default language reports with unicode prefix -- need to filter this
+         
      -- convert tableTests05.html into a PDF, set row and column spans, and then get the spanned row headers to work
      -- track the table IDs and the headers attributes and then check once the table is updated
      -- add overall table accessibility check flags for the accessibility summary
@@ -225,7 +228,7 @@
 
     *** FIX ASAP***
   -- List domains / URLs not scanned
-
+  -- get rid of expert levels
   -- How does JAWS read $56.23
   -- Add option for including ARIA-DESCRIBEDBY text in effectiveLabels
   -- is aria-describedby working on links? http://www.uchicago.edu/

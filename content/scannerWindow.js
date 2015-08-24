@@ -783,6 +783,7 @@ blr.W15yQC.ScannerWindow = {
             blr.W15yQC.ScannerWindow.urlMustMatchListType.push(false);
           }
           if (blr.W15yQC.ScannerWindow.urlList.length>0) {
+            blr.W15yQC.ScannerWindow.projectSettingsHaveBeenSet=true;
             blr.W15yQC.ScannerWindow.updateUrlInTree(blr.W15yQC.ScannerWindow.urlList.length-1);
             blr.W15yQC.ScannerWindow.sProjectTitle=projectQuickSettings.sURL.replace(/^\w+:\/\//,'').replace(/[#\?].+$/,'').replace(/\/([\w %_-]+\.)+\w+$/,'/');
           }

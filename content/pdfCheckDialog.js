@@ -175,10 +175,10 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
           pos+=s1.length;
          } else break;
         }
-        alert('"'+s1+'"  "'+s2+'" >> '+count);
+        // alert('"'+s1+'"  "'+s2+'" >> '+count);
         return count;
       }
-      alert('"'+s1+'"  "'+s2+'" >> '+0);
+      // alert('"'+s1+'"  "'+s2+'" >> '+0);
       return 0;
     }
     function appendReport() {
