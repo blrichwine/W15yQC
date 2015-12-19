@@ -1,6 +1,6 @@
 /*
    This file is part of W15y Quick Check
-   Copyright (C) 2011, 2012  Brian L. Richwine
+   Copyright (C) 2011, 2012, 2013, 2014, 2015 Brian L. Richwine
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ blr.W15yQC.LicenseDialog = {
 
   showBriefLicense: function () {
     var if1 = document.getElementById('license-text');
-    if1.contentDocument.body.innerHTML = '<p style="margin:0;padding:4px;font-size:12pt">W15y Quick Check<br>Copyright (C) 2011, 2012  Brian L. Richwine</p>' +
+    if1.contentDocument.body.innerHTML = '<p style="margin:0;padding:4px;font-size:12pt">W15y Quick Check<br>Copyright (C) 2011, 2012, 2013, 2014, 2015 Brian L. Richwine</p>' +
       '<p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. ' +
       'You may obtain a copy of the License at</p>' +
       '<p>http://www.apache.org/licenses/LICENSE-2.0</p>' +

@@ -34,10 +34,10 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 63',
-    releaseDate: 'August 24, 2015',
+    releaseVersion: '1.0 - Beta 64',
+    releaseDate: 'December 17, 2015',
     mainVersion: 1.0,
-    betaVersion: 63,
+    betaVersion: 64,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
@@ -717,7 +717,7 @@ ys: 'whys'
     },
 
     // TODO: Try replacing processNextEvent with http://dbaron.org/log/20100309-faster-timeouts  window.postMessage
-    fnDoEvents: function() {
+    fnDoEvents: function() { // Used in attempt to get XUL status elements to update while a thread is processing
       var thread;
       try {
         thread = Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThread;
@@ -2827,13 +2827,13 @@ ys: 'whys'
     fnOnlyASCIISymbolsWithNoLettersOrDigits: function (sText) {
       if (sText!=null && sText.length && sText.length > 0) {
         if(blr.W15yQC.bEnglishLocale==true) {
-          sText = sText.replace(/[^a-zA-Z0-9€™“Øœæ–ƒÎÙå—ç¾˜„‚‡®Œˆèé•ŠŸŽ’…‹š‘ž†‰ì›ïËÌñßó]/g, '');
+          sText = sText.replace(/[^a-zA-Z0-9ï¿½ï¿½ï¿½Øï¿½æ–ƒï¿½ï¿½ï¿½ï¿½ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é•Šï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì›ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]/g, '');
           if (sText.length > 0) {
             return false;
           }
           return true;
         } else { // TODO: Improve this by checking for unicode characters in common languages
-          sText = sText.replace(/[~`!@#$%^&*\(\)_+=\[{\]}\\\|;:'",<\.>\/\?\sÃà ÑÂª¬¸·×©¤§±¹½¨¡¥²³¦ÅÖÈ-]/g, '');
+          sText = sText.replace(/[~`!@#$%^&*\(\)_+=\[{\]}\\\|;:'",<\.>\/\?\sï¿½ï¿½ï¿½ï¿½Âªï¿½ï¿½ï¿½×©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-]/g, '');
           if (sText.length > 0) {
             return false;
           }
@@ -3568,6 +3568,10 @@ ys: 'whys'
         sXPath = segs.length ? '/' + segs.join('/') : '';
       }
       return sXPath;
+    },
+
+    fnXPathContainsInputNameElement: function (sXPath) {
+      return (/\/(a|button|input|label|legend)\[/i.test(sXPath));
     },
 
     fnDescribeNodeType: function (node) {
@@ -8068,6 +8072,7 @@ ys: 'whys'
                         blr.W15yQC.fnGetString('hrsTHOwnerDocNumber'), blr.W15yQC.fnGetString('hrsTHEffectiveLabel'),
                         blr.W15yQC.fnGetString('hrsTHEffectiveLabelSource')];
           if(bHasAlt) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHAlt')); }
+          colHeaders.push(blr.W15yQC.fnGetString('hrsTHUsedInControlDescription'));
           if(bHasTitle) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHTitle')); }
           if(bHasARIALabel) { colHeaders.push(blr.W15yQC.fnGetString('hrsTHARIALabel')); }
           colHeaders.push(blr.W15yQC.fnGetString('hrsTHSrc'));
@@ -8091,6 +8096,7 @@ ys: 'whys'
             }
             colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.effectiveLabelSource];
             if(bHasAlt) { colValues.push(io.alt); }
+            colValues.push(blr.W15yQC.fnXPathContainsInputNameElement(io.xpath)?'Y':'N');
             if(bHasTitle) { colValues.push(io.title); }
             if(bHasARIALabel) { colValues.push(io.ariaLabel); }
             colValues.push(io.src);

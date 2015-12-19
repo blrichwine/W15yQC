@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <title>hidden radio buttons test</title>
 <style type="text/css">
 
@@ -51,19 +50,6 @@ margin: 0;
 }
 </style>
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		$("input:radio[name=highlight-colors]").change(function() {
-			$('li[class~="selectedColor"]').removeClass("selectedColor");
-			$('input:radio[name="highlight-colors"]:checked').each(function () {
-				$('li[data-color="' + $(this).attr("value") + '"]').addClass("selectedColor");
-			});
-		});
-		$("li[data-color]").hover(function () {
-			$(this).toggleClass("selectedColor");
-		});
-	});
-</script>
 </head>
 <body>
 <h1>Highlight Colors</h1>

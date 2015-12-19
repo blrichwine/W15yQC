@@ -1,6 +1,6 @@
 /*
    This file is part of W15y Quick Check
-   Copyright (C) 2011, 2012  Brian L. Richwine
+   Copyright (C) 2011, 2012, 2013, 2014, 2015 Brian L. Richwine
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -172,6 +172,10 @@ blr.W15yQC.ImagesDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
+          treecell.setAttribute('label', blr.W15yQC.fnXPathContainsInputNameElement(ak.xpath)?'Y':'N');
+          treerow.appendChild(treecell);
+
+          treecell = document.createElement('treecell');
           treecell.setAttribute('label', ak.effectiveLabel);
           treerow.appendChild(treecell);
 
@@ -233,7 +237,7 @@ blr.W15yQC.ImagesDialog = {
       }
     } catch(ex) {}
   },
-  
+
   init: function (dialog) {
     var oW15yQCReport;
 
@@ -281,7 +285,8 @@ blr.W15yQC.ImagesDialog = {
     }
 
     textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, ak.nodeDescription, "\n\n");
-    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'Effective Label: '+ak.effectiveLabel, "\n\n");
+    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'Used in control description: '+(blr.W15yQC.fnXPathContainsInputNameElement(ak.xpath)?'Y':'N'), "\n");
+    textbox.value = blr.W15yQC.fnJoinNoClean(textbox.value, 'Effective Label: '+ak.effectiveLabel, "\n");
     if (ak.node != null) {
       box = ak.node.getBoundingClientRect();
       if (box != null) {
@@ -490,7 +495,7 @@ blr.W15yQC.ImagesDialog = {
   generateReportHTML: function () {
     blr.W15yQC.openHTMLReportWindow(false,'images');
   },
-  
+
   windowOnKeyDown: function (dialog, evt) {
     switch (evt.keyCode) {
       case 224:

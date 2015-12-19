@@ -57,8 +57,8 @@ it fails because it doesn't have a caption or a summary.</p>
 <p>This table should fail because it has ths making it a data table, but
 it fails because it doesn't have a caption or a summary.</p>
 <table title="Table 5c Title">
-	 <tr><th>Cell 1,1</td><td>Cell 2,1</td></tr>
-	 <tr><th>Cell 1,2</td><td>Cell 2,2</td></tr>
+	 <tr><th>Cell 1,1</th><td>Cell 2,1</td></tr>
+	 <tr><th>Cell 1,2</th><td>Cell 2,2</td></tr>
 </table>
 
 <h2>Table 6</h2>
@@ -301,11 +301,11 @@ Should Pass.</p>
 <table border="1" cellpadding="4" summary="17This is the table caption and the table summary text.">
 	<caption>This is the table caption and the table summary text.</caption>
   <tr>
-    <th scope="row">Row 1</td>
+    <th scope="row">Row 1</th>
     <td>1,2</td>
 	</tr>
   <tr>
-    <th scope="row">Row 2</td>
+    <th scope="row">Row 2</th>
     <td>2,2</td>
 	</tr>
 </table>
@@ -314,7 +314,7 @@ Should Pass.</p>
 <p>Data table with row missing table header.</p>
 <table border="1" cellpadding="4" summary="18This table has row th's. One row has content that does not have a header.">
   <tr>
-    <th scope="row">Row 1</td>
+    <th scope="row">Row 1</th>
     <td>1,2</td>
 	</tr>
   <tr>
@@ -322,7 +322,7 @@ Should Pass.</p>
     <td>2,2</td>
 	</tr>
   <tr>
-    <th scope="row">Row 3</td>
+    <th scope="row">Row 3</th>
     <td>3,2</td>
 	</tr>
 </table>
@@ -331,9 +331,9 @@ Should Pass.</p>
 <p>Data table with column missing table header.</p>
 <table border="1" cellpadding="4" summary="19This table has column th's. One column has content that does not have a header.">
   <tr>
-    <th scope="col">Col 1</td>
+    <th scope="col">Col 1</th>
     <td>Col 2</td>
-    <th scope="col">Col 3</td>
+    <th scope="col">Col 3</th>
 	</tr>
   <tr>
     <td>2,1</td>
@@ -351,9 +351,9 @@ Should Pass.</p>
 <p>Data table with combination of table headers and headers attributes.</p>
 <table border="1" cellpadding="4" summary="20This table has column headers and header attributes. All cells have either a header or headers attribute.">
   <tr>
-    <th id="t20ha" scope="col" abbr="C1">Col 1</td>
+    <th id="t20ha" scope="col" abbr="C1">Col 1</th>
     <td id="t20h1" headers="t20ha">Col 2</td>
-    <th scope="col">Col 3</td>
+    <th scope="col">Col 3</th>
 	</tr>
   <tr>
     <td>2,1</td>

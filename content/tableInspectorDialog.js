@@ -1,6 +1,7 @@
+"use strict";
 /*
    This file is part of W15y Quick Check
-   Copyright (C) 2011, 2012  Brian L. Richwine
+   Copyright (C) 2011, 2012, 2013, 2014, 2015 Brian L. Richwine
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,7 +32,6 @@
  *
  *
  */
-"use strict";
 
 if (!blr) {
   var blr = {};
@@ -49,14 +49,15 @@ blr.W15yQC.TableInspectorDialog = {
   oLastTreeviewToHaveFocus: null,
   aLastList: null,
   fnPopulateTree: function (aDocumentsList, aFormsList, aFormControlsList) {
+  "use strict";
     var bHasARIADescription, bHasARIALabel, bHasId, bHasLegend, bHasName, bHasRole, bHasStateDescription, bHasValue,
     i, tbc, ch, treecell, treeitem, treerow, ak, textbox;
     if (aDocumentsList != null && aFormControlsList != null && aFormControlsList.length && aFormControlsList.length > 0) {
       bHasId = false;
       bHasName = false;
       for (i = 0; i < aFormsList.length; i++) {
-        if (aFormsList[i].node.getAttribute('id')) bHasId = true;
-        if (aFormsList[i].name != null && aFormsList[i].name.length > 0) bHasName = true;
+        if (aFormsList[i].node.getAttribute('id')) { bHasId = true; }
+        if (aFormsList[i].name != null && aFormsList[i].name.length > 0) { bHasName = true; }
       }
 
       tbc = document.getElementById('treeboxChildren1');
@@ -129,12 +130,12 @@ blr.W15yQC.TableInspectorDialog = {
         bHasStateDescription = false;
         for (i = 0; i < aFormControlsList.length; i++) {
           ak = aFormControlsList[i];
-          if (ak.legendText != null && ak.legendText.length > 0) bHasLegend = true;
-          if (ak.role != null && ak.role.length > 0) bHasRole = true;
-          if (ak.value != null && ak.value.length > 0) bHasValue = true;
-          if (ak.ARIALabelText != null && ak.ARIALabelText.length > 0) bHasARIALabel = true;
-          if (ak.ARIADescriptionText != null && ak.ARIADescriptionText.length > 0) bHasARIADescription = true;
-          if (ak.stateDescription != null && ak.stateDescription.length > 0) bHasStateDescription = true;
+          if (ak.legendText != null && ak.legendText.length > 0) { bHasLegend = true; }
+          if (ak.role != null && ak.role.length > 0) { bHasRole = true; }
+          if (ak.value != null && ak.value.length > 0) { bHasValue = true; }
+          if (ak.ARIALabelText != null && ak.ARIALabelText.length > 0) { bHasARIALabel = true; }
+          if (ak.ARIADescriptionText != null && ak.ARIADescriptionText.length > 0) { bHasARIADescription = true; }
+          if (ak.stateDescription != null && ak.stateDescription.length > 0) { bHasStateDescription = true; }
         }
         if (!bHasARIALabel) {
           ch = document.getElementById('col-header-ariaLabel2');
@@ -249,6 +250,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   init: function (dialog) {
+    "use strict";
     var aFormControlsLists;
     blr.W15yQC.fnReadUserPrefs();
     document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
@@ -264,6 +266,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   cleanup: function () {
+    "use strict";
     if (blr.W15yQC.FormControlsDialog.aDocumentsList != null) {
       blr.W15yQC.fnResetHighlights(blr.W15yQC.FormControlsDialog.aDocumentsList);
       blr.W15yQC.FormControlsDialog.aDocumentsList = null;
@@ -275,6 +278,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   updateNotesField1: function (bHighlightElement) {
+  "use strict";
     var treebox = document.getElementById('treebox1'),
       textbox = document.getElementById('note-text'),
       selectedRow, sPrefix;
@@ -282,7 +286,7 @@ blr.W15yQC.TableInspectorDialog = {
     blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus = treebox;
     blr.W15yQC.FormControlsDialog.aLastList = blr.W15yQC.FormControlsDialog.aFormsList;
     if (blr.W15yQC.FormControlsDialog.aFormsList != null && blr.W15yQC.FormControlsDialog.aFormsList.length > 0) {
-      if (bHighlightElement === null) bHighlightElement = true;
+      if (bHighlightElement === null) { bHighlightElement = true; }
 
       selectedRow = treebox.currentIndex;
       if (selectedRow == null || treebox.currentIndex < 0) {
@@ -309,11 +313,12 @@ blr.W15yQC.TableInspectorDialog = {
           blr.W15yQC.fnMoveToElement(blr.W15yQC.LandmarksDialog.aARIALandmarksList[selectedRow].node);
         } catch (ex) {}
       }
-      if (bHighlightElement != false) blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node);
+      if (bHighlightElement != false) { blr.W15yQC.highlightElement(blr.W15yQC.FormControlsDialog.aFormsList[selectedRow].node); }
     }
   },
 
   updateNotesField2: function (bHighlightElement) {
+  "use strict";
     var idCounter = null,
       aFC = null,
       el,
@@ -327,7 +332,7 @@ blr.W15yQC.TableInspectorDialog = {
     blr.W15yQC.FormControlsDialog.aLastList = blr.W15yQC.FormControlsDialog.aFormControlsList;
     if (blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length > 0) {
 
-      if (bHighlightElement === null) bHighlightElement = true;
+      if (bHighlightElement === null) { bHighlightElement = true; }
 
       selectedRow = treebox.currentIndex;
       if (selectedRow == null || treebox.currentIndex < 0) {
@@ -409,6 +414,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   inspectElement: function () {
+  "use strict";
     var treebox, aList, selectedRow, selectedIndex, node;
       try {
         if (blr.W15yQC.FormControlsDialog.aFormControlsList != null && blr.W15yQC.FormControlsDialog.aFormControlsList.length && blr.W15yQC.FormControlsDialog.aFormControlsList.length > 0) {
@@ -431,10 +437,10 @@ blr.W15yQC.TableInspectorDialog = {
           blr.W15yQC.inspectNode(node);
         }
       } catch (ex) {}
-    }
   },
 
   moveToSelectedElement: function () {
+  "use strict";
     var treebox, aList, selectedRow;
     if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
       treebox = blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
@@ -450,6 +456,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   moveFocusToSelectedElement: function () {
+  "use strict";
     var treebox, aList, selectedRow;
     if (blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus != null) {
       treebox = blr.W15yQC.FormControlsDialog.oLastTreeviewToHaveFocus;
@@ -466,6 +473,7 @@ blr.W15yQC.TableInspectorDialog = {
   },
 
   generateReportHTML: function () {
+  "use strict";
     blr.W15yQC.openHTMLReportWindow(false,'tables');
   }
 

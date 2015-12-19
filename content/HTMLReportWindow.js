@@ -1,6 +1,6 @@
 /*
    This file is part of W15y Quick Check
-   Copyright (C) 2011, 2012  Brian L. Richwine
+   Copyright (C) 2011, 2012, 2013, 2014, 2015 Brian L. Richwine
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -32,9 +32,33 @@
  *
  */
 "use strict";
+var blr=this.arguments[0];
 
-if (!blr) {
-  var blr = {};
+function fnUpdateStatus(sLabel) {
+    document.getElementById('progressMeterLabel').value='new'+sLabel;
+    document.getElementById('progressMeter').setAttribute('hidden','true');
+    blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdatePercentage(fPercentage) {
+    document.getElementById('progressMeter').value=fPercentage;
+    document.getElementById('progressMeter').setAttribute('hidden','false');
+    blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdateProgress(sLabel, fPercentage) {
+     document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : 'new'+sLabel);
+    if(fPercentage != null) {
+     document.getElementById('progressMeter').value=fPercentage;
+     document.getElementById('progressMeter').setAttribute('hidden','false');
+    } else {
+        document.getElementById('progressMeter').setAttribute('hidden','true');
+    }
+    blr.W15yQC.fnDoEvents();
+}
+
+function fnDelayedInit() {
+     window.setTimeout(function(){blr.W15yQC.HTMLReportWindow.init(window);}, 0);
 }
 
 /*

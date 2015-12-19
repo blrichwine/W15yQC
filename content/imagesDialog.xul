@@ -99,66 +99,73 @@
 							 style="text-align:right"
 							 sortDirection=""
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="15" id="col-header-height"
-							 crop="none"
-							 label="  H  "
-							 style="text-align:right"
-							 sortDirection=""
-							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="17" id="col-header-effectiveLabel"
-							 crop="none"
-							 label="Effective Label  "
-							 sortDirection=""
-							 flex="3"
-							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="18" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="19" id="col-header-effectiveLabelSource"
+						 <xul:splitter ordinal="14" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+	 						<xul:treecol ordinal="15" id="col-header-height"
+	 							 crop="none"
+	 							 label="  H  "
+	 							 style="text-align:right"
+	 							 sortDirection=""
+	 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
+	 						<xul:splitter ordinal="16" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+							<xul:treecol ordinal="17" id="col-header-effectiveLabel"
+								 crop="none"
+								 label=" C "
+                 title="Used in control element"
+								 sortDirection=""
+								 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
+							<xul:splitter ordinal="18" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+							<xul:treecol ordinal="19" id="col-header-effectiveLabel"
+								 crop="none"
+								 label="Effective Label  "
+								 sortDirection=""
+								 flex="3"
+								 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
+							<xul:splitter ordinal="20" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="21" id="col-header-effectiveLabelSource"
 							 crop="none"
 							 label="Label Source  "
 							 hidden="true"
 							 sortDirection=""
 							 flex="3"
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="20" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="21" id="col-header-alt"
+						<xul:splitter ordinal="22" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="23" id="col-header-alt"
 							 crop="none"
 							 label="Alt  "
 							 sortDirection=""
 							 flex="3"
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="22" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="23" id="col-header-title"
+						<xul:splitter ordinal="24" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="25" id="col-header-title"
 							 crop="none"
 							 label="Title  "
 							 sortDirection=""
 							 flex="3"
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="24" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="25" id="col-header-ARIALabel"
+						<xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="27" id="col-header-ARIALabel"
 							 crop="none"
 							 label="ARIA Label  "
 							 flex="3"
 							 sortDirection=""
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="26" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="27" id="col-header-LongDesc"
+						<xul:splitter ordinal="28" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="29" id="col-header-LongDesc"
 							 crop="none"
 							 label="Longdesc Text  "
 							 sortDirection=""
 							 flex="3"
 							 hidden="true"
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="28" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="29" id="col-header-role"
+						<xul:splitter ordinal="30" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="31" id="col-header-role"
 							 crop="none"
 							 label="Role  "
 							 sortDirection=""
 							 flex="2"
 							 onclick="blr.W15yQC.ImagesDialog.sortTree(this)" />
-						<xul:splitter ordinal="30" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
-						<xul:treecol ordinal="31" id="col-header-State"
+						<xul:splitter ordinal="32" resizeafter="closest" resizebefore="closest" class="tree-splitter" />
+						<xul:treecol ordinal="33" id="col-header-State"
 							 crop="none"
 							 label="State  "
 							 sortDirection=""
