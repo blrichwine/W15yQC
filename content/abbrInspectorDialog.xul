@@ -14,36 +14,6 @@
 	buttons=""
 	style="padding:0px"
 	onload="fnDelayedInit()">
-	<xul:script>
-			var blr=this.arguments[0];
-
-			function fnUpdateStatus(sLabel) {
-				document.getElementById('progressMeterLabel').value=sLabel;
-				document.getElementById('progressMeter').setAttribute('hidden','true');
-				blr.W15yQC.fnDoEvents();
-			}
-
-			function fnUpdatePercentage(fPercentage) {
-				document.getElementById('progressMeter').value=fPercentage;
-				document.getElementById('progressMeter').setAttribute('hidden','false');
-				blr.W15yQC.fnDoEvents();
-			}
-
-			function fnUpdateProgress(sLabel, fPercentage) {
-				 document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : sLabel);
-				if(fPercentage != null) {
-				 document.getElementById('progressMeter').value=fPercentage;
-				 document.getElementById('progressMeter').setAttribute('hidden','false');
-				} else {
-					document.getElementById('progressMeter').setAttribute('hidden','true');
-				}
-				blr.W15yQC.fnDoEvents();
-			}
-
-			function fnDelayedInit() {
-				 window.setTimeout(function(){blr.W15yQC.AbbrTagDialog.init(window);}, 0);
-			}
-   </xul:script>
    <xul:script type="application/x-javascript" src="chrome://W15yQC/content/abbrInspectorDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="556" width="900" style="min-height:350px">
       <xul:tree enableColumnDrag="true" id="treebox" flex="1" seltype="single"

@@ -33,8 +33,33 @@
  */
 "use strict";
 
-if (!blr) {
-  var blr = {};
+var blr=this.arguments[0];
+
+function fnUpdateStatus(sLabel) {
+  document.getElementById('progressMeterLabel').value=sLabel;
+  document.getElementById('progressMeter').setAttribute('hidden','true');
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdatePercentage(fPercentage) {
+  document.getElementById('progressMeter').value=fPercentage;
+  document.getElementById('progressMeter').setAttribute('hidden','false');
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdateProgress(sLabel, fPercentage) {
+  document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : sLabel);
+  if(fPercentage != null) {
+    document.getElementById('progressMeter').value=fPercentage;
+    document.getElementById('progressMeter').setAttribute('hidden','false');
+  } else {
+    document.getElementById('progressMeter').setAttribute('hidden','true');
+  }
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnDelayedInit() {
+  window.setTimeout(function(){blr.W15yQC.LuminosityCheckDialog.init(window);}, 0);
 }
 
 /*
@@ -203,7 +228,7 @@ blr.W15yQC.LuminosityCheckDialog = {
 
     dialog.fnUpdateProgress('Getting Elements...',null);
     blr.W15yQC.fnReadUserPrefs();
-    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
+    document.getElementById('button-inspectElement').hidden = !blr.W15yQC.getBoolPref("devtools.inspector.enabled",false);
 
     blr.W15yQC.LuminosityCheckDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
     //blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.LuminosityCheckDialog.aDocumentsList); //http://stackoverflow.com/questions/1030747/how-to-set-a-xulrunner-main-windows-minimum-size
@@ -298,7 +323,7 @@ blr.W15yQC.LuminosityCheckDialog = {
       sMeetsLimitText = 'just meets AA compliance.';
     }
 
-    sSpec = Application.prefs.getValue('extensions.W15yQC.testContrast.MinSpec', 'WCAG2 AA');
+    sSpec = blr.W15yQC.getCharPref('extensions.W15yQC.testContrast.MinSpec', 'WCAG2 AA');
     if (sSpec == 'WCAG2 AA') {
       if (lRatio < AALimit) {
         sLimitMsg = 'Failed to meet';

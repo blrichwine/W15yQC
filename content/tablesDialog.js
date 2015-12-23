@@ -33,8 +33,33 @@
  */
 "use strict";
 
-if (!blr) {
-  var blr = {};
+var blr=this.arguments[0];
+
+function fnUpdateStatus(sLabel) {
+  document.getElementById('progressMeterLabel').value=sLabel;
+  document.getElementById('progressMeter').setAttribute('hidden','true');
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdatePercentage(fPercentage) {
+  document.getElementById('progressMeter').value=fPercentage;
+  document.getElementById('progressMeter').setAttribute('hidden','false');
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdateProgress(sLabel, fPercentage) {
+  document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : sLabel);
+  if(fPercentage != null) {
+    document.getElementById('progressMeter').value=fPercentage;
+    document.getElementById('progressMeter').setAttribute('hidden','false');
+  } else {
+    document.getElementById('progressMeter').setAttribute('hidden','true');
+  }
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnDelayedInit() {
+  window.setTimeout(function(){blr.W15yQC.TablesDialog.init(window);}, 0);
 }
 
 /*
@@ -200,7 +225,7 @@ blr.W15yQC.TablesDialog = {
     var oW15yQCReport;
 
     blr.W15yQC.fnReadUserPrefs();
-    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
+    document.getElementById('button-inspectElement').hidden = !blr.W15yQC.getBoolPref("devtools.inspector.enabled",false);
 
     oW15yQCReport = blr.W15yQC.fnGetElements(window.opener.parent._content.document, dialog);
     blr.W15yQC.TablesDialog.aDocumentsList = oW15yQCReport.aDocuments;

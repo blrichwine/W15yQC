@@ -527,7 +527,7 @@ blr.W15yQC.ScannerWindow = {
 
   urlAlreadyInList: function(sURL) {
     var bIgnoreWWW=false, i,j,r, url2, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
-    bIgnoreWWW=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
+    bIgnoreWWW=blr.W15yQC.getBoolPref("extensions.W15yQC.DomainEquivalences.ignoreWWW",false);
     if(blr.W15yQC.ScannerWindow.urlList!=null) {
       sURL = sURL.replace(r3, '://'); // sURL is already normalized before being passed here.
       for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
@@ -1498,8 +1498,8 @@ try{
     blr.W15yQC.bQuick = false; // Make sure this has been reset
     if (blr.W15yQC.userExpertLevel<2) {
       blr.W15yQC.userExpertLevel=2;
-      Application.prefs.setValue("extensions.W15yQC.userExpertLevel", 2);
-      Application.prefs.setValue("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
+      blr.W15yQC.setIntPref("extensions.W15yQC.userExpertLevel", 2);
+      blr.W15yQC.setBoolPref("extensions.W15yQC.HTMLReport.includeLabelElementsInFormControls", true);
       alert('Notice: Setting W15yQC user level to Expert. This is required for the scanner to run properly.');
     }
 
@@ -1819,7 +1819,7 @@ try{
   },
 
   parseRecentFiles: function() {
-    var srf=Application.prefs.getValue("extensions.W15yQC.Scanner.RecentFiles",null);
+    var srf=blr.W15yQC.getCharPref("extensions.W15yQC.Scanner.RecentFiles",null);
     if(srf !=null && srf.length && srf.length>0) {
       return srf.split('|');
     }
@@ -1829,7 +1829,7 @@ try{
   addFileToRecentList: function(fileName) {
     var rf=blr.W15yQC.ScannerWindow.parseRecentFiles(),i;
     if(rf==null) {
-      Application.prefs.setValue("extensions.W15yQC.Scanner.RecentFiles",fileName);
+      blr.W15yQC.setCharPref("extensions.W15yQC.Scanner.RecentFiles",fileName);
     } else if(rf && rf.length && rf.length>0) {
       if(rf.length>10) {
         rf=rf.slice(1);
@@ -1838,7 +1838,7 @@ try{
         if(rf[i]==fileName) { rf.splice(i,1); }
       }
       rf.push(fileName);
-      Application.prefs.setValue("extensions.W15yQC.Scanner.RecentFiles",rf.join('|'));
+      blr.W15yQC.setCharPref("extensions.W15yQC.Scanner.RecentFiles",rf.join('|'));
     }
   },
 

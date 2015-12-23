@@ -70,18 +70,31 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
 
     for(i=0;i<blr.W15yQC.options.prefs.length;i++) {
       try {
-        s=s+Application.prefs.getValue(blr.W15yQC.options.prefs[i].n,'null');
+        switch (blr.W15yQC.options.prefs[i].t) {
+            case 'b':
+              s=s+blr.W15yQC.getBoolPref(blr.W15yQC.options.prefs[i].n,'null').toString();
+              break;
+            case 'i':
+              s=s+blr.W15yQC.getIntPref(blr.W15yQC.options.prefs[i].n,'null').toString();
+              break;
+            case 's':
+              s=s+blr.W15yQC.getCharPref(blr.W15yQC.options.prefs[i].n,'null');
+              break;
+            default:
+              alert('unexpect prefs type:');
+              s=s+'null';
+        }
       } catch(e) {}
     }
     return blr.W15yQC.crc32(s);
   },
 
   fnUpdateControlStates: function() {
-    var optionsCrc32=Application.prefs.getValue("extensions.W15yQC.options.crc32",null);
+    var optionsCrc32=blr.W15yQC.getIntPref("extensions.W15yQC.options.crc32",null);
 
     if (optionsCrc32!=null) {
       if (optionsCrc32===blr.W15yQC.options.calculateOptionsCrc32()) {
-        blr.W15yQC.options.fnUpdateStatus('Options match: '+Application.prefs.getValue("extensions.W15yQC.options.filename",'???'));
+        blr.W15yQC.options.fnUpdateStatus('Options match: '+blr.W15yQC.getCharPref("extensions.W15yQC.options.filename",'???'));
       } else {
         blr.W15yQC.options.fnUpdateStatus('Options: Custom');
         //Application.prefs.setValue("extensions.W15yQC.options.crc32",null);
@@ -92,8 +105,8 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
   },
 
   init: function() {
-    var panels = document.getElementById("optionsTabpanels"); // whatever your ID is
-
+    var panels = document.getElementById("optionsTabpanels");
+    blr.W15yQC.setCharPref('extensions.W15yQC.testtesttest',"mule");
     blr.W15yQC.options.fnReadPrefs();
     panels.addEventListener("select", function(e) {
       blr.W15yQC.options.fnUpdateControlStates();
@@ -107,7 +120,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
     blr.W15yQC.options.fnUpdateControlStates();
   },
 
-  observe: function(subject, topic, data) {
+  observe: function(subject, topic, data) { // TODO: Is this working?
      if (topic != "nsPref:changed")
      {
        return;
@@ -120,7 +133,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
         tbc, url, i, m,
         treeitem, treerow, treecell, row;
 
-    blr.W15yQC.options.mandates=JSON.parse(Application.prefs.getValue("extensions.W15yQC.mandates","[]"));
+    blr.W15yQC.options.mandates=JSON.parse(blr.W15yQC.getCharPref("extensions.W15yQC.mandates","[]"));
     tbc = document.getElementById('tEquivDomainsChildren');
 
     if (tbc != null) {
@@ -129,7 +142,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
       }
     }
 
-    sDomains=Application.prefs.getValue("extensions.W15yQC.DomainEquivalences","");
+    sDomains=blr.W15yQC.getCharPref("extensions.W15yQC.DomainEquivalences","");
     if(sDomains!=null && sDomains.length>3) {
       aEquivDomains=sDomains.split("|");
       if(aEquivDomains != null && aEquivDomains.length>0) {
@@ -197,7 +210,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
         }
       }
     }
-    Application.prefs.setValue("extensions.W15yQC.DomainEquivalences",sDomains);
+    blr.W15yQC.setCharPref("extensions.W15yQC.DomainEquivalences",sDomains);
   },
 
   fnAddDomainEquiv: function() {
@@ -269,7 +282,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
       tbc.appendChild(treeitem);
       blr.W15yQC.options.mandates.push(m);
     }
-    Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
+    blr.W15yQC.setCharPref("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
 
   fnEditMandate: function() {
@@ -292,7 +305,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
         blr.W15yQC.options.mandates[selectedRow]=m;
       }
     }
-    Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
+    blr.W15yQC.setCharPref("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
 
   fnDeleteMandate: function() {
@@ -305,7 +318,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
       row.parentNode.parentNode.removeChild(row.parentNode);
       blr.W15yQC.options.mandates.splice(selectedRow,1);
     }
-    Application.prefs.setValue("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
+    blr.W15yQC.setCharPref("extensions.W15yQC.mandates",JSON.stringify(blr.W15yQC.options.mandates));
   },
 
   fnResetDefaults: function() {
@@ -478,7 +491,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
                             if (blr.W15yQC.options.prefs[j].t==='b') {
                               v=blr.W15yQC.options.readDOMBool(prefs[i],'value',null);
                               if(v!=null) {
-                                Application.prefs.setValue(name,v);
+                                blr.W15yQC.setBoolPref(name,v);
                                 //alert(name+'='+v);
                               }
                             }
@@ -487,7 +500,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
                             if (blr.W15yQC.options.prefs[j].t==='i') {
                               v=blr.W15yQC.options.readDOMInt(prefs[i],'value',null);
                               if(v!==null) {
-                                Application.prefs.setValue(name,v);
+                                blr.W15yQC.setIntPref(name,v);
                                 //alert(name+'='+v);
                               }
                             }
@@ -496,7 +509,7 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
                             if (blr.W15yQC.options.prefs[j].t==='s') {
                               v=blr.W15yQC.options.readDOMEncodedString(prefs[i],'value',null);
                               if(v!==null) {
-                                Application.prefs.setValue(name,v);
+                                blr.W15yQC.setCharPref(name,v);
                                 //alert(name+'='+v);
                               }
                             }
@@ -516,8 +529,8 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
       }
       if(prefs.length>0) {
         blr.W15yQC.options.fnUpdateStatus('Preferences loaded.');
-        Application.prefs.setValue("extensions.W15yQC.options.filename",fn);
-        Application.prefs.setValue("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
+        blr.W15yQC.setCharPref("extensions.W15yQC.options.filename",fn);
+        blr.W15yQC.setIntPref("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
       } else {
         if (bOpenedOK) {
           blr.W15yQC.options.fnUpdateStatus('Empty preferences file loaded.');
@@ -560,7 +573,21 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
           converter.writeString('  <preferences>\n');
 
           for(i=0;i<blr.W15yQC.options.prefs.length;i++) {
-            value=Application.prefs.getValue(blr.W15yQC.options.prefs[i].n,null);
+            value=null;
+            switch (blr.W15yQC.options.prefs[i].t) {
+                case 'b':
+                  value=blr.W15yQC.getBoolPref(blr.W15yQC.options.prefs[i].n);
+                  break;
+                case 'i':
+                  value=blr.W15yQC.getIntPref(blr.W15yQC.options.prefs[i].n);
+                  break;
+                case 's':
+                  value=blr.W15yQC.getCharPref(blr.W15yQC.options.prefs[i].n);
+                  break;
+                default:
+                  alert('unexpect prefs type-savePrefs:');
+                  value=null;
+            }
             if (value!==null) {
               converter.writeString('    <pref>\n');
               blr.W15yQC.options.writeXMLEncodedString(blr.W15yQC.options.prefs[i].n,'name',converter,6);
@@ -586,8 +613,8 @@ blr.W15yQC.options = { // TODO: Make sure prefs is up to date
 
           converter.close(); // this closes foStream
 
-          Application.prefs.setValue("extensions.W15yQC.options.filename",file.path);
-          Application.prefs.setValue("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
+          blr.W15yQC.setCharPref("extensions.W15yQC.options.filename",file.path);
+          blr.W15yQC.setIntPref("extensions.W15yQC.options.crc32",blr.W15yQC.options.calculateOptionsCrc32());
 
           blr.W15yQC.options.fnUpdateStatus('Preferences file saved.');
         } else {

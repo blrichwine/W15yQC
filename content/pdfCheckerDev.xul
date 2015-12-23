@@ -11,84 +11,6 @@
 	onkeydown="windowOnKeyDown(this,event)"
 	onkeyup="windowOnKeyUp(event)"
 	onload="">
-   <xul:script>
-//<![CDATA[
-			var blr=this.arguments[0];
-			var ds=null;
-			var sURL=null;
-			var bAutoCheckPDF=(this.arguments.length>2 && this.arguments[2]==true)?true:false;
-      var bCmdIsPressed;
-
-			function check() {
-			  var tbURL=document.getElementById('tbURL'), butCheckPDF=document.getElementById('button-loadPDF');
-				sURL=tbURL.value;
-				ds=null;
-
-				if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)||/^file:.+\.pdf$/i.test(sURL)) {
-				  tbURL.readOnly=true;
-					butCheckPDF.disabled=true;
-					getPdfForFullCheck(sURL);
-				} else if(blr.W15yQC.fnStringHasContent(sURL)){
-					alert('URL looks invalid: '+sURL);
-				} else {
-					alert('Provide a URL to the PDF in the textbox.');
-				}
-			}
-
-			function makeSemanticView() {
-				var dialogID, dialogPath;
-			  if(ds!==null) {
-					dialogID = 'semanticPdfWindow';
-					dialogPath = 'chrome://W15yQC/content/semanticPdfWindow.xul';
-					window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,ds);
-				} else {
-					alert('No semantic structure');
-				}
-			}
-
-			function makeScreenReaderView() {
-				var dialogID, dialogPath;
-			  if(ds!==null) {
-					dialogID = 'semanticPdfWindow';
-					dialogPath = 'chrome://W15yQC/content/semanticPdfWindow.xul';
-					window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,ds,true);
-				} else {
-					alert('No semantic structure');
-				}
-			}
-
-
-
-			function windowOnKeyDown(dialog, evt) {
-				switch (evt.keyCode) {
-					case 224:
-						bCmdIsPressed = true;
-						break;
-					case 27:
-						dialog.close();
-						break;
-					case 87:
-						if (bCmdIsPressed == true) {
-								evt.stopPropagation();
-								evt.preventDefault();
-								dialog.close();
-						}
-						break;
-				}
-			}
-
-			function windowOnKeyUp(evt) {
-				switch (evt.keyCode) {
-					case 224:
-						bCmdIsPressed = false;
-						break;
-				}
-			}
-
-
-//]]>
-   </xul:script>
-   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
    <xul:vbox id="vb" align="stretch" flex="1" height="800" width="1024" style="min-height:350px">
  		<xul:hbox align="center">
 			<xul:label value="URL: " control="tbURL"/><xul:textbox id="tbURL" flex="1" style="min-width:50em" value=""/>
@@ -135,18 +57,5 @@
 			<xul:label flex="5" id="progressMeterLabel" control="progressMeter" value=" "/><xul:progressmeter flex="12" id="progressMeter" mode="determined" value="0" max="100"/>
 		</xul:hbox>
    </xul:vbox>
-   <xul:script>
-		<![CDATA[
-			if(this.arguments[1]!==null && typeof this.arguments[1].documentURI !== 'undefined') {
-				document.getElementById('tbURL').value=this.arguments[1].documentURI;
-			  if(/^about:blank$/i.test(document.getElementById('tbURL').value)) {
-					document.getElementById('tbURL').value="";
-				}
-			}
-			sURL=document.getElementById('tbURL').value;
-			if(bAutoCheckPDF==true && ((blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)&&/\.pdf$/i.test(sURL))||/^file:.+\.pdf$/i.test(sURL))) {
-				window.setTimeout(function(){check();}, 50);
-			}
-		]]>
-	 </xul:script>
+   <xul:script type="application/x-javascript" src="chrome://W15yQC/content/pdfCheckDialog.js"/>
 </xul:window>

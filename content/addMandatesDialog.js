@@ -32,9 +32,7 @@
  */
 "use strict";
 
-if (!blr) {
-  var blr = {};
-}
+var blr=this.arguments[0];
 
 /*
  * Object:  addMandatesDialog
@@ -131,7 +129,10 @@ blr.W15yQC.addMandatesDialog = {
     if(/^[\d\s\(\)\&\|\!]+$/.test(sLogic)) {
       sLogic=sLogic.replace(/\b\d+\b/g,'true'); // Just for test purposes
       try {
-        result=eval(sLogic);
+        result=blr.W15yQC.evalLogicString(sLogic);
+        if (/^(true|false)$/i.test(result)==false) {
+          sMsg='Syntax error in logic string.';
+        }        
       } catch(ex) {
         sMsg='Syntax error in logic string.';
       }
@@ -214,3 +215,41 @@ blr.W15yQC.addMandatesDialog = {
     return true;
   }
 };
+
+
+blr.W15yQC.addMandatesDialog.m=this.arguments[1];
+if(blr.W15yQC.addMandatesDialog.m!=null && blr.W15yQC.fnStringHasContent(blr.W15yQC.addMandatesDialog.m.title)) {
+  document.getElementById('tbTitle').value=blr.W15yQC.addMandatesDialog.m.title;
+  document.getElementById('tbLogic').value=blr.W15yQC.addMandatesDialog.m.logic;
+  document.getElementById('tbWeight').value=blr.W15yQC.addMandatesDialog.m.weight;
+  document.getElementById('cbMandateEnabled').checked=blr.W15yQC.addMandatesDialog.m.enabled;
+  document.getElementById('cbShowInReport').checked=blr.W15yQC.addMandatesDialog.m.showInReport;
+  (function () {
+    var i,m=blr.W15yQC.addMandatesDialog.m, tbc,treeitem, row, treecell;
+    tbc=document.getElementById('tMandatesChildren');
+    for(i=0;i<m.tests.length;i++) {
+      treeitem=document.createElement('treeitem');
+      row=document.createElement('treerow');
+      row.setAttribute('id','Test'+i);
+
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',i+1);
+      row.appendChild(treecell);
+
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',m.tests[i].xPath);
+      row.appendChild(treecell);
+
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',m.tests[i].text);
+      row.appendChild(treecell);
+
+      treecell=document.createElement('treecell');
+      treecell.setAttribute('label',m.tests[i].matchType);
+      row.appendChild(treecell);
+
+      treeitem.appendChild(row);
+      tbc.appendChild(treeitem);
+    }
+  })();
+}

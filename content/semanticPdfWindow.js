@@ -218,12 +218,22 @@ if (typeof blr==='undefined') {
                 bAllowAlt=false;
                 break;
               case 'h1':
+                newEl=rd.createElement('h1');
+                break;
               case 'h2':
+                newEl=rd.createElement('h2');
+                break;
               case 'h3':
+                newEl=rd.createElement('h3');
+                break;
               case 'h4':
+                newEl=rd.createElement('h4');
+                break;
               case 'h5':
+                newEl=rd.createElement('h5');
+                break;
               case 'h6':
-                newEl=rd.createElement(s);
+                newEl=rd.createElement('h6');
                 break;
               case 'p':
                 newEl=rd.createElement('p');
@@ -274,7 +284,7 @@ if (typeof blr==='undefined') {
                 newEl.setAttribute('href','#');
                 break;
               case 'table':
-                newEl=rd.createElement(s);
+                newEl=rd.createElement('table');
                 break;
               case 'thead':
               case 'tfoot':
@@ -282,10 +292,16 @@ if (typeof blr==='undefined') {
                 newEl=null; // DONT RENDER Thead or Tfoot or Tbody
                 break;
               case 'tr':
+                newEl=rd.createElement('tr');
+                break;
               case 'th':
+                newEl=rd.createElement('th');
+                break;
               case 'tr':
+                newEl=rd.createElement('tr');
+                break;
               case 'td':
-                newEl=rd.createElement(s);
+                newEl=rd.createElement('td');
                 break;
               case 'span':
                 newEl=rd.createElement('span');

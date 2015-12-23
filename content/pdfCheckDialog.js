@@ -71,6 +71,77 @@
  */
 "use strict";
 
+var blr=this.arguments[0];
+var ds=null;
+var sURL=null;
+var bAutoCheckPDF=(this.arguments.length>2 && this.arguments[2]==true)?true:false;
+var bCmdIsPressed;
+
+function check() {
+  var tbURL=document.getElementById('tbURL'), butCheckPDF=document.getElementById('button-loadPDF');
+  sURL=tbURL.value;
+  ds=null;
+
+  if (blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)||/^file:.+\.pdf$/i.test(sURL)) {
+    tbURL.readOnly=true;
+    butCheckPDF.disabled=true;
+    getPdfForFullCheck(sURL);
+  } else if(blr.W15yQC.fnStringHasContent(sURL)){
+    alert('URL looks invalid: '+sURL);
+  } else {
+    alert('Provide a URL to the PDF in the textbox.');
+  }
+}
+
+function makeSemanticView() {
+  var dialogID, dialogPath;
+  if(ds!==null) {
+    dialogID = 'semanticPdfWindow';
+    dialogPath = 'chrome://W15yQC/content/semanticPdfWindow.xul';
+    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,ds);
+  } else {
+    alert('No semantic structure');
+  }
+}
+
+function makeScreenReaderView() {
+  var dialogID, dialogPath;
+  if(ds!==null) {
+    dialogID = 'semanticPdfWindow';
+    dialogPath = 'chrome://W15yQC/content/semanticPdfWindow.xul';
+    window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen',blr,ds,true);
+  } else {
+    alert('No semantic structure');
+  }
+}
+
+function windowOnKeyDown(dialog, evt) {
+  switch (evt.keyCode) {
+    case 224:
+      bCmdIsPressed = true;
+      break;
+    case 27:
+      dialog.close();
+      break;
+    case 87:
+      if (bCmdIsPressed == true) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        dialog.close();
+      }
+      break;
+  }
+}
+
+function windowOnKeyUp(evt) {
+  switch (evt.keyCode) {
+    case 224:
+      bCmdIsPressed = false;
+      break;
+  }
+}
+
+
   function getPdfFullCheckResults(pdf,sURL,rd,re) {
     var standardElements=['Document', 'Part', 'Art', 'Sect', 'Div', 'BlockQuote', 'Caption',
     'TOC', 'TOCI', 'Index', 'NonStruct', 'Private', 'P', 'H', 'H1', 'H2', 'H3',
@@ -155,7 +226,28 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
 
     function makeExpandoCollapsoHeading(sTagName, sText) {
       var hTag, aTag;
-        hTag=rd.createElement(sTagName);
+        switch (sTagName.toLowerCase()) {
+            case 'h1':
+              hTag=rd.createElement('h1');
+              break;
+            case 'h2':
+              hTag=rd.createElement('h2');
+              break;
+            case 'h3':
+              hTag=rd.createElement('h3');
+              break;
+            case 'h4':
+              hTag=rd.createElement('h4');
+              break;
+            case 'h5':
+              hTag=rd.createElement('h5');
+              break;
+            case 'h6':
+              hTag=rd.createElement('h6');
+              break;
+            default:
+              hTag=rd.createElement('h2');
+        }
         aTag=rd.createElement('a');
         aTag.appendChild(rd.createTextNode(sText));
         aTag.setAttribute('onclick','ec(this);return false;');
@@ -2493,4 +2585,15 @@ Components.utils.import("resource://gre/modules/devtools/Console.jsm");
     } else {
       alert("Nothing to save!");
     }
+  }
+
+  if(this.arguments[1]!==null && typeof this.arguments[1].documentURI !== 'undefined') {
+      document.getElementById('tbURL').value=this.arguments[1].documentURI;
+    if(/^about:blank$/i.test(document.getElementById('tbURL').value)) {
+          document.getElementById('tbURL').value="";
+      }
+  }
+  sURL=document.getElementById('tbURL').value;
+  if(bAutoCheckPDF==true && ((blr.W15yQC.fnAppearsToBeFullyQualifiedURL(sURL)&&/\.pdf$/i.test(sURL))||/^file:.+\.pdf$/i.test(sURL))) {
+      window.setTimeout(function(){check();}, 50);
   }

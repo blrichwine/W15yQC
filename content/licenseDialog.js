@@ -52,7 +52,7 @@ blr.W15yQC.LicenseDialog = {
 
   cleanup: function (bResult) {
     if (bResult == true) {
-      Application.prefs.setValue("extensions.W15yQC.userAgreedToLicense", true);
+      blr.W15yQC.setBoolPref("extensions.W15yQC.userAgreedToLicense", true);
     }
   },
 

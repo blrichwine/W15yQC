@@ -33,8 +33,33 @@
  */
 "use strict";
 
-if (!blr) {
-  var blr = {};
+var blr=this.arguments[0];
+
+function fnUpdateStatus(sLabel) {
+  document.getElementById('progressMeterLabel').value=sLabel;
+  document.getElementById('progressMeter').setAttribute('hidden','true');
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdatePercentage(fPercentage) {
+  document.getElementById('progressMeter').value=fPercentage;
+  document.getElementById('progressMeter').setAttribute('hidden','false');
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnUpdateProgress(sLabel, fPercentage) {
+  document.getElementById('progressMeterLabel').value=(sLabel==null ? '' : sLabel);
+  if(fPercentage != null) {
+    document.getElementById('progressMeter').value=fPercentage;
+    document.getElementById('progressMeter').setAttribute('hidden','false');
+  } else {
+    document.getElementById('progressMeter').setAttribute('hidden','true');
+  }
+  blr.W15yQC.fnDoEvents();
+}
+
+function fnDelayedInit() {
+  window.setTimeout(function(){blr.W15yQC.OverallScannerReportWindow.init(window);}, 0);
 }
 
 /*

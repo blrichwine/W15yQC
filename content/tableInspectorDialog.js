@@ -253,7 +253,7 @@ blr.W15yQC.TableInspectorDialog = {
     "use strict";
     var aFormControlsLists;
     blr.W15yQC.fnReadUserPrefs();
-    document.getElementById('button-inspectElement').hidden = !Application.prefs.getValue("devtools.inspector.enabled",false);
+    document.getElementById('button-inspectElement').hidden = !blr.W15yQC.getBoolPref("devtools.inspector.enabled",false);
     blr.W15yQC.FormControlsDialog.aDocumentsList = blr.W15yQC.fnGetDocuments(window.opener.parent._content.document);
     blr.W15yQC.fnAnalyzeDocuments(blr.W15yQC.FormControlsDialog.aDocumentsList);
 
