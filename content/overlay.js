@@ -780,19 +780,16 @@ ys: 'whys'
       return 'String Bundle System Unavailable. Something serious is wrong!';
     },
 
-    // TODO: Try replacing processNextEvent with http://dbaron.org/log/20100309-faster-timeouts  window.postMessage
-    fnDoEvents: function() { // Used in attempt to get XUL status elements to update while a thread is processing
-      var thread;
+    // fnDoEvents used to get UI to update (so XUL status bars and status text update while processing)
+    fnDoEvents: function() { 
+      var thread, limit=10;
       try {
         thread = Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThread;
-        while (thread.hasPendingEvents()) { thread.processNextEvent(false); }
-      } catch(ex) { alert('fnDoEvents failed:'+ex.toString());
-      }
-
-      try {
-        thread = Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThread;
-        while (thread.hasPendingEvents()) { thread.processNextEvent(false); }
-      } catch(ex) { alert('fnDoEvents failed:'+ex.toString());
+        while (thread.hasPendingEvents() && limit>0) {
+          thread.processNextEvent(false); // Allow XUL UI to update while processing
+          limit=limit-1;
+        }
+      } catch(ex) { 
       }
     },
 
@@ -1549,9 +1546,10 @@ ys: 'whys'
       return null;
     },
 
-    fnMakeHTMLNotesList: function(no, msgHash) {
+    fnMakeHTMLNotesList: function(rd, no, msgHash) {
           blr.W15yQC.userExpertLevel = blr.W15yQC.getIntPref("extensions.W15yQC.userExpertLevel",0);
-          var sHTML = '',
+          var elList = rd.createElement('ul'),
+          el=null, el2=null,
           noteLevelDisplayOrder = [0,2,1],
           noteLevelClasses = ['', 'warning', 'failure'],
           noteLevelTexts = ['', blr.W15yQC.fnGetString('noteWarning'),blr.W15yQC.fnGetString('noteFailure')],
@@ -1564,7 +1562,7 @@ ys: 'whys'
       if(no != null && no.notes != null && no.notes.length > 0) {
         no.warning=false;
         no.failed=false;
-        sHTML = '<ul class="results">';
+        elList.setAttribute('class','results');
         for(noteLevelIndex=0;noteLevelIndex<3;noteLevelIndex++) {
           noteLevel = noteLevelDisplayOrder[noteLevelIndex];
           noteClass = noteLevelClasses[noteLevel];
@@ -1578,14 +1576,19 @@ ys: 'whys'
                 } else if(noteLevel==2) {
                   no.failed = true;
                 }
-                sHTML=sHTML+'<li><span class="srt">'+noteText+'</span> '+blr.W15yQC.fnMakeWebSafe(blr.W15yQC.fnJoin(rn.msgText,rn.msgExplanation,' '))+'</li>';
+                el=rd.createElement('li');
+                el2=rd.createElement('span');
+                el2.setAttribute('class','srt');
+                el2.appendChild(rd.createTextNode(noteText));
+                el.appendChild(el2);
+                el.appendChild(rd.createTextNode(blr.W15yQC.fnJoin(rn.msgText,rn.msgExplanation,' ')));
+                elList.appendChild(el);
               }
             }
           }
         }
-        sHTML += '</ul>';
       }
-      return sHTML;
+      return elList;
     },
 
     fnMakeTextNotesList: function(no, msgHash, sMsgKeysToIgnore) {
@@ -1812,7 +1815,8 @@ ys: 'whys'
         aEl.setAttribute('class','ec');
         aEl.setAttribute('href','javascript:expandContractSection=\''+sText+'\';');
         aEl.setAttribute('title','Expand Contract Section: '+sText); // TODO: i18n
-        aEl.setAttribute('onclick','ec(this,\'' + sText + '\');return false;');
+        aEl.setAttribute('data-ectext',sText);
+        aEl.setAttribute('onclick','ec(this);return false;');
         aEl.setAttribute('onmouseup','blur();');
         spanEl=doc.createElement('span');
         spanEl.appendChild(doc.createTextNode('Hide ')); // TODO: i18n
@@ -1856,9 +1860,7 @@ ys: 'whys'
         for (i = 0; i < aTableCells.length; i++) {
           td = doc.createElement('td');
           if (aTableCells[i] != null) {
-            sText = aTableCells[i].toString();
-            sText = sText.replace(/([^<&;\s|\/-]{45,50})/g, "$1<br />"); // Break long strings. Chars known to cause FF to break long strings of text to wrap a td cell ('<' to avoid breaking into tags)
-            td.innerHTML = sText; // Consider appending pre-created elements?
+            td.appendChild(aTableCells[i]);
           }
           tr.appendChild(td);
         }
@@ -5820,7 +5822,7 @@ ys: 'whys'
       reportDoc.head.appendChild(styleElement);
 
       scriptElement = reportDoc.createElement('script');
-      sScript = "function ec(node, sLinkText) { if(node.parentNode.getAttribute('class')=='hideSibling'){node.parentNode.setAttribute('class','');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsHide')+" </span>'+sLinkText}else{node.parentNode.setAttribute('class','hideSibling');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsReveal')+" </span>'+sLinkText}}";
+      sScript = "function ec(node) { var sLinkText=node.getAttribute('data-ectext'); if(node.parentNode.getAttribute('class')=='hideSibling'){node.parentNode.setAttribute('class','');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsHide')+" </span>'+sLinkText}else{node.parentNode.setAttribute('class','hideSibling');node.innerHTML='<span class=\"auralText\">"+blr.W15yQC.fnGetString('hrsReveal')+" </span>'+sLinkText}}";
       sScript += "function collapseAll() {var nodesList=document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','hideSibling')}}";
       sScript += "function expandAll() {var nodesList=document.getElementsByClassName('ec');for(var i=0;i<nodesList.length;i++){;nodesList[i].parentNode.setAttribute('class','')}}";
       sScript += "function fnToggleDisplayOfNonIssues(){var a=document.getElementById('displayToggle');var b=document.getElementsByTagName('tr');if(/"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"/.test(a.innerHTML)==true){a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowAll')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(/warning|failed/.test(b[c].className)!=true){var d=b[c].getElementsByTagName('th');if(d==null||d.length<1){b[c].setAttribute('style','display:none')}}}}}else{a.innerHTML='"+blr.W15yQC.fnGetString('hrsShowIssuesOnly')+"';if(b!=null&&b.length>1&&b[0].getElementsByTagName){for(var c=0;c<b.length;c++){if(b[c].getAttribute('style')=='display:none'){b[c].setAttribute('style','')}}}}}";
@@ -6122,7 +6124,7 @@ ys: 'whys'
     },
 
     fnDisplayFrameTitleResults: function (rd, aFramesList, bQuick) {
-      var div, table, msgHash, tbody, i, sNotes, sClass;
+      var div, table, msgHash, tbody, i, elNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFramesList');
       div.setAttribute('class', 'AISection');
@@ -6138,14 +6140,14 @@ ys: 'whys'
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFramesList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aFramesList[i], msgHash);
             sClass = '';
             if (aFramesList[i].failed) {
               sClass = 'failed';
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aFramesList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aFramesList[i].effectiveLabel), elNotes], sClass);
           }
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFrameElement'),
@@ -6155,14 +6157,14 @@ ys: 'whys'
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFramesList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aFramesList[i], msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aFramesList[i], msgHash);
             sClass = '';
             if (aFramesList[i].failed) {
               sClass = 'failed';
             } else if (aFramesList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aFramesList[i].nodeDescription), aFramesList[i].ownerDocumentNumber, aFramesList[i].containsDocumentNumber, aFramesList[i].effectiveLabel, aFramesList[i].effectiveLabelSource, aFramesList[i].src, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aFramesList[i].nodeDescription), rd.createTextNode(aFramesList[i].ownerDocumentNumber), rd.createTextNode(aFramesList[i].containsDocumentNumber), rd.createTextNode(aFramesList[i].effectiveLabel), rd.createTextNode(aFramesList[i].effectiveLabelSource), rd.createTextNode(aFramesList[i].src), elNotes], sClass);
           }
         }
 
@@ -7080,7 +7082,7 @@ ys: 'whys'
     },
 
     fnDisplayDocumentsResults: function (rd, aDocumentsList) {
-      var div, table, msgHash, tbody, i, dd, sNotes, sClass;
+      var div, table, msgHash, tbody, i, dd, elNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIDocumentsList');
       div.setAttribute('class', 'AISection');
@@ -7099,14 +7101,14 @@ ys: 'whys'
         tbody = rd.createElement('tbody');
         for (i = 0; i < aDocumentsList.length; i++) {
           dd = aDocumentsList[i];
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(dd, msgHash);
+          elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, dd, msgHash);
           sClass = '';
           if (dd.failed) {
             sClass = 'failed';
           } else if (dd.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, dd.title, dd.language, dd.dir, dd.URL, dd.compatMode, dd.docType, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(dd.title), rd.createTextNode(dd.language), rd.createTextNode(dd.dir), rd.createTextNode(dd.URL), rd.createTextNode(dd.compatMode), rd.createTextNode(dd.docType), elNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -7364,7 +7366,7 @@ ys: 'whys'
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList, bQuick) {
       var div, divContainer, innerDiv, list, previousHeadingLevel, previousDocument, sDoc, li, sNotesTxt, sMessage, span, nextLogicalLevel,
-        table, msgHash, tbody, i, lo, sPadding, j, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
+        table, msgHash, tbody, i, lo, sPadding, j, elNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
 
      div = rd.createElement('div');
       divContainer = rd.createElement('div');
@@ -7475,14 +7477,14 @@ ys: 'whys'
             for(j=1; j<lo.level; j++) {
               sPadding += '&nbsp;';
             }
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
             sClass = '';
             if (lo.failed) {
               sClass = 'failed';
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, lo.effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(lo.effectiveLabel), elNotes], sClass);
           }
         } else {
           colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
@@ -7503,14 +7505,14 @@ ys: 'whys'
             for(j=1; j<lo.level; j++) {
               sPadding += '&nbsp;';
             }
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
             sClass = '';
             if (lo.failed) {
               sClass = 'failed';
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, sPadding+blr.W15yQC.fnMakeWebSafe(lo.nodeDescription), lo.ownerDocumentNumber, lo.level, lo.effectiveLabel, lo.effectiveLabelSource, lo.role, lo.stateDescription, sNotes];
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(sPadding+lo.nodeDescription), rd.createTextNode(lo.ownerDocumentNumber), rd.createTextNode(lo.level), rd.createTextNode(lo.effectiveLabel), rd.createTextNode(lo.effectiveLabelSource), rd.createTextNode(lo.role), rd.createTextNode(lo.stateDescription), elNotes];
             if (bHasMultipleDocs==false) {
               colValues.splice(2,1);
             }
@@ -7520,14 +7522,14 @@ ys: 'whys'
           if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
             for (i = 0; i < aARIALandmarksList.pageLevel.notes.length; i++) {
               lo = aARIALandmarksList.pageLevel;
-              sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+              elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
               sClass = '';
               if (lo.failed) {
                 sClass = 'failed';
               } else if (lo.warning) {
                 sClass = 'warning';
               }
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aARIALandmarksList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1 + aARIALandmarksList.length), rd.createTextNode('--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--'), rd.createTextNode(' '), rd.createTextNode(' '), rd.createTextNode(' '), rd.createTextNode(' '), rd.createTextNode(' '), elNotes], sClass);
             }
           }
         }
@@ -8184,7 +8186,7 @@ ys: 'whys'
     },
 
     fnDisplayImagesResults: function (rd, aImagesList, bQuick) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, elNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasAlt=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIImagesList');
       div.setAttribute('class', 'AISection');
 
@@ -8209,14 +8211,14 @@ ys: 'whys'
           tbody = rd.createElement('tbody');
           for (i = 0; i < aImagesList.length; i++) {
             io = aImagesList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, io, msgHash);
             sClass = '';
             if (io.failed) {
               sClass = 'failed';
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, io.effectiveLabel, sNotes];
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(io.effectiveLabel), elNotes];
             blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         } else {
@@ -8239,20 +8241,20 @@ ys: 'whys'
           tbody = rd.createElement('tbody');
           for (i = 0; i < aImagesList.length; i++) {
             io = aImagesList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, io, msgHash);
             sClass = '';
             if (io.failed) {
               sClass = 'failed';
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.effectiveLabelSource];
-            if(bHasAlt) { colValues.push(io.alt); }
-            colValues.push(blr.W15yQC.fnXPathContainsInputNameElement(io.xpath)?'Y':'N');
-            if(bHasTitle) { colValues.push(io.title); }
-            if(bHasARIALabel) { colValues.push(io.ariaLabel); }
-            colValues.push(io.src);
-            colValues.push(sNotes);
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(io.nodeDescription), rd.createTextNode(io.ownerDocumentNumber), rd.createTextNode(io.effectiveLabel), rd.createTextNode(io.effectiveLabelSource)];
+            if(bHasAlt) { colValues.push(rd.createTextNode(io.alt)); }
+            colValues.push(rd.createTextNode(blr.W15yQC.fnXPathContainsInputNameElement(io.xpath)?'Y':'N'));
+            if(bHasTitle) { rd.createTextNode(colValues.push(io.title)); }
+            if(bHasARIALabel) { rd.createTextNode(colValues.push(io.ariaLabel)); }
+            colValues.push(rd.createTextNode(io.src));
+            colValues.push(elNotes);
             if (bHasMultipleDocs==false) {
               colValues.splice(2,1);
             }
@@ -8358,7 +8360,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
     },
 
     fnDisplayMultiMediaResults: function (rd, aMultiMediaList, bQuick) {
-      var div = rd.createElement('div'), table, msgHash, tbody, i, io, sNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasSrc=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
+      var div = rd.createElement('div'), table, msgHash, tbody, i, io, elNotes, sClass, bHasARIALabel=false, bHasTitle=false, bHasSrc=false, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div.setAttribute('id', 'AIMultiMediaList');
       div.setAttribute('class', 'AISection');
 
@@ -8383,14 +8385,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aMultiMediaList.length; i++) {
             io = aMultiMediaList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, io, msgHash);
             sClass = '';
             if (io.failed) {
               sClass = 'failed';
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, io.effectiveLabel, sNotes];
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(io.effectiveLabel), elNotes];
             blr.W15yQC.fnAppendTableRow(tbody, colValues, sClass);
           }
         } else {
@@ -8411,18 +8413,18 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aMultiMediaList.length; i++) {
             io = aMultiMediaList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(io, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, io, msgHash);
             sClass = '';
             if (io.failed) {
               sClass = 'failed';
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(io.nodeDescription), io.ownerDocumentNumber, io.effectiveLabel, io.effectiveLabelSource];
-            if(bHasTitle) { colValues.push(io.title); }
-            if(bHasARIALabel) { colValues.push(io.ariaLabel); }
-            if(bHasSrc) { colValues.push(io.src); }
-            colValues.push(sNotes);
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(io.nodeDescription), rd.createTextNode(io.ownerDocumentNumber), rd.createTextNode(io.effectiveLabel), rd.createTextNode(io.effectiveLabelSource)];
+            if(bHasTitle) { colValues.push(rd.createTextNode(io.title)); }
+            if(bHasARIALabel) { colValues.push(rd.createTextNode(io.ariaLabel)); }
+            if(bHasSrc) { colValues.push(rd.createTextNode(io.src)); }
+            colValues.push(elNotes);
             if (bHasMultipleDocs==false) {
               colValues.splice(2,1);
             }
@@ -8561,7 +8563,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
     },
 
     fnDisplayAccessKeysResults: function (rd, aAccessKeysList, bQuick) {
-      var div, table, msgHash, tbody, i, ak, sNotes, sClass;
+      var div, table, msgHash, tbody, i, ak, elNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIAccesskeysList');
       div.setAttribute('class', 'AISection');
@@ -8579,14 +8581,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aAccessKeysList.length; i++) {
             ak = aAccessKeysList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, ak, msgHash);
             sClass = '';
             if (ak.failed) {
               sClass = 'failed';
             } else if (ak.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, ak.accessKey, ak.effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(ak.accessKey), rd.createTextNode(ak.effectiveLabel), elNotes], sClass);
           }
         } else {
           table = blr.W15yQC.fnCreateTableHeaders(table, [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHElementDescription'),
@@ -8597,14 +8599,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aAccessKeysList.length; i++) {
             ak = aAccessKeysList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(ak, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, ak, msgHash);
             sClass = '';
             if (ak.failed) {
               sClass = 'failed';
             } else if (ak.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(ak.nodeDescription), ak.ownerDocumentNumber, ak.accessKey, ak.effectiveLabel, ak.stateDescription, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(ak.nodeDescription), rd.createTextNode(ak.ownerDocumentNumber), rd.createTextNode(ak.accessKey), rd.createTextNode(ak.effectiveLabel), rd.createTextNode(ak.stateDescription), elNotes], sClass);
           }
         }
         table.appendChild(tbody);
@@ -8831,7 +8833,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
     fnDisplayHeadingsResults: function (rd, aHeadingsList, bQuick) {
       var div, divContainer, innerDiv, list, multipleDocs=false, previousHeadingLevel, previousDocument, i,
         sDoc, nextLogicalLevel, j, li, sNotesTxt, sMessage, span,
-        table, msgHash, tbody, sNotes, sClass, lo;
+        table, msgHash, tbody, elNotes, sClass, lo;
 
       div = rd.createElement('div');
       divContainer = rd.createElement('div');
@@ -8937,14 +8939,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aHeadingsList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aHeadingsList[i], msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aHeadingsList[i], msgHash);
             sClass = '';
             if (aHeadingsList[i].failed) {
               sClass = 'failed';
             } else if (aHeadingsList[i].warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aHeadingsList[i].level), rd.createTextNode(aHeadingsList[i].effectiveLabel), elNotes], sClass);
           }
         } else {
           if (multipleDocs) {
@@ -8960,7 +8962,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           msgHash = new blr.W15yQC.HashTable();
           tbody = rd.createElement('tbody');
           for (i = 0; i < aHeadingsList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aHeadingsList[i], msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aHeadingsList[i], msgHash);
             sClass = '';
             if (aHeadingsList[i].failed) {
               sClass = 'failed';
@@ -8968,9 +8970,9 @@ fnAnalyzeMultimedia: function (oW15yResults) {
               sClass = 'warning';
             }
             if (multipleDocs) {
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].ownerDocumentNumber, aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aHeadingsList[i].nodeDescription), rd.createTextNode(aHeadingsList[i].ownerDocumentNumber), rd.createTextNode(aHeadingsList[i].level), rd.createTextNode(aHeadingsList[i].effectiveLabel), rd.createTextNode(aHeadingsList[i].effectiveLabelSource), elNotes], sClass);
             } else {
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aHeadingsList[i].nodeDescription), aHeadingsList[i].level, aHeadingsList[i].effectiveLabel, aHeadingsList[i].effectiveLabelSource, sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aHeadingsList[i].nodeDescription), rd.createTextNode(aHeadingsList[i].level), rd.createTextNode(aHeadingsList[i].effectiveLabel), rd.createTextNode(aHeadingsList[i].effectiveLabelSource), elNotes], sClass);
             }
           }
         }
@@ -8978,7 +8980,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         if(aHeadingsList.pageLevel && aHeadingsList.pageLevel.notes) {
           for (i = 0; i < aHeadingsList.pageLevel.notes.length; i++) {
             lo = aHeadingsList.pageLevel;
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(lo, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
             sClass = '';
             if (lo.failed) {
               sClass = 'failed';
@@ -8986,9 +8988,9 @@ fnAnalyzeMultimedia: function (oW15yResults) {
               sClass = 'warning';
             }
             if(bQuick) {
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1 + aHeadingsList.length), rd.createTextNode('--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--'), rd.createTextNode(''), elNotes], sClass);
             } else {
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1 + aHeadingsList.length, '--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--', '', '', '', sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1 + aHeadingsList.length), rd.createTextNode('--'+blr.W15yQC.fnGetString('hrsPageLevel')+'--'), rd.createTextNode(''), rd.createTextNode(''), rd.createTextNode(''), elNotes], sClass);
             }
           }
         }
@@ -9366,7 +9368,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
     },
 
     fnDisplayFormResults: function (rd, aFormsList) {
-      var div, table, msgHash, tbody, i, fce, sNotes, sClass;
+      var div, table, msgHash, tbody, i, fce, elNotes, sClass;
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormsList');
       div.setAttribute('class', 'AISection');
@@ -9385,14 +9387,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         tbody = rd.createElement('tbody');
         for (i = 0; i < aFormsList.length; i++) {
           fce = aFormsList[i];
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+          elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, fce, msgHash);
           sClass = '';
           if (fce.failed) {
             sClass = 'failed';
           } else if (fce.warning) {
             sClass = 'warning';
           }
-          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, fce.ownerDocumentNumber, blr.W15yQC.fnMakeWebSafe(fce.nodeDescription), fce.name, fce.action, fce.method, fce.stateDescription, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(fce.ownerDocumentNumber), rd.createTextNode(fce.nodeDescription), rd.createTextNode(fce.name), rd.createTextNode(fce.action), rd.createTextNode(fce.method), rd.createTextNode(fce.stateDescription), elNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -9405,7 +9407,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
     fnDisplayFormControlResults: function (rd, aFormControlsList, bQuick) {
       var div, i, ak, bHasARIALabel, bHasLegend, bHasLabel, bHasTitle, bHasARIADescription, bHasRole, bHasValue, bHasStateDescription, bHasMultipleDocs,
-          aTableHeaders, table, msgHash, tbody, fce, sNotes, sClass, aTableCells;
+          aTableHeaders, table, msgHash, tbody, fce, elNotes, sClass, aTableCells;
 
       div = rd.createElement('div');
       div.setAttribute('id', 'AIFormControlsList');
@@ -9449,14 +9451,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFormControlsList.length; i++) {
             fce = aFormControlsList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, fce, msgHash);
             sClass = '';
             if (fce.failed) {
               sClass = 'failed';
             } else if (fce.warning) {
               sClass = 'warning';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '), sNotes], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled'), rd.createTextNode(fce.announcedAs,' ')), elNotes], sClass);
           }
         } else {
           aTableHeaders = [blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsTHFormNum')];
@@ -9482,27 +9484,27 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aFormControlsList.length; i++) {
             fce = aFormControlsList[i];
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(fce, msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, fce, msgHash);
             sClass = '';
             if (fce.failed) {
               sClass = 'failed';
             } else if (fce.warning) {
               sClass = 'warning';
             }
-            aTableCells = [i + 1, fce.parentFormNumber];
-            if (bHasMultipleDocs) { aTableCells.push(fce.ownerDocumentNumber); }
-            aTableCells.push(blr.W15yQC.fnMakeWebSafe(fce.nodeDescription));
-            if (bHasLegend) { aTableCells.push(fce.legendText); }
-            if (bHasLabel) { aTableCells.push(fce.labelTagText); }
-            if (bHasTitle) { aTableCells.push(fce.title); }
-            if (bHasARIALabel) { aTableCells.push(fce.ARIALabelText); }
-            aTableCells.push(blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' '));
-            aTableCells.push(fce.effectiveLabelSource);
-            if (bHasARIADescription) { aTableCells.push(fce.ARIADescriptionText); }
-            aTableCells.push(fce.name);
-            aTableCells.push(fce.value);
-            if (bHasStateDescription) { aTableCells.push(fce.stateDescription); }
-            aTableCells.push(sNotes);
+            aTableCells = [rd.createTextNode(i + 1), rd.createTextNode(fce.parentFormNumber)];
+            if (bHasMultipleDocs) { aTableCells.push(rd.createTextNode(fce.ownerDocumentNumber)); }
+            aTableCells.push(rd.createTextNode(fce.nodeDescription));
+            if (bHasLegend) { aTableCells.push(rd.createTextNode(fce.legendText)); }
+            if (bHasLabel) { aTableCells.push(rd.createTextNode(fce.labelTagText)); }
+            if (bHasTitle) { aTableCells.push(rd.createTextNode(fce.title)); }
+            if (bHasARIALabel) { aTableCells.push(rd.createTextNode(fce.ARIALabelText)); }
+            aTableCells.push(rd.createTextNode(blr.W15yQC.fnJoin(blr.W15yQC.fnStringHasContent(fce.effectiveLabel)?fce.effectiveLabel:'unlabeled', fce.announcedAs,' ')));
+            aTableCells.push(rd.createTextNode(fce.effectiveLabelSource));
+            if (bHasARIADescription) { aTableCells.push(rd.createTextNode(fce.ARIADescriptionText)); }
+            aTableCells.push(rd.createTextNode(fce.name));
+            aTableCells.push(rd.createTextNode(fce.value));
+            if (bHasStateDescription) { aTableCells.push(rd.createTextNode(fce.stateDescription)); }
+            aTableCells.push(elNotes);
 
             blr.W15yQC.fnAppendTableRow(tbody, aTableCells, sClass);
           }
@@ -9833,7 +9835,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
                       blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargetAmbiguousLinksAndNonLink',[aTargetLinksList.toString(),blr.W15yQC.fnDescribeElement(targetNode)]); //
                     }
                   } else {
-                    blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargets',[blr.W15yQC.fnDescribeElement(targetNode)]); //
+                    blr.W15yQC.fnAddNote(aLinksList[i], 'lnkTargets',[blr.W15yQC.fnDescribeElement(targetNode, 355, 100)]); //
                   }
                 }
               } else { // getElementByID returned null
@@ -9977,7 +9979,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
 
     fnDisplayLinkResults: function (rd, aLinksList, bQuick) {
-      var div, table, msgHash, tbody, i, sNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
+      var div, table, msgHash, tbody, i, elNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
       div = rd.createElement('div');
       div.setAttribute('id', 'AILinksList');
       div.setAttribute('class', 'AISection');
@@ -9995,14 +9997,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           tbody = rd.createElement('tbody');
           for (i = 0; i < aLinksList.length; i++) {
             if (aLinksList[i].listedByAT!=false) {
-              sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+              elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aLinksList[i], msgHash);
               sClass = '';
               if (aLinksList[i].failed) {
                 sClass = 'failed';
               } else if (aLinksList[i].warning) {
                 sClass = 'warning';
               }
-              blr.W15yQC.fnAppendTableRow(tbody, [i + 1, aLinksList[i].effectiveLabel, sNotes], sClass);
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aLinksList[i].effectiveLabel), elNotes], sClass);
             }
           }
         } else {
@@ -10024,14 +10026,14 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
           tbody = rd.createElement('tbody');
           for (i = 0; i < aLinksList.length; i++) {
-            sNotes = blr.W15yQC.fnMakeHTMLNotesList(aLinksList[i], msgHash);
+            elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aLinksList[i], msgHash);
             sClass = '';
             if (aLinksList[i].failed) {
               sClass = 'failed';
             } else if (aLinksList[i].warning) {
               sClass = 'warning';
             }
-            colValues=[i + 1, blr.W15yQC.fnMakeWebSafe(aLinksList[i].nodeDescription), aLinksList[i].ownerDocumentNumber, aLinksList[i].effectiveLabel, aLinksList[i].effectiveLabelSource, blr.W15yQC.fnCutoffString(aLinksList[i].href,500), aLinksList[i].stateDescription, sNotes];
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(aLinksList[i].nodeDescription), rd.createTextNode(aLinksList[i].ownerDocumentNumber), rd.createTextNode(aLinksList[i].effectiveLabel), rd.createTextNode(aLinksList[i].effectiveLabelSource), rd.createTextNode(blr.W15yQC.fnCutoffString(aLinksList[i].href,500)), rd.createTextNode(aLinksList[i].stateDescription), elNotes];
             if (bHasMultipleDocs==false) {
               colValues.splice(2,1);
             }
@@ -10586,7 +10588,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
     },
 
     fnDisplayTableResults: function (rd, aTablesList) {
-      var div, table, msgHash, tbody, i, sNotes, sClass, sSize;
+      var div, table, msgHash, tbody, i, elNotes, sClass, sSize;
 
       div = rd.createElement('div');
       div.setAttribute('id', 'AITablesList');
@@ -10605,7 +10607,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         msgHash = new blr.W15yQC.HashTable();
         tbody = rd.createElement('tbody');
         for (i = 0; i < aTablesList.length; i++) {
-          sNotes = blr.W15yQC.fnMakeHTMLNotesList(aTablesList[i], msgHash);
+          elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, aTablesList[i], msgHash);
           sClass = '';
           if (aTablesList[i].failed) {
             sClass = 'failed';
@@ -10613,7 +10615,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             sClass = 'warning';
           }
           sSize = aTablesList[i].maxCols+' x '+aTablesList[i].maxRows;
-          blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aTablesList[i].nodeDescription), aTablesList[i].ownerDocumentNumber, aTablesList[i].summary, aTablesList[i].caption, sSize, aTablesList[i].state, sNotes], sClass);
+          blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aTablesList[i].nodeDescription), rd.createTextNode(aTablesList[i].ownerDocumentNumber), rd.createTextNode(aTablesList[i].summary), rd.createTextNode(aTablesList[i].caption), rd.createTextNode(sSize), rd.createTextNode(aTablesList[i].state), elNotes], sClass);
         }
         table.appendChild(tbody);
         div.appendChild(table);
@@ -10795,7 +10797,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
     },
 
     fnDisplayMandatesCheckResults: function (rd, aMandatesList, iMandateFailuresCount) {
-      var div, table, msgHash, tbody, i, sNotes, sClass, sSize;
+      var div, table, msgHash, tbody, i, sClass, sSize;
 
       if (aMandatesList!=null && aMandatesList.length>0) {
         div = rd.createElement('div');
@@ -10815,7 +10817,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
             if (!aMandatesList[i].result) {
               sClass = 'failed';
             }
-            blr.W15yQC.fnAppendTableRow(tbody, [i + 1, blr.W15yQC.fnMakeWebSafe(aMandatesList[i].title), aMandatesList[i].result?'Passed':'Failed', blr.W15yQC.fnMakeWebSafe(aMandatesList[i].message)], sClass);
+            blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(aMandatesList[i].title), rd.createTextNode(aMandatesList[i].result?'Passed':'Failed'), rd.createTextNode(aMandatesList[i].message)], sClass);
           }
           table.appendChild(tbody);
           div.appendChild(table);
