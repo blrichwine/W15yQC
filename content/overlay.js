@@ -3728,6 +3728,20 @@ ys: 'whys'
       return (/\/(a|button|input|label|legend)\[/i.test(sXPath));
     },
 
+    fnInputElementsInXPath: function (sXPath) {
+      var sElements='', aSteps=[], i, m;
+      if (/\/(a|button|input|label|legend)\[/i.test(sXPath)) {
+        aSteps=sXPath.split('/');
+        for (i=0;i<aSteps.length;i++) {
+          m=aSteps[i].match(/^(a|button|input|label|legend)\[/i);
+          if (m!==null) {
+            sElements=blr.W15yQC.fnJoin(sElements,m[0].replace('[',''),', ');
+          }
+        }
+      }
+      return sElements;
+    },
+
     fnDescribeNodeType: function (node) {
       var sTagName;
       if(node!=null) {
@@ -8250,7 +8264,7 @@ ys: 'whys'
             }
             colValues=[rd.createTextNode(i + 1), rd.createTextNode(io.nodeDescription), rd.createTextNode(io.ownerDocumentNumber), rd.createTextNode(io.effectiveLabel), rd.createTextNode(io.effectiveLabelSource)];
             if(bHasAlt) { colValues.push(rd.createTextNode(io.alt)); }
-            colValues.push(rd.createTextNode(blr.W15yQC.fnXPathContainsInputNameElement(io.xpath)?'Y':'N'));
+            colValues.push(rd.createTextNode(blr.W15yQC.fnXPathContainsInputNameElement(io.xpath)?'Y: '+blr.W15yQC.fnInputElementsInXPath(io.xpath):'N'));
             if(bHasTitle) { rd.createTextNode(colValues.push(io.title)); }
             if(bHasARIALabel) { rd.createTextNode(colValues.push(io.ariaLabel)); }
             colValues.push(rd.createTextNode(io.src));
@@ -11245,10 +11259,10 @@ fnAnalyzeMultimedia: function (oW15yResults) {
           a=h2.getElementsByTagName('a');
           if (a != null && a.length>0) {
             a=a[0];
-            a.setAttribute('onclick',a.getAttribute('onclick').replace("Window Details","Window Details"+sLabel));
-            a.appendChild(rd.createTextNode(' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)'));
+            a.setAttribute('data-ectext','Window Details'+sLabel);
+            a.appendChild(rd.createTextNode(sLabel));
           } else {
-            h2.appendChild(rd.createTextNode(' (Page Score: '+oW15yQCReport.iScore.toString()+'/100)'));
+            h2.appendChild(rd.createTextNode(sLabel));
           }
         }
       }

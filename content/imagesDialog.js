@@ -197,7 +197,7 @@ blr.W15yQC.ImagesDialog = {
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
-          treecell.setAttribute('label', blr.W15yQC.fnXPathContainsInputNameElement(ak.xpath)?'Y':'N');
+          treecell.setAttribute('label', blr.W15yQC.fnXPathContainsInputNameElement(ak.xpath)?'Y: '+blr.W15yQC.fnInputElementsInXPath(ak.xpath):'N');
           treerow.appendChild(treecell);
 
           treecell = document.createElement('treecell');
