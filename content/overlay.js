@@ -11840,8 +11840,11 @@ try{
       if (blr.W15yQC.fnTrim(" this  is  a  test ") != "this  is  a  test") {
         blr.W15yQC.fnLog("fnTrim test 1 failed.");
       }
-      if (blr.W15yQC.fnJoin(" just a test ", " part two ", ",") != "just a test, part two") {
+      if (blr.W15yQC.fnJoin(" just a test ", " part two ", ", ") != "just a test, part two") {
         blr.W15yQC.fnLog("fnJoin test 1 failed.");
+      }
+      if (blr.W15yQC.fnJoin(" just a test ", " part two ", ",") != "just a test,part two") {
+        blr.W15yQC.fnLog("fnJoin test 2 failed.");
       }
     }
   };
