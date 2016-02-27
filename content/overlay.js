@@ -7380,7 +7380,7 @@ ys: 'whys'
 
     fnDisplayARIALandmarksResults: function (rd, aARIALandmarksList, bQuick) {
       var div, divContainer, innerDiv, list, previousHeadingLevel, previousDocument, sDoc, li, sNotesTxt, sMessage, span, nextLogicalLevel,
-        table, msgHash, tbody, i, lo, sPadding, j, elNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
+        table, msgHash, tbody, i, lo, j, elNotes, sClass, bHasMultipleDocs=false, colHeaders=[], colValues=[];
 
      div = rd.createElement('div');
       divContainer = rd.createElement('div');
@@ -7487,10 +7487,6 @@ ys: 'whys'
           // Elements
           for (i = 0; i < aARIALandmarksList.length; i++) {
             lo = aARIALandmarksList[i];
-            sPadding = '';
-            for(j=1; j<lo.level; j++) {
-              sPadding += '&nbsp;';
-            }
             elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
             sClass = '';
             if (lo.failed) {
@@ -7499,6 +7495,21 @@ ys: 'whys'
               sClass = 'warning';
             }
             blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode(lo.effectiveLabel), elNotes], sClass);
+          }
+
+          // Page Level
+          if(aARIALandmarksList.pageLevel && aARIALandmarksList.pageLevel.notes) {
+            for (i = 0; i < aARIALandmarksList.pageLevel.notes.length; i++) {
+              lo = aARIALandmarksList.pageLevel;
+              elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
+              sClass = '';
+              if (lo.failed) {
+                sClass = 'failed';
+              } else if (lo.warning) {
+                sClass = 'warning';
+              }
+              blr.W15yQC.fnAppendTableRow(tbody, [rd.createTextNode(i + 1), rd.createTextNode('--Page Level--'), elNotes], sClass);
+            }
           }
         } else {
           colHeaders=[blr.W15yQC.fnGetString('hrsTHNumberSym'), blr.W15yQC.fnGetString('hrsLandmarkElement'),
@@ -7515,10 +7526,6 @@ ys: 'whys'
           // Elements
           for (i = 0; i < aARIALandmarksList.length; i++) {
             lo = aARIALandmarksList[i];
-            sPadding = '';
-            for(j=1; j<lo.level; j++) {
-              sPadding += '&nbsp;';
-            }
             elNotes = blr.W15yQC.fnMakeHTMLNotesList(rd, lo, msgHash);
             sClass = '';
             if (lo.failed) {
@@ -7526,7 +7533,7 @@ ys: 'whys'
             } else if (lo.warning) {
               sClass = 'warning';
             }
-            colValues=[rd.createTextNode(i + 1), rd.createTextNode(sPadding+lo.nodeDescription), rd.createTextNode(lo.ownerDocumentNumber), rd.createTextNode(lo.level), rd.createTextNode(lo.effectiveLabel), rd.createTextNode(lo.effectiveLabelSource), rd.createTextNode(lo.role), rd.createTextNode(lo.stateDescription), elNotes];
+            colValues=[rd.createTextNode(i + 1), rd.createTextNode(lo.nodeDescription), rd.createTextNode(lo.ownerDocumentNumber), rd.createTextNode(lo.level), rd.createTextNode(lo.effectiveLabel), rd.createTextNode(lo.effectiveLabelSource), rd.createTextNode(lo.role), rd.createTextNode(lo.stateDescription), elNotes];
             if (bHasMultipleDocs==false) {
               colValues.splice(2,1);
             }
