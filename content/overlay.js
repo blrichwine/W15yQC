@@ -34,10 +34,10 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 64',
-    releaseDate: 'December 17, 2015',
+    releaseVersion: '1.0 - Beta 65',
+    releaseDate: 'February 26, 2016',
     mainVersion: 1.0,
-    betaVersion: 64,
+    betaVersion: 65,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
@@ -1853,23 +1853,23 @@ ys: 'whys'
     },
 
     fnAppendTableRow: function (tableBody, aTableCells, sClass) {
-      var i, doc, sText, td, tr;
-      if (tableBody && aTableCells && aTableCells.length > 0) {
-        doc=tableBody.ownerDocument;
-        tr = doc.createElement('tr');
-        for (i = 0; i < aTableCells.length; i++) {
-          td = doc.createElement('td');
-          if (aTableCells[i] != null) {
-            td.appendChild(aTableCells[i]);
+        var i, doc, sText, td, tr;
+        if (tableBody && aTableCells && aTableCells.length > 0) {
+          doc=tableBody.ownerDocument;
+          tr = doc.createElement('tr');
+          for (i = 0; i < aTableCells.length; i++) {
+            td = doc.createElement('td');
+            if (aTableCells[i] != null) {
+              td.appendChild(aTableCells[i]);
+            }
+            tr.appendChild(td);
           }
-          tr.appendChild(td);
+          if (sClass != null && sClass.length != null && sClass.length > 0) {
+            tr.setAttribute('class', sClass);
+          }
+          tableBody.appendChild(tr);
         }
-        if (sClass != null && sClass.length != null && sClass.length > 0) {
-          tr.setAttribute('class', sClass);
-        }
-        tableBody.appendChild(tr);
-      }
-      return tableBody;
+        return tableBody;
     },
 
     fnToggleFocusHighlighter: function() {
@@ -8262,11 +8262,15 @@ ys: 'whys'
             } else if (io.warning) {
               sClass = 'warning';
             }
-            colValues=[rd.createTextNode(i + 1), rd.createTextNode(io.nodeDescription), rd.createTextNode(io.ownerDocumentNumber), rd.createTextNode(io.effectiveLabel), rd.createTextNode(io.effectiveLabelSource)];
+            colValues=[rd.createTextNode(i + 1),
+                       rd.createTextNode(io.nodeDescription),
+                       rd.createTextNode(io.ownerDocumentNumber),
+                       rd.createTextNode(io.effectiveLabel),
+                       rd.createTextNode(io.effectiveLabelSource)];
             if(bHasAlt) { colValues.push(rd.createTextNode(io.alt)); }
             colValues.push(rd.createTextNode(blr.W15yQC.fnXPathContainsInputNameElement(io.xpath)?'Y: '+blr.W15yQC.fnInputElementsInXPath(io.xpath):'N'));
-            if(bHasTitle) { rd.createTextNode(colValues.push(io.title)); }
-            if(bHasARIALabel) { rd.createTextNode(colValues.push(io.ariaLabel)); }
+            if(bHasTitle) { colValues.push(rd.createTextNode(io.title)); }
+            if(bHasARIALabel) { colValues.push(rd.createTextNode(io.ariaLabel)); }
             colValues.push(rd.createTextNode(io.src));
             colValues.push(elNotes);
             if (bHasMultipleDocs==false) {
@@ -11080,6 +11084,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
           if(itemsCount>0) {
             offset=Math.floor((30.0*(itemsCount-failures)/itemsCount)*((itemsCount-warnings/5)/itemsCount))-30;
+            if (failures<1 && offset>-5) { offset++; } // Bonus for no failures and few warnings
             score=score+offset;
             if(offset<0) {
               sDesc=blr.W15yQC.fnJoin(sDesc,"Penalty for "+failures.toString()+" failures and "+warnings.toString()+" warnings on "+itemsCount.toString()+" items ("+offset.toString()+").",' ');
@@ -11088,7 +11093,11 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         }
       }
       oW15yQCReport.PageScore.sDescription=sDesc;
-      if(score<0) { score=0; }
+      if (isNaN(score)) {
+        score=0;
+      }
+      score=(score>0)? score : 0;
+      
       oW15yQCReport.iScore=score;
     },
 
@@ -11250,7 +11259,11 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
         element = rd.createElement('p');
 
-        element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
+        if (oW15yQCReport.iScore>99 && blr.W15yQC.fnStringHasContent(oW15yQCReport.PageScore.sDescription)==false) {
+          element.appendChild(rd.createTextNode(oW15yQCReport.iScore));
+        } else {
+          element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));          
+        }
         div2.appendChild(element);
         h2=div.getElementsByTagName('h2');
         if (h2 != null && h2.length>0) {

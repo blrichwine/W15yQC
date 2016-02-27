@@ -7,7 +7,7 @@
     <em:id>W15yQuickCheck@blrichwine.gmail.com</em:id>
     <em:name>W15y Quick Check</em:name>
     <em:type>2</em:type>
-    <em:version>1.0b64</em:version>
+    <em:version>1.0b65</em:version>
     <em:optionsURL>chrome://W15yQC/content/options.xul</em:optionsURL>
     <em:optionsType>1</em:optionsType>
     <em:description>Basic web accessibility checker extension for Firefox.</em:description>
@@ -25,7 +25,7 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>35.0</em:minVersion>
-        <em:maxVersion>46.0</em:maxVersion>
+        <em:maxVersion>48.0</em:maxVersion>
       </Description>
     </em:targetApplication>
 
