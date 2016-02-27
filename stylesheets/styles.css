@@ -331,9 +331,9 @@ a.buttons:hover {
 }
 
 
-/* Section - for main page content */
+/* main - for main page content */
 
-section {
+main {
     width: 650px;
     float: right;
     padding-bottom: 50px;
