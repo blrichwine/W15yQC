@@ -3009,7 +3009,10 @@ ys: 'whys'
     fnIsValidHtmlID: function (sID) {
       if(sID != null && sID.length) {
         sID = blr.W15yQC.fnTrim(sID);
-        if(/^[a-z][a-z0-9:\._-]*$/i.test(sID)) {
+        if(/\s/.test(sID)) {
+          return false;
+        }
+        if (blr.W15yQC.fnStringHasContent(sID)) {
           return true;
         }
       }
@@ -3020,20 +3023,20 @@ ys: 'whys'
       var sMsg=null, sMsg1=null, sMsg2=null, sMsg3=null, sID2;
       sID = blr.W15yQC.fnTrim(sID);
       if(blr.W15yQC.fnStringHasContent(sID)) {
-        if(/^[a-z]/i.test(sID)==false){
-          sMsg1='begin with a letter [a-z]';
-        }
+//        if(/^[a-z]/i.test(sID)==false){
+//          sMsg1='begin with a letter [a-z]';
+//        }
         if(/\s/.test(sID)) {
           sMsg2='not contain spaces'
         }
-        sID2=sID.replace(/[a-z0-9\s:\._-]/ig,'');
-        if(blr.W15yQC.fnStringHasContent(sID2)) {
-          if(sID2.length>1) {
-            sMsg3="not contain the characters:'"+sID2+"'";
-          } else {
-            sMsg3="not contain the character:'"+sID2+"'";
-          }
-        }
+//        sID2=sID.replace(/[a-z0-9\s:\._-]/ig,'');
+//        if(blr.W15yQC.fnStringHasContent(sID2)) {
+//          if(sID2.length>1) {
+//            sMsg3="not contain the characters:'"+sID2+"'";
+//          } else {
+//            sMsg3="not contain the character:'"+sID2+"'";
+//          }
+//        }
       }
       if(sMsg1!=null || sMsg2!=null || sMsg3!=null) {
         sMsg='Should ';
