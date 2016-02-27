@@ -11259,10 +11259,10 @@ fnAnalyzeMultimedia: function (oW15yResults) {
 
         element = rd.createElement('p');
 
-        if (oW15yQCReport.iScore>99 && blr.W15yQC.fnStringHasContent(oW15yQCReport.PageScore.sDescription)==false) {
+        if (blr.W15yQC.fnStringHasContent(oW15yQCReport.PageScore.sDescription)==false) {
           element.appendChild(rd.createTextNode(oW15yQCReport.iScore));
         } else {
-          element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));          
+          element.appendChild(rd.createTextNode(oW15yQCReport.iScore+' - '+oW15yQCReport.PageScore.sDescription));
         }
         div2.appendChild(element);
         h2=div.getElementsByTagName('h2');
