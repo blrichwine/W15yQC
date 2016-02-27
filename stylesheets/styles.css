@@ -82,7 +82,7 @@ h4, h5, h6 {
     font-weight: 700;
 }
 
-section[role=main] h4, section[role=main] h5, section[role=main] h6 {
+main h4, main h5, main h6 {
     font-size: 110%;
     font-weight: normal;
 }
