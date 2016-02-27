@@ -2581,7 +2581,7 @@ ys: 'whys'
 
 
     fnURLsAreEqual: function (docURL1, url1, docURL2, url2) {
-      var i, r, bIgnoreWWW=false, r1=/#.*$/, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
+      var i, r, bIgnoreWWW=false, dregex, r1=/#.*$/, r2=/[\/\\](index|home)\.([sx]?html?|php[34]?|asp|aspx|cgi)$/i, r3=/:\/\/www\./i, r4=/[\/\\]$/;
       bIgnoreWWW=blr.W15yQC.getBoolPref("extensions.W15yQC.DomainEquivalences.ignoreWWW",true);
 
       if(url1 != null) {
@@ -2590,7 +2590,8 @@ ys: 'whys'
         //url1 = url1.replace(r1, '');
 
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-          url1 = url1.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
+		  dregex=new RegExp(':\/\/'+blr.W15yQC.domainEq1[i],'i');
+          url1 = url1.replace(dregex, '://'+blr.W15yQC.domainEq2[i]);
         }
       }
       if(url2 != null) {
@@ -2598,7 +2599,8 @@ ys: 'whys'
         if(bIgnoreWWW) { url2 = url2.replace(r3, '://'); }
         //url2 = url2.replace(r1, '');
         for(i=0;i<blr.W15yQC.domainEq1.length;i++) {
-          url2 = url2.replace('//'+blr.W15yQC.domainEq1[i], '//'+blr.W15yQC.domainEq2[i],'i');
+		  dregex=new RegExp(':\/\/'+blr.W15yQC.domainEq1[i],'i');
+          url2 = url2.replace(dregex, '://'+blr.W15yQC.domainEq2[i]);
         }
       }
 
@@ -5809,7 +5811,7 @@ ys: 'whys'
       styleRules += "thead tr { background-color: #EEEEEE; border: 1px solid #CCCCCC; box-shadow: 0 1px 0 #FFFFFF inset; }";
       styleRules += "table { border-collapse: collapse; font-size: 12px; margin: 20px; text-align: left; min-width: 480px; border: 1px solid #CCCCCC; box-shadow: 0 1px 0 #FFFFFF inset;}";
       styleRules += "th { margin:0;color: #000; font-size: 13px; font-weight: normal; padding: 8px; border-right: none; border-left: 1px solid #FFFFFF; box-shadow: -1px 0 0 #DDDDDD;}";
-      styleRules += "th {white-space:nowrap;}";
+      styleRules += "th {white-space:nowrap; max-width: 360px; width: 360px;}";
       styleRules += "th:last-of-type {min-width: 150px; border-right:none; box-shadow: none}";
       styleRules += "th a {margin-right:15px}";
       styleRules += "th a:before {content:\"\";float:right;width:10px;height:16px;margin:0 0 0 5px;z-index: -1;opacity: 1;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1AgLBBMlj+gFUAAAADFJREFUeNpjYMAEPlCMAhixKEIGW7Ap9GHADrYgK8SlCMNk6gGirSbZMwSDh4HYAAcAlJYHN316hgAAAAAASUVORK5CYII%3D) no-repeat 0 0;background-position:right center;}";
@@ -5819,10 +5821,10 @@ ys: 'whys'
       styleRules += "th.SortedAsc3 a:before, th.SortedDes3 a:before {opacity: 0.3;}";
       styleRules += "th.SortedAsc4 a:before, th.SortedDes4 a:before {opacity: 0.2;}";
       styleRules += "th.SortedAsc5 a:before, th.SortedDes5 a:before {opacity: 0.15;}";
-      styleRules += "td { margin:0; background: none repeat scroll 0 0 #E8EDFF; border-top: 1px solid #FFFFFF; color: #000; padding: 8px; border-left: 1px solid #B9C9FE; }";
+      styleRules += "td { margin:0; background: none repeat scroll 0 0 #E8EDFF; border-top: 1px solid #FFFFFF; color: #000; padding: 8px; border-left: 1px solid #B9C9FE; word-wrap: break-word; max-width: 360px; width: 360px}";
       styleRules += "tr.warning td { background-color: #FFC900; color: #000;} tr.failed td { background-color: #FF7B7B; color: #000}";
       styleRules += "#AIARIAElementsList ul ul {border-left:1px solid #757575;margin-left:5px;padding-left:8px} #AIARIAElementsList li {list-style:none;overflow:auto;width:100%;min-width:800px}";
-      styleRules += "td:first-child, th:first-child { border-left: none !important; box-shadow:none;}";
+      styleRules += "td:first-child, th:first-child { border-left: none !important; box-shadow:none; width: 55px; max-width: 55px;   vertical-align: middle; text-align: right;}";
       styleRules += "td ul{padding-left:12px}";
       styleRules += "tbody tr:hover td { background: none repeat scroll 0 0 #D0DAFD; }";
       styleRules += "tbody tr.failed:hover td { background: none repeat scroll 0 0 #E66F6F; }";
@@ -5963,21 +5965,33 @@ ys: 'whys'
       if(blr.W15yQC.sb == null) { blr.W15yQC.fnInitStringBundles(); }
       // Check if frame titles are empty, too short, only ASCII symbols, the same as other frame titles, or sounds like any other frame titles
       for (i = 0; i < aFramesList.length; i++) {
-        aFramesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node, aDocumentsList);
-        framedDocumentBody = null;
-        if(aFramesList[i].node != null) {
-          if(aFramesList[i].node.contentWindow != null && aFramesList[i].node.contentWindow.document && aFramesList[i].node.contentWindow.document.body) {
-            framedDocumentBody = aFramesList[i].node.contentWindow.document.body;
-          } else if(aFramesList[i].node.contentDocument && aFramesList[i].node.contentDocument.body) {
-            framedDocumentBody = aFramesList[i].node.contentDocument.body;
+        try {
+          aFramesList[i].ownerDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(aFramesList[i].node, aDocumentsList);
+          framedDocumentBody = null;
+          if(aFramesList[i].node != null) {
+            if(aFramesList[i].node.contentWindow != null && aFramesList[i].node.contentWindow.document && aFramesList[i].node.contentWindow.document.body) {
+              framedDocumentBody = aFramesList[i].node.contentWindow.document.body;
+            } else if(aFramesList[i].node.contentDocument && aFramesList[i].node.contentDocument.body) {
+              framedDocumentBody = aFramesList[i].node.contentDocument.body;
+            }
           }
-        }
-        aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(framedDocumentBody, aDocumentsList);
-        if (aFramesList[i].title != null && aFramesList[i].title.length && aFramesList[i].title.length > 0) {
-          aFramesList[i].title = blr.W15yQC.fnCleanSpaces(aFramesList[i].title);
-          aFramesList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFramesList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title) : '';
-        } else {
-          aFramesList[i].soundex = '';
+          aFramesList[i].containsDocumentNumber = blr.W15yQC.fnGetOwnerDocumentNumber(framedDocumentBody, aDocumentsList);
+          if (aFramesList[i].title != null && aFramesList[i].title.length && aFramesList[i].title.length > 0) {
+            aFramesList[i].title = blr.W15yQC.fnCleanSpaces(aFramesList[i].title);
+            aFramesList[i].soundex = blr.W15yQC.fnSetIsEnglishLocale(aDocumentsList[aFramesList[i].ownerDocumentNumber-1].language) ? blr.W15yQC.fnGetSoundExTokens(aFramesList[i].title) : '';
+          } else {
+            aFramesList[i].soundex = '';
+          }
+        } catch(e) {
+          if (aFramesList[i].containsDocumentNumber<1) {
+            aFramesList[i].containsDocumentNumber=0;
+          }
+          if (blr.W15yQC.fnStringHasContent(aFramesList[i].title)==false) {
+            aFramesList[i].title = '';
+          }
+          if (blr.W15yQC.fnStringHasContent(aFramesList[i].soundex)==false) {
+            aFramesList[i].soundex = '';
+          }
         }
       }
       for (i = 0; i < aFramesList.length; i++) {
@@ -11306,6 +11320,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         dialogID = 'licenseDialog';
         dialogPath = 'chrome://W15yQC/content/licenseDialog.xul';
         window.openDialog(dialogPath, dialogID, 'chrome,resizable=yes,centerscreen,modal',blr);
+        blr.W15yQC.fnDoEvents();
       }
 
       if(blr.W15yQC.getBoolPref("extensions.W15yQC.userAgreedToLicense",false)==true) {
@@ -11727,6 +11742,7 @@ try{
       blr.W15yQC.domainEq2=[];
       sDomains=blr.W15yQC.getCharPref("extensions.W15yQC.DomainEquivalences","");
       if(sDomains!=null && sDomains.length>3) {
+        sDomains=sDomains.toLowerCase();
         aEquivDomains=sDomains.split("|");
         if(aEquivDomains != null && aEquivDomains.length>0) {
           for(i=0;i<aEquivDomains.length;i++) {
