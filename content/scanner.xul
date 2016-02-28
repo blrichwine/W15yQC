@@ -428,6 +428,9 @@
       </xul:tree>
 			<xul:hbox>
 				 <xul:button id="button-scanSelectedURL"
+					 label="Start Scanning"
+					 oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
+				 <xul:button id="button-scanSelectedURL"
 					 label="Scan URL"
 					 oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
 				 <xul:button id="button-stopScanning"

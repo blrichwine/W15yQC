@@ -73,9 +73,9 @@
           <menupopup onpopupshowing="blr.W15yQC.fnInitToolsMenuPopup(document)">
             <menuitem id="W15yQC_menuEntry_contrastToolDialog" accesskey="c" label="Contrast Tool"
                       oncommand="blr.W15yQC.openDialog('contrast');"/>
-            <menuitem id="W15yQC_menuEntry_projectScanner" accesskey="p" label="Project Scanner"
+            <menuitem id="W15yQC_menuEntry_projectScanner" accesskey="s" label="Site Scanner"
                       oncommand="blr.W15yQC.openDialog('scanner');"/>
-            <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="s" label="Semantic View"
+            <menuitem id="W15yQC_menuEntry_removeStylesDialog" accesskey="v" label="Semantic View"
                       oncommand="blr.W15yQC.fnRemoveStyles();"/>
             <menuitem id="W15yQC_menuEntry_focusHighlighter" accesskey="f" label="Focus Tracker"
                       oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
@@ -149,7 +149,7 @@
           <menuitem id="W15yTPBMI-RemoveStyles" accesskey="" label="Semantic View" oncommand="blr.W15yQC.fnRemoveStyles();"/>
           <menuitem id="W15yQCTBFocusHighlighter" accesskey="" label="Focus Tracker" type="checkbox" oncommand="blr.W15yQC.fnToggleFocusHighlighter();"/>
           <menuitem id="W15yTPBMI-idsChecker" accesskey="" label="Problem IDs Checker" oncommand="blr.W15yQC.openDialog('idsCheck');"/>
-          <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Project Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
+          <menuitem id="W15yTPBMI_projectScanner" accesskey="" label="Site Scanner" oncommand="blr.W15yQC.openDialog('scanner');"/>
           <menuitem id="W15yTPBMI_pdfChecker" accesskey="" label="Check PDF" oncommand="blr.W15yQC.openDialog('checkPDF',window.top.content.document);"/>
           <menuitem id="W15yTPBMI_pdfChecker" accesskey="" label="Open PDF Checker" oncommand="blr.W15yQC.openDialog('pdfChecker',window.top.content.document);"/>
       </menupopup>
