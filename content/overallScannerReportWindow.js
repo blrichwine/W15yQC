@@ -200,7 +200,7 @@ try{
     var i, j, l, list, llen, rd,
         maxFailuresList=null, maxDocumentsList=null, maxFormControlsList=null, mandateFailuresLists=null, failedMandateTitles=[], matches, mandateTitle,
         missingTitles=[], pagesWithNonUniqueTitles=0, pageScoreHistogram=[], effectiveNonUniqueTitles=[], nonUniqueTitles, effectiveWindowTitle, maxPSHValue,
-        ul,li,a,ul2,li2,h, table, thead, tbody, tr, th, td, caption, span, fv, ev, w;
+        ul,li,a,ul2,li2,h, table, thead, tbody, tr, th, td, caption, span, fv, ev, w, scoreIndex;
     rd=blr.W15yQC.OverallScannerReportWindow.rd;
     list=blr.W15yQC.OverallScannerReportWindow.urlList;
     nonUniqueTitles=new blr.W15yQC.HashTable();
@@ -209,23 +209,25 @@ try{
     h.appendChild(rd.createTextNode('Overall Report'));
     rd.body.appendChild(h);
     if (list!=null && list.length>0) {
-      for(i=0;i<100;i++) { pageScoreHistogram[i]=0; }
+      for(i=0;i<22;i++) { pageScoreHistogram[i]=0; }
       llen=list.length;
       for(i=0;i<llen;i++) {
-        if(list[i]!=null && list[i].score!=null) {
-          pageScoreHistogram[list[i].score/5<19?list[i].score/5:19]++;
+        if(list[i]!==null && list[i].score!==null) {
+          scoreIndex=Math.floor(list[i].score/5);
+          scoreIndex=scoreIndex>19 ? 19 : scoreIndex;
+          pageScoreHistogram[scoreIndex]=pageScoreHistogram[scoreIndex]+1;
         }
         // Pages with the most form controls
-        if(list[i].formControlsCount>2) { maxFormControlsList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].formControlsCount,i,30,maxFormControlsList); }
+        if(list[i]!==null && list[i].formControlsCount>2) { maxFormControlsList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].formControlsCount,i,30,maxFormControlsList); }
   
         // Pages with the most documents
-        if(list[i].downloadsCount>0) { maxDocumentsList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].downloadsCount,i,30,maxDocumentsList); }
+        if(list[i]!==null && list[i].downloadsCount>0) { maxDocumentsList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].downloadsCount,i,30,maxDocumentsList); }
 
         // Pages with the most failures
-        if(list[i].failuresCount>0) { maxFailuresList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].failuresCount,i,30,maxFailuresList); }
+        if(list[i]!==null && list[i].failuresCount>0) { maxFailuresList=blr.W15yQC.OverallScannerReportWindow.addPair(list[i].failuresCount,i,30,maxFailuresList); }
         
         // Pages with mandate failures
-        if (list[i].mandateFailuresCount>0) {
+        if (list[i]!==null && list[i].mandateFailuresCount>0) {
           matches=list[i].windowDescription.match(/Failed mandate '(.+?)'\s+\(/gi);
           if (matches!=null) {
             for(j=0;j<matches.length;j++) {
@@ -240,9 +242,9 @@ try{
           }
         }
 
-        if (list[i].dateScanned!=null && !blr.W15yQC.fnStringHasContent(list[i].windowTitle)) {
+        if (list[i]!==null && list[i].dateScanned!=null && !blr.W15yQC.fnStringHasContent(list[i].windowTitle)) {
           missingTitles.push(i);
-        } else if(list[i].windowTitleNotUnique==true) {
+        } else if(list[i]!==null && list[i].windowTitleNotUnique==true) {
           effectiveWindowTitle=list[i].windowTitle.replace(/['"]/,'').replace(/[!\(\)_;:\/\\\|\?\^=]+/g, ' ').replace(/[\.,\+-]+([a-z\s]|$)/ig, '$1').replace(/\s+/g, ' ').replace(/^\s*|\s*$/g, '').toLowerCase();
           if (!nonUniqueTitles.hasItem(effectiveWindowTitle)) {
             nonUniqueTitles.setItem(effectiveWindowTitle,[i]);
