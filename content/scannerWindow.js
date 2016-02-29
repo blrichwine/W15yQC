@@ -1527,9 +1527,11 @@ try{
       iframeHolder = document.getElementById('iFrameHolder'),
       textbox = document.getElementById('note-text'),
       scannerIFrame = document.getElementById('pageBeingScannedIFrame'),
+      buttonStartScanning = document.getElementById('button-scanStartScanning'),
       buttonScanSelectedURL=document.getElementById('button-scanSelectedURL'),
       buttonStopScanning=document.getElementById('button-stopScanning'),
       buttonOpenSelectedURL=document.getElementById('button-openSelectedURL'),
+      buttonOpenSelectedURLSource=document.getElementById('button-openSelectedURLsSource'),
       buttonEditSelectedURL=document.getElementById('button-editSelectedURL'),
       buttonAddNewURL=document.getElementById('button-addNewURL'),
       buttonDeleteSelectedURL=document.getElementById('button-deleteSelectedURL');
@@ -1537,8 +1539,10 @@ try{
     if(selectedRow==null) { selectedRow=-1;}
 
     if(blr.W15yQC.ScannerWindow.stateScanning==true) {
+      buttonStartScanning.disabled=true;
       buttonScanSelectedURL.disabled=true;
       buttonOpenSelectedURL.disabled=true;
+      buttonOpenSelectedURLSource.disabled=true;
       buttonAddNewURL.disabled=true;
       buttonEditSelectedURL.disabled=true;
       buttonDeleteSelectedURL.disabled=true;
@@ -1552,11 +1556,13 @@ try{
         buttonStopScanning.disabled=false;
       }
     } else {
+      buttonStartScanning.disabled=selectedRow<0;
       buttonStopScanning.label='Stop Scanning';
       buttonScanSelectedURL.disabled=selectedRow<0;
       buttonStopScanning.disabled=true;
       buttonAddNewURL.disabled=false;
       buttonOpenSelectedURL.disabled=selectedRow<0;
+      buttonOpenSelectedURLSource.disabled=selectedRow<0;
       buttonEditSelectedURL.disabled=selectedRow<0;
       buttonDeleteSelectedURL.disabled=selectedRow<0;
       if(textbox==null) {

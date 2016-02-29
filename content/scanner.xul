@@ -427,15 +427,15 @@
 				 <xul:treechildren id="treeboxChildren"/>
       </xul:tree>
 			<xul:hbox>
-				 <xul:button id="button-scanSelectedURL"
+				 <xul:button id="button-scanStartScanning"
 					 label="Start Scanning"
 					 oncommand="blr.W15yQC.ScannerWindow.scanNewLinks()"/>
-				 <xul:button id="button-scanSelectedURL"
-					 label="Scan URL"
-					 oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
 				 <xul:button id="button-stopScanning"
 					 label="Stop Scanning"
 					 oncommand="blr.W15yQC.ScannerWindow.stopScanning()"/>
+				 <xul:button id="button-scanSelectedURL"
+					 label="Scan URL"
+					 oncommand="blr.W15yQC.ScannerWindow.scanSelectedURL()"/>
 				 <xul:button id="button-openSelectedURL"
 					 label="Open URL"
 					 oncommand="blr.W15yQC.ScannerWindow.openSelectedURL()"/>

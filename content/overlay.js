@@ -3108,15 +3108,18 @@ ys: 'whys'
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
+          case 'activate this':
           case 'back':
           case 'click':
           case 'click here':
+          case 'clickhere':
           case 'clicking here':
           case 'click here for more':
           case 'click here to find out more':
           case 'click this':
           case 'click this for more':
           case 'click this to find out more':
+          case 'click to see more':
           case 'even more':
           case 'get more':
           case 'get details':
@@ -3178,10 +3181,22 @@ ys: 'whys'
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
-          case 'home':
-          case 'home page':
-          case 'homepage':
-            return false;
+            case 'about':
+            case 'about us':
+            case 'contact':
+            case 'contact form':
+            case 'contact info':
+            case 'contact us':
+            case 'events':
+            case 'home':
+            case 'home page':
+            case 'homepage':
+            case 'intro':
+            case 'introduction':
+            case 'today':
+            case 'welcome':
+            case 'welcome!':
+              return false;
           }
           if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
         }
@@ -3200,30 +3215,37 @@ ys: 'whys'
         if (sText && sText.length && sText.length >= minLength && sText.toLowerCase) {
           if (blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return false; }
           switch (sText.toLowerCase()) {
+          case 'activate this':
           case 'click':
           case 'click here':
+          case 'clickhere':
           case 'clicking here':
           case 'click here for more':
           case 'click here to find out more':
+          case 'click this':
+          case 'click this for more':
+          case 'click this to find out more':
+          case 'click to see more':
           case 'even more':
+          case 'get more':
+          case 'get details':
           case 'here':
+          case 'learn more':
           case 'more':
-          case 'read':
+          case 'press':
+          case 'press here':
+          case 'read this':
           case 'read more':
           case 'reading more':
           case 'read more here':
-          case 'see':
           case 'see here':
           case 'seehere':
-          case 'touch':
           case 'tap':
-          case 'press':
-          case 'touch here':
-          case 'press here':
           case 'tap here':
+          case 'this':
+          case 'touch':
+          case 'touch here':
           case 'x':
-          case 'no':
-          case 'yes':
             return false;
           }
           if (!blr.W15yQC.fnOnlyASCIISymbolsWithNoLettersOrDigits(sText)) { return true; }
