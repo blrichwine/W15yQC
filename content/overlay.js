@@ -34,10 +34,10 @@ if (typeof blr == "undefined" || blr===null) {var blr = {}};
 
 if (!blr.W15yQC) {
   blr.W15yQC = {
-    releaseVersion: '1.0 - Beta 66',
-    releaseDate: 'February 27, 2016',
+    releaseVersion: '1.0 - Beta 67',
+    releaseDate: 'November 17, 2016',
     mainVersion: 1.0,
-    betaVersion: 66,
+    betaVersion: 68,
     updateCheckMade: false,
     // Following are variables for setting various options:
     bHonorARIAHiddenAttribute: true,
@@ -639,6 +639,7 @@ ys: 'whys'
     // Get the "extensions.myext." branch
     blr.W15yQC.userPrefs = Components.classes["@mozilla.org/preferences-service;1"]
                            .getService(Components.interfaces.nsIPrefService);
+    blr.W15yQC.userPrefs = blr.W15yQC.userPrefs.getBranch("");
   },
   setBoolPref: function(sPrefName, bValue) {
     if (blr.W15yQC.userPrefs===null) {
@@ -649,14 +650,20 @@ ys: 'whys'
     } catch(e) {}
   },
   getBoolPref: function(sPrefName,bDefValue) {
+    blr.W15yQC.fnLog("Entering getBoolPref");
     if (blr.W15yQC.userPrefs===null) {
+      blr.W15yQC.fnLog("Calling initPrefService");
       blr.W15yQC.initPrefService();
     }
     try {
+      blr.W15yQC.fnLog("Trying to return value");
       return blr.W15yQC.userPrefs.getBoolPref(sPrefName);
     } catch(e) {
+        blr.W15yQC.fnLog("Error reading value for: "+sPrefName+"\n"+blr.W15yQC.objectToString(e));
         return bDefValue != undefined ? bDefValue : null;
     }
+    blr.W15yQC.fnLog("Calling returning Null");
+
     return null;  // quiet warnings
   },
   setIntPref: function(sPrefName, iValue) {
@@ -697,7 +704,7 @@ ys: 'whys'
     }
     return null;  // quiet warnings
   },
-  
+
   makeCRCTable: function() {
     var c, n, k, crcTable = [];
     for(n =0; n < 256; n++){
@@ -781,7 +788,7 @@ ys: 'whys'
     },
 
     // fnDoEvents used to get UI to update (so XUL status bars and status text update while processing)
-    fnDoEvents: function() { 
+    fnDoEvents: function() {
       var thread, limit=10;
       try {
         thread = Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThread;
@@ -789,7 +796,7 @@ ys: 'whys'
           thread.processNextEvent(false); // Allow XUL UI to update while processing
           limit=limit-1;
         }
-      } catch(ex) { 
+      } catch(ex) {
       }
     },
 
@@ -977,7 +984,7 @@ ys: 'whys'
             sLogic=sLogic.replace(/\(\s+/ig,'(');
             sLogic=sLogic.replace(/\s+\)/ig,')');
             sLogic=blr.W15yQC.fnCleanSpaces(sLogic);
-            
+
             if (/^(false|true)\s*&\s*(false|true)/i.test(sLogic)) {
               sLogic=blr.W15yQC.fnCleanSpaces(sLogic.replace(/^false\s*&\s*(false|true)/ig,'false '));
               sLogic=blr.W15yQC.fnCleanSpaces(sLogic.replace(/^(false|true)\s*&\s*false/ig,'false '));
@@ -997,7 +1004,7 @@ ys: 'whys'
             sLogic=sLogic.replace(/\(\s+/ig,'(');
             sLogic=sLogic.replace(/\s+\)/ig,')');
             sLogic=blr.W15yQC.fnCleanSpaces(sLogic);
-            
+
           } while (bMadeChange==true);
 
           sLogic=blr.W15yQC.fnCleanSpaces(sLogic);
@@ -1008,7 +1015,7 @@ ys: 'whys'
       }
       return 'Syntax error in logic string.';
     },
-    
+
     autoAdjustColumnWidths: function (treebox, iLimitCounter) {
       // Auto-size the narrower XUL treebox columns
 
@@ -1612,7 +1619,7 @@ ys: 'whys'
           noteLevel = noteLevelDisplayOrder[noteLevelIndex];
           noteText = noteLevelTexts[noteLevel];
           for(i=0; i<no.notes.length; i++) {
-            if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel && (sMsgKeysToIgnore==null || sMsgKeysToIgnore.contains("|"+no.notes[i].msgKey+"|")==false)) {
+            if(blr.W15yQC.fnGetNoteSeverityLevel(no.notes[i].msgKey) == noteLevel && (sMsgKeysToIgnore==null || (sMsgKeysToIgnore.contains && sMsgKeysToIgnore.contains("|"+no.notes[i].msgKey+"|")==false))) {
               rn = blr.W15yQC.fnResolveNote(no.notes[i], msgHash);
               if(rn != null && ((rn.expertLevel<= blr.W15yQC.userExpertLevel && blr.W15yQC.bQuick==false) || (rn.bQuick==true && blr.W15yQC.bQuick==true))) {
                 if(noteLevel==1) {
@@ -3187,13 +3194,17 @@ ys: 'whys'
             case 'contact form':
             case 'contact info':
             case 'contact us':
+            case 'document':
             case 'events':
             case 'home':
             case 'home page':
             case 'homepage':
             case 'intro':
             case 'introduction':
+            case 'none':
             case 'today':
+            case 'untitled':
+            case 'untitled document':
             case 'welcome':
             case 'welcome!':
               return false;
@@ -3499,7 +3510,7 @@ ys: 'whys'
         do {
           var compStyle = window.getComputedStyle (node, null);
 
-          if (/absolute|fixed/.test(compStyle.getPropertyValue("position").toLowerCase()) == true) {
+          if (compStyle!==null && compStyle.getPropertyValue && /absolute|fixed/.test(compStyle.getPropertyValue("position").toLowerCase()) == true) {
             if (/hidden/.test(compStyle.getPropertyValue("overflow").toLowerCase()) == true &&
               (parseInt(compStyle.getPropertyValue("width"),10) <= 1 || parseInt(compStyle.getPropertyValue("height"),10) <= 1) &&
               parseInt(compStyle.getPropertyValue("top"),10) > -1 &&
@@ -10834,7 +10845,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
                       sLogic=sLogic.replace(re,results[j-1].toString());
                     }
                   }
-                  
+
                   result=blr.W15yQC.evalLogicString(sLogic);
                   if(/^\s*(true|false)\s*/i.test(result)) {
                     result=/^\s*true\s*$/i.test(result);
@@ -11143,7 +11154,7 @@ fnAnalyzeMultimedia: function (oW15yResults) {
         score=0;
       }
       score=(score>0)? score : 0;
-      
+
       oW15yQCReport.iScore=score;
     },
 
